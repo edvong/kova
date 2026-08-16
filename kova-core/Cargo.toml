@@ -1,0 +1,13 @@
+[package]
+name = "kova-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Core types and traits for Kova"
+readme = "../README.md"
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+[dependencies]
+thiserror = { workspace = true }

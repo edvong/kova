@@ -1,0 +1,14 @@
+[package]
+name = "kova-sqlite"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "SQLite support for Kova"
+readme = "../README.md"
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+[dependencies]
+kova-core = { workspace = true }
+rusqlite = { workspace = true }

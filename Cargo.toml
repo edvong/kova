@@ -1,0 +1,45 @@
+[workspace]
+members = [
+    "kova-core",
+    "kova-pg",
+    "kova-sqlite",
+    "kova-derive",
+    "kova",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+authors = ["Edmond Vong <edmond@edvong.com>"]
+description = "A PostgreSQL and SQLite ORM for Rust"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/edvong/kova"
+keywords = ["postgres", "sqlite", "orm", "database", "sql"]
+
+[workspace.dependencies]
+kova-core = { path = "kova-core" }
+kova-derive = { path = "kova-derive" }
+kova-pg = { path = "kova-pg" }
+kova-sqlite = { path = "kova-sqlite" }
+
+thiserror = "2"
+rusqlite = "0.40"
+tokio-postgres = "0.7"
+
+proc-macro2 = "1"
+syn = { version = "2", features = ["full", "extra-traits"] }
+quote = "1"
+heck = "0.5"
+
+r2d2 = "0.8"
+r2d2_sqlite = "0.35"
+
+chrono = "0.4"
+time = "0.3"
+jiff = "0.2"
+uuid = "1"
+serde = "1"
+serde_json = "1"
+url = "2.5"
