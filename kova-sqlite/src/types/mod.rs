@@ -3,6 +3,7 @@ mod row;
 mod impls;
 mod db;
 mod ext;
+mod conn;
 
 pub use value::Value;
 pub use row::Row;

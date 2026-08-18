@@ -2,9 +2,12 @@ mod error;
 pub mod types;
 pub mod dsl;
 pub mod render;
+mod query;
+mod database;
 
-pub type Result<T, E = crate::error::Error> = std::result::Result<T, E>;
 pub use error::Error;
+pub type Result<T, E = Error> = std::result::Result<T, E>;
+// pub type BoxFuture<'a, T> = std::pin::Pin<Box<dyn Future<Output = T> + Send + 'a>>;
 
 
 
