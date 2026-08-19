@@ -1,4 +1,4 @@
-use kova_core::types::{Connection, ConnectionAsync, ExecutableAsync};
+use kova_core::types::{Async, Connection, ConnectionAsync, Executable, ExecutableAsync};
 use kova_core::{Error, Result};
 
 use deadpool_postgres::Transaction;
@@ -8,10 +8,12 @@ pub struct PgPool(pub Pool);
 
 pub struct PgTx<'t>(pub Transaction<'t>);
 
+impl Executable for PgPool {
+    type Mode = Async;
+    type Native = Object;
+}
 
 impl ExecutableAsync for PgPool {
-    type Native = Object;
-
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
     where
         F: AsyncFnOnce(&Self::Native) -> Result<R> + Send
@@ -21,9 +23,12 @@ impl ExecutableAsync for PgPool {
     }
 }
 
-impl<'t> ExecutableAsync for PgTx<'t> {
+impl<'t> Executable for PgTx<'t> {
+    type Mode = Async;
     type Native = Transaction<'t>;
+}
 
+impl<'t> ExecutableAsync for PgTx<'t> {
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
     where
         F: AsyncFnOnce(&Self::Native) -> Result<R> + Send

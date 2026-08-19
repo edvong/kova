@@ -1,9 +1,9 @@
 use crate::Result;
 use crate::types::Connection;
+use crate::types::Sync;
+use crate::types::conn::Executable;
 
-pub trait ExecutableSync: Sized {
-    type Native;
-
+pub trait ExecutableSync: Executable<Mode = Sync> {
     fn with_native_sync<F, R>(&self, f: F) -> Result<R>
     where
         F: FnOnce(&Self::Native) -> Result<R>;
@@ -16,7 +16,6 @@ pub trait ConnectionSync: Connection + ExecutableSync {
 }
 
 impl<E: ExecutableSync> ExecutableSync for &mut E {
-    type Native = E::Native;
     fn with_native_sync<F, R>(&self, f: F) -> Result<R> where F: FnOnce(&Self::Native) -> Result<R> {
         (**self).with_native_sync(f)
     }

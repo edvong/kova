@@ -10,7 +10,7 @@ mod conn;
 pub use {
     db::Database,
     mode::{Mode, Sync, Async},
-    conn::{Connection, ExecutableSync, ConnectionSync, ExecutableAsync, ConnectionAsync},
+    conn::{Connection, Executable, ExecutableSync, ConnectionSync, ExecutableAsync, ConnectionAsync},
     meta::ColumnMeta,
     model::{FromRow, Model},
     value::{FromValue, ToValue},

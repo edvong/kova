@@ -1,11 +1,9 @@
-use crate::types::Mode;
 use crate::types::ext::Extension;
+use crate::types::{Connection, Executable, Mode};
 
 pub trait Database: 'static + Sized {
 
-    type Mode: Mode;
-
-    type Connection<'a> where Self: 'a;
+    type Connection<'a>: Connection + Executable where Self: 'a;
 
     type Value<'a> where Self: 'a;
 

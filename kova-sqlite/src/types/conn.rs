@@ -1,13 +1,16 @@
-use kova_core::types::{Connection, ConnectionSync, ExecutableSync};
+use kova_core::types::{Connection, ConnectionSync, Executable, ExecutableSync, Sync};
 use kova_core::{Error, Result};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
 pub struct SqlitePool(Pool<SqliteConnectionManager>);
 
-impl ExecutableSync for SqlitePool {
+impl Executable for SqlitePool {
+    type Mode = Sync;
     type Native = rusqlite::Connection;
+}
 
+impl ExecutableSync for SqlitePool {
     fn with_native_sync<F, R>(&self, f: F) -> Result<R>
     where
         F: FnOnce(&Self::Native) -> Result<R>
@@ -17,11 +20,15 @@ impl ExecutableSync for SqlitePool {
     }
 }
 
+
 pub struct SqliteTx<'t>(rusqlite::Transaction<'t>);
 
-impl<'a> ExecutableSync for SqliteTx<'a> {
+impl<'a> Executable for SqliteTx<'a> {
+    type Mode = Sync;
     type Native = rusqlite::Connection;
+}
 
+impl<'a> ExecutableSync for SqliteTx<'a> {
     fn with_native_sync<F, R>(&self, f: F) -> Result<R>
     where
         F: FnOnce(&Self::Native) -> Result<R>

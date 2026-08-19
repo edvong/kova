@@ -1,9 +1,8 @@
 use crate::Result;
-use crate::types::Connection;
+use crate::types::conn::Executable;
+use crate::types::{Async, Connection};
 
-pub trait ExecutableAsync: Sized {
-    type Native;
-
+pub trait ExecutableAsync: Executable<Mode = Async> {
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
     where
         F: AsyncFnOnce(&Self::Native) -> Result<R> + Send;
@@ -17,7 +16,6 @@ pub trait ConnectionAsync: Connection + ExecutableAsync {
 }
 
 impl<E: ExecutableAsync> ExecutableAsync for &mut E {
-    type Native = E::Native;
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
     where
         F: AsyncFnOnce(&Self::Native) -> Result<R> + Send,

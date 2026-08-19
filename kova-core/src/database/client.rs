@@ -1,11 +1,13 @@
 use crate::Result;
 use crate::database::executor::Executor;
 use crate::database::operations::Operations;
-use crate::types::{Sync, Connection, ConnectionAsync, ConnectionSync, Database, Mode, Async};
+use crate::types::{Async, Connection, ConnectionAsync, ConnectionSync, Database, Executable, Mode, Sync};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
-pub struct Client<'a, DB: Database, M: Mode = <DB as Database>::Mode> {
+type EM<'a, DB> = <<DB as Database>::Connection<'a> as Executable>::Mode;
+
+pub struct Client<'a, DB: Database, M: Mode = EM<'a, DB>> {
     pub(crate) inner: Operations<DB::Connection<'a>>,
     pub(crate) _mode: PhantomData<M>,
 }
@@ -24,8 +26,8 @@ pub type Transaction<'a, 'b, 't, DB> = Operations<&'b mut <<DB as Database>::Con
 
 impl<'a, DB> Client<'a, DB, Sync>
 where
-    DB: Database<Mode =Sync>,
     DB::Connection<'a>: ConnectionSync,
+    DB: Database
 {
     pub fn transaction<F, R>(&self, f: F) -> Result<R>
     where
@@ -39,8 +41,8 @@ where
 
 impl<'a, DB> Client<'a, DB, Async>
 where
-    DB: Database<Mode =Async>,
     DB::Connection<'a>: ConnectionAsync,
+    DB: Database
 {
     pub async fn transaction<F, R>(&self, f: F) -> Result<R>
     where
