@@ -8,3 +8,9 @@ pub enum Assignment<'a, DB: Database> {
 
     // Extensions
 }
+
+
+// pub type Assignment<'a, DB> = Component<
+//     StandardAssignment<'a, DB>,
+//     <DB as Database>::Extension<'a>::Assignment<'a>
+// >;

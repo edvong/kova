@@ -2,7 +2,6 @@ use crate::types::{ColumnMeta, Database};
 use crate::{Error, Result};
 
 pub trait FromRow: Sized {
-
     type DB: Database;
 
     fn from_row(row: &<Self::DB as Database>::Row<'_>) -> Result<Self, Error>;

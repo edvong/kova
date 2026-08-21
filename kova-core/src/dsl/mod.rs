@@ -7,13 +7,21 @@ mod assignment;
 // mod returning;
 mod selected;
 mod operator;
+mod component;
+mod pagination;
 
 pub use {
     column::Column,
     condition::Condition,
     assignment::Assignment,
-    operator::ExtensionOperator,
     order::OrderBy,
+    operator::{Operator, StandardOperator},
+    pagination::Pagination,
+};
+
+pub(crate) use {
+    component::Component,
+    
 };
 
 // pub(crate) use {

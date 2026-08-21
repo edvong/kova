@@ -1,12 +1,14 @@
 use std::borrow::Cow;
-use tokio_postgres::types::{FromSql, ToSql, Type};
+use std::error::Error;
+use tokio_postgres::types::private::BytesMut;
+use tokio_postgres::types::{FromSql, IsNull, ToSql, Type};
 
 #[derive(Debug)]
 pub enum Value<'a> {
     Null,
-    Bool(bool),
 
     // Strictly maps to the corresponding PostgreSQL primitive numeric types.
+    Bool(bool),
     Int2(i16),
     Int4(i32),
     Int8(i64),
@@ -20,12 +22,24 @@ pub enum Value<'a> {
     Blob(Cow<'a, [u8]>),
 
     // ==========================================
-    // Escape hatch for PostgreSQL-native values.
-    // Handles Date, Time, Uuid, Json, Inet, Oid,
-    // arrays, and any other types not explicitly handled above.
+    // Extension / Custom Types Escape Hatches
     // ==========================================
-    PgNative(&'a (dyn ToSql + Sync)),
-    PgRawBytes {
+
+    /// Escape hatch for serialization (Rust -> Database).
+    /// Holds a dynamically dispatched `ToSql` trait object.
+    ///
+    /// Used when writing complex or database-specific Rust types
+    /// (e.g., Uuid, JsonB, Arrays) to the database, allowing the
+    /// underlying driver to handle the serialization natively.
+    DynamicWrite(&'a (dyn ToSql + Sync)),
+
+    /// Escape hatch for deserialization (Database -> Rust).
+    /// Captures the unparsed raw byte stream and type metadata.
+    ///
+    /// Used when reading unknown or complex types from the database.
+    /// The ORM's mapping layer (`FromValue`) intercepts this variant
+    /// to decode the raw bytes into a strongly-typed Rust structure.
+    RawRead {
         ty: Type,
         raw: &'a [u8]
     },
@@ -33,7 +47,7 @@ pub enum Value<'a> {
 
 impl<'a> FromSql<'a> for Value<'a> {
     // 'a is the lifetime of the underlying network/socket buffer.
-    fn from_sql(ty: &Type, raw: &'a [u8]) -> Result<Self, Box<dyn std::error::Error + Sync + Send>> {
+    fn from_sql(ty: &Type, raw: &'a [u8]) -> Result<Self, Box<dyn Error + Sync + Send>> {
         match *ty {
             // Numeric types: use the native PostgreSQL type parsers directly.
             Type::INT2 => Ok(Value::Int2(i16::from_sql(ty, raw)?)),
@@ -55,7 +69,7 @@ impl<'a> FromSql<'a> for Value<'a> {
 
             // Escape hatch: any PostgreSQL type not explicitly handled by Kova
             // is preserved as its original type metadata and raw byte representation.
-            _ => Ok(Value::PgRawBytes {
+            _ => Ok(Value::RawRead {
                 ty: ty.clone(),
                 raw
             }),
@@ -66,4 +80,42 @@ impl<'a> FromSql<'a> for Value<'a> {
     fn accepts(_ty: &Type) -> bool {
         true
     }
+}
+
+impl<'a> ToSql for Value<'a> {
+    fn to_sql(&self, ty: &Type, out: &mut BytesMut)
+        -> Result<IsNull, Box<dyn Error + Sync + Send>> {
+        match self {
+            Value::Null => Ok(IsNull::Yes),
+
+            // Basic types: Directly reuse the ToSql implementation of the underlying types
+            Value::Bool(b) => b.to_sql(ty, out),
+            Value::Int2(i) => i.to_sql(ty, out),
+            Value::Int4(i) => i.to_sql(ty, out),
+            Value::Int8(i) => i.to_sql(ty, out),
+            Value::Float4(f) => f.to_sql(ty, out),
+            Value::Float8(f) => f.to_sql(ty, out),
+
+            // Cow wrapped types: call after dereferencing to &str and &[u8].
+            Value::Text(t) => t.as_ref().to_sql(ty, out),
+            Value::Blob(b) => b.as_ref().to_sql(ty, out),
+
+            Value::DynamicWrite(native) => native.to_sql_checked(ty, out),
+
+            Value::RawRead { raw, .. } => {
+                out.extend_from_slice(raw);
+                Ok(IsNull::No)
+            }
+        }
+    }
+
+    fn accepts(_ty: &Type) -> bool {
+        true
+    }
+
+    fn to_sql_checked(&self, ty: &Type, out: &mut BytesMut)
+        -> Result<IsNull, Box<dyn Error + Sync + Send>> {
+        self.to_sql(ty, out)
+    }
+
 }

@@ -2,8 +2,8 @@ mod error;
 pub mod types;
 pub mod dsl;
 pub mod render;
-mod query;
-mod database;
+pub mod statement;
+pub mod database;
 
 pub use error::Error;
 pub type Result<T, E = Error> = std::result::Result<T, E>;

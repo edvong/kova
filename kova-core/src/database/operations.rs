@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::types::{ExecutableAsync, ExecutableSync};
+use crate::types::{Database, Model, Query, Select};
 
 pub struct Operations<E> {
     pub(crate) executor: Executor<E>,
@@ -11,11 +11,18 @@ impl<E> Operations<E> {
     }
 }
 
-impl<E: ExecutableSync> Operations<E> {
-    // pub fn select<T>(&self) -> Select<'a, DB, T> {
-    //     Select::create(&self.executor)
-    // }
-    //
+impl<E> Operations<E> {
+    pub fn select<'c, 'a, T, DB>(&'c self) -> <DB::Query<'a> as Query<'a, DB>>::Select<'c, T, E>
+    where
+        DB: Database,
+        T: Model<DB = DB>,
+        'a: 'c,
+        E: 'c,
+    {
+        <DB::Query<'a> as Query<'a, DB>>::Select::new(&self.executor)
+    }
+
+
     // pub fn insert<T>(&self, T/Iterator<Item=T>) -> Insert<'a, DB, T> {
     //     Insert::create(&self.executor)
     // }
@@ -31,8 +38,4 @@ impl<E: ExecutableSync> Operations<E> {
     // pub fn statement<T>(&self) -> Statement<'a, DB, T> {
     //     Statement::create(&self.executor)
     // }
-}
-
-impl<E: ExecutableAsync> Operations<E> {
-
 }

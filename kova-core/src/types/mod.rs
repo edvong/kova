@@ -6,6 +6,7 @@ mod value;
 mod ext;
 mod mode;
 mod conn;
+mod query;
 
 pub use {
     db::Database,
@@ -14,7 +15,10 @@ pub use {
     meta::ColumnMeta,
     model::{FromRow, Model},
     value::{FromValue, ToValue},
+    query::{Query, Select},
     ext::Extension,
     json::Json,
 };
+
+
 

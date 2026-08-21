@@ -1,7 +1,7 @@
 use crate::dsl::assignment::Assignment;
 use crate::dsl::condition::Condition;
 use crate::dsl::expression::IntoExpression;
-use crate::dsl::operator::StandardOperator;
+use crate::dsl::operator::{Operator, StandardOperator};
 use crate::dsl::order::{OrderBy, OrderDir};
 use crate::types::{ColumnMeta, Database, Extension};
 use std::ops::Deref;
@@ -17,6 +17,12 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
     type Target = ExtColumn<'a, T, DB>;
     fn deref(&self) -> &Self::Target {
         &self.inner
+    }
+}
+
+impl<'a, DB: Database> From<StandardOperator<'a, DB>> for Operator<'a, DB> {
+    fn from(value: StandardOperator<'a, DB>) -> Self {
+        Operator::Standard(value)
     }
 }
 

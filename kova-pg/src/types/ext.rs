@@ -1,9 +1,9 @@
-use crate::dsl::{Column, Operator};
-use kova_core::types::Extension;
+use crate::dsl::{Column, Operator, Pagination};
 
-pub struct PgExtension;
+pub struct Extension;
 
-impl Extension<'_> for PgExtension {
+impl kova_core::types::Extension<'_> for Extension {
     type Column<T> = Column<T>;
     type Operator<'o> = Operator;
+    type Pagination = Pagination;
 }

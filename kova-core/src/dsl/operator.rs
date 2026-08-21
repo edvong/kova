@@ -1,15 +1,13 @@
+use crate::dsl::component::Component;
 use crate::dsl::expression::Expression;
-use crate::render::Render;
 use crate::types::{ColumnMeta, Database, Extension};
 
 /// A unified operator node containing either a standard SQL operator
 /// or a database-specific extension.
-pub enum Operator<'a, DB: Database> {
-    Standard(StandardOperator<'a, DB>),
-    Extension(<DB::Extension<'a> as Extension<'a>>::Operator<'a>),
-}
-
-pub trait ExtensionOperator: Render {}
+pub type Operator<'a, DB> = Component<
+    StandardOperator<'a, DB>,
+    <<DB as Database>::Extension<'a> as Extension<'a>>::Operator<'a>,
+>;
 
 pub enum StandardOperator<'a, DB: Database> {
     Eq(ColumnMeta, Expression<'a, DB>),
@@ -31,11 +29,4 @@ pub enum StandardOperator<'a, DB: Database> {
 
     Like(ColumnMeta, Expression<'a, DB>),
     NotLike(ColumnMeta, Expression<'a, DB>),
-}
-
-
-impl<'a, DB: Database> From<StandardOperator<'a, DB>> for Operator<'a, DB> {
-    fn from(value: StandardOperator<'a, DB>) -> Self {
-        Operator::Standard(value)
-    }
 }
