@@ -4,7 +4,7 @@ pub use kova_core::{Error, Result};
 // Client, Transaction
 
 pub mod types {
-    pub use kova_core::types::{Database, FromRow, Model, FromValue, ToValue, Extension, ColumnMeta};
+    pub use kova_core::types::{Database, FromRow, Model, FromValue, IntoValue, Extension, ColumnMeta};
 
     #[cfg(feature = "pg")]
     pub use kova_pg::types::{Postgres as Engine};
@@ -59,10 +59,6 @@ mod tests {
         type DB = Engine;
 
         fn from_row(row: &<Self::DB as Database>::Row<'_>) -> Result<Self, Error> {
-            todo!()
-        }
-
-        fn from_row_as_values<'a>(row: &'a <Self::DB as Database>::Row<'_>) -> Result<Vec<<Self::DB as Database>::Value<'a>>, Error> {
             todo!()
         }
     }

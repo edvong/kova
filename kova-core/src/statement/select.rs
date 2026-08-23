@@ -1,11 +1,11 @@
-use crate::dsl::{Condition, Pagination};
+use crate::dsl::{Condition, Pagination, Projectable, Projection};
 use crate::render::{Render, RenderData, SelectContext};
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
 
 pub struct SelectStatement<'a, T, DB: Database> {
     // pub modifier: Option<SelectModifier<'a, DB>>,
-    // pub projections: Vec<Expression<'a, DB>>,
+    pub projections: Vec<Projection<'a, DB>>,
     pub where_clause: Option<Condition<'a, DB>>,
     // pub table_hints: Option<TableHint<'a, DB>>,
     // pub lock_clause: Option<LockClause<'a, DB>>,
@@ -15,11 +15,12 @@ pub struct SelectStatement<'a, T, DB: Database> {
 
 impl<'a, T, DB> SelectStatement<'a, T, DB>
 where
-    T: Model<DB = DB>,
-    DB: Database
+    T: Model<DB=DB>,
+    DB: Database,
 {
     pub fn new() -> Self {
         Self {
+            projections: Vec::new(),
             where_clause: None,
             pagination: None,
             _marker: PhantomData,
@@ -34,6 +35,10 @@ where
     }
 
     // ==== BEGIN: Standard Implementation ====
+
+    pub fn columns<C: Projectable<'a, DB>>(&mut self, cols: C) {
+        self.projections = cols.into_projections();
+    }
 
     pub fn filter(&mut self, cond: Condition<'a, DB>) {
         self.where_clause = Some(cond);

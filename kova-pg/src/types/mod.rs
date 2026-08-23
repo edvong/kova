@@ -1,10 +1,11 @@
-mod value;
-mod row;
+mod conn;
 mod db;
 mod ext;
-mod conn;
+mod impls;
+mod row;
+mod value;
 
-pub use value::Value;
+pub use conn::PgPool;pub use db::Postgres;
 pub use row::Row;
-pub use db::Postgres;
-pub use conn::PgPool;
+pub use value::Value;
+

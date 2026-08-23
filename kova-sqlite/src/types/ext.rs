@@ -7,4 +7,6 @@ impl Extension<'_> for SqliteExtension {
     type Column<T> = Column<T>;
     type Operator<'o> = Operator;
     type Pagination = Pagination;
+    type Projection = ();
+    type Function<'t> = ();
 }
