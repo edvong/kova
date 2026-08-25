@@ -1,8 +1,11 @@
-use crate::dsl::Component;
+use crate::dsl::arg::{IntoArg, IsSingleArg};
 use crate::dsl::condition::Condition;
+use crate::dsl::group_by::StandardGroupBy;
 use crate::dsl::operator::{IntoOperand, Operator, StandardOperator};
-use crate::dsl::order::{OrderBy, OrderDir};
-use crate::dsl::projection::{IntoProjection, Projectable, Projection, StandardProjection};
+use crate::dsl::order::{Direction, Ordering, StandardOperand};
+use crate::dsl::projection::{Projection, StandardProjection,
+};
+use crate::dsl::{Component, GroupBy};
 use crate::types::{ColumnMeta, Database, Extension};
 use std::ops::Deref;
 
@@ -26,15 +29,16 @@ impl<'a, DB: Database> From<StandardOperator<'a, DB>> for Operator<'a, DB> {
     }
 }
 
-impl<'a, T, DB: Database> IntoProjection<'a, DB> for Column<'a, T, DB> {
-    fn into_projection(self) -> Projection<'a, DB> {
-        Component::Standard(StandardProjection::Column(self.meta, None))
-    }
-}
 
-impl<'a, T, DB: Database> Projectable<'a, DB> for Column<'a, T, DB> {
-    fn into_projections(self) -> Vec<Projection<'a, DB>> {
-        vec![self.into_projection()]
+impl<'a, T, DB: Database> IsSingleArg for Column<'a, T, DB> {}
+
+// ==== Projection START ====
+
+// Projection
+impl<'a, T, DB: Database> Column<'a, T, DB> {
+    /// The type of alias T must be consistent with the current column
+    pub fn alias(self, alias: Column<'a, T, DB>) -> Projection<'a, DB> {
+        Projection::Standard(StandardProjection::Column(self.meta, Some(alias.meta)))
     }
 }
 
@@ -45,12 +49,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
     }
 }
 
-impl<'a, T, DB: Database> Column<'a, T, DB> {
-    /// The type of alias T must be consistent with the current column
-    pub fn alias(self, alias: Column<'a, T, DB>) -> Projection<'a, DB> {
-        Component::Standard(StandardProjection::Column(self.meta, Some(alias.meta)))
-    }
-}
+
 
 impl<'a, T, DB: Database> Column<'a, T, DB> {
     pub fn eq<V>(&self, v: V) -> Condition<'a, DB>
@@ -162,17 +161,19 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         Condition::Op(StandardOperator::NotLike(self.meta, v.into_operand()).into())
     }
 
-    pub fn asc(&self) -> OrderBy {
-        OrderBy {
-            column: self.meta,
-            direction: OrderDir::Asc,
+    pub fn asc(&self) -> Ordering<'a, DB> {
+        Ordering {
+            operand: Component::Standard(StandardOperand::Column(self.meta)),
+            direction: Direction::Asc,
+            nulls: None,
         }
     }
 
-    pub fn desc(&self) -> OrderBy {
-        OrderBy {
-            column: self.meta,
-            direction: OrderDir::Desc,
+    pub fn desc(&self) -> Ordering<'a, DB> {
+        Ordering {
+            operand: Component::Standard(StandardOperand::Column(self.meta)),
+            direction: Direction::Desc,
+            nulls: None,
         }
     }
 

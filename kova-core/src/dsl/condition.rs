@@ -1,4 +1,5 @@
 use crate::dsl::operator::Operator;
+use crate::dsl::order::{Direction, OrderOperand, Ordering, StandardOperand};
 use crate::types::Database;
 use std::ops::{BitAnd, BitOr};
 
@@ -21,5 +22,25 @@ impl<'a, DB: Database> BitOr for Condition<'a, DB> {
     type Output = Self;
     fn bitor(self, rhs: Self) -> Self::Output {
         Condition::Or(Box::new(self), Box::new(rhs))
+    }
+}
+
+
+impl<'a, DB: Database> Condition<'a, DB> {
+    // Condition is a tree, taken the ownership
+    pub fn asc(self) -> Ordering<'a, DB> {
+        Ordering {
+            operand: OrderOperand::Standard(StandardOperand::Condition(self)),
+            direction: Direction::Asc,
+            nulls: None,
+        }
+    }
+
+    pub fn desc(self) -> Ordering<'a, DB> {
+        Ordering {
+            operand: OrderOperand::Standard(StandardOperand::Condition(self)),
+            direction: Direction::Desc,
+            nulls: None,
+        }
     }
 }

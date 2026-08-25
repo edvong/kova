@@ -3,9 +3,11 @@ pub trait Extension<'a>: Sized {
     type Operator<'o>
     where
         Self: 'o;
-    type Pagination;
+    type Pagination: Default;
     type Projection;
     type Function<'t>;
+    type GroupBy;
+    type OrderOperand;
 
     // type Assignment<'t> where Self: 't;
 }

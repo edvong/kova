@@ -2,7 +2,7 @@ use crate::types::{Postgres, Row};
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
-use kova_core::dsl::{Condition, Pagination, Projectable};
+use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
     Database, ExecutableAsync, FromRow, FromValue, GetColumn, GetColumns, Model,
@@ -26,34 +26,56 @@ where
         }
     }
 
-    pub fn columns<C: Projectable<'a, Postgres>>(mut self, cols: C) -> Self {
-        self.statement.projections = cols.into_projections();
+    pub fn columns<C>(mut self, cols: C) -> Self where C: IntoArgs<Projection<'a, Postgres>> {
+        self.statement.columns(cols);
+        self
+    }
+
+    pub fn inner_join<M>(mut self, cond: Condition<'a, Postgres>) -> Self where M: Model<DB = Postgres> {
+        let joining = Join {
+            typ: JoinType::Inner,
+            target_table: T::TABLE_NAME,
+            on: cond,
+        };
+        self.statement.join(joining);
+        self
+    }
+
+    pub fn left_join<M>(mut self, cond: Condition<'a, Postgres>) -> Self where M: Model<DB = Postgres> {
+        let joining = Join {
+            typ: JoinType::Left,
+            target_table: T::TABLE_NAME,
+            on: cond,
+        };
+        self.statement.join(joining);
         self
     }
 
     pub fn filter(mut self, cond: Condition<'a, Postgres>) -> Self {
-        self.statement.filter(cond);
+        self.statement.r#where(cond);
         self
     }
 
+    pub fn group_by<C>(mut self, cols: C) -> Self where C: IntoArgs<GroupBy<'a, Postgres>> {
+        self.statement.group_by(cols);
+        self
+    }
+    
+    pub fn having(mut self, cond: Condition<'a, Postgres>) -> Self {
+        self.statement.having(cond);
+        self
+    }
+    
     pub fn limit(mut self, limit: usize) -> Self {
-        if let Pagination::<'_, Postgres>::Extension(ext) =
-            self.statement.pagination.get_or_insert_with(|| {
-                Pagination::<'_, Postgres>::Extension(crate::dsl::Pagination::default())
-            })
-        {
-            ext.limit = Some(limit);
+        if let Some(p) =self.statement.pagination_ext_mut() {
+            p.limit = Some(limit);
         }
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        if let Pagination::<'_, Postgres>::Extension(ext) =
-            self.statement.pagination.get_or_insert_with(|| {
-                Pagination::<'_, Postgres>::Extension(crate::dsl::Pagination::default())
-            })
-        {
-            ext.offset = Some(offset);
+        if let Some(p) = self.statement.pagination_ext_mut() {
+            p.offset = Some(offset);
         }
         self
     }
@@ -128,9 +150,6 @@ where
             .await
     }
 }
-
-
-
 
 
 impl<'c, 'a, T, E> CoreSelect<'c, 'a, T, E, Postgres> for Select<'c, 'a, T, E, Postgres>

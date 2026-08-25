@@ -9,4 +9,6 @@ impl Extension<'_> for SqliteExtension {
     type Pagination = Pagination;
     type Projection = ();
     type Function<'t> = ();
+    type GroupBy = ();
+    type OrderOperand = ();
 }

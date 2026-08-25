@@ -8,4 +8,6 @@ impl kova_core::types::Extension<'_> for Extension {
     type Pagination = Pagination;
     type Projection = ();
     type Function<'t> = ();
+    type GroupBy = ();
+    type OrderOperand = ();
 }
