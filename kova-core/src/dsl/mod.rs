@@ -3,41 +3,35 @@ mod assignment;
 mod column;
 mod component;
 mod condition;
-mod ext;
 mod function;
-mod group_by;
-mod having;
-mod join;
 mod operator;
-mod order;
-mod pagination;
-mod projection;
-mod r#where;
+mod operand;
+
+mod clause;
 
 pub mod func {
     pub use crate::dsl::function::{
+        Function, Quantifier,
         Abs, Avg, Count, CountAll, Length, Lower, Max, Min, Sum, Upper,
     };
 }
 
 pub use {
-    arg::IntoArgs,
+    arg::{IntoArg, IntoArgs},
     assignment::Assignment,
     column::Column,
-    condition::Condition,
-    group_by::GroupBy,
-    join::{Join, JoinClause, JoinType},
+    component::{Component, WithComponent},
+    condition::{Condition},
+    operand::{Operand, IntoOperand},
     operator::{Operator, StandardOperator},
-    order::{NullsOrder, OrderByClause, Ordering},
-    pagination::{ExtPagination, PaginationClause},
-    projection::Projection,
+    clause::*,
 };
 
 pub(crate) use {
-    component::Component,
-    ext::ExtensionClause,
-    group_by::GroupByClause,
-    having::HavingClause,
-    projection::ProjectionClause,
-    r#where::Where,
+    // group_by::GroupByClause,
+    // having::HavingClause,
+    // distinct::DistinctClause,
+    // projection::ProjectionClause,
+    // locking::LockingClause,
+    // r#where::WhereClause,
 };

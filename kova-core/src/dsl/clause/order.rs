@@ -1,6 +1,7 @@
-use crate::dsl::arg::{IntoArg, IsSingleArg};
+use crate::dsl::arg::{IntoArg, SingleArgMarker};
 use crate::dsl::function::Function;
-use crate::dsl::{ExtensionClause, Column, Component, Condition, IntoArgs};
+use crate::dsl::{Column, Component, Condition, IntoArgs};
+use crate::dsl::component::WithComponent;
 use crate::types::{ColumnMeta, Database, Extension};
 
 pub struct OrderByClause<'a, DB: Database> {
@@ -35,7 +36,7 @@ impl<'a, DB: Database> OrderByClause<'a, DB> {
 
 pub struct Ordering<'a, DB: Database> {
     pub(crate) operand: OrderOperand<'a, DB>,
-    pub(crate) direction: Direction,
+    pub(crate) direction: Option<Direction>,
     pub(crate) nulls: Option<NullsOrder>,
 }
 
@@ -51,10 +52,30 @@ impl<'a, DB: Database> Ordering<'a, DB> {
     }
 }
 
-pub type OrderOperand<'a, DB> = Component<
-    StandardOperand<'a, DB>,
-    <<DB as Database>::Extension<'a> as Extension<'a>>::OrderOperand
->;
+
+pub struct OrderOperand<'a, DB: Database> {
+    pub(crate) inner: Component<
+        StandardOperand<'a, DB>,
+        <<DB as Database>::Extension<'a> as Extension<'a>>::OrderOperand
+    >,
+}
+
+pub type ExtOrderOperand<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::OrderOperand;
+
+impl<'a, DB: Database> WithComponent for OrderOperand<'a, DB> {
+    type Standard = StandardOperand<'a, DB>;
+    type Extension = ExtOrderOperand<'a, DB>;
+
+    fn from_std(std: Self::Standard) -> Self {
+        Self { inner: Component::standard(std) }
+    }
+
+    fn from_ext(ext: Self::Extension) -> Self {
+        Self { inner: Component::extension(ext) }
+    }
+}
+
+
 
 pub enum StandardOperand<'a, DB: Database> {
     Column(ColumnMeta),
@@ -72,7 +93,7 @@ pub enum NullsOrder {
     Last,
 }
 
-impl<'a, DB: Database> IsSingleArg for Ordering<'a, DB> {}
+impl<'a, DB: Database> SingleArgMarker for Ordering<'a, DB> {}
 
 impl<'a, T, DB: Database> IntoArg<Ordering<'a, DB>> for Column<'a, T, DB> {
     fn into_arg(self) -> Ordering<'a, DB> {
@@ -89,19 +110,5 @@ impl<'a, DB: Database> IntoArg<Ordering<'a, DB>> for Function<'a, DB> {
 impl<'a, DB: Database> IntoArg<Ordering<'a, DB>> for Condition<'a, DB> {
     fn into_arg(self) -> Ordering<'a, DB> {
         self.asc()
-    }
-}
-
-
-impl<'a, DB: Database> ExtensionClause for OrderByClause<'a, DB> {
-    type S = ();
-    type E = ();
-
-    fn component(&self) -> &Option<Component<Self::S, Self::E>> {
-        todo!()
-    }
-
-    fn component_mut(&mut self) -> &mut Option<Component<Self::S, Self::E>> {
-        todo!()
     }
 }

@@ -1,0 +1,12 @@
+pub use crate::dsl::function::array_agg::ArrayAgg;
+
+mod array_agg;
+
+/// Container for PostgreSQL-specific dialect functions.
+///
+/// This enum acts as an extension point, wrapping specialized AST nodes
+/// (like `ArrayAgg`) so they can be seamlessly injected into the core SQL AST.
+pub enum Function<'a> {
+    ArrayAgg(ArrayAgg<'a>),
+}
+

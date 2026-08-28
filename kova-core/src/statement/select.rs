@@ -1,16 +1,18 @@
-use crate::dsl::{ExtensionClause, Condition, ExtPagination, GroupBy, GroupByClause, HavingClause, IntoArgs, Join, JoinClause, OrderByClause, Ordering, PaginationClause, Projection, ProjectionClause, Where};
+use crate::dsl::{Condition, DistinctClause, ExtLocking, ExtPagination, ExtensionClause, GroupBy, GroupByClause, HavingClause, IntoArgs, Join, JoinClause, LockingClause, OrderByClause, Ordering, PaginationClause, Projection, ProjectionClause, WhereClause};
 use crate::render::{Render, RenderData, SelectContext};
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
 
 pub struct SelectStatement<'a, T, DB: Database> {
+    distinct: DistinctClause,
     projection: ProjectionClause<'a, DB>,
     join: JoinClause<'a, DB>,
-    r#where: Where<'a, DB>,
+    r#where: WhereClause<'a, DB>,
     group_by: GroupByClause<'a, DB>,
     having: HavingClause<'a, DB>,
     order_by: OrderByClause<'a, DB>,
     pagination: PaginationClause<'a, DB>,
+    locking: LockingClause<'a, DB>,
     _marker: PhantomData<T>,
 }
 
@@ -21,13 +23,15 @@ where
 {
     pub fn new() -> Self {
         Self {
+            distinct: DistinctClause::new(),
             projection: ProjectionClause::new(),
             join: JoinClause::new(),
-            r#where: Where::new(),
+            r#where: WhereClause::new(),
             group_by: GroupByClause::new(),
             having: HavingClause::new(),
             order_by: OrderByClause::new(),
             pagination: PaginationClause::new(),
+            locking: LockingClause::new(),
             _marker: PhantomData,
         }
     }
@@ -37,6 +41,10 @@ where
         let mut ctx = SelectContext::new(&mut data);
         self.render(&mut ctx);
         data
+    }
+
+    pub fn distinct(&mut self) {
+        self.distinct.set(true);
     }
 
     pub fn columns<C>(&mut self, cols: C)
@@ -69,8 +77,18 @@ where
         self.order_by.set(order);
     }
 
-    pub fn pagination_ext_mut(&mut self) -> Option<&mut ExtPagination<'a, DB>> {
-        self.pagination.ext_mut_or_default()
+    pub fn pagination_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtPagination<'a, DB>
+    where
+        F: FnOnce() -> ExtPagination<'a, DB>
+    {
+        self.pagination.ext_mut_or_with(f)
+    }
+
+    pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
+    where
+        F: FnOnce() -> ExtLocking<'a, DB>
+    {
+        self.locking.ext_mut_or_with(f)
     }
 
 }

@@ -1,5 +1,5 @@
-use crate::dsl::operator::Operator;
-use crate::dsl::order::{Direction, OrderOperand, Ordering, StandardOperand};
+use crate::dsl::component::WithComponent;
+use crate::dsl::{Direction, Operator, OrderOperand, Ordering, StandardOperand};
 use crate::types::Database;
 use std::ops::{BitAnd, BitOr};
 
@@ -30,16 +30,16 @@ impl<'a, DB: Database> Condition<'a, DB> {
     // Condition is a tree, taken the ownership
     pub fn asc(self) -> Ordering<'a, DB> {
         Ordering {
-            operand: OrderOperand::Standard(StandardOperand::Condition(self)),
-            direction: Direction::Asc,
+            operand: OrderOperand::from_std(StandardOperand::Condition(self)),
+            direction: Some(Direction::Asc),
             nulls: None,
         }
     }
 
     pub fn desc(self) -> Ordering<'a, DB> {
         Ordering {
-            operand: OrderOperand::Standard(StandardOperand::Condition(self)),
-            direction: Direction::Desc,
+            operand: OrderOperand::from_std(StandardOperand::Condition(self)),
+            direction: Some(Direction::Desc),
             nulls: None,
         }
     }

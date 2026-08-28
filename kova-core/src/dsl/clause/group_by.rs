@@ -1,4 +1,4 @@
-use crate::dsl::arg::{IntoArg, IsSingleArg};
+use crate::dsl::arg::{IntoArg, SingleArgMarker};
 use crate::dsl::function::Function;
 use crate::dsl::{Column, Component, IntoArgs};
 use crate::types::{ColumnMeta, Database, Extension};
@@ -33,11 +33,24 @@ impl<'a, DB: Database> GroupByClause<'a, DB> {
     }
 }
 
-// Specific extensions to GroupBy are reserved for each database.
-pub type GroupBy<'a, DB> = Component<
-    StandardGroupBy<'a, DB>,
-    <<DB as Database>::Extension<'a> as Extension<'a>>::GroupBy,
->;
+
+pub struct GroupBy<'a, DB: Database> {
+    pub(crate) inner: Component<
+        StandardGroupBy<'a, DB>,
+        <<DB as Database>::Extension<'a> as Extension<'a>>::GroupBy,
+    >
+}
+
+impl<'a, DB: Database> GroupBy<'a, DB> {
+    pub fn standard(std: StandardGroupBy<'a, DB>) -> Self {
+        Self { inner: Component::standard(std) }
+    }
+
+    pub fn extension(ext: <<DB as Database>::Extension<'a> as Extension<'a>>::GroupBy) -> Self {
+        Self { inner: Component::extension(ext) }
+    }
+}
+
 
 // Core difference from Projection: only columns and functions, no Option<ColumnMeta> alias
 pub enum StandardGroupBy<'a, DB: Database> {
@@ -46,16 +59,16 @@ pub enum StandardGroupBy<'a, DB: Database> {
 }
 
 
-impl<'a, DB: Database> IsSingleArg for GroupBy<'a, DB> {}
+impl<'a, DB: Database> SingleArgMarker for GroupBy<'a, DB> {}
 
 impl<'a, T, DB: Database> IntoArg<GroupBy<'a, DB>> for Column<'a, T, DB> {
     fn into_arg(self) -> GroupBy<'a, DB> {
-        GroupBy::Standard(StandardGroupBy::Column(self.meta))
+        GroupBy::standard(StandardGroupBy::Column(self.meta))
     }
 }
 
 impl<'a, DB: Database> IntoArg<GroupBy<'a, DB>> for Function<'a, DB> {
     fn into_arg(self) -> GroupBy<'a, DB> {
-        GroupBy::Standard(StandardGroupBy::Function(self))
+        GroupBy::standard(StandardGroupBy::Function(self))
     }
 }

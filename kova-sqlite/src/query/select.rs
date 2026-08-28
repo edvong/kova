@@ -1,3 +1,4 @@
+use crate::dsl::Pagination;
 use crate::types::{Row, Sqlite};
 use kova_core::database::Executor;
 use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Projection};
@@ -65,16 +66,14 @@ where
     }
 
     pub fn limit(mut self, limit: usize) -> Self {
-        if let Some(p) =self.statement.pagination_ext_mut() {
-            p.limit = Some(limit);
-        }
+        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
+        ext.limit = Some(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        if let Some(p) = self.statement.pagination_ext_mut() {
-            p.offset = Some(offset);
-        }
+        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
+        ext.offset = Some(offset);
         self
     }
 }

@@ -1,11 +1,11 @@
 use crate::dsl::Condition;
 use crate::types::Database;
 
-pub struct Where<'a, DB: Database> {
+pub struct WhereClause<'a, DB: Database> {
     cond: Option<Condition<'a, DB>>
 }
 
-impl<'a, DB: Database> Where<'a, DB> {
+impl<'a, DB: Database> WhereClause<'a, DB> {
     pub(crate) fn new() -> Self {
         Self { cond: None }
     }

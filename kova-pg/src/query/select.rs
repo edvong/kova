@@ -1,3 +1,4 @@
+use crate::dsl::{LockItem, LockMode, Locking, Pagination, WaitPolicy};
 use crate::types::{Postgres, Row};
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
@@ -26,12 +27,18 @@ where
         }
     }
 
-    pub fn columns<C>(mut self, cols: C) -> Self where C: IntoArgs<Projection<'a, Postgres>> {
+    pub fn columns<C>(mut self, cols: C) -> Self
+    where
+        C: IntoArgs<Projection<'a, Postgres>>,
+    {
         self.statement.columns(cols);
         self
     }
 
-    pub fn inner_join<M>(mut self, cond: Condition<'a, Postgres>) -> Self where M: Model<DB = Postgres> {
+    pub fn inner_join<M>(mut self, cond: Condition<'a, Postgres>) -> Self
+    where
+        M: Model<DB = Postgres>,
+    {
         let joining = Join {
             typ: JoinType::Inner,
             target_table: T::TABLE_NAME,
@@ -41,7 +48,10 @@ where
         self
     }
 
-    pub fn left_join<M>(mut self, cond: Condition<'a, Postgres>) -> Self where M: Model<DB = Postgres> {
+    pub fn left_join<M>(mut self, cond: Condition<'a, Postgres>) -> Self
+    where
+        M: Model<DB = Postgres>,
+    {
         let joining = Join {
             typ: JoinType::Left,
             target_table: T::TABLE_NAME,
@@ -56,27 +66,61 @@ where
         self
     }
 
-    pub fn group_by<C>(mut self, cols: C) -> Self where C: IntoArgs<GroupBy<'a, Postgres>> {
+    pub fn group_by<C>(mut self, cols: C) -> Self
+    where
+        C: IntoArgs<GroupBy<'a, Postgres>>,
+    {
         self.statement.group_by(cols);
         self
     }
-    
+
     pub fn having(mut self, cond: Condition<'a, Postgres>) -> Self {
         self.statement.having(cond);
         self
     }
-    
+
     pub fn limit(mut self, limit: usize) -> Self {
-        if let Some(p) =self.statement.pagination_ext_mut() {
-            p.limit = Some(limit);
-        }
+        let ext = self
+            .statement
+            .pagination_ext_mut_or_with(|| Pagination::default());
+        ext.limit = Some(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        if let Some(p) = self.statement.pagination_ext_mut() {
-            p.offset = Some(offset);
-        }
+        let ext = self
+            .statement
+            .pagination_ext_mut_or_with(|| Pagination::default());
+        ext.offset = Some(offset);
+        self
+    }
+
+    pub fn lock<M>(mut self, mode: LockMode, wait: Option<WaitPolicy>) -> Self
+    where
+        M: Model<DB = Postgres>,
+    {
+        let ext = self
+            .statement
+            .locking_ext_mut_or_with(|| Locking::default());
+        ext.locks.push(LockItem {
+            mode,
+            tables: vec![M::TABLE_NAME],
+            wait,
+        });
+
+        self
+    }
+
+    pub fn lock_all(mut self, mode: LockMode, wait: Option<WaitPolicy>) -> Self {
+        let ext = self
+            .statement
+            .locking_ext_mut_or_with(|| Locking::default());
+        ext.locks.push(LockItem {
+            mode,
+            tables: vec![], // Empty represents lock globally
+            wait,
+        });
+
         self
     }
 }
@@ -150,7 +194,6 @@ where
             .await
     }
 }
-
 
 impl<'c, 'a, T, E> CoreSelect<'c, 'a, T, E, Postgres> for Select<'c, 'a, T, E, Postgres>
 where

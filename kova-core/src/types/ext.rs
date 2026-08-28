@@ -1,13 +1,20 @@
 pub trait Extension<'a>: Sized {
     type Column<T>;
+
     type Operator<'o>
     where
         Self: 'o;
-    type Pagination: Default;
-    type Projection;
+
+    // Expression Extension
     type Function<'t>;
-    type GroupBy;
     type OrderOperand;
+
+    // Clause Extension
+    type GroupBy;
+    type Locking;
+    type Pagination;
+
+
 
     // type Assignment<'t> where Self: 't;
 }

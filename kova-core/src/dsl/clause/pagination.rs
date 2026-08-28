@@ -1,10 +1,10 @@
-use crate::dsl::{ExtensionClause, Component};
+use crate::dsl::ExtensionClause;
 use crate::types::{Database, Extension};
 
 pub type ExtPagination<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Pagination;
 
 pub struct PaginationClause<'a, DB: Database> {
-    pagination: Option<Component<(), ExtPagination<'a, DB>>>,
+    pagination: Option<ExtPagination<'a, DB>>,
 }
 
 impl<'a, DB: Database> PaginationClause<'a, DB> {
@@ -13,15 +13,12 @@ impl<'a, DB: Database> PaginationClause<'a, DB> {
     }
 }
 
-impl<'a, DB: Database> ExtensionClause for PaginationClause<'a, DB> {
-    type S = ();
-    type E = ExtPagination<'a, DB>;
-
-    fn component(&self) -> &Option<Component<Self::S, Self::E>> {
+impl<'a, DB: Database> ExtensionClause<ExtPagination<'a, DB>> for PaginationClause<'a, DB> {
+    fn ext_opt(&self) -> &Option<ExtPagination<'a, DB>> {
         &self.pagination
     }
 
-    fn component_mut(&mut self) -> &mut Option<Component<Self::S, Self::E>> {
+    fn ext_opt_mut(&mut self) -> &mut Option<ExtPagination<'a, DB>> {
         &mut self.pagination
     }
 }

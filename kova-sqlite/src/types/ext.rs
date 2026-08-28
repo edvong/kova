@@ -6,9 +6,9 @@ pub struct SqliteExtension;
 impl Extension<'_> for SqliteExtension {
     type Column<T> = Column<T>;
     type Operator<'o> = Operator;
-    type Pagination = Pagination;
-    type Projection = ();
     type Function<'t> = ();
-    type GroupBy = ();
     type OrderOperand = ();
+    type GroupBy = ();
+    type Locking = ();
+    type Pagination = Pagination;
 }

@@ -38,20 +38,6 @@ pub trait GetColumns<'a, Target> {
 
 #[macro_export]
 #[doc(hidden)]
-macro_rules! bind_get_columns_tuple {
-    ($DB:ty, $Row:ident) => {
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2);
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3);
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4);
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5);
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6);
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6, T7);
-        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8);
-    };
-}
-
-#[macro_export]
-#[doc(hidden)]
 macro_rules! bind_get_columns_tuple_inner {
     ($DB:ty, $Row:ident, $($T:ident),+) => {
         impl<'a, $($T),+> $crate::types::GetColumns<'a, ($($T,)+)> for $Row<'a>
@@ -71,5 +57,103 @@ macro_rules! bind_get_columns_tuple_inner {
                 ))
             }
         }
+    };
+}
+
+#[macro_export]
+#[doc(hidden)]
+macro_rules! bind_get_columns_tuple {
+    ($DB:ty, $Row:ident) => {
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6, T7);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9);
+        $crate::bind_get_columns_tuple_inner!($DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26, T27
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31
+        );
+        $crate::bind_get_columns_tuple_inner!(
+            $DB, $Row, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17,
+            T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32
+        );
     };
 }

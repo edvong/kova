@@ -1,7 +1,7 @@
 /// Marker trait: Declares that a type represents a "single argument".
 /// This acts as a type-system firewall to prevent overlapping implementations
 /// between individual primitive values and collections (like Tuples or Vecs).
-pub trait IsSingleArg {}
+pub trait SingleArgMarker {}
 
 /// Conversion protocol for a single argument.
 pub trait IntoArg<A> {
@@ -36,7 +36,7 @@ pub trait IntoArgs<A> {
 // for any single argument type without conflicting with Tuple or Vec implementations.
 impl<T, A> IntoArgs<A> for T
 where
-    T: IntoArg<A> + IsSingleArg,
+    T: IntoArg<A> + SingleArgMarker,
 {
     fn size_hint(&self) -> usize {
         1

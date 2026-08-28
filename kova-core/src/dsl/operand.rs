@@ -2,6 +2,7 @@ use crate::dsl::column::Column;
 use crate::types::{ColumnMeta, Database, IntoValue};
 use crate::{Error, Result};
 use std::sync::Arc;
+use crate::dsl::function::Function;
 
 /// Represents a generic operand within a SQL expression AST (Abstract Syntax Tree).
 /// An operand can be a dynamically bound database value, a column reference,
@@ -10,6 +11,7 @@ use std::sync::Arc;
 pub enum Operand<'a, DB: Database> {
     Value(DB::Value<'a>),
     Column(ColumnMeta),
+    Function(Function<'a, DB>),
     /// Captures conversion or building errors inline to avoid interrupting
     /// the fluent builder API chain, deferring error handling to execution time.
     Error(Arc<Error>),
