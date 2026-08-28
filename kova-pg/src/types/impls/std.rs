@@ -1,6 +1,6 @@
 use crate::types::{Postgres, Value};
-use kova_core::types::{FromValue, IntoValue};
-use kova_core::{Error, Result};
+use kova_core::types::{FromValue, IntoValue, ScalarMarker};
+use kova_core::{mark_scalars, Error, Result};
 use std::borrow::Cow;
 use std::convert::TryFrom;
 
@@ -44,6 +44,9 @@ impl_native_type!(i64, Int8);
 impl_native_type!(f32, Float4);
 impl_native_type!(f64, Float8);
 impl_native_type!(bool, Bool);
+
+mark_scalars!(Postgres, i16, i32, i64, f32, f64, bool);
+
 
 // ==========================================
 // Safe Cast Numeric Types
@@ -97,6 +100,8 @@ impl_cast_int!(isize, i64, Int8);
 impl_cast_int!(usize, i64, Int8);
 impl_cast_int!(u64, i64, Int8);
 
+mark_scalars!(Postgres, i8, u8, u16, u32, isize, usize, u64);
+
 // ==========================================
 // Text Types (Zero-copy & Ownership)
 // ==========================================
@@ -119,6 +124,7 @@ impl FromValue<Postgres> for String {
         }
     }
 }
+mark_scalars!(Postgres, String);
 
 // &'a String: Convenience conversion for references, wrapped as borrowed
 impl<'a> IntoValue<'a, Postgres> for &'a String {
@@ -126,6 +132,7 @@ impl<'a> IntoValue<'a, Postgres> for &'a String {
         Ok(Value::Text(Cow::Borrowed(self)))
     }
 }
+impl<'a> ScalarMarker<Postgres> for &'a String {}
 
 // &'a str: Zero-copy borrowing. Wraps the slice in `Cow::Borrowed` without allocation.
 impl<'a> IntoValue<'a, Postgres> for &'a str {
@@ -133,6 +140,7 @@ impl<'a> IntoValue<'a, Postgres> for &'a str {
         Ok(Value::Text(Cow::Borrowed(self)))
     }
 }
+impl<'a> ScalarMarker<Postgres> for &'a str {}
 
 /// Note: `&'a str` deliberately does not implement `FromValue`.
 /// Since the lifetime of the database response is bound to the underlying network stream,
@@ -160,6 +168,7 @@ impl FromValue<Postgres> for Vec<u8> {
         }
     }
 }
+mark_scalars!(Postgres, Vec<u8>);
 
 // &'a [u8]: Zero-copy borrowing. Avoids heap allocation by directly referencing the slice.
 impl<'a> IntoValue<'a, Postgres> for &'a [u8] {
@@ -167,6 +176,7 @@ impl<'a> IntoValue<'a, Postgres> for &'a [u8] {
         Ok(Value::Blob(Cow::Borrowed(self)))
     }
 }
+impl<'a> ScalarMarker<Postgres> for &'a [u8] {}
 
 // ==========================================
 // Fixed-Size Arrays (e.g., UUID, Hashes)
@@ -195,3 +205,4 @@ impl<const N: usize> FromValue<Postgres> for [u8; N] {
         }
     }
 }
+impl<const N: usize> ScalarMarker<Postgres> for [u8; N] {}

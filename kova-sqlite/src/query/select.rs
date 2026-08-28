@@ -4,8 +4,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
-    Database, ExecutableSync, FromRow, FromValue, GetColumn, GetColumns, Model,
-    Select as CoreSelect,
+    Database, DecodeColumn, ExecutableSync, FromRow, Model, Select as CoreSelect,
 };
 use kova_core::{Error, Result};
 
@@ -25,12 +24,18 @@ where
         }
     }
 
-    pub fn columns<C>(mut self, cols: C) -> Self where C: IntoArgs<Projection<'a, Sqlite>> {
+    pub fn columns<C>(mut self, cols: C) -> Self
+    where
+        C: IntoArgs<Projection<'a, Sqlite>>,
+    {
         self.statement.columns(cols);
         self
     }
 
-    pub fn inner_join<M>(mut self, cond: Condition<'a, Sqlite>) -> Self where M: Model<DB = Sqlite> {
+    pub fn inner_join<M>(mut self, cond: Condition<'a, Sqlite>) -> Self
+    where
+        M: Model<DB = Sqlite>,
+    {
         let joining = Join {
             typ: JoinType::Inner,
             target_table: T::TABLE_NAME,
@@ -40,7 +45,10 @@ where
         self
     }
 
-    pub fn left_join<M>(mut self, cond: Condition<'a, Sqlite>) -> Self where M: Model<DB = Sqlite> {
+    pub fn left_join<M>(mut self, cond: Condition<'a, Sqlite>) -> Self
+    where
+        M: Model<DB = Sqlite>,
+    {
         let joining = Join {
             typ: JoinType::Left,
             target_table: T::TABLE_NAME,
@@ -55,7 +63,10 @@ where
         self
     }
 
-    pub fn group_by<C>(mut self, cols: C) -> Self where C: IntoArgs<GroupBy<'a, Sqlite>> {
+    pub fn group_by<C>(mut self, cols: C) -> Self
+    where
+        C: IntoArgs<GroupBy<'a, Sqlite>>,
+    {
         self.statement.group_by(cols);
         self
     }
@@ -66,13 +77,17 @@ where
     }
 
     pub fn limit(mut self, limit: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
+        let ext = self
+            .statement
+            .pagination_ext_mut_or_with(|| Pagination::default());
         ext.limit = Some(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
+        let ext = self
+            .statement
+            .pagination_ext_mut_or_with(|| Pagination::default());
         ext.offset = Some(offset);
         self
     }
@@ -94,22 +109,11 @@ where
         self.process_rows(|row| U::from_row(&row))
     }
 
-    pub fn load_scalar<U>(self) -> Result<Vec<U>>
+    pub fn load_in<U>(self) -> Result<Vec<U>>
     where
-        U: FromValue<Sqlite>,
+        for<'r> U: DecodeColumn<'r, Sqlite>,
     {
-        self.process_rows(|row| row.get_column(0))
-    }
-
-    pub fn load_columns<U>(self) -> Result<Vec<U>>
-    where
-        for<'r> Row<'r>: GetColumns<'r, U>,
-    {
-        self.process_rows(|row| {
-            let mut idx = 0;
-            // The cursor incrementation is handled by the internal GetColumns protocol
-            row.get_columns(&mut idx)
-        })
+        self.process_rows(|row| U::decode_column(&row))
     }
 
     fn process_rows<U, F>(self, mut f: F) -> Result<Vec<U>>

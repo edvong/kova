@@ -20,6 +20,6 @@ pub use {
     mode::{Async, Mode, Sync},
     model::{FromRow, Model},
     query::{Query, Select},
-    row::{ColumnIndex, GetColumn, GetColumns, Row},
+    row::{ColumnIndex, GetColumn, Row, ScalarMarker, DecodeColumn},
     value::{FromValue, IntoValue, Value},
 };

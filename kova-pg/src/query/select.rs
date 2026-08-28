@@ -6,8 +6,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
-    Database, ExecutableAsync, FromRow, FromValue, GetColumn, GetColumns, Model,
-    Select as CoreSelect,
+    Database, DecodeColumn, ExecutableAsync, FromRow, Model, Select as CoreSelect,
 };
 use tokio_postgres::types::ToSql;
 
@@ -148,31 +147,15 @@ where
         Ok(result)
     }
 
-    pub async fn load_scalar<U>(self) -> Result<Vec<U>>
+    pub async fn load_in<U>(self) -> Result<Vec<U>>
     where
-        U: FromValue<Postgres>,
+        for<'r> U: DecodeColumn<'r, Postgres>,
     {
         let raw_rows = self.load_raw_rows().await?;
         let mut result = Vec::with_capacity(raw_rows.len());
         for raw_row in raw_rows {
             let row = Row::new(&raw_row);
-            // Single column, index always 0
-            result.push(row.get_column(0)?);
-        }
-        Ok(result)
-    }
-
-    pub async fn load_columns<U>(self) -> Result<Vec<U>>
-    where
-        for<'r> Row<'r>: GetColumns<'r, U>,
-    {
-        let raw_rows = self.load_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            let mut idx = 0;
-            // The cursor incrementation is handled by the internal GetColumns protocol
-            result.push(row.get_columns(&mut idx)?);
+            result.push(U::decode_column(&row)?);
         }
         Ok(result)
     }
