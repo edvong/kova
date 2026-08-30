@@ -1,6 +1,6 @@
-pub use crate::dsl::function::array_agg::ArrayAgg;
-
 mod array_agg;
+
+pub use crate::dsl::function::array_agg::ArrayAgg;
 
 /// Container for PostgreSQL-specific dialect functions.
 ///

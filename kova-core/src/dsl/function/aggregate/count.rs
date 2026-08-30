@@ -1,0 +1,131 @@
+use crate::dsl::condition::ConditionBuilder;
+use crate::dsl::function::builder::{AggregateBuilder, FunctionBuilder};
+use crate::dsl::function::Function;
+use crate::dsl::{Column, Condition, IntoOperand, Ordering, Projection, StandardOperator};
+use crate::types::Database;
+use crate::{impl_aggregate_builder, impl_condition_builder, impl_function_into_arg};
+
+pub struct Count<T>(pub T);
+
+// impl<'a, T, DB: Database> ConditionBuilder<'a, DB> for Count<Column<'a, T, DB>> {
+//     fn build_operand(self) -> Operand<'a, DB> {
+//         Operand::Function(self.build_func())
+//     }
+// }
+//
+// impl<'a, T, DB: Database> FunctionBuilder<'a, DB> for Count<Column<'a, T, DB>> {
+//     #[inline(always)]
+//     fn build_func(self) -> Function<'a, DB> {
+//         self.build_aggr(Quantifier::All)
+//     }
+// }
+//
+// impl<'a, T, DB: Database> AggregateBuilder<'a, DB> for Count<Column<'a, T, DB>> {
+//     #[inline(always)]
+//     fn build_aggr(self, quantifier: Quantifier) -> Function<'a, DB> {
+//         Function::from_std(StandardFunction::Count(self.0.meta(), quantifier))
+//     }
+// }
+
+impl_condition_builder!(Count);
+impl_aggregate_builder!(Count, Count);
+impl_function_into_arg!(Count);
+
+
+impl<'a, T, DB: Database> Count<Column<'a, T, DB>> {
+    pub fn eq<V, M>(self, v: V) -> Condition<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.binary_op(v, StandardOperator::Eq)
+    }
+
+    pub fn ne<V, M>(self, v: V) -> Condition<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.binary_op(v, StandardOperator::Ne)
+    }
+
+    pub fn gt<V, M>(self, v: V) -> Condition<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.binary_op(v, StandardOperator::Gt)
+    }
+
+    pub fn ge<V, M>(self, v: V) -> Condition<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.binary_op(v, StandardOperator::Ge)
+    }
+
+    pub fn lt<V, M>(self, v: V) -> Condition<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.binary_op(v, StandardOperator::Lt)
+    }
+
+    pub fn le<V, M>(self, v: V) -> Condition<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.binary_op(v, StandardOperator::Le)
+    }
+
+    pub fn is_null(self) -> Condition<'a, DB> {
+        self.unary_op(StandardOperator::IsNull)
+    }
+
+    pub fn is_not_null(self) -> Condition<'a, DB> {
+        self.unary_op(StandardOperator::IsNull)
+    }
+
+    pub fn between<L, M1, U, M2>(self, lower: L, upper: U) -> Condition<'a, DB>
+    where
+        L: IntoOperand<'a, M1, DB>,
+        U: IntoOperand<'a, M2, DB>,
+    {
+        self.ternary_op(lower, upper, StandardOperator::Between)
+    }
+
+    pub fn not_between<L, M1, U, M2>(self, lower: L, upper: U) -> Condition<'a, DB>
+    where
+        L: IntoOperand<'a, M1, DB>,
+        U: IntoOperand<'a, M2, DB>,
+    {
+        self.ternary_op(lower, upper, StandardOperator::NotBetween)
+    }
+
+    pub fn in_list<I, V, M>(self, values: I) -> Condition<'a, DB>
+    where
+        I: IntoIterator<Item = V>,
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.list_op(values, StandardOperator::In)
+    }
+
+    pub fn not_in<I, V, M>(self, values: I) -> Condition<'a, DB>
+    where
+        I: IntoIterator<Item = V>,
+        V: IntoOperand<'a, M, DB>,
+    {
+        self.list_op(values, StandardOperator::NotIn)
+    }
+
+    pub fn distinct(self) -> Function<'a, DB> {
+        self.build_distinct()
+    }
+    pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
+        self.build_alias(col)
+    }
+
+    pub fn asc(self) -> Ordering<'a, DB> {
+        self.build_asc()
+    }
+    pub fn desc(self) -> Ordering<'a, DB> {
+        self.build_desc()
+    }
+}

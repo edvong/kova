@@ -1,6 +1,6 @@
 use crate::types::{Sqlite, Value};
-use kova_core::types::{FromValue, IntoValue};
-use kova_core::{Error, Result};
+use kova_core::types::{FromValue, IntoValue, ScalarMarker};
+use kova_core::{mark_scalars, Error, Result};
 use std::borrow::Cow;
 use std::convert::TryFrom;
 
@@ -72,6 +72,7 @@ macro_rules! impl_sqlite_int {
 }
 
 impl_sqlite_int!(i8, u8, i16, u16, i32, u32, u64, isize, usize);
+mark_scalars!(Sqlite, i8, u8, i16, u16, i32, u32, u64, isize, usize);
 
 // ==========================================
 // Floating-Point Numbers (Float / Real)
@@ -106,6 +107,7 @@ macro_rules! impl_sqlite_float {
 }
 
 impl_sqlite_float!(f32, f64);
+mark_scalars!(Sqlite, f32, f64);
 
 // ==========================================
 // Boolean Type
@@ -134,6 +136,7 @@ impl FromValue<Sqlite> for bool {
         }
     }
 }
+mark_scalars!(Sqlite, bool);
 
 // ==========================================
 // 5. Text Type (Strings)
@@ -147,21 +150,6 @@ impl<'a> IntoValue<'a, Sqlite> for String {
         Ok(Value::Text(Cow::Owned(self)))
     }
 }
-
-// &'a str: Zero-copy borrowing (highly efficient for queries)
-impl<'a> IntoValue<'a, Sqlite> for &'a str {
-    fn into_value(self) -> Result<Value<'a>> {
-        Ok(Value::Text(Cow::Borrowed(self)))
-    }
-}
-
-// &'a String: Convenience conversion for references
-impl<'a> IntoValue<'a, Sqlite> for &'a String {
-    fn into_value(self) -> Result<Value<'a>> {
-        Ok(Value::Text(Cow::Borrowed(self.as_str())))
-    }
-}
-
 // Extract String from Value: Allocates memory only if the underlying `Cow` is borrowed
 impl FromValue<Sqlite> for String {
     fn from_value(value: Value<'_>) -> Result<Self> {
@@ -171,6 +159,22 @@ impl FromValue<Sqlite> for String {
         }
     }
 }
+mark_scalars!(Sqlite, String);
+
+// &'a String: Convenience conversion for references
+impl<'a> IntoValue<'a, Sqlite> for &'a String {
+    fn into_value(self) -> Result<Value<'a>> {
+        Ok(Value::Text(Cow::Borrowed(self.as_str())))
+    }
+}
+
+// &'a str: Zero-copy borrowing (highly efficient for queries)
+impl<'a> IntoValue<'a, Sqlite> for &'a str {
+    fn into_value(self) -> Result<Value<'a>> {
+        Ok(Value::Text(Cow::Borrowed(self)))
+    }
+}
+
 
 // ==========================================
 // Binary Type (Blob)
@@ -184,21 +188,6 @@ impl<'a> IntoValue<'a, Sqlite> for Vec<u8> {
         Ok(Value::Blob(Cow::Owned(self)))
     }
 }
-
-// &'a [u8]: Zero-copy borrowing
-impl<'a> IntoValue<'a, Sqlite> for &'a [u8] {
-    fn into_value(self) -> Result<Value<'a>> {
-        Ok(Value::Blob(Cow::Borrowed(self)))
-    }
-}
-
-// &'a Vec<u8>: Convenience conversion for references
-impl<'a> IntoValue<'a, Sqlite> for &'a Vec<u8> {
-    fn into_value(self) -> Result<Value<'a>> {
-        Ok(Value::Blob(Cow::Borrowed(self.as_slice())))
-    }
-}
-
 // Extract Vec<u8> from Value
 impl FromValue<Sqlite> for Vec<u8> {
     fn from_value(value: Value<'_>) -> Result<Self> {
@@ -208,6 +197,23 @@ impl FromValue<Sqlite> for Vec<u8> {
         }
     }
 }
+mark_scalars!(Sqlite, Vec<u8>);
+
+
+// &'a Vec<u8>: Convenience conversion for references
+impl<'a> IntoValue<'a, Sqlite> for &'a Vec<u8> {
+    fn into_value(self) -> Result<Value<'a>> {
+        Ok(Value::Blob(Cow::Borrowed(self.as_slice())))
+    }
+}
+
+// &'a [u8]: Zero-copy borrowing
+impl<'a> IntoValue<'a, Sqlite> for &'a [u8] {
+    fn into_value(self) -> Result<Value<'a>> {
+        Ok(Value::Blob(Cow::Borrowed(self)))
+    }
+}
+
 
 /// Fixed-size array support (e.g., cryptographic hashes, UUIDs like `[u8; 16]`, `[u8; 32]`).
 /// Ensures the blob length exactly matches the expected array size during deserialization.
@@ -238,3 +244,4 @@ impl<const N: usize> FromValue<Sqlite> for [u8; N] {
         }
     }
 }
+impl<const N: usize> ScalarMarker<Sqlite> for [u8; N] {}

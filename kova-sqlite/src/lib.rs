@@ -1,3 +1,3 @@
 pub mod types;
-mod query;
-mod dsl;
+pub mod dsl;
+pub mod query;

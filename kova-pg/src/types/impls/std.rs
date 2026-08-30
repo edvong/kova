@@ -132,7 +132,6 @@ impl<'a> IntoValue<'a, Postgres> for &'a String {
         Ok(Value::Text(Cow::Borrowed(self)))
     }
 }
-impl<'a> ScalarMarker<Postgres> for &'a String {}
 
 // &'a str: Zero-copy borrowing. Wraps the slice in `Cow::Borrowed` without allocation.
 impl<'a> IntoValue<'a, Postgres> for &'a str {
@@ -140,7 +139,6 @@ impl<'a> IntoValue<'a, Postgres> for &'a str {
         Ok(Value::Text(Cow::Borrowed(self)))
     }
 }
-impl<'a> ScalarMarker<Postgres> for &'a str {}
 
 /// Note: `&'a str` deliberately does not implement `FromValue`.
 /// Since the lifetime of the database response is bound to the underlying network stream,
@@ -170,13 +168,20 @@ impl FromValue<Postgres> for Vec<u8> {
 }
 mark_scalars!(Postgres, Vec<u8>);
 
+
+// &'a Vec<u8>: Convenience conversion for references
+impl<'a> IntoValue<'a, Postgres> for &'a Vec<u8> {
+    fn into_value(self) -> Result<Value<'a>> {
+        Ok(Value::Blob(Cow::Borrowed(self.as_slice())))
+    }
+}
+
 // &'a [u8]: Zero-copy borrowing. Avoids heap allocation by directly referencing the slice.
 impl<'a> IntoValue<'a, Postgres> for &'a [u8] {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Blob(Cow::Borrowed(self)))
     }
 }
-impl<'a> ScalarMarker<Postgres> for &'a [u8] {}
 
 // ==========================================
 // Fixed-Size Arrays (e.g., UUID, Hashes)
@@ -187,6 +192,12 @@ impl<'a, const N: usize> IntoValue<'a, Postgres> for [u8; N] {
     fn into_value(self) -> Result<Value<'a>> {
         // Fixed-size array, consumed and converted to Vec for Cow.
         Ok(Value::Blob(Cow::Owned(self.to_vec())))
+    }
+}
+
+impl<'a, const N: usize> IntoValue<'a, Postgres> for &'a [u8; N] {
+    fn into_value(self) -> Result<Value<'a>> {
+        Ok(Value::Blob(Cow::Borrowed(self.as_slice())))
     }
 }
 

@@ -1,7 +1,7 @@
 use crate::dsl::Pagination;
 use crate::types::{Row, Sqlite};
 use kova_core::database::Executor;
-use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Projection};
+use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Ordering, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
     Database, DecodeColumn, ExecutableSync, FromRow, Model, Select as CoreSelect,
@@ -73,6 +73,14 @@ where
 
     pub fn having(mut self, cond: Condition<'a, Sqlite>) -> Self {
         self.statement.having(cond);
+        self
+    }
+
+    pub fn order_by<C>(mut self, cols: C) -> Self
+    where
+        C: IntoArgs<Ordering<'a, Sqlite>>,
+    {
+        self.statement.order_by(cols);
         self
     }
 

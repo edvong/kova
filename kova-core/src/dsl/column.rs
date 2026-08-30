@@ -1,6 +1,6 @@
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::component::WithComponent;
-use crate::dsl::condition::Condition;
+use crate::dsl::condition::{Condition, ConditionBuilder};
 use crate::dsl::operand::IntoOperand;
 use crate::dsl::operator::{Operator, StandardOperator};
 use crate::dsl::{Operand, OrderOperand};
@@ -23,15 +23,9 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
     }
 }
 
-// impl<'a, DB: Database> From<StandardOperator<'a, DB>> for Operator<'a, DB> {
-//     fn from(value: StandardOperator<'a, DB>) -> Self {
-//         Operator::from_std(value)
-//     }
-// }
 
 impl<'a, T, DB: Database> SingleArgMarker for Column<'a, T, DB> {}
 
-// ==== Projection START ====
 
 // Projection
 impl<'a, T, DB: Database> Column<'a, T, DB> {
@@ -54,137 +48,99 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
     }
 }
 
+
+impl<'a, T, DB: Database> ConditionBuilder<'a, DB> for &Column<'a, T, DB> {
+    fn build_operand(self) -> Operand<'a, DB> {
+        Operand::Column(self.meta)
+    }
+}
+
 impl<'a, T, DB: Database> Column<'a, T, DB> {
-    pub fn eq<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn eq<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        // Operator::from_std(value)
-        Condition::Op(Operator::from_std(StandardOperator::Eq(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
+        self.binary_op(v, StandardOperator::Eq)
     }
 
-    pub fn ne<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn ne<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::Ne(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
+        self.binary_op(v, StandardOperator::Ne)
     }
 
-    pub fn gt<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn gt<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::Gt(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
+        self.binary_op(v, StandardOperator::Gt)
     }
 
-    pub fn ge<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn ge<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::Ge(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
+        self.binary_op(v, StandardOperator::Ge)
     }
 
-    pub fn lt<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn lt<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::Lt(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
+        self.binary_op(v, StandardOperator::Lt)
     }
 
-    pub fn le<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn le<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::Le(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
+        self.binary_op(v, StandardOperator::Le)
     }
 
     pub fn is_null(&self) -> Condition<'a, DB> {
-        Condition::Op(Operator::from_std(StandardOperator::IsNull(
-            Operand::Column(self.meta),
-        )))
+        self.unary_op(StandardOperator::IsNull)
     }
 
     pub fn is_not_null(&self) -> Condition<'a, DB> {
-        Condition::Op(Operator::from_std(StandardOperator::IsNotNull(
-            Operand::Column(self.meta),
-        )))
+        self.unary_op(StandardOperator::IsNotNull)
     }
 
-    pub fn between<L, U>(&self, lower: L, upper: U) -> Condition<'a, DB>
+    pub fn between<L, M1, U, M2>(&self, lower: L, upper: U) -> Condition<'a, DB>
     where
-        L: IntoOperand<'a, L, DB>,
-        U: IntoOperand<'a, U, DB>,
+        L: IntoOperand<'a, M1, DB>,
+        U: IntoOperand<'a, M2, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::Between(
-            Operand::Column(self.meta),
-            lower.into_operand(),
-            upper.into_operand(),
-        )))
+        self.ternary_op(lower, upper, StandardOperator::Between)
     }
 
-    pub fn not_between<L, U>(&self, lower: L, upper: U) -> Condition<'a, DB>
+    pub fn not_between<L, M1, U, M2>(&self, lower: L, upper: U) -> Condition<'a, DB>
     where
-        L: IntoOperand<'a, L, DB>,
-        U: IntoOperand<'a, U, DB>,
+        L: IntoOperand<'a, M1, DB>,
+        U: IntoOperand<'a, M2, DB>,
     {
-        Condition::Op(Operator::from_std(StandardOperator::NotBetween(
-            Operand::Column(self.meta),
-            lower.into_operand(),
-            upper.into_operand(),
-        )))
+        self.ternary_op(lower, upper, StandardOperator::NotBetween)
     }
 
-    pub fn in_list<I, V>(&self, values: I) -> Condition<'a, DB>
+    pub fn in_list<I, V, M>(&self, values: I) -> Condition<'a, DB>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        let values = values
-            .into_iter()
-            .map(|value| value.into_operand())
-            .collect();
-        Condition::Op(Operator::from_std(StandardOperator::In(
-            Operand::Column(self.meta),
-            values,
-        )))
+        self.list_op(values, StandardOperator::In)
     }
 
-    pub fn not_in<I, V>(&self, values: I) -> Condition<'a, DB>
+    pub fn not_in<I, V, M>(&self, values: I) -> Condition<'a, DB>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
-        let values = values
-            .into_iter()
-            .map(|value| value.into_operand())
-            .collect();
-        Condition::Op(Operator::from_std(StandardOperator::NotIn(
-            Operand::Column(self.meta),
-            values,
-        )))
+        self.list_op(values, StandardOperator::NotIn)
     }
 
-    pub fn like<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn like<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Like(
             Operand::Column(self.meta),
@@ -192,9 +148,9 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         )))
     }
 
-    pub fn not_like<V>(&self, v: V) -> Condition<'a, DB>
+    pub fn not_like<V, M>(&self, v: V) -> Condition<'a, DB>
     where
-        V: IntoOperand<'a, V, DB>,
+        V: IntoOperand<'a, M, DB>,
     {
         Condition::Op(Operator::from_std(StandardOperator::NotLike(
             Operand::Column(self.meta),
@@ -218,7 +174,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         }
     }
 
-    // pub fn set<V>(&self, value: V) -> Assignment<'a, DB> where V: IntoOperand<'a, V, DB> {
+    // pub fn set<V, M>(&self, value: V) -> Assignment<'a, DB> where V: IntoOperand<'a, V, DB> {
     //     Assignment::Value(Operand::Column(self.meta), value.into_operand())
     // }
 }

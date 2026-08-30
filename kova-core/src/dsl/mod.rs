@@ -11,8 +11,9 @@ mod clause;
 
 pub mod func {
     pub use crate::dsl::function::{
-        Function, Quantifier,
-        Abs, Avg, Count, CountAll, Length, Lower, Max, Min, Sum, Upper,
+        Function,
+        Avg, Count, CountAll,Max, Min, Sum,
+        Length, Lower,  Upper, Abs,
     };
 }
 
@@ -27,11 +28,4 @@ pub use {
     clause::*,
 };
 
-pub(crate) use {
-    // group_by::GroupByClause,
-    // having::HavingClause,
-    // distinct::DistinctClause,
-    // projection::ProjectionClause,
-    // locking::LockingClause,
-    // r#where::WhereClause,
-};
+

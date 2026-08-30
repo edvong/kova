@@ -4,10 +4,15 @@ mod pagination;
 mod locking;
 mod function;
 
+
+pub mod func {
+    pub use crate::dsl::function::ArrayAgg;
+}
+
 pub use {
     column::Column,
     locking::{LockMode, WaitPolicy},
-    function::{Function, ArrayAgg},
+    function::{Function},
 };
 
 pub(crate) use {

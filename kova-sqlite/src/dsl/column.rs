@@ -1,3 +1,4 @@
+use crate::types::Sqlite;
 use kova_core::types::ColumnMeta;
 use std::marker::PhantomData;
 
@@ -7,11 +8,14 @@ pub struct Column<T> {
 }
 
 impl<T> Column<T> {
-    pub const fn new(meta: ColumnMeta) -> Self {
-        Self {
-            meta,
-            _marker: PhantomData,
-        }
+    
+    #[doc(hidden)]
+    pub const fn create<'a>(meta: ColumnMeta) -> kova_core::dsl::Column<'a, T, Sqlite> {
+        kova_core::dsl::Column::new(meta, Self::new(meta))
+    }
+
+    const fn new(meta: ColumnMeta) -> Column<T> {
+        Self { meta, _marker: PhantomData }
     }
 }
 

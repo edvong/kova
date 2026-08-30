@@ -15,7 +15,7 @@ pub struct ArrayAgg<'a> {
     meta: ColumnMeta,
     distinct: bool,
     order_by: Vec<Ordering<'a, Postgres>>,
-    filter: Option<Condition<'a, Postgres>>,
+    filter: Option<Box<Condition<'a, Postgres>>>,
 }
 
 // array_agg(x)
@@ -55,7 +55,7 @@ impl<'a> ArrayAgg<'a> {
     /// Attaches a `FILTER (WHERE ...)` clause to selectively aggregate rows.
     /// Translates to: `array_agg(...) FILTER (WHERE condition)`
     pub fn filter(mut self, condition: Condition<'a, Postgres>) -> Self {
-        self.filter = Some(condition);
+        self.filter = Some(Box::new(condition));
         self
     }
 }
@@ -65,9 +65,9 @@ impl<'a> ArrayAgg<'a> {
 /// conditional clauses (e.g., `HAVING array_agg(id) = '{1, 2}'`).
 impl<'a> ArrayAgg<'a> {
     /// Creates an equality (`=`) condition.
-    pub fn eq<V>(&self, v: V) -> Condition<'a, Postgres>
+    pub fn eq<V, M>(&self, v: V) -> Condition<'a, Postgres>
     where
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Eq(
             Operand::Column(self.meta),
@@ -76,9 +76,9 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates an inequality (`!=` or `<>`) condition.
-    pub fn ne<V>(&self, v: V) -> Condition<'a, Postgres>
+    pub fn ne<V, M>(&self, v: V) -> Condition<'a, Postgres>
     where
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Ne(
             Operand::Column(self.meta),
@@ -87,9 +87,9 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a greater-than (`>`) condition.
-    pub fn gt<V>(&self, v: V) -> Condition<'a, Postgres>
+    pub fn gt<V, M>(&self, v: V) -> Condition<'a, Postgres>
     where
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Gt(
             Operand::Column(self.meta),
@@ -98,9 +98,9 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a greater-than-or-equal-to (`>=`) condition.
-    pub fn ge<V>(&self, v: V) -> Condition<'a, Postgres>
+    pub fn ge<V, M>(&self, v: V) -> Condition<'a, Postgres>
     where
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Ge(
             Operand::Column(self.meta),
@@ -109,9 +109,9 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a less-than (`<`) condition.
-    pub fn lt<V>(&self, v: V) -> Condition<'a, Postgres>
+    pub fn lt<V, M>(&self, v: V) -> Condition<'a, Postgres>
     where
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Lt(
             Operand::Column(self.meta),
@@ -120,9 +120,9 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a less-than-or-equal-to (`<=`) condition.
-    pub fn le<V>(&self, v: V) -> Condition<'a, Postgres>
+    pub fn le<V, M>(&self, v: V) -> Condition<'a, Postgres>
     where
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Le(
             Operand::Column(self.meta),
@@ -145,10 +145,10 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a `BETWEEN` condition.
-    pub fn between<L, U>(&self, lower: L, upper: U) -> Condition<'a, Postgres>
+    pub fn between<L, M1, U, M2>(&self, lower: L, upper: U) -> Condition<'a, Postgres>
     where
-        L: IntoOperand<'a, L, Postgres>,
-        U: IntoOperand<'a, U, Postgres>,
+        L: IntoOperand<'a, M1, Postgres>,
+        U: IntoOperand<'a, M2, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::Between(
             Operand::Column(self.meta),
@@ -158,10 +158,10 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a `NOT BETWEEN` condition.
-    pub fn not_between<L, U>(&self, lower: L, upper: U) -> Condition<'a, Postgres>
+    pub fn not_between<L, M1, U, M2>(&self, lower: L, upper: U) -> Condition<'a, Postgres>
     where
-        L: IntoOperand<'a, L, Postgres>,
-        U: IntoOperand<'a, U, Postgres>,
+        L: IntoOperand<'a, M1, Postgres>,
+        U: IntoOperand<'a, M2, Postgres>,
     {
         Condition::Op(Operator::from_std(StandardOperator::NotBetween(
             Operand::Column(self.meta),
@@ -171,10 +171,10 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates an `IN (...)` condition.
-    pub fn in_list<I, V>(&self, values: I) -> Condition<'a, Postgres>
+    pub fn in_list<I, V, M>(&self, values: I) -> Condition<'a, Postgres>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         let values = values
             .into_iter()
@@ -187,10 +187,10 @@ impl<'a> ArrayAgg<'a> {
     }
 
     /// Creates a `NOT IN (...)` condition.
-    pub fn not_in<I, V>(&self, values: I) -> Condition<'a, Postgres>
+    pub fn not_in<I, V, M>(&self, values: I) -> Condition<'a, Postgres>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, V, Postgres>,
+        V: IntoOperand<'a, M, Postgres>,
     {
         let values = values
             .into_iter()

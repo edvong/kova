@@ -1,8 +1,10 @@
-use crate::query::select::Select;
+mod select;
+
 use crate::types::Postgres;
 use kova_core::types::{Model, Query as CoreQuery};
 
-mod select;
+pub use crate::query::select::Select;
+
 
 pub struct Query;
 

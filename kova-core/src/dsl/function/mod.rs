@@ -1,4 +1,11 @@
-use crate::dsl::arg::IntoArg;
+mod scalar;
+mod aggregate;
+mod builder;
+mod macros;
+
+pub use aggregate::*;
+pub use scalar::*;
+
 use crate::dsl::component::WithComponent;
 use crate::dsl::{
     Column, Component, Direction, OrderOperand, Ordering, Projection, ProjectionExpr,
@@ -6,6 +13,7 @@ use crate::dsl::{
 };
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
+
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
 
@@ -47,27 +55,6 @@ pub enum StandardFunction<'a, DB: Database> {
     _Marker(PhantomData<&'a DB>),
 }
 
-// Aggregate functions
-pub struct CountAll;
-pub struct Count<T>(pub T);
-pub struct Sum<T>(pub T);
-pub struct Max<T>(pub T);
-pub struct Min<T>(pub T);
-pub struct Avg<T>(pub T);
-
-// Scalar functions
-pub struct Length<T>(pub T);
-pub struct Lower<T>(pub T);
-pub struct Upper<T>(pub T);
-pub struct Abs<T>(pub T);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum Quantifier {
-    All,
-    Distinct,
-}
-
-// ==== Function to Projection ====
 
 impl<'a, DB: Database> Function<'a, DB> {
     pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
@@ -94,46 +81,12 @@ impl<'a, DB: Database> Function<'a, DB> {
     }
 }
 
-// No Arguments, independent implementation
-impl CountAll {
-    pub fn alias<U, DB: Database>(self, col: Column<U, DB>) -> Projection<DB> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Projection {
-            expr: ProjectionExpr::Function(func),
-            alias: Some(col.meta),
-        }
-    }
 
-    pub fn asc<'a, DB: Database>(self) -> Ordering<'a, DB> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(func)),
-            direction: Some(Direction::Asc),
-            nulls: None,
-        }
-    }
 
-    pub fn desc<'a, DB: Database>(self) -> Ordering<'a, DB> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(func)),
-            direction: Some(Direction::Desc),
-            nulls: None,
-        }
-    }
-}
 
-impl<'a, DB: Database> IntoArg<Projection<'a, DB>> for CountAll {
-    fn into_arg(self) -> Projection<'a, DB> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Projection {
-            expr: ProjectionExpr::Function(func),
-            alias: None,
-        }
-    }
-}
 
-// ==== Aggregate Functions ====
+
+/*
 
 macro_rules! impl_aggregate_function {
     ($StructName:ident, $Variant:ident) => {
@@ -188,13 +141,17 @@ macro_rules! impl_aggregate_function {
     };
 }
 
-impl_aggregate_function!(Count, Count);
-impl_aggregate_function!(Sum, Sum);
-impl_aggregate_function!(Max, Max);
-impl_aggregate_function!(Min, Min);
-impl_aggregate_function!(Avg, Avg);
+*/
+
+// impl_aggregate_function!(Count, Count);
+// impl_aggregate_function!(Sum, Sum);
+// impl_aggregate_function!(Max, Max);
+// impl_aggregate_function!(Min, Min);
+// impl_aggregate_function!(Avg, Avg);
 
 // ==== Scalar Functions ====
+
+/*
 
 macro_rules! impl_scalar_function {
     ($StructName:ident, $Variant:ident) => {
@@ -238,7 +195,10 @@ macro_rules! impl_scalar_function {
     };
 }
 
-impl_scalar_function!(Length, Length);
-impl_scalar_function!(Lower, Lower);
-impl_scalar_function!(Upper, Upper);
-impl_scalar_function!(Abs, Abs);
+
+
+ */
+// impl_scalar_function!(Length, Length);
+// impl_scalar_function!(Lower, Lower);
+// impl_scalar_function!(Upper, Upper);
+// impl_scalar_function!(Abs, Abs);

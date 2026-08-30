@@ -1,8 +1,9 @@
 mod select;
 
-use crate::query::select::Select;
 use crate::types::Sqlite;
 use kova_core::types::{Model, Query as CoreQuery};
+
+pub use crate::query::select::Select;
 
 pub struct Query;
 

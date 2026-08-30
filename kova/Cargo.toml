@@ -17,7 +17,6 @@ kova-sqlite = { workspace = true, optional = true }
 
 [features]
 default = ["pg"]
-#default = ["sqlite"]
 
 # PostgreSQL-specific features
 pg = ["dep:kova-pg"]
@@ -30,3 +29,7 @@ sqlite = ["dep:kova-sqlite"]
 sqlite-pool = []
 
 json = []
+
+#[dev-dependencies]
+#kova-pg = { workspace = true }
+#kova-sqlite = { workspace = true }
