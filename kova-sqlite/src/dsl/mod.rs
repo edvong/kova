@@ -1,12 +1,14 @@
+mod assignment;
 mod column;
+mod conflict;
 mod operator;
 mod pagination;
 
-pub use {
-    column::Column,
-};
+pub use column::Column;
 
 pub(crate) use {
-    operator::Operator,
-    pagination::Pagination,
+    assignment::Assignment,
+    conflict::{OnConflict, ConflictTarget}, 
+    operator::Operator, 
+    pagination::Pagination
 };

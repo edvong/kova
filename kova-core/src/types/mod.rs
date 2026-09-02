@@ -19,7 +19,7 @@ pub use {
     meta::ColumnMeta,
     mode::{Async, Mode, Sync},
     model::{FromRow, Model},
-    query::{Query, Select},
-    row::{ColumnIndex, GetColumn, Row, ScalarMarker, DecodeColumn},
+    query::{Query, Select, Insert},
+    row::{ColumnIndex, GetColumn, Row, ScalarMarker, FromColumn},
     value::{FromValue, IntoValue, Value},
 };

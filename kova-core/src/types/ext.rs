@@ -6,15 +6,13 @@ pub trait Extension<'a>: Sized {
         Self: 'o;
 
     // Expression Extension
-    type Function<'t>;
+    type Function<'t>  where Self: 't;
     type OrderOperand;
+    type Assignment<'t> where Self: 't;
 
     // Clause Extension
     type GroupBy;
     type Locking;
     type Pagination;
-
-
-
-    // type Assignment<'t> where Self: 't;
+    type OnConflict<'c>;
 }

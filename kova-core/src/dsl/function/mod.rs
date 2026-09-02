@@ -1,9 +1,9 @@
-mod scalar;
 mod aggregate;
 mod builder;
-mod macros;
+mod scalar;
 
 pub use aggregate::*;
+pub use builder::FunctionBuilder;
 pub use scalar::*;
 
 use crate::dsl::component::WithComponent;
@@ -13,7 +13,6 @@ use crate::dsl::{
 };
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
-
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
 
@@ -55,7 +54,6 @@ pub enum StandardFunction<'a, DB: Database> {
     _Marker(PhantomData<&'a DB>),
 }
 
-
 impl<'a, DB: Database> Function<'a, DB> {
     pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
         Projection {
@@ -80,125 +78,3 @@ impl<'a, DB: Database> Function<'a, DB> {
         }
     }
 }
-
-
-
-
-
-
-/*
-
-macro_rules! impl_aggregate_function {
-    ($StructName:ident, $Variant:ident) => {
-        impl<'a, T, DB: Database> $StructName<Column<'a, T, DB>> {
-            pub fn distinct(self) -> Function<'a, DB> {
-                Function::from_std(StandardFunction::$Variant(
-                    self.0.meta,
-                    Quantifier::Distinct,
-                ))
-            }
-
-            pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
-                let func =
-                    Function::from_std(StandardFunction::$Variant(self.0.meta, Quantifier::All));
-                Projection {
-                    expr: ProjectionExpr::Function(func),
-                    alias: Some(col.meta),
-                }
-            }
-
-            pub fn asc(self) -> Ordering<'a, DB> {
-                let func =
-                    Function::from_std(StandardFunction::$Variant(self.0.meta, Quantifier::All));
-                Ordering {
-                    operand: OrderOperand::from_std(StandardOperand::Function(func)),
-                    direction: Some(Direction::Asc),
-                    nulls: None,
-                }
-            }
-
-            pub fn desc(self) -> Ordering<'a, DB> {
-                let func =
-                    Function::from_std(StandardFunction::$Variant(self.0.meta, Quantifier::All));
-                Ordering {
-                    operand: OrderOperand::from_std(StandardOperand::Function(func)),
-                    direction: Some(Direction::Desc),
-                    nulls: None,
-                }
-            }
-        }
-
-        impl<'a, T, DB: Database> IntoArg<Projection<'a, DB>> for $StructName<Column<'a, T, DB>> {
-            fn into_arg(self) -> Projection<'a, DB> {
-                let func =
-                    Function::from_std(StandardFunction::$Variant(self.0.meta, Quantifier::All));
-                Projection {
-                    expr: ProjectionExpr::Function(func),
-                    alias: None,
-                }
-            }
-        }
-    };
-}
-
-*/
-
-// impl_aggregate_function!(Count, Count);
-// impl_aggregate_function!(Sum, Sum);
-// impl_aggregate_function!(Max, Max);
-// impl_aggregate_function!(Min, Min);
-// impl_aggregate_function!(Avg, Avg);
-
-// ==== Scalar Functions ====
-
-/*
-
-macro_rules! impl_scalar_function {
-    ($StructName:ident, $Variant:ident) => {
-        impl<'a, T, DB: Database> $StructName<Column<'a, T, DB>> {
-            pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
-                let func = Function::from_std(StandardFunction::$Variant(self.0.meta));
-                Projection {
-                    expr: ProjectionExpr::Function(func),
-                    alias: Some(col.meta),
-                }
-            }
-
-            pub fn asc(self) -> Ordering<'a, DB> {
-                let func = Function::from_std(StandardFunction::$Variant(self.0.meta));
-                Ordering {
-                    operand: OrderOperand::from_std(StandardOperand::Function(func)),
-                    direction: Some(Direction::Asc),
-                    nulls: None,
-                }
-            }
-
-            pub fn desc(self) -> Ordering<'a, DB> {
-                let func = Function::from_std(StandardFunction::$Variant(self.0.meta));
-                Ordering {
-                    operand: OrderOperand::from_std(StandardOperand::Function(func)),
-                    direction: Some(Direction::Desc),
-                    nulls: None,
-                }
-            }
-        }
-
-        impl<'a, T, DB: Database> IntoArg<Projection<'a, DB>> for $StructName<Column<'a, T, DB>> {
-            fn into_arg(self) -> Projection<'a, DB> {
-                let func = Function::from_std(StandardFunction::$Variant(self.0.meta));
-                Projection {
-                    expr: ProjectionExpr::Function(func),
-                    alias: None,
-                }
-            }
-        }
-    };
-}
-
-
-
- */
-// impl_scalar_function!(Length, Length);
-// impl_scalar_function!(Lower, Lower);
-// impl_scalar_function!(Upper, Upper);
-// impl_scalar_function!(Abs, Abs);

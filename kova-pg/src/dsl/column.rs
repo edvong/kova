@@ -1,4 +1,6 @@
+use crate::dsl::assignment::Assignment;
 use crate::types::Postgres;
+use kova_core::dsl::WithComponent;
 use kova_core::types::ColumnMeta;
 use std::marker::PhantomData;
 
@@ -20,6 +22,12 @@ impl<T> Column<T> {
 }
 
 impl<T> Column<T> {
+
+    pub fn excluded<'a>(&self) -> kova_core::dsl::Assignment<'a, Postgres> {
+        kova_core::dsl::Assignment::from_ext(Assignment::ExcludedColumn(self.meta))
+    }
+
+
     // JSONB operators
     // fn json_extract_text(key) -> Maps to PG `->>` operator.
     // fn json_contains(value) -> Maps to PG `@>` operator (contains).

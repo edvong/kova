@@ -4,7 +4,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Ordering, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
-    Database, DecodeColumn, ExecutableSync, FromRow, Model, Select as CoreSelect,
+    Database, FromColumn, ExecutableSync, FromRow, Model, Select as CoreSelect,
 };
 use kova_core::{Error, Result};
 
@@ -119,9 +119,9 @@ where
 
     pub fn load_in<U>(self) -> Result<Vec<U>>
     where
-        for<'r> U: DecodeColumn<'r, Sqlite>,
+        for<'r> U: FromColumn<'r, Sqlite>,
     {
-        self.process_rows(|row| U::decode_column(&row))
+        self.process_rows(|row| U::extract(&row))
     }
 
     fn process_rows<U, F>(self, mut f: F) -> Result<Vec<U>>

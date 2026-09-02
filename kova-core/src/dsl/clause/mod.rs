@@ -8,6 +8,8 @@ mod r#where;
 mod distinct;
 mod locking;
 mod ext;
+mod insert;
+mod conflict;
 
 pub use {
     group_by::GroupBy,
@@ -16,6 +18,7 @@ pub use {
     pagination::{ExtPagination, PaginationClause},
     projection::{Projection, ProjectionExpr},
     locking::ExtLocking,
+    conflict::ExtOnConflict,
 };
 
 pub(crate) use {
@@ -25,5 +28,7 @@ pub(crate) use {
     projection::ProjectionClause,
     locking::LockingClause,
     r#where::WhereClause,
+    insert::ValuesClause,
+    conflict::OnConflictClause,
     ext::ExtensionClause,
 };

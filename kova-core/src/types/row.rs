@@ -66,15 +66,15 @@ macro_rules! mark_scalars {
 
 /// Unified protocol for decoding an entire row into a specific Rust type.
 /// Supports both single scalar extraction and multi-column tuple mapping.
-pub trait DecodeColumn<'a, DB: Database>: Sized {
-    fn decode_column(row: &DB::Row<'a>) -> Result<Self>;
+pub trait FromColumn<'a, DB: Database>: Sized {
+    fn extract(row: &DB::Row<'a>) -> Result<Self>;
 }
 
 // =========================================================
 // Blanket Implementation for Scalar Types
 // =========================================================
-/// Automatically implements `DecodeColumn` for any type marked as a scalar.
-impl<'a, DB, T> DecodeColumn<'a, DB> for T
+/// Automatically implements `FromColumn` for any type marked as a scalar.
+impl<'a, DB, T> FromColumn<'a, DB> for T
 where
     DB: Database,
     T: FromValue<DB> + ScalarMarker<DB>,
@@ -82,7 +82,7 @@ where
     // of extracting this specific column type.
     DB::Row<'a>: GetColumn<'a, T>,
 {
-    fn decode_column(row: &DB::Row<'a>) -> Result<Self> {
+    fn extract(row: &DB::Row<'a>) -> Result<Self> {
         // When decoding directly into a single scalar type,
         // the extraction always defaults to the first column (index 0).
         GetColumn::get_column(row, 0)
@@ -93,13 +93,13 @@ where
 #[doc(hidden)]
 macro_rules! bind_decode_column_tuple_inner {
     ($DB:ty, $($T:ident),+) => {
-        impl<'a, $($T),+> $crate::types::DecodeColumn<'a, $DB> for ($($T,)+)
+        impl<'a, $($T),+> $crate::types::FromColumn<'a, $DB> for ($($T,)+)
         where
             // Enforces that the concrete Row type supports extracting every
             // single element type defined within the tuple.
             $( <$DB as $crate::types::Database>::Row<'a>: $crate::types::GetColumn<'a, $T> ),+
         {
-            fn decode_column(row: &<$DB as $crate::types::Database>::Row<'a>) -> $crate::Result<Self> {
+            fn extract(row: &<$DB as $crate::types::Database>::Row<'a>) -> $crate::Result<Self> {
                 let mut idx = 0;
                 Ok((
                     $(

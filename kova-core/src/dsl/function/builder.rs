@@ -8,7 +8,7 @@ use crate::types::Database;
 // ==========================================
 // Scalar/Basic Function Builder
 // ==========================================
-pub(crate) trait FunctionBuilder<'a, DB: Database>: Sized {
+pub trait FunctionBuilder<'a, DB: Database>: Sized {
     fn build_func(self) -> Function<'a, DB>;
 
     #[inline(always)]

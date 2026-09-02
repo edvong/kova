@@ -1,36 +1,49 @@
+#![allow(clippy::wrong_self_convention)]
+
 use crate::dsl::condition::ConditionBuilder;
 use crate::dsl::function::builder::{AggregateBuilder, FunctionBuilder};
-use crate::dsl::function::Function;
-use crate::dsl::{Column, Condition, IntoOperand, Ordering, Projection, StandardOperator};
+use crate::dsl::function::{Function, Quantifier, StandardFunction};
+use crate::dsl::{
+    Column, Condition, IntoArg, IntoOperand, Operand, Ordering, Projection, ProjectionExpr,
+    StandardOperator, WithComponent,
+};
 use crate::types::Database;
-use crate::{impl_aggregate_builder, impl_condition_builder, impl_function_into_arg};
 
 pub struct Count<T>(pub T);
 
-// impl<'a, T, DB: Database> ConditionBuilder<'a, DB> for Count<Column<'a, T, DB>> {
-//     fn build_operand(self) -> Operand<'a, DB> {
-//         Operand::Function(self.build_func())
-//     }
-// }
-//
-// impl<'a, T, DB: Database> FunctionBuilder<'a, DB> for Count<Column<'a, T, DB>> {
-//     #[inline(always)]
-//     fn build_func(self) -> Function<'a, DB> {
-//         self.build_aggr(Quantifier::All)
-//     }
-// }
-//
-// impl<'a, T, DB: Database> AggregateBuilder<'a, DB> for Count<Column<'a, T, DB>> {
-//     #[inline(always)]
-//     fn build_aggr(self, quantifier: Quantifier) -> Function<'a, DB> {
-//         Function::from_std(StandardFunction::Count(self.0.meta(), quantifier))
-//     }
-// }
+impl<'a, T, DB: Database> ConditionBuilder<'a, DB> for Count<Column<'a, T, DB>> {
+    fn build_operand(self) -> Operand<'a, DB> {
+        Operand::Function(self.build_func())
+    }
+}
 
-impl_condition_builder!(Count);
-impl_aggregate_builder!(Count, Count);
-impl_function_into_arg!(Count);
+impl<'a, T, DB: Database> FunctionBuilder<'a, DB> for Count<Column<'a, T, DB>> {
+    #[inline(always)]
+    fn build_func(self) -> Function<'a, DB> {
+        self.build_aggr(Quantifier::All)
+    }
+}
 
+impl<'a, T, DB: Database> AggregateBuilder<'a, DB> for Count<Column<'a, T, DB>> {
+    #[inline(always)]
+    fn build_aggr(self, quantifier: Quantifier) -> Function<'a, DB> {
+        Function::from_std(StandardFunction::Count(self.0.meta(), quantifier))
+    }
+}
+
+impl<'a, T, DB: Database> IntoArg<Projection<'a, DB>> for Count<Column<'a, T, DB>> {
+    #[inline(always)]
+    fn into_arg(self) -> Projection<'a, DB> {
+        Projection {
+            expr: ProjectionExpr::Function(<Self as FunctionBuilder<'a, DB>>::build_func(self)),
+            alias: None,
+        }
+    }
+}
+
+// impl_condition_builder!(Count);
+// impl_aggregate_builder!(Count, Count);
+// impl_function_into_arg!(Count);
 
 impl<'a, T, DB: Database> Count<Column<'a, T, DB>> {
     pub fn eq<V, M>(self, v: V) -> Condition<'a, DB>

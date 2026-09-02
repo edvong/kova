@@ -6,7 +6,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Ordering, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
-    Database, DecodeColumn, ExecutableAsync, FromRow, Model, Select as CoreSelect,
+    Database, FromColumn, ExecutableAsync, FromRow, Model, Select as CoreSelect,
 };
 use tokio_postgres::types::ToSql;
 
@@ -157,13 +157,13 @@ where
 
     pub async fn load_in<U>(self) -> Result<Vec<U>>
     where
-        for<'r> U: DecodeColumn<'r, Postgres>,
+        for<'r> U: FromColumn<'r, Postgres>,
     {
         let raw_rows = self.load_raw_rows().await?;
         let mut result = Vec::with_capacity(raw_rows.len());
         for raw_row in raw_rows {
             let row = Row::new(&raw_row);
-            result.push(U::decode_column(&row)?);
+            result.push(U::extract(&row)?);
         }
         Ok(result)
     }

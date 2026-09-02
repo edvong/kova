@@ -3,8 +3,7 @@ use crate::dsl::component::WithComponent;
 use crate::dsl::condition::{Condition, ConditionBuilder};
 use crate::dsl::operand::IntoOperand;
 use crate::dsl::operator::{Operator, StandardOperator};
-use crate::dsl::{Operand, OrderOperand};
-
+use crate::dsl::{Assignment, Operand, OrderOperand, StandardAssignment};
 use crate::dsl::{Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
 use crate::types::{ColumnMeta, Database, Extension};
 use std::ops::Deref;
@@ -23,11 +22,9 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
     }
 }
 
-
 impl<'a, T, DB: Database> SingleArgMarker for Column<'a, T, DB> {}
 
 
-// Projection
 impl<'a, T, DB: Database> Column<'a, T, DB> {
     /// The type of alias T must be consistent with the current column
     pub fn alias(self, alias: Column<'a, T, DB>) -> Projection<'a, DB> {
@@ -47,7 +44,6 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         self.meta
     }
 }
-
 
 impl<'a, T, DB: Database> ConditionBuilder<'a, DB> for &Column<'a, T, DB> {
     fn build_operand(self) -> Operand<'a, DB> {
@@ -174,7 +170,10 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         }
     }
 
-    // pub fn set<V, M>(&self, value: V) -> Assignment<'a, DB> where V: IntoOperand<'a, V, DB> {
-    //     Assignment::Value(Operand::Column(self.meta), value.into_operand())
-    // }
+    pub fn set<V, M>(&self, v: V) -> Assignment<'a, DB>
+    where
+        V: IntoOperand<'a, M, DB>,
+    {
+        Assignment::from_std(StandardAssignment::Value(self.meta, v.into_operand()))
+    }
 }
