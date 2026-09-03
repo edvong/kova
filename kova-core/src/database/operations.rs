@@ -1,7 +1,8 @@
-use std::marker::PhantomData;
+use std::borrow::Cow;
 use crate::database::Executor;
 use crate::dsl::IntoRows;
-use crate::types::{Database, Insert, Model, Query, Select};
+use crate::types::{Database, Delete, Insert, Model, Query, Select, Statement, Update};
+use std::marker::PhantomData;
 
 pub struct Operations<'a, E, DB> {
     pub(crate) executor: Executor<E>,
@@ -34,15 +35,30 @@ impl<'c, E, DB: Database> Operations<'c, E, DB> {
         <DB::Query<'a> as Query<'a, DB>>::Insert::<'c, T, E>::new(&self.executor, data)
     }
 
-    // pub fn update<T>(&self) -> Update<'a, DB, T> {
-    //     Update::create(&self.executor)
-    // }
-    //
-    // pub fn delete<T>(&self) -> Delete<'a, DB, T> {
-    //     Delete::create(&self.executor)
-    // }
-    //
-    // pub fn statement<T>(&self) -> Statement<'a, DB, T> {
-    //     Statement::create(&self.executor)
-    // }
+    pub fn update<'a, T>(&'c self) -> <DB::Query<'a> as Query<'a, DB>>::Update<'c, T, E>
+    where
+        T: Model<DB = DB>,
+        'a: 'c,
+        E: 'c,
+    {
+        <DB::Query<'a> as Query<'a, DB>>::Update::<'c, T, E>::new(&self.executor)
+    }
+
+    pub fn delete<'a, T>(&'c self) -> <DB::Query<'a> as Query<'a, DB>>::Delete<'c, T, E>
+    where
+        T: Model<DB = DB>,
+        'a: 'c,
+        E: 'c,
+    {
+        <DB::Query<'a> as Query<'a, DB>>::Delete::<'c, T, E>::new(&self.executor)
+    }
+
+    pub fn statement<'a, S>(&'c self, sql: S) -> <DB::Query<'a> as Query<'a, DB>>::Statement<'c, E>
+    where
+        S: Into<Cow<'a, str>>,
+        'a: 'c,
+        E: 'c,
+    {
+        <DB::Query<'a> as Query<'a, DB>>::Statement::<'c, E>::new(&self.executor, sql)
+    }
 }

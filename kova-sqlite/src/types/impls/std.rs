@@ -159,7 +159,7 @@ impl FromValue<Sqlite> for String {
         }
     }
 }
-mark_scalars!(Sqlite, String);
+mark_scalars!(Sqlite, String, str);
 
 // &'a String: Convenience conversion for references
 impl<'a> IntoValue<'a, Sqlite> for &'a String {
@@ -197,7 +197,7 @@ impl FromValue<Sqlite> for Vec<u8> {
         }
     }
 }
-mark_scalars!(Sqlite, Vec<u8>);
+mark_scalars!(Sqlite, Vec<u8>, [u8]);
 
 
 // &'a Vec<u8>: Convenience conversion for references

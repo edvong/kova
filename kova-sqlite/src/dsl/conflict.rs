@@ -20,11 +20,12 @@ impl<'a> OnConflict<'a> {
         self.targets = targets;
     }
 
-    pub fn ignore(&mut self) {
+    pub fn clear(&mut self) {
         self.assignments.clear();
     }
 
-    pub fn update(&mut self, assignments: Vec<Assignment<'a, Sqlite>>) {
+    pub fn set(&mut self, assignments: Vec<Assignment<'a, Sqlite>>) {
+        self.assignments.clear();
         self.assignments = assignments;
     }
 }

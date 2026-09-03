@@ -1,5 +1,7 @@
 use crate::dsl::{ConflictTarget, OnConflict};
-use crate::types::{Postgres, Row};
+use crate::query::exec::{execute_affected, fetch_rows};
+use crate::query::{NoReturn, Returning};
+use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
@@ -9,10 +11,6 @@ use kova_core::types::{
     Database, ExecutableAsync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
 use std::marker::PhantomData;
-use tokio_postgres::types::ToSql;
-
-pub struct NoReturn;
-pub struct Returning;
 
 pub struct NoConflict;
 pub struct Conflicted;
@@ -23,7 +21,8 @@ pub struct Insert<'c, 'a, T, E, DB: Database, R = NoReturn, C = NoConflict> {
     _marker: PhantomData<(R, C)>,
 }
 
-impl<'c, 'a, T, E, C> Insert<'c, 'a, T, E, Postgres, NoReturn, C>
+impl<'c, 'a, T, E> CoreInsert<'c, 'a, T, E, Postgres>
+for Insert<'c, 'a, T, E, Postgres, NoReturn, NoConflict>
 where
     T: Model<DB = Postgres>,
 {
@@ -37,7 +36,12 @@ where
             _marker: PhantomData,
         }
     }
+}
 
+impl<'c, 'a, T, E, C> Insert<'c, 'a, T, E, Postgres, NoReturn, C>
+where
+    T: Model<DB = Postgres>,
+{
     pub fn returning<P>(mut self, cols: P) -> Insert<'c, 'a, T, E, Postgres, Returning, C>
     where
         P: IntoArgs<Projection<'a, Postgres>>,
@@ -104,23 +108,7 @@ where
     E::Native: GenericClient + Sync,
 {
     pub async fn execute(self) -> Result<u64> {
-        let data = self.statement.build();
-
-        self.executor
-            .with_conn_async(async move |native| {
-                // Maps the framework's Value to a ToSql borrowing recognized by tokio_postgres.
-                let mut params: Vec<&(dyn ToSql + Sync)> = Vec::with_capacity(data.params.len());
-                for param in &data.params {
-                    params.push(param as &(dyn ToSql + Sync));
-                }
-
-                // get the u64 row number
-                native
-                    .execute(&data.sql, &params[..])
-                    .await
-                    .map_err(|e| kova_core::Error::Database(Box::new(e)))
-            })
-            .await
+        execute_affected(self.executor, self.statement.build()).await
     }
 }
 
@@ -134,59 +122,13 @@ where
     where
         U: FromRow<DB = Postgres>,
     {
-        let raw_rows = self.execute_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            result.push(U::from_row(&row)?);
-        }
-
-        Ok(result)
+        fetch_rows(self.executor, self.statement.build(), |row| U::from_row(&row)).await
     }
 
     pub async fn execute_in<U>(self) -> Result<Vec<U>>
     where
         for<'r> U: FromColumn<'r, Postgres>,
     {
-        let raw_rows = self.execute_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            result.push(U::extract(&row)?);
-        }
-
-        Ok(result)
-    }
-
-    async fn execute_raw_rows(self) -> Result<Vec<tokio_postgres::Row>> {
-        let data = self.statement.build();
-        self.executor
-            .with_conn_async(async move |native| {
-                let mut params: Vec<&(dyn ToSql + Sync)> = Vec::with_capacity(data.params.len());
-                for param in &data.params {
-                    params.push(param as &(dyn ToSql + Sync));
-                }
-
-                native
-                    .query(&data.sql, &params[..])
-                    .await
-                    .map_err(|e| kova_core::Error::Database(Box::new(e)))
-            })
-            .await
-    }
-}
-
-impl<'c, 'a, T, E> CoreInsert<'c, 'a, T, E, Postgres>
-    for Insert<'c, 'a, T, E, Postgres, NoReturn, NoConflict>
-where
-    T: Model<DB = Postgres>,
-{
-    fn new<D, M>(executor: &'c Executor<E>, data: D) -> Self
-    where
-        D: IntoRows<'a, T, M>,
-    {
-        Self::new(executor, data)
+        fetch_rows(self.executor, self.statement.build(), |row| U::extract(&row)).await
     }
 }

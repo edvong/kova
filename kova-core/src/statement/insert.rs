@@ -23,8 +23,8 @@ where
         }
     }
 
-    pub fn build(&self) -> RenderData<'a, DB> {
-        todo!()
+    pub fn build(&self) -> Vec<RenderData<'a, DB>> {
+        unimplemented!()
     }
 
 

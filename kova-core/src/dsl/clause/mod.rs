@@ -10,8 +10,11 @@ mod locking;
 mod ext;
 mod insert;
 mod conflict;
+mod bind;
+mod assignment;
 
 pub use {
+    bind::Bind,
     group_by::GroupBy,
     join::{Join, JoinClause, JoinType},
     order::{NullsOrder, OrderByClause, Ordering, Direction, StandardOperand, OrderOperand},
@@ -22,6 +25,8 @@ pub use {
 };
 
 pub(crate) use {
+    assignment::AssignmentClause,
+    bind::BindClause,
     group_by::GroupByClause,
     having::HavingClause,
     distinct::DistinctClause,

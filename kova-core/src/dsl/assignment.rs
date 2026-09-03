@@ -1,5 +1,6 @@
-use crate::dsl::operand::Operand;
+use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::component::{Component, WithComponent};
+use crate::dsl::operand::Operand;
 use crate::types::{ColumnMeta, Database, Extension};
 
 pub type ExtAssignment<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Assignment<'a>;
@@ -13,11 +14,15 @@ impl<'a, DB: Database> WithComponent for Assignment<'a, DB> {
     type Extension = ExtAssignment<'a, DB>;
 
     fn from_std(std: Self::Standard) -> Self {
-        Self { inner: Component::standard(std) }
+        Self {
+            inner: Component::standard(std),
+        }
     }
 
     fn from_ext(ext: Self::Extension) -> Self {
-        Self { inner: Component::extension(ext) }
+        Self {
+            inner: Component::extension(ext),
+        }
     }
 }
 
@@ -25,3 +30,7 @@ pub enum StandardAssignment<'a, DB: Database> {
     // `col = ?` or `col = other_col`
     Value(ColumnMeta, Operand<'a, DB>),
 }
+
+impl<'a, DB: Database> SingleArgMarker for Assignment<'a, DB> {}
+
+

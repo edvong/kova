@@ -2,6 +2,8 @@ use crate::types::ext::Extension;
 use crate::types::{Connection, Executable, Query, Row, Value};
 
 pub trait Database: 'static + Sized {
+    const MAX_PARAMS: usize;
+    
     type Value<'a>: Value
     where
         Self: 'a;

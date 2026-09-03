@@ -54,6 +54,15 @@ where
     T: ScalarMarker<DB>,
 {}
 
+// As long as the underlying type T is a scalar, all of its borrowed forms
+// (including &str and &[u8]) are automatically legal scalars,
+// without the need to write sample code for reference types!
+impl<'a, DB, T> ScalarMarker<DB> for &'a T
+where
+    DB: Database,
+    T: ScalarMarker<DB> + ?Sized,
+{}
+
 /// A convenience macro to quickly implement `ScalarMarker` for multiple standard types.
 #[macro_export]
 macro_rules! mark_scalars {

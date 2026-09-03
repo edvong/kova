@@ -124,7 +124,7 @@ impl FromValue<Postgres> for String {
         }
     }
 }
-mark_scalars!(Postgres, String);
+mark_scalars!(Postgres, String, str);
 
 // &'a String: Convenience conversion for references, wrapped as borrowed
 impl<'a> IntoValue<'a, Postgres> for &'a String {
@@ -166,8 +166,7 @@ impl FromValue<Postgres> for Vec<u8> {
         }
     }
 }
-mark_scalars!(Postgres, Vec<u8>);
-
+mark_scalars!(Postgres, Vec<u8>, [u8]);
 
 // &'a Vec<u8>: Convenience conversion for references
 impl<'a> IntoValue<'a, Postgres> for &'a Vec<u8> {

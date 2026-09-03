@@ -1,31 +1,37 @@
 use crate::dsl::{LockItem, LockMode, Locking, Pagination, WaitPolicy};
-use crate::types::{Postgres, Row};
+use crate::query::exec::fetch_rows;
+use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::{Condition, GroupBy, IntoArgs, Join, JoinType, Ordering, Projection};
 use kova_core::statement::SelectStatement;
 use kova_core::types::{
-    Database, FromColumn, ExecutableAsync, FromRow, Model, Select as CoreSelect,
+    Database, ExecutableAsync, FromColumn, FromRow, Model, Select as CoreSelect,
 };
-use tokio_postgres::types::ToSql;
+use std::iter::once;
 
 pub struct Select<'c, 'a, T, E, DB: Database> {
     pub(crate) executor: &'c Executor<E>,
     pub(crate) statement: SelectStatement<'a, T, DB>,
 }
 
-impl<'c, 'a, T, E> Select<'c, 'a, T, E, Postgres>
+impl<'c, 'a, T, E> CoreSelect<'c, 'a, T, E, Postgres> for Select<'c, 'a, T, E, Postgres>
 where
     T: Model<DB = Postgres>,
 {
-    pub(crate) fn new(executor: &'c Executor<E>) -> Self {
+    fn new(executor: &'c Executor<E>) -> Self {
         Self {
             executor,
             statement: SelectStatement::new(),
         }
     }
+}
 
+impl<'c, 'a, T, E> Select<'c, 'a, T, E, Postgres>
+where
+    T: Model<DB = Postgres>,
+{
     pub fn columns<C>(mut self, cols: C) -> Self
     where
         C: IntoArgs<Projection<'a, Postgres>>,
@@ -38,12 +44,12 @@ where
     where
         M: Model<DB = Postgres>,
     {
-        let joining = Join {
+        let join = Join {
             typ: JoinType::Inner,
             target_table: T::TABLE_NAME,
             on: cond,
         };
-        self.statement.join(joining);
+        self.statement.join(join);
         self
     }
 
@@ -51,12 +57,12 @@ where
     where
         M: Model<DB = Postgres>,
     {
-        let joining = Join {
+        let join = Join {
             typ: JoinType::Left,
             target_table: T::TABLE_NAME,
             on: cond,
         };
-        self.statement.join(joining);
+        self.statement.join(join);
         self
     }
 
@@ -146,51 +152,13 @@ where
     where
         U: FromRow<DB = Postgres>,
     {
-        let raw_rows = self.load_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            result.push(U::from_row(&row)?);
-        }
-        Ok(result)
+        fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row)).await
     }
 
     pub async fn load_in<U>(self) -> Result<Vec<U>>
     where
         for<'r> U: FromColumn<'r, Postgres>,
     {
-        let raw_rows = self.load_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            result.push(U::extract(&row)?);
-        }
-        Ok(result)
-    }
-
-    async fn load_raw_rows(self) -> Result<Vec<tokio_postgres::Row>> {
-        let data = self.statement.build();
-        self.executor
-            .with_conn_async(async move |native| {
-                let mut params: Vec<&(dyn ToSql + Sync)> = Vec::with_capacity(data.params.len());
-                for param in &data.params {
-                    params.push(param as &(dyn ToSql + Sync));
-                }
-
-                native
-                    .query(&data.sql, &params[..])
-                    .await
-                    .map_err(|e| kova_core::Error::Database(Box::new(e)))
-            })
-            .await
-    }
-}
-
-impl<'c, 'a, T, E> CoreSelect<'c, 'a, T, E, Postgres> for Select<'c, 'a, T, E, Postgres>
-where
-    T: Model<DB = Postgres>,
-{
-    fn new(executor: &'c Executor<E>) -> Self {
-        Select::new(executor)
+        fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row)).await
     }
 }

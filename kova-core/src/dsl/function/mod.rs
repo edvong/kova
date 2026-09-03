@@ -11,6 +11,7 @@ use crate::dsl::{
     Column, Component, Direction, OrderOperand, Ordering, Projection, ProjectionExpr,
     StandardOperand,
 };
+use crate::types::ScalarMarker;
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
 
@@ -19,6 +20,8 @@ pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>
 pub struct Function<'a, DB: Database> {
     pub(crate) inner: Component<StandardFunction<'a, DB>, ExtFunction<'a, DB>>,
 }
+
+impl<'a, DB: Database> ScalarMarker<DB> for Function<'a, DB> {}
 
 impl<'a, DB: Database> WithComponent for Function<'a, DB> {
     type Standard = StandardFunction<'a, DB>;
