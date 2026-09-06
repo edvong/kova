@@ -7,6 +7,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::Column;
 use kova_core::types::Select as CoreSelect;
 use kova_core::types::{FromValue, IntoValue};
+use kova_sqlite::types::{Sqlite, SqlitePool};
 
 #[path = "../common/models.rs"]
 mod models;
@@ -17,15 +18,16 @@ use models::{Order, User};
 // Stress Test 1: The ultimate chain of all syntax nodes
 // ==========================================
 fn compile_check_sqlite_monster_query() {
-    let executor: Executor<kova_sqlite::types::SqlitePool> = unimplemented!();
+    let executor: Executor<SqlitePool> = unimplemented!();
 
-    let _query = Select::<'_, '_, User, _, _>::new(&executor)
+    let _query = Select::<'_, '_, _, User, _, ()>::new(&executor)
         // 1. Stress test IntoArgs<Projection> polymorphic tuple: standard column + aggregate function + alias extension
         .columns(User::name)
         .columns((
             User::id,
             Order::amount,
-            Count(User::id).alias(User::id),
+            Count(User::id)
+                .alias(User::id),
         ))
         // 2. Stress test JOIN boundaries: generic Model parameters + Column vs Column comparison
         .inner_join::<Order>(Order::user_id.eq(User::id))
@@ -63,28 +65,28 @@ fn compile_check_sqlite_load_endpoints() -> kova_core::Result<()> {
     let executor: Executor<kova_sqlite::types::SqlitePool> = unimplemented!();
 
     // Endpoint 1: Load main model
-    let query = Select::<'_, '_, User, _, _>::new(&executor);
+    let query = Select::<'_, '_, Sqlite, User, SqlitePool, ()>::new(&executor);
     let _users: Vec<User> = query.load()?;
 
     // Endpoint 2: Map to another model (Verify U: FromRow)
-    let query = Select::<'_, '_, User, _, _>::new(&executor);
+    let query = Select::<'_, '_, Sqlite, User, SqlitePool, ()>::new(&executor);
     let _orders: Vec<Order> = query.load_as::<Order>()?;
 
-    let query = Select::<'_, '_, User, _, _>::new(&executor);
+    let query = Select::<'_, '_, Sqlite, User, SqlitePool, ()>::new(&executor);
     let _orders: Vec<(User, Order)> = query.load_as::<(User, Order)>()?;
 
     // Endpoint 3: Extract scalar (Single column, triggers basic implementation of DecodeColumn)
-    let query = Select::<'_, '_, User, _, _>::new(&executor);
+    let query = Select::<'_, '_, Sqlite, User, SqlitePool, ()>::new(&executor);
     let _ids: Vec<i32> = query.load_in::<i32>()?;
 
     // Endpoint 4: Extract single column Option
-    let query = Select::<'_, '_, User, _, _>::new(&executor);
+    let query = Select::<'_, '_, Sqlite, User, SqlitePool, ()>::new(&executor);
     let _optional_amounts: Vec<Option<f64>> = query.load_in::<Option<f64>>()?;
 
     // Endpoint 5: Extract giant strongly-typed Tuple (Triggers bind_decode_columns_tuple! macro limits)
-    let query = Select::<'_, '_, User, _, _>::new(&executor);
-    let _complex_rows: Vec<(i32, String, Option<f64>, bool, Vec<u8>)> = query
-        .load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>()?;
+    let query = Select::<'_, '_, Sqlite, User, SqlitePool, ()>::new(&executor);
+    let _complex_rows: Vec<(i32, String, Option<f64>, Box<String>, bool, Vec<u8>)> = query
+        .load_in::<(i32, String, Option<f64>, Box<String>, bool, Vec<u8>)>()?;
 
     Ok(())
 }

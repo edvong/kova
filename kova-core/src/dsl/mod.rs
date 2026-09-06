@@ -23,7 +23,7 @@ pub use {
     assignment::{Assignment, StandardAssignment},
     column::Column,
     component::{Component, WithComponent},
-    condition::{Condition},
+    condition::{Condition, ConditionBuilder},
     operand::{Operand, IntoOperand},
     operator::{Operator, StandardOperator},
     rows::{InsertRows, IntoRows},
@@ -31,3 +31,8 @@ pub use {
 };
 
 
+pub trait EraseX {
+    type Erased;
+
+    fn erase_x(self) -> Self::Erased;
+}

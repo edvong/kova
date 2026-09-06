@@ -24,7 +24,7 @@ impl<T> Column<T> {
 }
 
 impl<T> Column<T> {
-    pub fn excluded<'a>(&self) -> kova_core::dsl::Assignment<'a, Sqlite> {
+    pub fn excluded<'a, X>(&self) -> kova_core::dsl::Assignment<'a, Sqlite, X> {
         kova_core::dsl::Assignment::from_ext(Assignment::ExcludedColumn(self.meta))
     }
 }

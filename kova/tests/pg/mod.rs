@@ -1,4 +1,4 @@
 #![cfg(feature = "pg")]
 
-mod query_checks;
-mod type_checks;
+pub mod query_checks;
+pub mod type_checks;

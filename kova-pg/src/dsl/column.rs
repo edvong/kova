@@ -23,7 +23,7 @@ impl<T> Column<T> {
 
 impl<T> Column<T> {
 
-    pub fn excluded<'a>(&self) -> kova_core::dsl::Assignment<'a, Postgres> {
+    pub fn excluded<'a, X>(&self) -> kova_core::dsl::Assignment<'a, Postgres, X> {
         kova_core::dsl::Assignment::from_ext(Assignment::ExcludedColumn(self.meta))
     }
 

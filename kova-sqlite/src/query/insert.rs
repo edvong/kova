@@ -4,7 +4,7 @@ use crate::query::{NoReturn, Returning};
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
-use kova_core::dsl::{Assignment, IntoArgs, IntoRows, Projection};
+use kova_core::dsl::{Assignment, EraseX, IntoArgs, IntoRows, Projection};
 use kova_core::statement::InsertStatement;
 use kova_core::types::{
     Database, ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model,
@@ -14,14 +14,14 @@ use std::marker::PhantomData;
 pub struct NoConflict;
 pub struct Conflicted;
 
-pub struct Insert<'c, 'a, T, E, DB: Database, R = NoReturn, C = NoConflict> {
+pub struct Insert<'c, 'a, DB: Database, T, E, X, R = NoReturn, C = NoConflict> {
     executor: &'c Executor<E>,
-    statement: InsertStatement<'a, T, DB>,
-    _marker: PhantomData<(R, C)>,
+    statement: InsertStatement<'a, DB, T>,
+    _marker: PhantomData<(X, R, C)>,
 }
 
-impl<'c, 'a, T, E> CoreInsert<'c, 'a, T, E, Sqlite>
-    for Insert<'c, 'a, T, E, Sqlite, NoReturn, NoConflict>
+impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, Sqlite, T, E, X>
+    for Insert<'c, 'a, Sqlite, T, E, X, NoReturn, NoConflict>
 where
     T: Model<DB = Sqlite>,
 {
@@ -37,15 +37,15 @@ where
     }
 }
 
-impl<'c, 'a, T, E, C> Insert<'c, 'a, T, E, Sqlite, NoReturn, C>
+impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
 where
     T: Model<DB = Sqlite>,
 {
-    pub fn returning<P>(mut self, cols: P) -> Insert<'c, 'a, T, E, Sqlite, Returning, C>
+    pub fn returning<P>(mut self, cols: P) -> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
     where
-        P: IntoArgs<Projection<'a, Sqlite>>,
+        P: IntoArgs<Projection<'a, Sqlite, X>>,
     {
-        self.statement.retuning(cols);
+        self.statement.retuning(cols.into_mapped_args(|p| p.erase_x()));
         Insert {
             executor: self.executor,
             statement: self.statement,
@@ -54,19 +54,17 @@ where
     }
 }
 
-impl<'c, 'a, T, E, R> Insert<'c, 'a, T, E, Sqlite, R, NoConflict>
+impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, NoConflict>
 where
     T: Model<DB = Sqlite>,
 {
-    pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, T, E, Sqlite, R, Conflicted>
+    pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
     where
         A: IntoArgs<ConflictTarget<'a>>,
     {
-        let c = self.statement.on_conflict_ext_mut_or(|| OnConflict::new());
-
-        let mut target_ast = Vec::new();
-        targets.append_args(&mut target_ast);
-        c.conflict(target_ast);
+        self.statement
+            .on_conflict_ext_mut_or(|| OnConflict::new())
+            .set_conflict(targets.into_args());
 
         Insert {
             executor: self.executor,
@@ -76,32 +74,31 @@ where
     }
 }
 
-impl<'c, 'a, T, E, R> Insert<'c, 'a, T, E, Sqlite, R, Conflicted>
+impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
 where
     T: Model<DB = Sqlite>,
 {
     pub fn do_nothing(mut self) -> Self {
-        let c = self.statement.on_conflict_ext_mut_or(|| OnConflict::new());
-        c.clear();
+        self.statement
+            .on_conflict_ext_mut_or(|| OnConflict::new())
+            .set_ignore();
 
         self
     }
 
-    pub fn do_update<A>(mut self, assignments: A) -> Self
+    pub fn update<A>(mut self, assignments: A) -> Self
     where
-        A: IntoArgs<Assignment<'a, Sqlite>>,
+        A: IntoArgs<Assignment<'a, Sqlite, X>>,
     {
-        let mut vec = Vec::new();
-        assignments.append_args(&mut vec);
-
-        let c = self.statement.on_conflict_ext_mut_or(|| OnConflict::new());
-        c.set(vec);
+        self.statement
+            .on_conflict_ext_mut_or(|| OnConflict::new())
+            .set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
 
         self
     }
 }
 
-impl<'c, 'a, T, E, C> Insert<'c, 'a, T, E, Sqlite, NoReturn, C>
+impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
 where
     T: Model<DB = Sqlite>,
     E: ExecutableSync<Native = rusqlite::Connection>,
@@ -111,7 +108,7 @@ where
     }
 }
 
-impl<'c, 'a, T, E, C> Insert<'c, 'a, T, E, Sqlite, Returning, C>
+impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
 where
     T: Model<DB = Sqlite>,
     E: ExecutableSync<Native = rusqlite::Connection>,
@@ -127,7 +124,7 @@ where
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
     where
-        for<'r> U: FromColumn<'r, Sqlite>,
+        for<'r> U: FromColumn<'r, Sqlite, X>,
     {
         fetch_rows(self.executor, self.statement.build(), |row| {
             U::extract(&row)

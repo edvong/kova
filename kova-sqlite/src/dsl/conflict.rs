@@ -4,28 +4,27 @@ use kova_core::dsl::{Assignment, Column, IntoArg, SingleArgMarker};
 use kova_core::types::ColumnMeta;
 
 pub struct OnConflict<'a> {
-    targets: Vec<ConflictTarget<'a>>,
-    assignments: Vec<Assignment<'a, Sqlite>>,
+    items: Vec<ConflictTarget<'a>>,
+    assignments: Vec<Assignment<'a, Sqlite, ()>>,
 }
 
 impl<'a> OnConflict<'a> {
     pub(crate) fn new() -> Self {
         Self {
-            targets: Vec::new(),
+            items: Vec::new(),
             assignments: Vec::new(),
         }
     }
 
-    pub fn conflict(&mut self, targets: Vec<ConflictTarget<'a>>) {
-        self.targets = targets;
+    pub fn set_conflict(&mut self, args: Vec<ConflictTarget<'a>>) {
+        self.items = args;
     }
 
-    pub fn clear(&mut self) {
+    pub fn set_ignore(&mut self) {
         self.assignments.clear();
     }
 
-    pub fn set(&mut self, assignments: Vec<Assignment<'a, Sqlite>>) {
-        self.assignments.clear();
+    pub fn set_assignment(&mut self, assignments: Vec<Assignment<'a, Sqlite, ()>>) {
         self.assignments = assignments;
     }
 }

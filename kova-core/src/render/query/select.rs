@@ -1,5 +1,5 @@
-use crate::statement::SelectStatement;
 use crate::render::{Render, RenderData};
+use crate::statement::SelectStatement;
 use crate::types::{Database, Model};
 
 pub struct SelectContext<'ctx, 'a, DB: Database> {
@@ -13,7 +13,7 @@ impl<'ctx, 'a, DB: Database> SelectContext<'ctx, 'a, DB> {
 }
 
 
-impl<'ctc, 'a, T, DB> Render<SelectContext<'ctc, 'a, DB>> for SelectStatement<'a, T, DB>
+impl<'ctc, 'a, DB, T> Render<SelectContext<'ctc, 'a, DB>> for SelectStatement<'a, DB, T>
 where T: Model,
       DB: Database
 {

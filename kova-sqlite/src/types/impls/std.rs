@@ -1,8 +1,30 @@
 use crate::types::{Sqlite, Value};
-use kova_core::types::{FromValue, IntoValue, ScalarMarker};
-use kova_core::{mark_scalars, Error, Result};
+use kova_core::types::{FromValue, IntoValue};
+use kova_core::{Error, Result, impl_native_extract_column};
 use std::borrow::Cow;
 use std::convert::TryFrom;
+
+impl_native_extract_column!(
+    Sqlite,
+    i8,
+    i16,
+    i32,
+    i64,
+    u8,
+    u16,
+    u32,
+    u64,
+    isize,
+    usize,
+    f32,
+    f64,
+    bool,
+    String,
+    // str,
+    Vec<u8>
+    // [u8]
+);
+// impl<const N: usize, X> ScalarMarker<Sqlite, X> for [u8; N] {}
 
 // ==========================================
 // Native Integer (Aligned with SQLite INTEGER)
@@ -72,7 +94,7 @@ macro_rules! impl_sqlite_int {
 }
 
 impl_sqlite_int!(i8, u8, i16, u16, i32, u32, u64, isize, usize);
-mark_scalars!(Sqlite, i8, u8, i16, u16, i32, u32, u64, isize, usize);
+
 
 // ==========================================
 // Floating-Point Numbers (Float / Real)
@@ -107,7 +129,6 @@ macro_rules! impl_sqlite_float {
 }
 
 impl_sqlite_float!(f32, f64);
-mark_scalars!(Sqlite, f32, f64);
 
 // ==========================================
 // Boolean Type
@@ -136,7 +157,6 @@ impl FromValue<Sqlite> for bool {
         }
     }
 }
-mark_scalars!(Sqlite, bool);
 
 // ==========================================
 // 5. Text Type (Strings)
@@ -159,7 +179,6 @@ impl FromValue<Sqlite> for String {
         }
     }
 }
-mark_scalars!(Sqlite, String, str);
 
 // &'a String: Convenience conversion for references
 impl<'a> IntoValue<'a, Sqlite> for &'a String {
@@ -197,7 +216,7 @@ impl FromValue<Sqlite> for Vec<u8> {
         }
     }
 }
-mark_scalars!(Sqlite, Vec<u8>, [u8]);
+
 
 
 // &'a Vec<u8>: Convenience conversion for references
@@ -244,4 +263,3 @@ impl<const N: usize> FromValue<Sqlite> for [u8; N] {
         }
     }
 }
-impl<const N: usize> ScalarMarker<Sqlite> for [u8; N] {}

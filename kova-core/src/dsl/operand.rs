@@ -1,8 +1,8 @@
 use crate::dsl::column::Column;
+use crate::dsl::function::Function;
 use crate::types::{ColumnMeta, Database, IntoValue};
 use crate::{Error, Result};
 use std::sync::Arc;
-use crate::dsl::function::Function;
 
 /// Represents a generic operand within a SQL expression AST (Abstract Syntax Tree).
 /// An operand can be a dynamically bound database value, a column reference,
@@ -35,7 +35,7 @@ impl<'a, DB: Database> From<Result<DB::Value<'a>>> for Operand<'a, DB> {
 /// A conversion trait used to normalize various types into a unified `Operand`.
 /// This trait enables the SQL DSL to seamlessly accept both explicit database columns
 /// and native Rust values in its expression methods.
-pub trait IntoOperand<'a, T, DB: Database> {
+pub trait IntoOperand<'a, Target, DB: Database> {
     fn into_operand(self) -> Operand<'a, DB>;
 }
 
@@ -55,8 +55,48 @@ impl<'a, T, DB: Database> IntoOperand<'a, T, DB> for Column<'a, T, DB> {
 /// or `&'a [u8]` are completely unnecessary and intentionally omitted.
 impl<'a, T, DB> IntoOperand<'a, T, DB> for T
 where
-    T: IntoValue<'a, DB>,
     DB: Database,
+    T: IntoValue<'a, DB>,
+{
+    fn into_operand(self) -> Operand<'a, DB> {
+        match self.into_value() {
+            Ok(v) => Operand::Value(v),
+            Err(e) => Operand::Error(Arc::new(e)),
+        }
+    }
+}
+
+impl<'a, 'b, T, DB> IntoOperand<'a, T, DB> for &'b T
+where
+    DB: Database,
+    &'b T: IntoValue<'a, DB>,
+{
+    fn into_operand(self) -> Operand<'a, DB> {
+        match self.into_value() {
+            Ok(v) => Operand::Value(v),
+            Err(e) => Operand::Error(Arc::new(e)),
+        }
+    }
+}
+
+
+// Allow String Column accept &str
+impl<'a, 'b, DB: Database> IntoOperand<'a, String, DB> for &'b str
+where
+    &'b str: IntoValue<'a, DB>,
+{
+    fn into_operand(self) -> Operand<'a, DB> {
+        match self.into_value() {
+            Ok(v) => Operand::Value(v),
+            Err(e) => Operand::Error(Arc::new(e)),
+        }
+    }
+}
+
+// Allow Vec<u8> Column accept &[u8]
+impl<'a, 'b, DB: Database> IntoOperand<'a, Vec<u8>, DB> for &'b [u8]
+where
+    &'b [u8]: IntoValue<'a, DB>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
         match self.into_value() {

@@ -27,112 +27,106 @@ impl<'a, T, DB: Database> FunctionBuilder<'a, DB> for Lower<Column<'a, T, DB>> {
     }
 }
 
-impl<'a, T, DB: Database> IntoArg<Projection<'a, DB>> for Lower<Column<'a, T, DB>> {
+impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Lower<Column<'a, T, DB>> {
     #[inline(always)]
-    fn into_arg(self) -> Projection<'a, DB> {
-        Projection {
-            expr: ProjectionExpr::Function(<Self as FunctionBuilder<'a, DB>>::build_func(self)),
-            alias: None,
-        }
+    fn into_arg(self) -> Projection<'a, DB, X> {
+        Projection::new(
+            ProjectionExpr::Function(<Self as FunctionBuilder<'a, DB>>::build_func(self)),
+            None,
+        )
     }
 }
 
-
-// impl_condition_builder!(Lower);
-// impl_scalar_builder!(Lower, Lower); // Struct Name, StandardFunction Enumerated Variant Name.
-// impl_function_into_arg!(Lower);
-
-
 impl<'a, T, DB: Database> Lower<Column<'a, T, DB>> {
-    pub fn eq<V, M>(self, v: V) -> Condition<'a, DB>
+    pub fn eq<V, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.binary_op(v, StandardOperator::Eq)
     }
 
-    pub fn ne<V, M>(self, v: V) -> Condition<'a, DB>
+    pub fn ne<V, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.binary_op(v, StandardOperator::Ne)
     }
 
-    pub fn gt<V, M>(self, v: V) -> Condition<'a, DB>
+    pub fn gt<V, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.binary_op(v, StandardOperator::Gt)
     }
 
-    pub fn ge<V, M>(self, v: V) -> Condition<'a, DB>
+    pub fn ge<V, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.binary_op(v, StandardOperator::Ge)
     }
 
-    pub fn lt<V, M>(self, v: V) -> Condition<'a, DB>
+    pub fn lt<V, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.binary_op(v, StandardOperator::Lt)
     }
 
-    pub fn le<V, M>(self, v: V) -> Condition<'a, DB>
+    pub fn le<V, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.binary_op(v, StandardOperator::Le)
     }
 
-    pub fn is_null(self) -> Condition<'a, DB> {
+    pub fn is_null<X>(self) -> Condition<'a, DB, X> {
         self.unary_op(StandardOperator::IsNull)
     }
 
-    pub fn is_not_null(self) -> Condition<'a, DB> {
+    pub fn is_not_null<X>(self) -> Condition<'a, DB, X> {
         self.unary_op(StandardOperator::IsNull)
     }
 
-    pub fn between<L, M1, U, M2>(self, lower: L, upper: U) -> Condition<'a, DB>
+    pub fn between<L, U, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
     where
-        L: IntoOperand<'a, M1, DB>,
-        U: IntoOperand<'a, M2, DB>,
+        L: IntoOperand<'a, T, DB>,
+        U: IntoOperand<'a, T, DB>,
     {
         self.ternary_op(lower, upper, StandardOperator::Between)
     }
 
-    pub fn not_between<L, M1, U, M2>(self, lower: L, upper: U) -> Condition<'a, DB>
+    pub fn not_between<L, U, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
     where
-        L: IntoOperand<'a, M1, DB>,
-        U: IntoOperand<'a, M2, DB>,
+        L: IntoOperand<'a, T, DB>,
+        U: IntoOperand<'a, T, DB>,
     {
         self.ternary_op(lower, upper, StandardOperator::NotBetween)
     }
 
-    pub fn in_list<I, V, M>(self, values: I) -> Condition<'a, DB>
+    pub fn in_list<I, V, X>(self, values: I) -> Condition<'a, DB, X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.list_op(values, StandardOperator::In)
     }
 
-    pub fn not_in<I, V, M>(self, values: I) -> Condition<'a, DB>
+    pub fn not_in<I, V, X>(self, values: I) -> Condition<'a, DB, X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, M, DB>,
+        V: IntoOperand<'a, T, DB>,
     {
         self.list_op(values, StandardOperator::NotIn)
     }
 
-    pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
+    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
         self.build_alias(col)
     }
-    pub fn asc(self) -> Ordering<'a, DB> {
+    pub fn asc<X>(self) -> Ordering<'a, DB, X> {
         self.build_asc()
     }
-    pub fn desc(self) -> Ordering<'a, DB> {
+    pub fn desc<X>(self) -> Ordering<'a, DB, X> {
         self.build_desc()
     }
 }

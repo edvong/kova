@@ -1,3 +1,4 @@
+use std::marker::PhantomData;
 use crate::dsl::function::{Function, Quantifier};
 use crate::dsl::{
     Column, Direction, OrderOperand, Ordering, Projection, ProjectionExpr, StandardOperand,
@@ -12,28 +13,30 @@ pub trait FunctionBuilder<'a, DB: Database>: Sized {
     fn build_func(self) -> Function<'a, DB>;
 
     #[inline(always)]
-    fn build_alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
-        Projection {
-            expr: ProjectionExpr::Function(self.build_func()),
-            alias: Some(col.meta()),
-        }
+    fn build_alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
+        Projection::new(
+            ProjectionExpr::Function(self.build_func()),
+            Some(col.meta()),
+        )
     }
 
     #[inline(always)]
-    fn build_asc(self) -> Ordering<'a, DB> {
+    fn build_asc<X>(self) -> Ordering<'a, DB, X> {
         Ordering {
             operand: OrderOperand::from_std(StandardOperand::Function(self.build_func())),
             direction: Some(Direction::Asc),
             nulls: None,
+            _marker: PhantomData,
         }
     }
 
     #[inline(always)]
-    fn build_desc(self) -> Ordering<'a, DB> {
+    fn build_desc<X>(self) -> Ordering<'a, DB, X> {
         Ordering {
             operand: OrderOperand::from_std(StandardOperand::Function(self.build_func())),
             direction: Some(Direction::Desc),
             nulls: None,
+            _marker: PhantomData,
         }
     }
 }

@@ -1,5 +1,5 @@
 use crate::Result;
-use crate::dsl::{IntoArg, IntoArgs, SingleArgMarker};
+use crate::dsl::{IntoArg, SingleArgMarker};
 use crate::types::{Database, IntoValue};
 
 pub struct Bind<'a, DB: Database>(Result<DB::Value<'a>>);
@@ -13,12 +13,8 @@ impl<'a, DB: Database> BindClause<'a, DB> {
         Self { params: Vec::new() }
     }
 
-    pub fn bind<A>(&mut self, args: A)
-    where
-        A: IntoArgs<Bind<'a, DB>>,
-    {
-        self.params.clear();
-        args.append_args(&mut self.params);
+    pub fn set(&mut self, args: Vec<Bind<'a, DB>>) {
+        self.params = args;
     }
 
     pub fn to_values(self) -> Result<Vec<DB::Value<'a>>> {

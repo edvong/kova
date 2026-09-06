@@ -1,44 +1,46 @@
+use std::marker::PhantomData;
+use crate::dsl::{Column, EraseX};
 use crate::dsl::arg::{IntoArg, SingleArgMarker};
 use crate::dsl::function::Function;
-use crate::dsl::{Column, IntoArgs};
 use crate::types::{ColumnMeta, Database};
 
 pub struct ProjectionClause<'a, DB: Database> {
-    items: Vec<Projection<'a, DB>>,
+    items: Vec<Projection<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> ProjectionClause<'a, DB> {
     pub(crate) fn new() -> Self {
         Self { items: Vec::new() }
     }
-    pub(crate) fn from(items: Vec<Projection<'a, DB>>) -> Self {
+    pub(crate) fn from(items: Vec<Projection<'a, DB, ()>>) -> Self {
         Self { items }
     }
-    pub fn set<I>(&mut self, args: I)
-    where
-        I: IntoArgs<Projection<'a, DB>>,
-    {
-        self.items.clear();
-        self.extend(args);
-    }
-
-    pub fn extend<I>(&mut self, args: I)
-    where
-        I: IntoArgs<Projection<'a, DB>>,
-    {
-        self.items.reserve(args.size_hint());
-        args.append_args(&mut self.items);
+    pub fn set(&mut self, args: Vec<Projection<'a, DB, ()>>) {
+        self.items = args;
     }
 }
 
-pub struct Projection<'a, DB: Database> {
+pub struct Projection<'a, DB: Database, X> {
     pub(crate) expr: ProjectionExpr<'a, DB>,
     pub(crate) alias: Option<ColumnMeta>,
+    _marker: PhantomData<X>,
 }
 
-impl<'a, DB: Database> Projection<'a, DB> {
+impl<'a, DB: Database, X> EraseX for Projection<'a, DB, X> {
+    type Erased = Projection<'a, DB, ()>;
+
+    fn erase_x(self) -> Self::Erased {
+        Projection {
+            expr: self.expr, 
+            alias: self.alias,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<'a, DB: Database, X> Projection<'a, DB, X> {
     pub fn new(expr: ProjectionExpr<'a, DB>, alias: Option<ColumnMeta>) -> Self {
-        Self { expr, alias }
+        Self { expr, alias, _marker: PhantomData }
     }
 }
 
@@ -47,16 +49,22 @@ pub enum ProjectionExpr<'a, DB: Database> {
     Function(Function<'a, DB>),
 }
 
-impl<'a, DB: Database> SingleArgMarker for Projection<'a, DB> {}
+impl<'a, DB: Database, X> SingleArgMarker for Projection<'a, DB, X> {}
 
-impl<'a, T, DB: Database> IntoArg<Projection<'a, DB>> for Column<'a, T, DB> {
-    fn into_arg(self) -> Projection<'a, DB> {
-        Projection { expr: ProjectionExpr::Column(self.meta), alias: None }
+impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<'a, T, DB> {
+    fn into_arg(self) -> Projection<'a, DB, X> {
+        Projection::new(
+            ProjectionExpr::Column(self.meta),
+            None,
+        )
     }
 }
 
-impl<'a, DB: Database> IntoArg<Projection<'a, DB>> for Function<'a, DB> {
-    fn into_arg(self) -> Projection<'a, DB> {
-        Projection { expr: ProjectionExpr::Function(self), alias: None }
+impl<'a, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Function<'a, DB> {
+    fn into_arg(self) -> Projection<'a, DB, X> {
+        Projection::new (
+            ProjectionExpr::Function(self),
+            None,
+        )
     }
 }

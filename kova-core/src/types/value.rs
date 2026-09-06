@@ -2,8 +2,7 @@ use crate::Result;
 use crate::types::Database;
 
 pub trait IntoValue<'a, DB: Database> {
-    fn into_value(
-        self) -> Result<DB::Value<'a>>;
+    fn into_value(self) -> Result<DB::Value<'a>>;
 }
 
 pub trait FromValue<DB: Database>: Sized {

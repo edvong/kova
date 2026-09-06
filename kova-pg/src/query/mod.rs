@@ -7,7 +7,7 @@ mod exec;
 
 use crate::query::insert::NoConflict;
 use crate::types::Postgres;
-use kova_core::types::{Model, Query as CoreQuery};
+use kova_core::types::{Database, Model, Query as CoreQuery};
 
 pub use crate::query::select::Select;
 pub use crate::query::insert::Insert;
@@ -21,29 +21,29 @@ pub struct Returning;
 pub struct Query;
 
 impl<'a> CoreQuery<'a, Postgres> for Query {
-    type Select<'c, T: Model<DB = Postgres>, E> = Select<'c, 'a, T, E, Postgres>
+    type Select<'c, T: Model<DB = Postgres>, E, X> = Select<'c, 'a, Postgres, T, E, X>
     where
         'a: 'c,
         E: 'c;
 
-    type Insert<'c, T, E> = Insert<'c, 'a, T, E, Postgres, NoReturn, NoConflict>
+    type Insert<'c, T, E, X> = Insert<'c, 'a, Postgres, T, E, X, NoReturn, NoConflict>
     where
         T: Model<DB = Postgres> + 'a,
         'a: 'c,
         E: 'c;
 
-    type Update<'c, T: Model<DB = Postgres>, E> = Update<'c, 'a, T, E, Postgres, NoReturn>
+    type Update<'c, T: Model<DB = Postgres>, E, X> = Update<'c, 'a, Postgres, T, E, X, NoReturn>
     where
         'a: 'c,
         E: 'c;
 
-    type Delete<'c, T: Model<DB = Postgres>, E> = Delete<'c, 'a, T, E, Postgres, NoReturn>
+    type Delete<'c, T: Model<DB = Postgres>, E, X> = Delete<'c, 'a, Postgres, T, E, X, NoReturn>
     where
         'a: 'c,
         E: 'c;
-    type Statement<'c, E> = Statement<'c, 'a, E>
+    
+    type Statement<'c, E, X> = Statement<'c, 'a, Postgres, E, X>
     where
         'a: 'c,
         E: 'c;
-
 }

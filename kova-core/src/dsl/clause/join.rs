@@ -18,7 +18,7 @@ impl<'a, DB: Database> JoinClause<'a, DB> {
 pub struct Join<'a, DB: Database> {
     pub typ: JoinType,
     pub target_table: &'static str,
-    pub on: Condition<'a, DB>,
+    pub on: Condition<'a, DB, ()>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

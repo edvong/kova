@@ -1,7 +1,7 @@
 use crate::types::Postgres;
 use crate::types::value::Value;
-use kova_core::{bind_decode_columns_tuple, Error};
-use kova_core::types::{ColumnIndex, FromValue, GetColumn, Row as CoreRow};
+use kova_core::types::{ColumnIndex, Row as CoreRow};
+use kova_core::{Error, bind_extract_columns_tuple};
 
 /// A lightweight, zero-copy wrapper around `tokio_postgres::Row`.
 ///
@@ -42,18 +42,18 @@ impl<'a> CoreRow<'a, Postgres> for Row<'a> {
     }
 }
 
-/// Provides strongly-typed column extraction capabilities by index.
-///
-/// The target type `T` must implement `FromValue<Postgres>`, which acts as the
-/// deserialization boundary to safely convert raw database bytes into native Rust structures.
-impl<'a, T: FromValue<Postgres>> GetColumn<'a, T> for Row<'a> {
-    fn get_column(&self, idx: usize) -> kova_core::Result<T> {
-        // Double mapping error handling to align with the core trait signature
-        let value = self.get_value(idx).map_err(|e| Error::Database(Box::new(e)))?;
-        T::from_value(value)
-    }
-}
+// /// Provides strongly-typed column extraction capabilities by index.
+// ///
+// /// The target type `T` must implement `FromValue<Postgres>`, which acts as the
+// /// deserialization boundary to safely convert raw database bytes into native Rust structures.
+// impl<'a, T: FromValue<Postgres>> GetColumn<'a, T> for Row<'a> {
+//     fn get_column(&self, idx: usize) -> kova_core::Result<T> {
+//         // Double mapping error handling to align with the core trait signature
+//         let value = self.get_value(idx).map_err(|e| Error::Database(Box::new(e)))?;
+//         T::from_value(value)
+//     }
+// }
 
 // Macro invocation that automatically generates tuple-based extraction implementations
 // (allowing `load_in::<String>()`, `load_in::<(i32, String)>()`).
-bind_decode_columns_tuple!(Postgres);
+bind_extract_columns_tuple!(Postgres);

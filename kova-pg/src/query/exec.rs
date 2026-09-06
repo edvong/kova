@@ -1,26 +1,26 @@
 use crate::types::{Postgres, Row};
 use deadpool_postgres::GenericClient;
 use kova_core::database::Executor;
-use kova_core::statement::RawRenderData;
+use kova_core::statement::StatementPayload;
 use kova_core::types::ExecutableAsync;
 use kova_core::{Error, Result};
 use tokio_postgres::types::ToSql;
 
 pub(crate) async fn execute_affected<'a, E, I, D>(
     executor: &Executor<E>,
-    data_iter: I,
+    payload: I,
 ) -> Result<u64>
 where
     E: ExecutableAsync,
     E::Native: GenericClient + Sync,
     I: IntoIterator<Item = D> + Send,
-    D: Into<RawRenderData<'a, Postgres>>,
+    D: Into<StatementPayload<'a, Postgres>>,
 {
     executor
         .with_conn_async(async move |native| {
             let mut total_affected = 0;
 
-            for data in data_iter {
+            for data in payload {
                 let raw_data = data.into();
                 let mut params: Vec<&(dyn ToSql + Sync)> =
                     Vec::with_capacity(raw_data.params.len());
@@ -41,21 +41,21 @@ where
 
 pub(crate) async fn fetch_rows<'a, E, I, D, U, F>(
     executor: &Executor<E>,
-    data_iter: I,
+    payload: I,
     mut f: F,
 ) -> Result<Vec<U>>
 where
     E: ExecutableAsync,
     E::Native: GenericClient + Sync,
     I: IntoIterator<Item = D> + Send,
-    D: Into<RawRenderData<'a, Postgres>>,
+    D: Into<StatementPayload<'a, Postgres>>,
     F: FnMut(Row<'_>) -> Result<U> + Send,
 {
     executor
         .with_conn_async(async move |native| {
             let mut result = Vec::new();
 
-            for data in data_iter {
+            for data in payload {
                 let raw_data = data.into();
                 let mut params: Vec<&(dyn ToSql + Sync)> =
                     Vec::with_capacity(raw_data.params.len());

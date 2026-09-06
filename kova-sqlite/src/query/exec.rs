@@ -1,19 +1,19 @@
 use crate::types::{Row, Sqlite};
 use kova_core::database::Executor;
-use kova_core::statement::RawRenderData;
+use kova_core::statement::StatementPayload;
 use kova_core::types::ExecutableSync;
 use kova_core::{Error, Result};
 
-pub(crate) fn execute_affected<'a, E, I, D>(executor: &Executor<E>, data_iter: I) -> Result<u64>
+pub(crate) fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) -> Result<u64>
 where
     E: ExecutableSync<Native = rusqlite::Connection>,
     I: IntoIterator<Item = D>,
-    D: Into<RawRenderData<'a, Sqlite>>,
+    D: Into<StatementPayload<'a, Sqlite>>,
 {
     executor.with_conn_sync(|native| {
         let mut total_affected = 0;
 
-        for data in data_iter {
+        for data in payload {
             let raw_data = data.into();
             let mut stmt = native
                 .prepare(raw_data.sql.as_ref())
@@ -30,19 +30,19 @@ where
 
 pub(crate) fn fetch_rows<'a, E, I, D, U, F>(
     executor: &Executor<E>,
-    data_iter: I,
+    payload: I,
     mut f: F,
 ) -> Result<Vec<U>>
 where
     E: ExecutableSync<Native = rusqlite::Connection>,
     I: IntoIterator<Item = D>,
-    D: Into<RawRenderData<'a, Sqlite>>,
+    D: Into<StatementPayload<'a, Sqlite>>,
     F: FnMut(Row<'_>) -> Result<U>,
 {
     executor.with_conn_sync(|native| {
         let mut result = Vec::with_capacity(32);
 
-        for data in data_iter {
+        for data in payload {
             let raw_data = data.into();
             let mut stmt = native
                 .prepare(raw_data.sql.as_ref())

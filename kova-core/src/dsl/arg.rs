@@ -16,24 +16,31 @@ impl<A> IntoArg<A> for A {
     }
 }
 
-/// Protocol for providing arguments in batch.
-/// Designed for maximum performance: it intentionally avoids methods like `into_vec()`
-/// to prevent unnecessary heap allocations, opting instead to append directly 
-/// to an existing buffer.
-pub trait IntoArgs<A> {
-    /// Returns a hint of the number of arguments to be appended.
-    /// Used to pre-allocate capacity in the target vector to avoid reallocation during pushes.
+pub trait IntoArgs<A>: Sized {
     fn size_hint(&self) -> usize;
 
-    /// Appends the arguments directly into the underlying storage of the Bundle.
-    fn append_args(self, out: &mut Vec<A>);
+    fn for_each_arg<F>(self, f: &mut F)
+    where
+        F: FnMut(A);
+
+    #[inline(always)]
+    fn into_args(self) -> Vec<A> {
+        let mut vec = Vec::with_capacity(self.size_hint());
+        self.for_each_arg(&mut |item| vec.push(item));
+        vec
+    }
+
+    #[inline(always)]
+    fn into_mapped_args<B, M>(self, mut map_fn: M) -> Vec<B>
+    where
+        M: FnMut(A) -> B,
+    {
+        let mut vec = Vec::with_capacity(self.size_hint());
+        self.for_each_arg(&mut |item| vec.push(map_fn(item)));
+        vec
+    }
 }
 
-// ==========================================
-// Blanket Impl: Automatic Batch Support for Single Args
-// ==========================================
-// Using the `IsSingleArg` marker trait, we can safely implement `IntoArgs` 
-// for any single argument type without conflicting with Tuple or Vec implementations.
 impl<T, A> IntoArgs<A> for T
 where
     T: IntoArg<A> + SingleArgMarker,
@@ -42,37 +49,34 @@ where
         1
     }
 
-    fn append_args(self, out: &mut Vec<A>) {
-        out.push(self.into_arg()); // Appends directly with zero allocation.
+    #[inline(always)]
+    fn for_each_arg<F>(self, f: &mut F)
+    where
+        F: FnMut(A)
+    {
+        f(self.into_arg());
     }
 }
 
-// ==========================================
-// Escape Hatch: Specialized Implementation for Vec
-// ==========================================
-// Allows users to pass dynamically sized slices or vectors of arguments.
+
 impl<A> IntoArgs<A> for Vec<A> {
+    #[inline(always)]
     fn size_hint(&self) -> usize {
         self.len()
     }
 
-    fn append_args(mut self, out: &mut Vec<A>) {
-        // Optimization: If the output buffer is empty, we perform a highly efficient 
-        // O(1) pointer swap instead of copying the elements over.
-        if out.is_empty() {
-            std::mem::swap(out, &mut self);
-        } else {
-            out.extend(self); // Fallback to O(N) extension if the buffer already has data.
+    #[inline(always)]
+    fn for_each_arg<F>(self, f: &mut F)
+    where
+        F: FnMut(A)
+    {
+        for item in self {
+            f(item);
         }
     }
 }
 
-// ==========================================
-// DSL Core: Macro-Expanded Implementations for Tuples
-// ==========================================
-// Rust lacks variadic generics. This macro unrolls tuple implementations at compile time,
-// enabling a highly ergonomic DSL where users can pass arbitrary amounts of arguments 
-// simply by grouping them in a tuple (e.g., `(arg1, arg2, arg3)`).
+
 macro_rules! impl_into_args_for_tuple {
     ( $($T:ident),+ ) => {
         impl<A, $($T),+> IntoArgs<A> for ($($T,)+)
@@ -86,12 +90,14 @@ macro_rules! impl_into_args_for_tuple {
                 0 $( + $T.size_hint() )+
             }
 
-            fn append_args(self, out: &mut Vec<A>) {
+            fn for_each_arg<F>(self, f: &mut F)
+            where
+                F: FnMut(A)
+            {
                 #[allow(non_snake_case)]
                 let ( $($T,)+ ) = self;
-                // Sequentially delegates the append operation to each tuple element.
                 $(
-                    $T.append_args(out);
+                    $T.for_each_arg(f);
                 )+
             }
         }

@@ -1,3 +1,4 @@
+mod codec;
 mod conn;
 mod db;
 mod ext;
@@ -7,9 +8,11 @@ mod mode;
 mod model;
 mod query;
 mod row;
+mod row_macros;
 mod value;
 
 pub use {
+    codec::{Decode, DecodeExt, Encode},
     conn::{
         Connection, ConnectionAsync, ConnectionSync, Executable, ExecutableAsync, ExecutableSync,
     },
@@ -19,7 +22,7 @@ pub use {
     meta::ColumnMeta,
     mode::{Async, Mode, Sync},
     model::{FromRow, Model},
-    query::{Query, Select, Insert, Update, Delete, Statement},
-    row::{ColumnIndex, GetColumn, Row, ScalarMarker, FromColumn},
+    query::{Delete, Insert, Query, Select, Statement, Update},
+    row::{ColumnIndex, FromColumn, Row},
     value::{FromValue, IntoValue, Value},
 };

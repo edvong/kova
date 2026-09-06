@@ -1,5 +1,3 @@
-#![cfg(feature = "pg")]
-
 use kova::types::Engine;
 use kova_core::types::{FromValue, IntoValue};
 

@@ -1,11 +1,12 @@
 use crate::dsl::arg::{IntoArg, SingleArgMarker};
-use crate::dsl::function::Function;
-use crate::dsl::{Column, Component, Condition, IntoArgs};
 use crate::dsl::component::WithComponent;
+use crate::dsl::function::Function;
+use crate::dsl::{Column, Component, Condition, EraseX};
 use crate::types::{ColumnMeta, Database, Extension};
+use std::marker::PhantomData;
 
 pub struct OrderByClause<'a, DB: Database> {
-    items: Vec<Ordering<'a, DB>>,
+    items: Vec<Ordering<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> OrderByClause<'a, DB> {
@@ -13,34 +14,37 @@ impl<'a, DB: Database> OrderByClause<'a, DB> {
         Self { items: Vec::new() }
     }
 
-    pub(crate) fn from(ordering: Vec<Ordering<'a, DB>>) -> Self {
+    pub(crate) fn from(ordering: Vec<Ordering<'a, DB, ()>>) -> Self {
         Self { items: ordering }
     }
 
-    pub fn set<I>(&mut self, args: I)
-    where
-        I: IntoArgs<Ordering<'a, DB>>
-    {
-        self.items.clear();
-        self.extend(args);
-    }
-
-    pub fn extend<I>(&mut self, args: I)
-    where
-        I: IntoArgs<Ordering<'a, DB>>
-    {
-        self.items.reserve(args.size_hint());
-        args.append_args(&mut self.items);
+    pub fn set(&mut self, args: Vec<Ordering<'a, DB, ()>>) {
+        self.items = args;
     }
 }
 
-pub struct Ordering<'a, DB: Database> {
+pub struct Ordering<'a, DB: Database, X> {
     pub(crate) operand: OrderOperand<'a, DB>,
     pub(crate) direction: Option<Direction>,
     pub(crate) nulls: Option<NullsOrder>,
+    pub(crate) _marker: PhantomData<X>,
 }
 
-impl<'a, DB: Database> Ordering<'a, DB> {
+impl<'a, DB: Database, X> EraseX for Ordering<'a, DB, X> {
+    type Erased = Ordering<'a, DB, ()>;
+
+    fn erase_x(self) -> Self::Erased {
+        Ordering {
+            operand: self.operand,
+            direction: self.direction,
+            nulls: self.nulls,
+            _marker: PhantomData,
+        }
+    }
+}
+
+
+impl<'a, DB: Database, X> Ordering<'a, DB, X> {
     pub fn nulls_first(mut self) -> Self {
         self.nulls = Some(NullsOrder::First);
         self
@@ -80,7 +84,7 @@ impl<'a, DB: Database> WithComponent for OrderOperand<'a, DB> {
 pub enum StandardOperand<'a, DB: Database> {
     Column(ColumnMeta),
     Function(Function<'a, DB>),
-    Condition(Condition<'a, DB>),
+    Condition(Condition<'a, DB, ()>),
 }
 
 pub enum Direction {
@@ -93,22 +97,22 @@ pub enum NullsOrder {
     Last,
 }
 
-impl<'a, DB: Database> SingleArgMarker for Ordering<'a, DB> {}
+impl<'a, DB: Database, X> SingleArgMarker for Ordering<'a, DB, X> {}
 
-impl<'a, T, DB: Database> IntoArg<Ordering<'a, DB>> for Column<'a, T, DB> {
-    fn into_arg(self) -> Ordering<'a, DB> {
-        self.asc()
+impl<'a, T, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Column<'a, T, DB> {
+    fn into_arg(self) -> Ordering<'a, DB, X> {
+        self.asc::<X>()
     }
 }
 
-impl<'a, DB: Database> IntoArg<Ordering<'a, DB>> for Function<'a, DB> {
-    fn into_arg(self) -> Ordering<'a, DB> {
-        self.asc()
+impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Function<'a, DB> {
+    fn into_arg(self) -> Ordering<'a, DB, X> {
+        self.asc::<X>()
     }
 }
 
-impl<'a, DB: Database> IntoArg<Ordering<'a, DB>> for Condition<'a, DB> {
-    fn into_arg(self) -> Ordering<'a, DB> {
+impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Condition<'a, DB, X> {
+    fn into_arg(self) -> Ordering<'a, DB, X> {
         self.asc()
     }
 }

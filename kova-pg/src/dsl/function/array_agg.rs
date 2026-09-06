@@ -1,22 +1,13 @@
-use crate::dsl::Function;
+#![allow(clippy::wrong_self_convention)]
+
 use crate::types::Postgres;
-use kova_core::dsl::func::Function as CoreFunction;
+use kova_core::dsl::func::{Function as CoreFunction, FunctionBuilder};
 use kova_core::dsl::{
-    Column, Condition, GroupBy, IntoArg, IntoOperand, Operand, Operator, Ordering, Projection,
+    Column, Condition, ConditionBuilder, EraseX, IntoOperand, Operand, Ordering, Projection,
     ProjectionExpr, StandardOperator, WithComponent,
 };
 use kova_core::types::ColumnMeta;
-
-/// Builder for the PostgreSQL `array_agg()` aggregate function.
-///
-/// Constructs an AST node that translates to variants of the `array_agg` SQL function,
-/// fully supporting `DISTINCT`, intra-aggregate `ORDER BY`, and the `FILTER` clause.
-pub struct ArrayAgg<'a> {
-    meta: ColumnMeta,
-    distinct: bool,
-    order_by: Vec<Ordering<'a, Postgres>>,
-    filter: Option<Box<Condition<'a, Postgres>>>,
-}
+use std::marker::PhantomData;
 
 // array_agg(x)
 // array_agg(ALL x)
@@ -26,228 +17,205 @@ pub struct ArrayAgg<'a> {
 // array_agg(x) FILTER (WHERE ...)
 // array_agg(DISTINCT x ORDER BY y) FILTER (WHERE ...)
 
-impl<'a> ArrayAgg<'a> {
-    /// Initializes a new `array_agg` function call targeting the specified column.
-    /// Translates to: `array_agg(column)`
-    pub fn new<T>(target: Column<'a, T, Postgres>) -> Self {
-        Self {
-            meta: target.meta(),
+pub struct ArrayAggState<'a, X> {
+    pub(crate) meta: ColumnMeta,
+    pub(crate) distinct: bool,
+    pub(crate) order_by: Vec<Ordering<'a, Postgres, ()>>,
+    pub(crate) filter: Option<Box<Condition<'a, Postgres, ()>>>,
+    pub(crate) _marker: PhantomData<X>,
+}
+
+impl<'a, X> EraseX for ArrayAggState<'a, X> {
+    type Erased = ArrayAggState<'a, ()>;
+
+    fn erase_x(self) -> Self::Erased {
+        ArrayAggState {
+            meta: self.meta,
+            distinct: self.distinct,
+            order_by: self.order_by,
+            filter: self.filter,
+            _marker: PhantomData,
+        }
+    }
+}
+
+pub trait IntoArrayAggState<'a> {
+    type X;
+    fn into_state(self) -> ArrayAggState<'a, Self::X>;
+}
+
+impl<'a, U> IntoArrayAggState<'a> for Column<'a, U, Postgres> {
+    type X = ();
+    fn into_state(self) -> ArrayAggState<'a, ()> {
+        ArrayAggState {
+            meta: self.meta(),
             distinct: false,
             order_by: vec![],
             filter: None,
+            _marker: PhantomData,
         }
     }
-
-    /// Adds the `DISTINCT` keyword to the aggregate expression.
-    /// Translates to: `array_agg(DISTINCT column)`
-    pub fn distinct(mut self) -> Self {
-        self.distinct = true;
-        self
-    }
-
-    /// Appends an `ORDER BY` clause inside the aggregate function.
-    /// Translates to: `array_agg(column ORDER BY ...)`
-    pub fn order_by(mut self, ordering: Ordering<'a, Postgres>) -> Self {
-        self.order_by.push(ordering);
-        self
-    }
-
-    /// Attaches a `FILTER (WHERE ...)` clause to selectively aggregate rows.
-    /// Translates to: `array_agg(...) FILTER (WHERE condition)`
-    pub fn filter(mut self, condition: Condition<'a, Postgres>) -> Self {
-        self.filter = Some(Box::new(condition));
-        self
-    }
 }
 
-/// Comparison operators for the aggregate function.
-/// These methods allow the `array_agg` expression to be used directly in
-/// conditional clauses (e.g., `HAVING array_agg(id) = '{1, 2}'`).
-impl<'a> ArrayAgg<'a> {
-    /// Creates an equality (`=`) condition.
-    pub fn eq<V, M>(&self, v: V) -> Condition<'a, Postgres>
-    where
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Eq(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-    }
-
-    /// Creates an inequality (`!=` or `<>`) condition.
-    pub fn ne<V, M>(&self, v: V) -> Condition<'a, Postgres>
-    where
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Ne(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-    }
-
-    /// Creates a greater-than (`>`) condition.
-    pub fn gt<V, M>(&self, v: V) -> Condition<'a, Postgres>
-    where
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Gt(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-    }
-
-    /// Creates a greater-than-or-equal-to (`>=`) condition.
-    pub fn ge<V, M>(&self, v: V) -> Condition<'a, Postgres>
-    where
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Ge(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-    }
-
-    /// Creates a less-than (`<`) condition.
-    pub fn lt<V, M>(&self, v: V) -> Condition<'a, Postgres>
-    where
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Lt(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-    }
-
-    /// Creates a less-than-or-equal-to (`<=`) condition.
-    pub fn le<V, M>(&self, v: V) -> Condition<'a, Postgres>
-    where
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Le(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-    }
-
-    /// Creates an `IS NULL` condition.
-    pub fn is_null(&self) -> Condition<'a, Postgres> {
-        Condition::Op(Operator::from_std(StandardOperator::IsNull(
-            Operand::Column(self.meta),
-        )))
-    }
-
-    /// Creates an `IS NOT NULL` condition.
-    pub fn is_not_null(&self) -> Condition<'a, Postgres> {
-        Condition::Op(Operator::from_std(StandardOperator::IsNotNull(
-            Operand::Column(self.meta),
-        )))
-    }
-
-    /// Creates a `BETWEEN` condition.
-    pub fn between<L, M1, U, M2>(&self, lower: L, upper: U) -> Condition<'a, Postgres>
-    where
-        L: IntoOperand<'a, M1, Postgres>,
-        U: IntoOperand<'a, M2, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::Between(
-            Operand::Column(self.meta),
-            lower.into_operand(),
-            upper.into_operand(),
-        )))
-    }
-
-    /// Creates a `NOT BETWEEN` condition.
-    pub fn not_between<L, M1, U, M2>(&self, lower: L, upper: U) -> Condition<'a, Postgres>
-    where
-        L: IntoOperand<'a, M1, Postgres>,
-        U: IntoOperand<'a, M2, Postgres>,
-    {
-        Condition::Op(Operator::from_std(StandardOperator::NotBetween(
-            Operand::Column(self.meta),
-            lower.into_operand(),
-            upper.into_operand(),
-        )))
-    }
-
-    /// Creates an `IN (...)` condition.
-    pub fn in_list<I, V, M>(&self, values: I) -> Condition<'a, Postgres>
-    where
-        I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        let values = values
-            .into_iter()
-            .map(|value| value.into_operand())
-            .collect();
-        Condition::Op(Operator::from_std(StandardOperator::In(
-            Operand::Column(self.meta),
-            values,
-        )))
-    }
-
-    /// Creates a `NOT IN (...)` condition.
-    pub fn not_in<I, V, M>(&self, values: I) -> Condition<'a, Postgres>
-    where
-        I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, M, Postgres>,
-    {
-        let values = values
-            .into_iter()
-            .map(|value| value.into_operand())
-            .collect();
-        Condition::Op(Operator::from_std(StandardOperator::NotIn(
-            Operand::Column(self.meta),
-            values,
-        )))
-    }
-}
-
-impl<'a> ArrayAgg<'a> {
-    /// Finalizes the builder state, consuming the instance and transforming it
-    /// into a Core AST `Function` node that the base query engine understands.
-    pub fn into_func(self) -> CoreFunction<'a, Postgres> {
-        CoreFunction::from_ext(Function::ArrayAgg(self))
-    }
-
-    /// Convenience wrapper: Converts the aggregate function directly into an aliased `Projection`.
-    /// Similar in behavior to standard aggregate bindings (e.g., `Count::alias()`).
-    pub fn alias<T>(self, col: Column<'a, T, Postgres>) -> Projection<'a, Postgres> {
-        let func = self.into_func();
-        Projection::new(ProjectionExpr::Function(func), Some(col.meta()))
+impl<'a, X> IntoArrayAggState<'a> for ArrayAggState<'a, X> {
+    type X = X;
+    fn into_state(self) -> ArrayAggState<'a, X> {
+        self
     }
 }
 
 // ==========================================
-// Trait Implementations for AST Integration
-// ==========================================
 
-/// Allows the dialect-specific function to be used dynamically as a general operand.
-impl<'a> IntoOperand<'a, ArrayAgg<'a>, Postgres> for ArrayAgg<'a> {
-    fn into_operand(self) -> Operand<'a, Postgres> {
-        Operand::Function(self.into_func())
+pub struct ArrayAgg<T>(pub T);
+
+impl<'a, T> ArrayAgg<T>
+where
+    T: IntoArrayAggState<'a>,
+{
+    // --- State Transition (Keep the current T::X unchanged) ---
+
+    pub fn distinct(self) -> ArrayAgg<ArrayAggState<'a, T::X>> {
+        let mut state = self.0.into_state();
+        state.distinct = true;
+        ArrayAgg(state)
+    }
+
+    pub fn order_by(
+        self,
+        ordering: Ordering<'a, Postgres, T::X>,
+    ) -> ArrayAgg<ArrayAggState<'a, T::X>> {
+        let mut state = self.0.into_state();
+        state.order_by.push(ordering.erase_x());
+        ArrayAgg(state)
+    }
+
+    pub fn filter<NewX>(
+        self,
+        cond: Condition<'a, Postgres, NewX>,
+    ) -> ArrayAgg<ArrayAggState<'a, NewX>> {
+        let state = self.0.into_state();
+        ArrayAgg(ArrayAggState {
+            meta: state.meta,
+            distinct: state.distinct,
+            order_by: state.order_by,
+            filter: Some(Box::new(cond.erase_x())),
+            _marker: PhantomData,
+        })
+    }
+
+    // --- Delivery (Extract T::X) ---
+
+    pub fn alias<U>(self, col: Column<'a, U, Postgres>) -> Projection<'a, Postgres, T::X> {
+        Projection::new(
+            ProjectionExpr::Function(self.build_func()),
+            Some(col.meta()),
+        )
+    }
+
+    fn build_func(self) -> CoreFunction<'a, Postgres> {
+        CoreFunction::from_ext(crate::dsl::Function::ArrayAgg(
+            self.0.into_state().erase_x(),
+        ))
     }
 }
 
-/// Allows the dialect function to be passed directly into a `SELECT` clause (without an explicit alias).
-impl<'a> IntoArg<Projection<'a, Postgres>> for ArrayAgg<'a> {
-    fn into_arg(self) -> Projection<'a, Postgres> {
-        Projection::new(ProjectionExpr::Function(self.into_func()), None)
+// ====================== Operators ======================
+
+impl<'a, T> ConditionBuilder<'a, Postgres> for ArrayAgg<T>
+where
+    T: IntoArrayAggState<'a>,
+{
+    #[inline(always)]
+    fn build_operand(self) -> Operand<'a, Postgres> {
+        Operand::Function(self.build_func())
     }
 }
 
-/// Allows the dialect function to be passed directly into an `ORDER BY` clause.
-impl<'a> IntoArg<Ordering<'a, Postgres>> for ArrayAgg<'a> {
-    fn into_arg(self) -> Ordering<'a, Postgres> {
-        // Delegates directly to the CoreFunction's pre-existing IntoArg implementation.
-        self.into_func().into_arg()
+impl<'a, T> ArrayAgg<T>
+where
+    T: IntoArrayAggState<'a>,
+{
+    pub fn eq<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    where
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.binary_op(v, StandardOperator::Eq)
     }
-}
 
-/// Allows the dialect function to be passed directly into a `GROUP BY` clause.
-impl<'a> IntoArg<GroupBy<'a, Postgres>> for ArrayAgg<'a> {
-    fn into_arg(self) -> GroupBy<'a, Postgres> {
-        // Delegates directly to the CoreFunction's pre-existing IntoArg implementation.
-        self.into_func().into_arg()
+    pub fn ne<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    where
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.binary_op(v, StandardOperator::Ne)
     }
+
+    pub fn gt<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    where
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.binary_op(v, StandardOperator::Gt)
+    }
+
+    pub fn ge<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    where
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.binary_op(v, StandardOperator::Ge)
+    }
+
+    pub fn lt<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    where
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.binary_op(v, StandardOperator::Lt)
+    }
+
+    pub fn le<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    where
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.binary_op(v, StandardOperator::Le)
+    }
+
+    pub fn is_null(self) -> Condition<'a, Postgres, T::X> {
+        self.unary_op(StandardOperator::IsNull)
+    }
+
+    pub fn is_not_null(self) -> Condition<'a, Postgres, T::X> {
+        self.unary_op(StandardOperator::IsNotNull)
+    }
+
+    pub fn between<L, U, Target>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
+    where
+        L: IntoOperand<'a, Target, Postgres>,
+        U: IntoOperand<'a, Target, Postgres>,
+    {
+        self.ternary_op(lower, upper, StandardOperator::Between)
+    }
+
+    pub fn not_between<L, U, Target>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
+    where
+        L: IntoOperand<'a, Target, Postgres>,
+        U: IntoOperand<'a, Target, Postgres>,
+    {
+        self.ternary_op(lower, upper, StandardOperator::NotBetween)
+    }
+
+    pub fn in_list<I, V, Target>(self, values: I) -> Condition<'a, Postgres, T::X>
+    where
+        I: IntoIterator<Item = V>,
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.list_op(values, StandardOperator::In)
+    }
+
+    pub fn not_in<I, V, Target>(self, values: I) -> Condition<'a, Postgres, T::X>
+    where
+        I: IntoIterator<Item = V>,
+        V: IntoOperand<'a, Target, Postgres>,
+    {
+        self.list_op(values, StandardOperator::NotIn)
+    }
+
+    // Other PG Operators ...
 }

@@ -9,32 +9,39 @@ use std::ops::Deref;
 
 type EM<'a, DB> = <<DB as Database>::Connection<'a> as Executable>::Mode;
 
-pub struct Client<'a, DB: Database, M: Mode = EM<'a, DB>> {
-    pub(crate) inner: Operations<'a, DB::Connection<'a>, DB>,
+pub struct Client<'a, DB: Database, X, M: Mode = EM<'a, DB>> {
+    pub(crate) inner: Operations<'a, DB, DB::Connection<'a>, X>,
     pub(crate) _mode: PhantomData<M>,
 }
 
-impl<'a, DB: Database, M: Mode> Deref for Client<'a, DB, M> {
-    type Target = Operations<'a, DB::Connection<'a>, DB>;
+impl<'a, DB: Database, X, M: Mode> Deref for Client<'a, DB, X, M> {
+    type Target = Operations<'a, DB, DB::Connection<'a>, X>;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
+// Provider new with default `X` type & Specify `X` type
+
 // 'a is the connection pool,
 // 'b is the mutable borrow itself,
 // 't is the lifetime of the underlying native transaction
-pub type Transaction<'a, 'b, 't, DB> =
-    Operations<'a, &'b mut <<DB as Database>::Connection<'a> as Connection>::Transaction<'t>, DB>;
+pub type Transaction<'a, 'b, 't, DB, X> = Operations<
+    'a,
+    DB,
+    &'b mut <<DB as Database>::Connection<'a> as Connection>::Transaction<'t>,
+    X,
+>;
 
-impl<'a, DB> Client<'a, DB, Sync>
+impl<'a, DB, X> Client<'a, DB, X, Sync>
 where
     DB::Connection<'a>: ConnectionSync,
     DB: Database,
+    X: 'a,
 {
     pub fn transaction<F, R>(&self, f: F) -> Result<R>
     where
-        F: FnOnce(Transaction<'a, '_, '_, DB>) -> Result<R>,
+        F: FnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R>,
     {
         self.executor
             .inner
@@ -42,14 +49,15 @@ where
     }
 }
 
-impl<'a, DB> Client<'a, DB, Async>
+impl<'a, DB, X> Client<'a, DB, X, Async>
 where
     DB::Connection<'a>: ConnectionAsync,
     DB: Database,
+    X: 'a,
 {
     pub async fn transaction<F, R>(&self, f: F) -> Result<R>
     where
-        F: AsyncFnOnce(Transaction<'a, '_, '_, DB>) -> Result<R> + Send,
+        F: AsyncFnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> + Send,
     {
         self.executor
             .inner

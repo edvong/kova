@@ -1,15 +1,15 @@
-use crate::dsl::{Condition, IntoArgs, Projection, ProjectionClause, WhereClause};
+use crate::dsl::{Condition, Projection, ProjectionClause, WhereClause};
 use crate::render::RenderData;
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
 
-pub struct DeleteStatement<'a, T, DB: Database> {
+pub struct DeleteStatement<'a, DB: Database, T> {
     pub(crate) r#where: WhereClause<'a, DB>,
     pub(crate) returning: ProjectionClause<'a, DB>,
     _marker: PhantomData<T>,
 }
 
-impl<'a, T, DB: Database> DeleteStatement<'a, T, DB>
+impl<'a, DB: Database, T> DeleteStatement<'a, DB, T>
 where
     T: Model<DB = DB>,
 {
@@ -25,14 +25,11 @@ where
         unimplemented!()
     }
 
-    pub fn r#where(&mut self, cond: Condition<'a, DB>) {
+    pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {
         self.r#where.set(cond);
     }
 
-    pub fn returning<P>(&mut self, cols: P)
-    where
-        P: IntoArgs<Projection<'a, DB>>,
-    {
+    pub fn returning(&mut self, cols: Vec<Projection<'a, DB, ()>>) {
         self.returning.set(cols);
     }
 }

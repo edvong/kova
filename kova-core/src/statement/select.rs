@@ -1,9 +1,13 @@
-use crate::dsl::{Condition, DistinctClause, ExtLocking, ExtPagination, ExtensionClause, GroupBy, GroupByClause, HavingClause, IntoArgs, Join, JoinClause, LockingClause, OrderByClause, Ordering, PaginationClause, Projection, ProjectionClause, WhereClause};
-use crate::render::{Render, RenderData, SelectContext};
+use crate::dsl::{
+    Condition, DistinctClause, ExtLocking, ExtPagination, ExtensionClause, GroupBy, GroupByClause,
+    HavingClause, Join, JoinClause, LockingClause, OrderByClause, Ordering, PaginationClause,
+    Projection, ProjectionClause, WhereClause,
+};
+use crate::render::RenderData;
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
 
-pub struct SelectStatement<'a, T, DB: Database> {
+pub struct SelectStatement<'a, DB: Database, T> {
     distinct: DistinctClause,
     projection: ProjectionClause<'a, DB>,
     join: JoinClause<'a, DB>,
@@ -16,7 +20,7 @@ pub struct SelectStatement<'a, T, DB: Database> {
     _marker: PhantomData<T>,
 }
 
-impl<'a, T, DB> SelectStatement<'a, T, DB>
+impl<'a, DB, T> SelectStatement<'a, DB, T>
 where
     T: Model<DB = DB>,
     DB: Database,
@@ -37,9 +41,9 @@ where
     }
 
     pub fn build(&self) -> RenderData<'a, DB> {
-        let mut data = RenderData::new();
-        let mut ctx = SelectContext::new(&mut data);
-        self.render(&mut ctx);
+        let data = RenderData::new();
+        // let mut ctx = SelectContext::new(&mut data);
+        // self.render(&mut ctx);
         data
     }
 
@@ -47,48 +51,41 @@ where
         self.distinct.set(true);
     }
 
-    pub fn columns<C>(&mut self, cols: C)
-    where
-        C: IntoArgs<Projection<'a, DB>>,
-    {
-        self.projection.set(cols);
+    pub fn columns(&mut self, args: Vec<Projection<'a, DB, ()>>) {
+        self.projection.set(args);
     }
 
     pub fn join(&mut self, join: Join<'a, DB>) {
         self.join.add(join)
     }
 
-    pub fn r#where(&mut self, cond: Condition<'a, DB>) {
+    pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {
         self.r#where.set(cond)
     }
 
-    pub fn having(&mut self, cond: Condition<'a, DB>) {
+    pub fn having(&mut self, cond: Condition<'a, DB, ()>) {
         self.having.set(cond);
     }
 
-    pub fn group_by<C>(&mut self, cols: C) where C: IntoArgs<GroupBy<'a, DB>> {
-        self.group_by.set(cols)
+    pub fn group_by(&mut self, args: Vec<GroupBy<'a, DB, ()>>) {
+        self.group_by.set(args)
     }
 
-    pub fn order_by<O>(&mut self, order: O)
-    where
-        O: IntoArgs<Ordering<'a, DB>>
-    {
-        self.order_by.set(order);
+    pub fn order_by(&mut self, orders: Vec<Ordering<'a, DB, ()>>) {
+        self.order_by.set(orders);
     }
 
     pub fn pagination_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtPagination<'a, DB>
     where
-        F: FnOnce() -> ExtPagination<'a, DB>
+        F: FnOnce() -> ExtPagination<'a, DB>,
     {
         self.pagination.ext_mut_or_with(f)
     }
 
     pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
     where
-        F: FnOnce() -> ExtLocking<'a, DB>
+        F: FnOnce() -> ExtLocking<'a, DB>,
     {
         self.locking.ext_mut_or_with(f)
     }
-
 }

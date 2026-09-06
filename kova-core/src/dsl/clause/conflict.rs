@@ -13,7 +13,9 @@ impl<'a, DB: Database> OnConflictClause<'a, DB> {
     }
 }
 
-impl<'a, DB: Database> ExtensionClause<ExtOnConflict<'a, DB>> for OnConflictClause<'a, DB> {
+impl<'a, DB: Database> ExtensionClause<ExtOnConflict<'a, DB>>
+    for OnConflictClause<'a, DB>
+{
     fn ext_opt(&self) -> &Option<ExtOnConflict<'a, DB>> {
         &self.inner
     }

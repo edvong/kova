@@ -11,7 +11,6 @@ use crate::dsl::{
     Column, Component, Direction, OrderOperand, Ordering, Projection, ProjectionExpr,
     StandardOperand,
 };
-use crate::types::ScalarMarker;
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
 
@@ -20,8 +19,6 @@ pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>
 pub struct Function<'a, DB: Database> {
     pub(crate) inner: Component<StandardFunction<'a, DB>, ExtFunction<'a, DB>>,
 }
-
-impl<'a, DB: Database> ScalarMarker<DB> for Function<'a, DB> {}
 
 impl<'a, DB: Database> WithComponent for Function<'a, DB> {
     type Standard = StandardFunction<'a, DB>;
@@ -58,26 +55,28 @@ pub enum StandardFunction<'a, DB: Database> {
 }
 
 impl<'a, DB: Database> Function<'a, DB> {
-    pub fn alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB> {
-        Projection {
-            expr: ProjectionExpr::Function(self),
-            alias: Some(col.meta),
-        }
+    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
+        Projection::new(
+            ProjectionExpr::Function(self),
+            Some(col.meta)
+        )
     }
 
-    pub fn asc(self) -> Ordering<'a, DB> {
+    pub fn asc<X>(self) -> Ordering<'a, DB, X> {
         Ordering {
             operand: OrderOperand::from_std(StandardOperand::Function(self)),
             direction: Some(Direction::Asc),
             nulls: None,
+            _marker:PhantomData,
         }
     }
 
-    pub fn desc(self) -> Ordering<'a, DB> {
+    pub fn desc<X>(self) -> Ordering<'a, DB, X> {
         Ordering {
             operand: OrderOperand::from_std(StandardOperand::Function(self)),
             direction: Some(Direction::Desc),
             nulls: None,
+            _marker:PhantomData,
         }
     }
 }

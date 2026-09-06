@@ -1,23 +1,25 @@
+use crate::query::exec::{execute_affected, fetch_rows};
 use crate::query::{NoReturn, Returning};
-use crate::types::{Postgres, Row};
+use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
-use kova_core::dsl::{Assignment, Condition, IntoArgs, Projection};
+use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, Projection};
 use kova_core::statement::UpdateStatement;
 use kova_core::types::{
     Database, ExecutableAsync, FromColumn, FromRow, Model, Update as CoreUpdate,
 };
+use std::iter::once;
 use std::marker::PhantomData;
-use tokio_postgres::types::ToSql;
 
-pub struct Update<'c, 'a, T, E, DB: Database, R = NoReturn> {
+pub struct Update<'c, 'a, DB: Database, T, E, X, R = NoReturn> {
     executor: &'c Executor<E>,
-    statement: UpdateStatement<'a, T, DB>,
-    _marker: PhantomData<R>,
+    statement: UpdateStatement<'a, DB, T>,
+    _marker: PhantomData<(R, X)>,
 }
 
-impl<'c, 'a, T, E> Update<'c, 'a, T, E, Postgres, NoReturn>
+impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, Postgres, T, E, X>
+    for Update<'c, 'a, Postgres, T, E, X, NoReturn>
 where
     T: Model<DB = Postgres>,
 {
@@ -28,20 +30,27 @@ where
             _marker: PhantomData,
         }
     }
+}
 
+impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
+where
+    T: Model<DB = Postgres>,
+{
     pub fn set<A>(mut self, assignments: A) -> Self
     where
-        A: IntoArgs<Assignment<'a, Postgres>>,
+        A: IntoArgs<Assignment<'a, Postgres, X>>,
     {
-        self.statement.set(assignments);
+        self.statement
+            .set(assignments.into_mapped_args(|a| a.erase_x()));
+
         self
     }
 
-    pub fn returning<P>(mut self, cols: P) -> Update<'c, 'a, T, E, Postgres, Returning>
+    pub fn returning<P>(mut self, cols: P) -> Update<'c, 'a, Postgres, T, E, X, Returning>
     where
-        P: IntoArgs<Projection<'a, Postgres>>,
+        P: IntoArgs<Projection<'a, Postgres, X>>,
     {
-        self.statement.returning(cols);
+        self.statement.returning(cols.into_mapped_args(|p| p.erase_x()));
         Update {
             executor: self.executor,
             statement: self.statement,
@@ -50,40 +59,28 @@ where
     }
 }
 
-impl<'c, 'a, T, E, R> Update<'c, 'a, T, E, Postgres, R>
+impl<'c, 'a, T, E, X, R> Update<'c, 'a, Postgres, T, E, X, R>
 where
     T: Model<DB = Postgres>,
 {
-    pub fn filter(mut self, cond: Condition<'a, Postgres>) -> Self {
-        self.statement.r#where(cond);
+    pub fn filter(mut self, cond: Condition<'a, Postgres, X>) -> Self {
+        self.statement.r#where(cond.erase_x());
         self
     }
 }
 
-impl<'c, 'a, T, E> Update<'c, 'a, T, E, Postgres, NoReturn>
+impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
 where
     T: Model<DB = Postgres>,
     E: ExecutableAsync,
     E::Native: GenericClient + Sync,
 {
     pub async fn execute(self) -> Result<u64> {
-        let data = self.statement.build();
-        self.executor
-            .with_conn_async(async move |native| {
-                let mut params: Vec<&(dyn ToSql + Sync)> = Vec::with_capacity(data.params.len());
-                for param in &data.params {
-                    params.push(param as &(dyn ToSql + Sync));
-                }
-                native
-                    .execute(&data.sql, &params[..])
-                    .await
-                    .map_err(|e| kova_core::Error::Database(Box::new(e)))
-            })
-            .await
+        execute_affected(self.executor, once(self.statement.build())).await
     }
 }
 
-impl<'c, 'a, T, E> Update<'c, 'a, T, E, Postgres, Returning>
+impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, Returning>
 where
     T: Model<DB = Postgres>,
     E: ExecutableAsync,
@@ -93,50 +90,19 @@ where
     where
         U: FromRow<DB = Postgres>,
     {
-        let raw_rows = self.execute_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            result.push(U::from_row(&row)?);
-        }
-        Ok(result)
+        fetch_rows(self.executor, once(self.statement.build()), |row| {
+            U::from_row(&row)
+        })
+        .await
     }
 
     pub async fn execute_in<U>(self) -> Result<Vec<U>>
     where
-        for<'r> U: FromColumn<'r, Postgres>,
+        for<'r> U: FromColumn<'r, Postgres, X>,
     {
-        let raw_rows = self.execute_raw_rows().await?;
-        let mut result = Vec::with_capacity(raw_rows.len());
-        for raw_row in raw_rows {
-            let row = Row::new(&raw_row);
-            result.push(U::extract(&row)?);
-        }
-        Ok(result)
-    }
-
-    async fn execute_raw_rows(self) -> Result<Vec<tokio_postgres::Row>> {
-        let data = self.statement.build();
-        self.executor
-            .with_conn_async(async move |native| {
-                let mut params: Vec<&(dyn ToSql + Sync)> = Vec::with_capacity(data.params.len());
-                for param in &data.params {
-                    params.push(param as &(dyn ToSql + Sync));
-                }
-                native
-                    .query(&data.sql, &params[..])
-                    .await
-                    .map_err(|e| kova_core::Error::Database(Box::new(e)))
-            })
-            .await
-    }
-}
-
-impl<'c, 'a, T, E> CoreUpdate<'c, 'a, T, E, Postgres> for Update<'c, 'a, T, E, Postgres, NoReturn>
-where
-    T: Model<DB = Postgres>,
-{
-    fn new(executor: &'c Executor<E>) -> Self {
-        Self::new(executor)
+        fetch_rows(self.executor, once(self.statement.build()), |row| {
+            U::extract(&row)
+        })
+        .await
     }
 }

@@ -16,12 +16,12 @@ pub use {
 };
 use crate::render::RenderData;
 
-pub struct RawRenderData<'a, DB: Database> {
+pub struct StatementPayload<'a, DB: Database> {
     pub sql: Cow<'a, str>,
     pub params: Vec<DB::Value<'a>>,
 }
 
-impl<'a, DB: Database> From<RenderData<'a, DB>> for RawRenderData<'a, DB> {
+impl<'a, DB: Database> From<RenderData<'a, DB>> for StatementPayload<'a, DB> {
     fn from(data: RenderData<'a, DB>) -> Self {
         Self {
             sql: Cow::Owned(data.sql),

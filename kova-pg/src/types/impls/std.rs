@@ -1,8 +1,30 @@
 use crate::types::{Postgres, Value};
-use kova_core::types::{FromValue, IntoValue, ScalarMarker};
-use kova_core::{mark_scalars, Error, Result};
+use kova_core::types::{FromValue, IntoValue};
+use kova_core::{Error, Result, impl_native_extract_column};
 use std::borrow::Cow;
 use std::convert::TryFrom;
+
+impl_native_extract_column!(
+    Postgres,
+    i8,
+    i16,
+    i32,
+    i64,
+    u8,
+    u16,
+    u32,
+    u64,
+    isize,
+    usize,
+    f32,
+    f64,
+    bool,
+    String,
+    // str,
+    Vec<u8>
+    // [u8]
+);
+// impl<const N: usize, X> ScalarMarker<Postgres, X> for [u8; N] {}
 
 // ==========================================
 // Native Aligned Types (PG Native Numeric & Bool)
@@ -44,9 +66,6 @@ impl_native_type!(i64, Int8);
 impl_native_type!(f32, Float4);
 impl_native_type!(f64, Float8);
 impl_native_type!(bool, Bool);
-
-mark_scalars!(Postgres, i16, i32, i64, f32, f64, bool);
-
 
 // ==========================================
 // Safe Cast Numeric Types
@@ -100,8 +119,6 @@ impl_cast_int!(isize, i64, Int8);
 impl_cast_int!(usize, i64, Int8);
 impl_cast_int!(u64, i64, Int8);
 
-mark_scalars!(Postgres, i8, u8, u16, u32, isize, usize, u64);
-
 // ==========================================
 // Text Types (Zero-copy & Ownership)
 // ==========================================
@@ -124,7 +141,6 @@ impl FromValue<Postgres> for String {
         }
     }
 }
-mark_scalars!(Postgres, String, str);
 
 // &'a String: Convenience conversion for references, wrapped as borrowed
 impl<'a> IntoValue<'a, Postgres> for &'a String {
@@ -166,7 +182,6 @@ impl FromValue<Postgres> for Vec<u8> {
         }
     }
 }
-mark_scalars!(Postgres, Vec<u8>, [u8]);
 
 // &'a Vec<u8>: Convenience conversion for references
 impl<'a> IntoValue<'a, Postgres> for &'a Vec<u8> {
@@ -215,4 +230,3 @@ impl<const N: usize> FromValue<Postgres> for [u8; N] {
         }
     }
 }
-impl<const N: usize> ScalarMarker<Postgres> for [u8; N] {}

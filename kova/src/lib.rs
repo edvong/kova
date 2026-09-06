@@ -1,10 +1,12 @@
+mod macros;
+
 pub use kova_core::database::{Client, Transaction};
 pub use kova_core::{Error, Result};
 pub use kova_derive::{FromRow, Model};
 
 pub mod types {
     pub use kova_core::types::{
-        ColumnMeta, Database, FromRow, FromValue, IntoValue, Model, ScalarMarker,
+        ColumnMeta, Database, Decode, DecodeExt, Encode, FromRow, FromValue, IntoValue, Model, Row,
     };
 
     #[cfg(feature = "pg")]
@@ -12,9 +14,6 @@ pub mod types {
 
     #[cfg(feature = "sqlite")]
     pub use kova_sqlite::types::Sqlite as Engine;
-
-    #[cfg(feature = "json")]
-    pub use kova_core::Json;
 }
 
 pub mod dsl {
@@ -33,8 +32,17 @@ pub mod dsl {
 
     pub mod func {
         pub use kova_core::dsl::func::{
+            Abs,
+            Avg,
+            Count,
             // Function, Quantifier,
-            CountAll, Count, Abs, Avg, Length, Lower, Max, Min, Sum, Upper,
+            CountAll,
+            Length,
+            Lower,
+            Max,
+            Min,
+            Sum,
+            Upper,
         };
 
         #[cfg(feature = "pg")]
@@ -52,22 +60,3 @@ pub mod query {
 
 #[cfg(all(feature = "pg", feature = "sqlite"))]
 compile_error!("Features 'pg' and 'sqlite' are mutually exclusive in Kova ORM.");
-
-
-#[macro_export]
-macro_rules! register_type {
-    ($DB:ty, $T:ty) => {
-        impl kova::types::ScalarMarker<$DB> for $T {}
-
-        impl kova::dsl::SingleArgMarker for $T {}
-
-        impl<'a> kova::dsl::IntoArg<kova::dsl::Bind<'a, $DB>> for $T
-        where $T: kova::types::IntoValue<'a, $DB> {
-            fn into_arg(self) -> kova::dsl::Bind<'a, $DB> {
-                kova::dsl::Bind(self.into_value())
-            }
-        }
-    };
-}
-
-// kova::register_type!(Postgres, JsonEmail);
