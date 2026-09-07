@@ -1,27 +1,37 @@
 use crate::Result;
 use crate::database::executor::Executor;
 use crate::database::operations::Operations;
-use crate::types::{
-    Async, Connection, ConnectionAsync, ConnectionSync, Database, Executable, Mode, Sync,
-};
+use crate::types::{Async, Connection, ConnectionAsync, ConnectionSync, Database, Mode, Sync};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
-type EM<'a, DB> = <<DB as Database>::Connection<'a> as Executable>::Mode;
-
-pub struct Client<'a, DB: Database, X, M: Mode = EM<'a, DB>> {
-    pub(crate) inner: Operations<'a, DB, DB::Connection<'a>, X>,
-    pub(crate) _mode: PhantomData<M>,
+pub struct Client<'a, DB: Database, M, X> {
+    inner: Operations<'a, DB, DB::Connection<'a>, X>,
+    _marker: PhantomData<M>,
 }
 
-impl<'a, DB: Database, X, M: Mode> Deref for Client<'a, DB, X, M> {
+impl<'a, DB: Database, M: Mode, X> Client<'a, DB, M, X> {
+    pub fn new(conn: DB::Connection<'a>) -> Self {
+        Self {
+            inner: Operations::new(Executor::new(conn)),
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn with<Codec>(self) -> Client<'a, DB, M, Codec> {
+        Client {
+            inner: self.inner.with::<Codec>(),
+            _marker: self._marker,
+        }
+    }
+}
+
+impl<'a, DB: Database, M: Mode, X> Deref for Client<'a, DB, M, X> {
     type Target = Operations<'a, DB, DB::Connection<'a>, X>;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
-
-// Provider new with default `X` type & Specify `X` type
 
 // 'a is the connection pool,
 // 'b is the mutable borrow itself,
@@ -33,7 +43,7 @@ pub type Transaction<'a, 'b, 't, DB, X> = Operations<
     X,
 >;
 
-impl<'a, DB, X> Client<'a, DB, X, Sync>
+impl<'a, DB, X> Client<'a, DB, Sync, X>
 where
     DB::Connection<'a>: ConnectionSync,
     DB: Database,
@@ -49,7 +59,7 @@ where
     }
 }
 
-impl<'a, DB, X> Client<'a, DB, X, Async>
+impl<'a, DB, X> Client<'a, DB, Async, X>
 where
     DB::Connection<'a>: ConnectionAsync,
     DB: Database,

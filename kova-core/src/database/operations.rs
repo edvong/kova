@@ -4,15 +4,22 @@ use crate::types::{Database, Delete, Insert, Model, Query, Select, Statement, Up
 use std::borrow::Cow;
 use std::marker::PhantomData;
 
-pub struct Operations<'a, DB, E, X = ()> {
+pub struct Operations<'a, DB, E, X> {
     pub(crate) executor: Executor<E>,
-    pub(crate) _marker: PhantomData<(&'a X, DB)>,
+    pub(crate) _marker: PhantomData<(&'a DB, X)>,
 }
 
 impl<'a, DB, E, X> Operations<'a, DB, E, X> {
-    pub fn new(e: Executor<E>) -> Self {
+    pub(crate) fn new(e: Executor<E>) -> Self {
         Self {
             executor: e,
+            _marker: PhantomData,
+        }
+    }
+
+    pub(crate) fn with<Codec>(self) -> Operations<'a, DB, E, Codec> {
+        Operations {
+            executor: self.executor,
             _marker: PhantomData,
         }
     }

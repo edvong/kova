@@ -3,7 +3,7 @@ use kova_core::{Error, Result};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
-pub struct SqlitePool(Pool<SqliteConnectionManager>);
+pub struct SqlitePool(pub Pool<SqliteConnectionManager>);
 
 impl Executable for SqlitePool {
     type Mode = Sync;
