@@ -1,6 +1,5 @@
-use crate::dsl::column::Column;
 use crate::dsl::function::Function;
-use crate::types::{ColumnMeta, Database, IntoValue};
+use crate::types::{ColumnMeta, Database, Encode};
 use crate::{Error, Result};
 use std::sync::Arc;
 
@@ -32,47 +31,33 @@ impl<'a, DB: Database> From<Result<DB::Value<'a>>> for Operand<'a, DB> {
     }
 }
 
-/// A conversion trait used to normalize various types into a unified `Operand`.
-/// This trait enables the SQL DSL to seamlessly accept both explicit database columns
-/// and native Rust values in its expression methods.
-pub trait IntoOperand<'a, Target, DB: Database> {
+pub struct IsAst;
+pub struct IsValue;
+
+pub trait IntoOperand<'a, Target, DB: Database, K, X> {
     fn into_operand(self) -> Operand<'a, DB>;
 }
 
-impl<'a, T, DB: Database> IntoOperand<'a, T, DB> for Column<'a, T, DB> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::Column(self.meta)
-    }
-}
-
-/// Blanket implementation for any type `T` that implements `IntoValue`.
-///
-/// **Note on Lifetimes and References:**
-/// In Rust, a reference (e.g., `&'a str` or `&'a T`) is considered a distinct type `T`.
-/// Because `IntoValue::into_value(self)` takes ownership of `self`, this single generic
-/// implementation inherently covers both owned types and borrowed reference types.
-/// Therefore, redundant implementations specifically targeting `&'a T`, `&'a str`,
-/// or `&'a [u8]` are completely unnecessary and intentionally omitted.
-impl<'a, T, DB> IntoOperand<'a, T, DB> for T
+impl<'a, T, DB, X> IntoOperand<'a, T, DB, IsValue, X> for T
 where
     DB: Database,
-    T: IntoValue<'a, DB>,
+    T: Encode<'a, DB, X, T>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.into_value() {
+        match self.encode() {
             Ok(v) => Operand::Value(v),
             Err(e) => Operand::Error(Arc::new(e)),
         }
     }
 }
 
-impl<'a, 'b, T, DB> IntoOperand<'a, T, DB> for &'b T
+impl<'a, 'b, T, DB, X> IntoOperand<'a, T, DB, IsValue, X> for &'b T
 where
     DB: Database,
-    &'b T: IntoValue<'a, DB>,
+    &'b T: Encode<'a, DB, X, T>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.into_value() {
+        match self.encode() {
             Ok(v) => Operand::Value(v),
             Err(e) => Operand::Error(Arc::new(e)),
         }
@@ -81,12 +66,12 @@ where
 
 
 // Allow String Column accept &str
-impl<'a, 'b, DB: Database> IntoOperand<'a, String, DB> for &'b str
+impl<'a, 'b, DB: Database, X> IntoOperand<'a, String, DB, IsValue, X> for &'b str
 where
-    &'b str: IntoValue<'a, DB>,
+    &'b str: Encode<'a, DB, X, String>
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.into_value() {
+        match self.encode() {
             Ok(v) => Operand::Value(v),
             Err(e) => Operand::Error(Arc::new(e)),
         }
@@ -94,12 +79,12 @@ where
 }
 
 // Allow Vec<u8> Column accept &[u8]
-impl<'a, 'b, DB: Database> IntoOperand<'a, Vec<u8>, DB> for &'b [u8]
+impl<'a, 'b, DB: Database, X> IntoOperand<'a, Vec<u8>, DB, IsValue, X> for &'b [u8]
 where
-    &'b [u8]: IntoValue<'a, DB>,
+    &'b [u8]: Encode<'a, DB, X, Vec<u8>>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.into_value() {
+        match self.encode() {
             Ok(v) => Operand::Value(v),
             Err(e) => Operand::Error(Arc::new(e)),
         }

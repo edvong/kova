@@ -20,16 +20,8 @@ default = ["pg"]
 
 # PostgreSQL-specific features
 pg = ["dep:kova-pg"]
-pg-pool = []
-pg-rustls = []
-pg-native-tls = []
+rustls = ["kova-pg?/rustls"]
+native-tls = ["kova-pg?/native-tls"]
 
 # SQLite-specific features
 sqlite = ["dep:kova-sqlite"]
-sqlite-pool = []
-
-json = []
-
-#[dev-dependencies]
-#kova-pg = { workspace = true }
-#kova-sqlite = { workspace = true }

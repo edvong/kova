@@ -1,7 +1,7 @@
 #![allow(clippy::wrong_self_convention)]
 
 use crate::types::Postgres;
-use kova_core::dsl::func::{Function as CoreFunction, FunctionBuilder};
+use kova_core::dsl::func::Function as CoreFunction;
 use kova_core::dsl::{
     Column, Condition, ConditionBuilder, EraseX, IntoOperand, Operand, Ordering, Projection,
     ProjectionExpr, StandardOperator, WithComponent,
@@ -135,44 +135,44 @@ impl<'a, T> ArrayAgg<T>
 where
     T: IntoArrayAggState<'a>,
 {
-    pub fn eq<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn eq<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.binary_op(v, StandardOperator::Eq)
     }
 
-    pub fn ne<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn ne<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.binary_op(v, StandardOperator::Ne)
     }
 
-    pub fn gt<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn gt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.binary_op(v, StandardOperator::Gt)
     }
 
-    pub fn ge<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn ge<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.binary_op(v, StandardOperator::Ge)
     }
 
-    pub fn lt<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn lt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.binary_op(v, StandardOperator::Lt)
     }
 
-    pub fn le<V, Target>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn le<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.binary_op(v, StandardOperator::Le)
     }
@@ -185,34 +185,34 @@ where
         self.unary_op(StandardOperator::IsNotNull)
     }
 
-    pub fn between<L, U, Target>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
+    pub fn between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
     where
-        L: IntoOperand<'a, Target, Postgres>,
-        U: IntoOperand<'a, Target, Postgres>,
+        L: IntoOperand<'a, Target, Postgres, K, T::X>,
+        U: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.ternary_op(lower, upper, StandardOperator::Between)
     }
 
-    pub fn not_between<L, U, Target>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
+    pub fn not_between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
     where
-        L: IntoOperand<'a, Target, Postgres>,
-        U: IntoOperand<'a, Target, Postgres>,
+        L: IntoOperand<'a, Target, Postgres, K, T::X>,
+        U: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.ternary_op(lower, upper, StandardOperator::NotBetween)
     }
 
-    pub fn in_list<I, V, Target>(self, values: I) -> Condition<'a, Postgres, T::X>
+    pub fn in_list<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.list_op(values, StandardOperator::In)
     }
 
-    pub fn not_in<I, V, Target>(self, values: I) -> Condition<'a, Postgres, T::X>
+    pub fn not_in<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, Target, Postgres>,
+        V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
         self.list_op(values, StandardOperator::NotIn)
     }

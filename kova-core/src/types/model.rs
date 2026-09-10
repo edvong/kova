@@ -1,6 +1,11 @@
 use crate::types::{ColumnMeta, Database};
 use crate::{Error, Result};
 
+#[diagnostic::on_unimplemented(
+    message = "cannot map a database row to `{Self}`",
+    label = "invalid row mapping target",
+    note = "expected a type that implements `FromRow`.\nif `{Self}` is a struct, ensure it derives `Model` or `FromRow`.\nif passing a tuple, ensure every element implements `FromRow`."
+)]
 pub trait FromRow: Sized {
     type DB: Database;
 
@@ -35,6 +40,7 @@ where
 // Macros already implemented for single type
 macro_rules! impl_from_row_for_tuple {
     ( $($T:ident),+ ) => {
+        #[diagnostic::do_not_recommend]
         impl<$($T,)+ DB> FromRow for ($($T,)+)
         where
             DB: Database,

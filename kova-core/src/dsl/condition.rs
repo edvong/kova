@@ -110,9 +110,9 @@ pub trait ConditionBuilder<'a, DB: Database>: Sized {
     /// to a `StandardOperator`. This perfectly matches the signature of standard enum
     /// tuple variant constructors (e.g., `StandardOperator::Eq`).
     #[inline(always)]
-    fn binary_op<V, Target, X, F>(self, v: V, op_fn: F) -> Condition<'a, DB, X>
+    fn binary_op<V, Target, X, K, F>(self, v: V, op_fn: F) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, Target, DB>,
+        V: IntoOperand<'a, Target, DB, K, X>,
         F: FnOnce(Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB>,
     {
         ConditionNode::Op(Operator::from_std(op_fn(
@@ -133,10 +133,10 @@ pub trait ConditionBuilder<'a, DB: Database>: Sized {
 
     /// Constructs a ternary condition (e.g., `between`, `not_between`).
     #[inline(always)]
-    fn ternary_op<L, U, Target, X, F>(self, lower: L, upper: U, op_fn: F) -> Condition<'a, DB, X>
+    fn ternary_op<L, U, Target, K, X, F>(self, lower: L, upper: U, op_fn: F) -> Condition<'a, DB, X>
     where
-        L: IntoOperand<'a, Target, DB>,
-        U: IntoOperand<'a, Target, DB>,
+        L: IntoOperand<'a, Target, DB, K, X>,
+        U: IntoOperand<'a, Target, DB, K, X>,
         F: FnOnce(Operand<'a, DB>, Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB>,
     {
         ConditionNode::Op(Operator::from_std(op_fn(
@@ -150,10 +150,10 @@ pub trait ConditionBuilder<'a, DB: Database>: Sized {
     /// Constructs a list-based condition (e.g., `in_list`, `not_in`) by evaluating
     /// an iterator of values into a vector of operands.
     #[inline(always)]
-    fn list_op<I, V, Target, X, F>(self, values: I, op_fn: F) -> Condition<'a, DB, X>
+    fn list_op<I, V, Target, K, X, F>(self, values: I, op_fn: F) -> Condition<'a, DB, X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, Target, DB>,
+        V: IntoOperand<'a, Target, DB, K, X>,
         F: FnOnce(Operand<'a, DB>, Vec<Operand<'a, DB>>) -> StandardOperator<'a, DB>,
     {
         let vec = values.into_iter().map(|val| val.into_operand()).collect();

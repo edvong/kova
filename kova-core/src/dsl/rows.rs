@@ -1,3 +1,5 @@
+use crate::types::Model;
+
 pub trait IntoRows<'a, T, Marker> {
     fn into_rows(self) -> InsertRows<'a, T>;
 }
@@ -25,31 +27,31 @@ pub struct ManyRows;
 pub struct BorrowedSingleRow;
 pub struct BorrowedManyRows;
 
-impl<'a, T> IntoRows<'a, T, SingleRow> for T {
+impl<'a, T: Model> IntoRows<'a, T, SingleRow> for T {
     fn into_rows(self) -> InsertRows<'a, T> {
         InsertRows::Single(self)
     }
 }
 
-impl<'a, T> IntoRows<'a, T, ManyRows> for Vec<T> {
+impl<'a, T: Model> IntoRows<'a, T, ManyRows> for Vec<T> {
     fn into_rows(self) -> InsertRows<'a, T> {
         InsertRows::Many(self)
     }
 }
 
-impl<'a, T> IntoRows<'a, T, BorrowedSingleRow> for &'a T {
+impl<'a, T: Model> IntoRows<'a, T, BorrowedSingleRow> for &'a T {
     fn into_rows(self) -> InsertRows<'a, T> {
         InsertRows::BorrowedSingle(self)
     }
 }
 
-impl<'a, T> IntoRows<'a, T, BorrowedManyRows> for &'a [T] {
+impl<'a, T: Model> IntoRows<'a, T, BorrowedManyRows> for &'a [T] {
     fn into_rows(self) -> InsertRows<'a, T> {
         InsertRows::BorrowedMany(self)
     }
 }
 
-impl<'a, T> IntoRows<'a, T, BorrowedManyRows> for &'a Vec<T> {
+impl<'a, T: Model> IntoRows<'a, T, BorrowedManyRows> for &'a Vec<T> {
     fn into_rows(self) -> InsertRows<'a, T> {
         InsertRows::BorrowedMany(self.as_slice())
     }

@@ -4,9 +4,11 @@ use kova::Error;
 use kova::dsl::{Column, ExtColumn};
 use kova::types::{ColumnMeta, Database, Engine, FromRow, Model};
 
+#[derive(Default, Clone)]
 pub struct User {
     pub id: i32,
     pub name: String,
+    pub is_active: bool,
 }
 
 impl FromRow for User {
@@ -39,6 +41,14 @@ impl<'a> User {
     pub const name: Column<'a, String, Engine> = ExtColumn::create(ColumnMeta {
         table_name: "user",
         column_name: "name",
+        is_autoincrement: false,
+        is_json: false,
+        is_ignore: false,
+    });
+    #[allow(non_upper_case_globals)]
+    pub const is_active: Column<'a, bool, Engine> = ExtColumn::create(ColumnMeta {
+        table_name: "user",
+        column_name: "is_active",
         is_autoincrement: false,
         is_json: false,
         is_ignore: false,

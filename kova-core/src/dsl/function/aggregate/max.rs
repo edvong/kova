@@ -6,10 +6,7 @@
 use crate::dsl::condition::ConditionBuilder;
 use crate::dsl::function::builder::{AggregateBuilder, FunctionBuilder};
 use crate::dsl::function::{Function, Quantifier, StandardFunction};
-use crate::dsl::{
-    Column, Condition, IntoArg, IntoOperand, Operand, Ordering, Projection, ProjectionExpr,
-    StandardOperator, WithComponent,
-};
+use crate::dsl::{Column, Condition, GroupBy, IntoArg, IntoOperand, Operand, Ordering, Projection, ProjectionExpr, SingleArgMarker, StandardGroupBy, StandardOperator, WithComponent};
 use crate::types::Database;
 
 pub struct Max<T>(pub T);
@@ -39,50 +36,60 @@ impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Max<Column<'a, T
     fn into_arg(self) -> Projection<'a, DB, X> {
         Projection::new(
             ProjectionExpr::Function(<Self as FunctionBuilder<'a, DB>>::build_func(self)),
-            None
+            None,
         )
     }
 }
 
+impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Max<Column<'a, T, DB>> {
+    #[inline(always)]
+    fn into_arg(self) -> GroupBy<'a, DB, X> {
+        GroupBy::standard(StandardGroupBy::Function(<Self as FunctionBuilder<'a, DB>>::build_func(self)))
+    }
+}
+
+impl<'a, T, DB: Database> SingleArgMarker for Max<Column<'a, T, DB>> {}
+
+
 impl<'a, T, DB: Database> Max<Column<'a, T, DB>> {
-    pub fn eq<V, X>(self, v: V) -> Condition<'a, DB, X>
+    pub fn eq<V, K, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.binary_op(v, StandardOperator::Eq)
     }
 
-    pub fn ne<V, X>(self, v: V) -> Condition<'a, DB, X>
+    pub fn ne<V, K, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.binary_op(v, StandardOperator::Ne)
     }
 
-    pub fn gt<V, X>(self, v: V) -> Condition<'a, DB, X>
+    pub fn gt<V, K, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.binary_op(v, StandardOperator::Gt)
     }
 
-    pub fn ge<V, X>(self, v: V) -> Condition<'a, DB, X>
+    pub fn ge<V, K, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.binary_op(v, StandardOperator::Ge)
     }
 
-    pub fn lt<V, X>(self, v: V) -> Condition<'a, DB, X>
+    pub fn lt<V, K, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.binary_op(v, StandardOperator::Lt)
     }
 
-    pub fn le<V, X>(self, v: V) -> Condition<'a, DB, X>
+    pub fn le<V, K, X>(self, v: V) -> Condition<'a, DB, X>
     where
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.binary_op(v, StandardOperator::Le)
     }
@@ -95,34 +102,34 @@ impl<'a, T, DB: Database> Max<Column<'a, T, DB>> {
         self.unary_op(StandardOperator::IsNull)
     }
 
-    pub fn between<L, U, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
+    pub fn between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
     where
-        L: IntoOperand<'a, T, DB>,
-        U: IntoOperand<'a, T, DB>,
+        L: IntoOperand<'a, T, DB, K, X>,
+        U: IntoOperand<'a, T, DB, K, X>,
     {
         self.ternary_op(lower, upper, StandardOperator::Between)
     }
 
-    pub fn not_between<L, U, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
+    pub fn not_between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
     where
-        L: IntoOperand<'a, T, DB>,
-        U: IntoOperand<'a, T, DB>,
+        L: IntoOperand<'a, T, DB, K, X>,
+        U: IntoOperand<'a, T, DB, K, X>,
     {
         self.ternary_op(lower, upper, StandardOperator::NotBetween)
     }
 
-    pub fn in_list<I, V, X>(self, values: I) -> Condition<'a, DB, X>
+    pub fn in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.list_op(values, StandardOperator::In)
     }
 
-    pub fn not_in<I, V, X>(self, values: I) -> Condition<'a, DB, X>
+    pub fn not_in<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, T, DB>,
+        V: IntoOperand<'a, T, DB, K, X>,
     {
         self.list_op(values, StandardOperator::NotIn)
     }

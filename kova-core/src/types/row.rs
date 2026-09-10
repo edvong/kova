@@ -31,6 +31,11 @@ pub trait Row<'a, DB: Database> {
         I: Into<ColumnIndex<'i>>;
 }
 
+#[diagnostic::on_unimplemented(
+    message = "cannot extract `{Self}` from the database column(s)",
+    label = "invalid column extraction target",
+    note = "expected a type that implements `FromColumn` or `Decode`.\nif passing a tuple, ensure every element can be decoded from the database."
+)]
 pub trait FromColumn<'a, DB: Database, X>: Sized {
     #[inline(always)]
     fn extract(row: &DB::Row<'a>) -> Result<Self> {

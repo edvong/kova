@@ -1,4 +1,4 @@
-pub mod types;
 pub mod dsl;
+pub mod options;
 pub mod query;
-mod options;
+pub mod types;

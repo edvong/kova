@@ -10,7 +10,7 @@ use tokio_postgres::Config;
 pub use deadpool_postgres::RecyclingMethod;
 
 pub struct Options {
-    config: Config,
+    config: Result<Config>,
     pool_config: PoolConfig,
     manager_config: ManagerConfig,
 
@@ -24,11 +24,11 @@ pub struct Options {
 impl Options {
     // Accepts standard Postgres connection strings,
     // like "host=localhost user=postgres dbname=kova"
-    pub fn from<T: AsRef<str>>(conn: T) -> Result<Self> {
+    pub fn from<T: AsRef<str>>(conn: T) -> Self {
         let config = Config::from_str(conn.as_ref())
-            .map_err(|e| Error::Database(Box::new(e)))?;
+            .map_err(|e| Error::Database(Box::new(e)));
 
-        Ok(Self {
+        Self {
             config,
             pool_config: PoolConfig::new(10),
             manager_config: ManagerConfig::default(),
@@ -38,7 +38,7 @@ impl Options {
 
             #[cfg(feature = "native-tls")]
             native_tls_state: None,
-        })
+        }
     }
 
     pub fn max_size(mut self, v: usize) -> Self {
@@ -90,7 +90,7 @@ impl Options {
         if let Some(tls_result) = self.rustls_state {
             let config = tls_result?;
             let tls = tokio_postgres_rustls::MakeRustlsConnect::new(config);
-            let manager = Manager::from_config(self.config, tls, self.manager_config);
+            let manager = Manager::from_config(self.config?, tls, self.manager_config);
             let pool = Pool::builder(manager)
                 .config(self.pool_config)
                 .runtime(Runtime::Tokio1)
@@ -114,7 +114,7 @@ impl Options {
             return Ok(Client::new(PgPool(pool)));
         }
 
-        let manager = Manager::from_config(self.config, tokio_postgres::NoTls, self.manager_config);
+        let manager = Manager::from_config(self.config?, tokio_postgres::NoTls, self.manager_config);
         let pool = Pool::builder(manager)
             .config(self.pool_config)
             .runtime(Runtime::Tokio1)

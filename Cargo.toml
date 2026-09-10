@@ -6,6 +6,8 @@ members = [
     "kova-derive",
     "kova",
 ]
+exclude = ["kova-tests"]
+
 resolver = "2"
 
 [workspace.package]

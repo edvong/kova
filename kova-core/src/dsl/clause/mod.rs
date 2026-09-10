@@ -15,7 +15,7 @@ mod assignment;
 
 pub use {
     bind::Bind,
-    group_by::GroupBy,
+    group_by::{GroupBy, StandardGroupBy},
     join::{Join, JoinClause, JoinType},
     order::{NullsOrder, OrderByClause, Ordering, Direction, StandardOperand, OrderOperand},
     pagination::{ExtPagination, PaginationClause},

@@ -2,6 +2,30 @@
 macro_rules! impl_native_extract_column {
     ($db:ty, $($type:ty),+) => {
         $(
+
+            impl<'a, X> $crate::types::Encode<'a, $db, X, $type> for $type {
+                #[inline(always)]
+                fn encode(self) -> $crate::Result<<$db as $crate::types::Database>::Value<'a>> {
+                    $crate::types::IntoValue::into_value(self)
+                }
+            }
+
+            impl<'a, 'b: 'a, X> $crate::types::Encode<'a, $db, X, $type> for &'b $type {
+                #[inline(always)]
+                fn encode(self) -> $crate::Result<<$db as $crate::types::Database>::Value<'a>> {
+                    $crate::types::IntoValue::into_value(self)
+                }
+            }
+
+            impl<'a, X> $crate::types::Decode<'a, $db, X> for $type {
+                #[inline(always)]
+                fn decode(value: <$db as $crate::types::Database>::Value<'a>) -> $crate::Result<Self> {
+                    $crate::types::FromValue::from_value(value)
+                }
+            }
+
+
+
             impl<'a, X> $crate::types::FromColumn<'a, $db, X> for $type
             where
                 $type: $crate::types::Decode<'a, $db, X>,
@@ -39,6 +63,7 @@ macro_rules! impl_native_extract_column {
 #[doc(hidden)]
 macro_rules! bind_extract_column_tuple_inner {
     ($DB:ty, $($T:ident),+) => {
+        #[diagnostic::do_not_recommend]
         impl<'a, $($T),+, X> $crate::types::FromColumn<'a, $DB, X> for ($($T,)+)
         where
             $( $T: $crate::types::FromColumn<'a, $DB, X> ),+

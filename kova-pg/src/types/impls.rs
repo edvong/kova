@@ -87,6 +87,19 @@ macro_rules! impl_cast_int {
             }
         }
 
+        impl<'a> IntoValue<'a, Postgres> for &'a $ty {
+            fn into_value(self) -> Result<Value<'a>> {
+                // Dereference *self to get value for safe conversion
+                <$target>::try_from(*self).map(Value::$variant).map_err(|_| {
+                    Error::ConversionError(format!(
+                        "Overflow casting &{} to {}",
+                        stringify!($ty),
+                        stringify!($target)
+                    ))
+                })
+            }
+        }
+
         impl FromValue<Postgres> for $ty {
             fn from_value(value: Value<'_>) -> Result<Self> {
                 match value {

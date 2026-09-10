@@ -1,39 +1,37 @@
 #![allow(unreachable_code, dead_code, unused)]
 
+use crate::Result;
+use crate::models::{Order, User};
+use kova::Options;
+use kova::dsl::func::{Abs, Avg, CountAll, Length, Lower, Max, Min, Sum, Upper};
 use kova::dsl::func::{ArrayAgg, Count};
 use kova::dsl::{LockMode, WaitPolicy};
-use kova::query::Select;
-use kova::types::Engine;
-use kova_core::database::Executor;
-use kova_core::dsl::Column;
-use kova_core::dsl::func::{Avg, CountAll};
-use kova_core::types::Select as CoreSelect;
-use kova_pg::types::{PgPool, Postgres};
 
-#[path = "../common/models.rs"]
-mod models;
+fn compile_check_select() {
+    let client = Options::from("").tls(|| unimplemented!()).build().unwrap();
 
-use models::{Order, User};
-
-/// Stress Test 1: The ultimate chain of all syntax nodes
-fn compile_check_pg_monster_query() {
-    let executor: Executor<PgPool> = unimplemented!();
-
-    let a = Order::is_active.eq::<_, ()>(false);
-
-    let _query = Select::<'_, '_, Postgres, User, PgPool, ()>::new(&executor)
-        // 1. Stress test IntoArgs<Projection> polymorphic tuple: standard column + aggregate function + alias extension + constant
+    client.select::<User>()
+        // Stress test IntoArgs<Projection> polymorphic tuple: standard column + aggregate function + alias extension + constant
+        .columns(CountAll)
         .columns(User::name)
+        .columns(Sum(Order::amount))
+        .columns((User::id, Sum(Order::amount), Count(User::id).alias(User::id)))
         .columns((
             User::id,
             Order::amount,
             Count(User::id).alias(User::id), // Core function wrapper
+            Sum(Order::amount).alias(User::name),
+            Min(Order::amount),
+            Max(Order::amount),
+            Lower(User::name),
+            Upper(User::name),
+            Abs(Order::amount),
+            Length(User::name),
             ArrayAgg(Order::amount)
                 .distinct()
                 .order_by(Order::id.desc().nulls_first())
                 .filter(
-                    Order::is_active.eq(true)
-                    & Order::amount.gt(100_f64)
+                    Order::is_active.eq(true) & Order::amount.gt(100_f64)
                 )
                 .alias(User::name), // Forcefully borrow alias to verify type boundaries
         ))
@@ -44,8 +42,12 @@ fn compile_check_pg_monster_query() {
         .filter(
             User::name.like("%admin%")
                 & (Order::amount.between(10.5_f64, 99.9_f64)
-                | Order::id.in_list(vec![1, 2, 3])
-                | Order::raw_data.is_not_null()),
+                    | Order::amount.not_between(0.0_f64, 1.0_f64)
+                    | Order::id.in_list(vec![1, 2, 3])
+                    | Order::id.not_in(vec![4, 5, 6])
+                    | Order::amount.ge(0.0_f64)
+                    | Order::amount.le(1000.0_f64)
+                    | Order::raw_data.is_not_null()),
         )
         // 4. Stress test Group By polymorphic tuple: mixed grouping of columns + functions
         .group_by(User::id)
@@ -69,32 +71,24 @@ fn compile_check_pg_monster_query() {
 }
 
 /// Stress Test 2: Lifecycle of Load API and extraction limits of macro-generated Tuples
-async fn compile_check_pg_load_endpoints() -> kova_core::Result<()> {
-    let executor: Executor<PgPool> = unimplemented!();
-
-    let query = Select::<'_, '_, Postgres, User, PgPool, ()>::new(&executor);
+async fn compile_check_pg_load_endpoints() -> Result<()> {
+    let client = Options::from("").build()?;
 
     // Endpoint 1: Load main model
-    let _users: Vec<User> = query.load().await?;
+    let _users = client.select::<User>().load().await?;
 
     // Endpoint 2: Map to another model (Verify U: FromRow)
-    let query = Select::<'_, '_, Postgres, User, PgPool, ()>::new(&executor);
-    let _orders: Vec<Order> = query.load_as::<Order>().await?;
-    let _orders: Vec<(User, Order)> = query.load_as::<(User, Order)>().await?;
+    let _orders = client.select::<Order>().load().await?;
+    let _orders = client.select::<User>().load_as::<(User, Order)>().await?;
 
-    // Endpoint 3: Extract scalar (Single column, triggers basic implementation of DecodeColumn)
-    let query = Select::<'_, '_, Postgres, User, PgPool, ()>::new(&executor);
-    let _ids: Vec<i32> = query.load_in::<i32>().await?;
+    // Endpoint 3: Extract scalar (Single column, triggers basic implementation of FromColumn)
+    let _ids = client.select::<User>().load_in::<Option<f64>>().await?;
 
     // Endpoint 4: Extract single column Option
-    let query = Select::<'_, '_, Postgres, User, PgPool, ()>::new(&executor);
-    let _optional_amounts: Vec<Option<f64>> = query.load_in::<Option<f64>>().await?;
+    let _optional_amounts = client.select::<User>().load_in::<Option<f64>>().await?;
 
-    // Endpoint 5: Extract giant strongly-typed Tuple (Triggers bind_decode_columns_tuple! macro limits)
-    let query = Select::<'_, '_, Postgres, User, PgPool, ()>::new(&executor);
-    let _complex_rows: Vec<(i32, String, Option<f64>, bool, Vec<u8>)> = query
-        .load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>()
-        .await?;
+    // Endpoint 5: Extract giant strongly-typed Tuple
+    let _complex_rows = client.select::<User>().load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>().await?;
 
     Ok(())
 }

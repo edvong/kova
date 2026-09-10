@@ -1,6 +1,6 @@
 use crate::types::Sqlite;
 use kova_core::dsl::func::{Abs, Function, FunctionBuilder, Length, Lower, Upper};
-use kova_core::dsl::{Assignment, Column, IntoArg, SingleArgMarker};
+use kova_core::dsl::{Assignment, Column, IntoArg, IntoArgs, SingleArgMarker};
 use kova_core::types::ColumnMeta;
 
 pub struct OnConflict<'a> {
@@ -41,23 +41,36 @@ pub(crate) enum TargetExpr<'a> {
 
 impl<'a> SingleArgMarker for ConflictTarget<'a> {}
 
-impl<'a, T> IntoArg<ConflictTarget<'a>> for Column<'a, T, Sqlite> {
-    fn into_arg(self) -> ConflictTarget<'a> {
-        ConflictTarget {
+impl<'a, T> IntoArgs<ConflictTarget<'a>> for Column<'a, T, Sqlite> {
+    fn size_hint(&self) -> usize {
+        1
+    }
+
+    fn for_each_arg<F>(self, f: &mut F)
+    where
+        F: FnMut(ConflictTarget<'a>)
+    {
+        f(ConflictTarget {
             target: TargetExpr::Column(self.meta()),
-        }
+        });
     }
 }
 
 macro_rules! impl_conflict_target_for_func {
     ($($func:ident),+) => {
         $(
-            impl<'a, T> IntoArg<ConflictTarget<'a>> for $func<Column<'a, T, Sqlite>> {
+            impl<'a, T> IntoArgs<ConflictTarget<'a>> for $func<Column<'a, T, Sqlite>> {
                 #[inline(always)]
-                fn into_arg(self) -> ConflictTarget<'a> {
-                    ConflictTarget {
+                fn size_hint(&self) -> usize { 1 }
+
+                #[inline(always)]
+                fn for_each_arg<F>(self, f: &mut F)
+                where
+                    F: FnMut(ConflictTarget<'a>)
+                {
+                    f(ConflictTarget {
                         target: TargetExpr::Function(self.build_func())
-                    }
+                    });
                 }
             }
         )+

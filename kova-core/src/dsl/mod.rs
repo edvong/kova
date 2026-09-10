@@ -24,7 +24,7 @@ pub use {
     column::Column,
     component::{Component, WithComponent},
     condition::{Condition, ConditionBuilder},
-    operand::{Operand, IntoOperand},
+    operand::{Operand, IntoOperand, IsValue, IsAst},
     operator::{Operator, StandardOperator},
     rows::{InsertRows, IntoRows},
     clause::*,

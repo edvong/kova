@@ -16,6 +16,12 @@ impl<A> IntoArg<A> for A {
     }
 }
 
+
+#[diagnostic::on_unimplemented(
+    message = "cannot convert `{Self}` into SQL arguments of type `{A}`",
+    label = "invalid SQL argument(s)",
+    note = "expected a valid SQL construct (e.g., Column, Function, Condition, or Assignment).\nif passing a tuple, ensure every element implements `IntoArg<{A}>`."
+)]
 pub trait IntoArgs<A>: Sized {
     fn size_hint(&self) -> usize;
 
@@ -79,6 +85,7 @@ impl<A> IntoArgs<A> for Vec<A> {
 
 macro_rules! impl_into_args_for_tuple {
     ( $($T:ident),+ ) => {
+        #[diagnostic::do_not_recommend]
         impl<A, $($T),+> IntoArgs<A> for ($($T,)+)
         where
             $( $T: IntoArgs<A> ),+
