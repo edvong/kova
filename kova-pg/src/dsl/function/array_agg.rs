@@ -3,8 +3,8 @@
 use crate::types::Postgres;
 use kova_core::dsl::func::Function as CoreFunction;
 use kova_core::dsl::{
-    Column, Condition, ConditionBuilder, EraseX, IntoOperand, Operand, Ordering, Projection,
-    ProjectionExpr, StandardOperator, WithComponent,
+    BuildCondition, Column, Condition, EraseX, IntoAlias, IntoOperand, Operand, Ordering,
+    Projection, ProjectionExpr, StandardOperator, WithComponent,
 };
 use kova_core::types::ColumnMeta;
 use std::marker::PhantomData;
@@ -108,7 +108,7 @@ where
     pub fn alias<U>(self, col: Column<'a, U, Postgres>) -> Projection<'a, Postgres, T::X> {
         Projection::new(
             ProjectionExpr::Function(self.build_func()),
-            Some(col.meta()),
+            Some(col.into_identifier()),
         )
     }
 
@@ -121,7 +121,7 @@ where
 
 // ====================== Operators ======================
 
-impl<'a, T> ConditionBuilder<'a, Postgres> for ArrayAgg<T>
+impl<'a, T> BuildCondition<'a, Postgres> for ArrayAgg<T>
 where
     T: IntoArrayAggState<'a>,
 {

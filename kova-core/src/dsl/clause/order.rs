@@ -30,6 +30,10 @@ pub struct Ordering<'a, DB: Database, X> {
     pub(crate) _marker: PhantomData<X>,
 }
 
+pub trait BuildOrdering<'a, DB: Database, X> {
+    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X>;
+}
+
 impl<'a, DB: Database, X> EraseX for Ordering<'a, DB, X> {
     type Erased = Ordering<'a, DB, ()>;
 
@@ -101,18 +105,20 @@ impl<'a, DB: Database, X> SingleArgMarker for Ordering<'a, DB, X> {}
 
 impl<'a, T, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Column<'a, T, DB> {
     fn into_arg(self) -> Ordering<'a, DB, X> {
-        self.asc::<X>()
+        self.build_ordering(Some(Direction::Asc))
     }
 }
 
-impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Function<'a, DB> {
-    fn into_arg(self) -> Ordering<'a, DB, X> {
-        self.asc::<X>()
-    }
-}
+// impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Function<'a, DB> {
+//     fn into_arg(self) -> Ordering<'a, DB, X> {
+//         // self.asc::<X>()
+//         // self.build_ordering(Some(Direction::Asc))
+//         todo!()
+//     }
+// }
 
 impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Condition<'a, DB, X> {
     fn into_arg(self) -> Ordering<'a, DB, X> {
-        self.asc()
+        self.build_ordering(Some(Direction::Asc))
     }
 }

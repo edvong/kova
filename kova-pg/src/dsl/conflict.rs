@@ -1,5 +1,5 @@
 use crate::types::Postgres;
-use kova_core::dsl::func::{Abs, Function, FunctionBuilder, Length, Lower, Upper};
+use kova_core::dsl::func::{Abs, Function, BuildFunction, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArgs};
 use kova_core::types::ColumnMeta;
 

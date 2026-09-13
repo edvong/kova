@@ -1,21 +1,32 @@
 #![allow(unreachable_code, dead_code, unused)]
 
 use crate::Result;
-use crate::models::{Order, User};
+use crate::models::comment::Comment;
+use crate::models::order::Order;
+use crate::models::post::Post;
+use crate::models::user::User;
+use crate::view::post_view::{CommentDto, PostView};
 use kova::Options;
-use kova::dsl::func::{Abs, Avg, CountAll, Length, Lower, Max, Min, Sum, Upper};
+use kova::dsl::func::{
+    Abs, Avg, CountAll, JsonbAgg, JsonbObject, Length, Lower, Max, Min, Sum, Upper,
+};
 use kova::dsl::func::{ArrayAgg, Count};
-use kova::dsl::{LockMode, WaitPolicy};
+use kova::dsl::{LockMode, Subselect, WaitPolicy};
 
 fn compile_check_select() {
     let client = Options::from("").tls(|| unimplemented!()).build().unwrap();
 
-    client.select::<User>()
+    client
+        .select::<User>()
         // Stress test IntoArgs<Projection> polymorphic tuple: standard column + aggregate function + alias extension + constant
         .columns(CountAll)
         .columns(User::name)
         .columns(Sum(Order::amount))
-        .columns((User::id, Sum(Order::amount), Count(User::id).alias(User::id)))
+        .columns((
+            User::id,
+            Sum(Order::amount),
+            Count(User::id).alias(User::id),
+        ))
         .columns((
             User::id,
             Order::amount,
@@ -30,9 +41,7 @@ fn compile_check_select() {
             ArrayAgg(Order::amount)
                 .distinct()
                 .order_by(Order::id.desc().nulls_first())
-                .filter(
-                    Order::is_active.eq(true) & Order::amount.gt(100_f64)
-                )
+                .filter(Order::is_active.eq(true) & Order::amount.gt(100_f64))
                 .alias(User::name), // Forcefully borrow alias to verify type boundaries
         ))
         // 2. Stress test JOIN boundaries: generic Model parameters + Column vs Column comparison
@@ -88,7 +97,41 @@ async fn compile_check_pg_load_endpoints() -> Result<()> {
     let _optional_amounts = client.select::<User>().load_in::<Option<f64>>().await?;
 
     // Endpoint 5: Extract giant strongly-typed Tuple
-    let _complex_rows = client.select::<User>().load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>().await?;
+    let _complex_rows = client
+        .select::<User>()
+        .load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>()
+        .await?;
+
+    Ok(())
+}
+
+
+async fn compile_check_complex_jsonb_subquery() -> Result<()> {
+    let client = Options::from("").build()?;
+
+    let _views = client
+        .select::<Post>()
+        .columns((
+            Post::id,
+            Post::title,
+            Post::content,
+            JsonbObject((User::id, User::name)).alias(PostView::author),
+            Subselect::<Comment>::columns(
+                JsonbAgg(
+                    JsonbObject((
+                        Comment::id,
+                        Comment::content,
+                        JsonbObject((User::id, User::name)).alias(CommentDto::commenter),
+                    ))
+                )
+            )
+            .inner_join::<User>(Comment::user_id.eq(User::id))
+            .filter(Comment::post_id.eq(Post::id))
+            .alias(PostView::comments),
+        ))
+        .inner_join::<User>(Post::author_id.eq(User::id))
+        .load_as::<PostView>()
+        .await?;
 
     Ok(())
 }

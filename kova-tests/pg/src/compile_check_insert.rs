@@ -1,7 +1,7 @@
-use kova::dsl::func::Lower;
-use kova::Options;
 use crate::Result;
-use crate::models::{Order, User};
+use crate::models::user::User;
+use kova::Options;
+use kova::dsl::func::Lower;
 
 /// Stress Test 3: Insert Statements & Conflict Handling
 async fn compile_check_pg_insert() -> Result<()> {

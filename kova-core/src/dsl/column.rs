@@ -1,10 +1,11 @@
+use crate::dsl::alias::{Identifier, IntoAlias};
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::component::WithComponent;
-use crate::dsl::condition::{Condition, ConditionBuilder, ConditionNode};
+use crate::dsl::condition::{BuildCondition, Condition, ConditionNode};
 use crate::dsl::operand::IntoOperand;
 use crate::dsl::operator::{Operator, StandardOperator};
-use crate::dsl::{IsAst, Assignment, Operand, OrderOperand, StandardAssignment};
-use crate::dsl::{Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
+use crate::dsl::{Assignment, IntoArg, IsAst, Operand, OrderOperand, StandardAssignment};
+use crate::dsl::{BuildOrdering, Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
 use std::ops::Deref;
@@ -23,12 +24,61 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
     }
 }
 
+// impl<'a, T, DB: Database> IntoIdentifier for Column<'a, T, DB> {
+//     fn into_identifier(self) -> Identifier {
+//         Identifier {
+//             identifier: self.meta().column_name,
+//         }
+//     }
+// }
+
+impl<'a, T, DB: Database> IntoAlias<T> for Column<'a, T, DB> {
+    fn into_identifier(self) -> Identifier {
+        Identifier {
+            identifier: self.meta().column_name,
+        }
+    }
+}
+
+impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<'a, T, DB> {
+    #[inline(always)]
+    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
+        Ordering {
+            operand: OrderOperand::from_std(StandardOperand::Column(self.meta)),
+            direction,
+            nulls: None,
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<'a, T, DB: Database> BuildCondition<'a, DB> for &Column<'a, T, DB> {
+    fn build_operand(self) -> Operand<'a, DB> {
+        Operand::Column(self.meta)
+    }
+}
+
+impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, IsAst, X> for Column<'a, T, DB> {
+    fn into_operand(self) -> Operand<'a, DB> {
+        Operand::Column(self.meta)
+    }
+}
+
+impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<'a, T, DB> {
+    fn into_arg(self) -> Projection<'a, DB, X> {
+        Projection::new(ProjectionExpr::Column(self.meta), None)
+    }
+}
+
 impl<'a, T, DB: Database> SingleArgMarker for Column<'a, T, DB> {}
 
 impl<'a, T, DB: Database> Column<'a, T, DB> {
     /// The type of alias T must be consistent with the current column
     pub fn alias<X>(self, alias: Column<'a, T, DB>) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.meta), Some(alias.meta))
+        Projection::new(
+            ProjectionExpr::Column(self.meta),
+            Some(alias.into_identifier()),
+        )
     }
 }
 
@@ -39,18 +89,6 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
     }
     pub fn meta(&self) -> ColumnMeta {
         self.meta
-    }
-}
-
-impl<'a, T, DB: Database> ConditionBuilder<'a, DB> for &Column<'a, T, DB> {
-    fn build_operand(self) -> Operand<'a, DB> {
-        Operand::Column(self.meta)
-    }
-}
-
-impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, IsAst, X> for Column<'a, T, DB> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::Column(self.meta)
     }
 }
 
@@ -160,21 +198,11 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
     }
 
     pub fn asc<X>(&self) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Column(self.meta)),
-            direction: Some(Direction::Asc),
-            nulls: None,
-            _marker: PhantomData,
-        }
+        self.build_ordering(Some(Direction::Asc))
     }
 
     pub fn desc<X>(&self) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Column(self.meta)),
-            direction: Some(Direction::Desc),
-            nulls: None,
-            _marker: PhantomData,
-        }
+        self.build_ordering(Some(Direction::Desc))
     }
 
     pub fn set<V, K, X>(&self, v: V) -> Assignment<'a, DB, X>

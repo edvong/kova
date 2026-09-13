@@ -2,6 +2,7 @@ use crate::dsl::function::Function;
 use crate::types::{ColumnMeta, Database, Encode};
 use crate::{Error, Result};
 use std::sync::Arc;
+use crate::statement::SelectStatement;
 
 /// Represents a generic operand within a SQL expression AST (Abstract Syntax Tree).
 /// An operand can be a dynamically bound database value, a column reference,
@@ -11,6 +12,7 @@ pub enum Operand<'a, DB: Database> {
     Value(DB::Value<'a>),
     Column(ColumnMeta),
     Function(Function<'a, DB>),
+    Subselect(Box<SelectStatement<'a, DB>>),
     /// Captures conversion or building errors inline to avoid interrupting
     /// the fluent builder API chain, deferring error handling to execution time.
     Error(Arc<Error>),
@@ -30,6 +32,11 @@ impl<'a, DB: Database> From<Result<DB::Value<'a>>> for Operand<'a, DB> {
         }
     }
 }
+
+// pub trait BuildOperand<'a, DB: Database> {
+//     fn build_operand(self) -> Operand<'a, DB>;
+// }
+
 
 pub struct IsAst;
 pub struct IsValue;

@@ -2,7 +2,6 @@ mod codec;
 mod conn;
 mod db;
 mod ext;
-mod json;
 mod meta;
 mod mode;
 mod model;
@@ -18,7 +17,6 @@ pub use {
     },
     db::Database,
     ext::Extension,
-    json::Json,
     meta::ColumnMeta,
     mode::{Async, Mode, Sync},
     model::{FromRow, Model},

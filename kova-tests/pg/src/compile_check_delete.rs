@@ -1,5 +1,6 @@
 use crate::Result;
-use crate::models::{Order, User};
+use crate::models::order::Order;
+use crate::models::user::User;
 use kova::Options;
 
 /// Stress Test 5: Delete Statements

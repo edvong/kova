@@ -3,14 +3,11 @@ mod builder;
 mod scalar;
 
 pub use aggregate::*;
-pub use builder::FunctionBuilder;
+pub use builder::BuildFunction;
 pub use scalar::*;
 
 use crate::dsl::component::WithComponent;
-use crate::dsl::{
-    Column, Component, Direction, OrderOperand, Ordering, Projection, ProjectionExpr,
-    StandardOperand,
-};
+use crate::dsl::Component;
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
 
@@ -54,29 +51,29 @@ pub enum StandardFunction<'a, DB: Database> {
     _Marker(PhantomData<&'a DB>),
 }
 
-impl<'a, DB: Database> Function<'a, DB> {
-    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        Projection::new(
-            ProjectionExpr::Function(self),
-            Some(col.meta)
-        )
-    }
-
-    pub fn asc<X>(self) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(self)),
-            direction: Some(Direction::Asc),
-            nulls: None,
-            _marker:PhantomData,
-        }
-    }
-
-    pub fn desc<X>(self) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(self)),
-            direction: Some(Direction::Desc),
-            nulls: None,
-            _marker:PhantomData,
-        }
-    }
-}
+// impl<'a, DB: Database> Function<'a, DB> {
+//     pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
+//         Projection::new(
+//             ProjectionExpr::Function(self),
+//             Some(col.identifier())
+//         )
+//     }
+// 
+//     pub fn asc<X>(self) -> Ordering<'a, DB, X> {
+//         Ordering {
+//             operand: OrderOperand::from_std(StandardOperand::Function(self)),
+//             direction: Some(Direction::Asc),
+//             nulls: None,
+//             _marker:PhantomData,
+//         }
+//     }
+// 
+//     pub fn desc<X>(self) -> Ordering<'a, DB, X> {
+//         Ordering {
+//             operand: OrderOperand::from_std(StandardOperand::Function(self)),
+//             direction: Some(Direction::Desc),
+//             nulls: None,
+//             _marker:PhantomData,
+//         }
+//     }
+// }

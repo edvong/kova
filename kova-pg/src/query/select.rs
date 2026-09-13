@@ -14,8 +14,8 @@ use std::marker::PhantomData;
 
 pub struct Select<'c, 'a, DB: Database, T, E, X> {
     pub(crate) executor: &'c Executor<E>,
-    pub(crate) statement: SelectStatement<'a, DB, T>,
-    _marker: PhantomData<X>,
+    pub(crate) statement: SelectStatement<'a, DB>,
+    _marker: PhantomData<(T, X)>,
 }
 
 impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Postgres, T, E, X> for Select<'c, 'a, Postgres, T, E, X>
@@ -25,7 +25,7 @@ where
     fn new(executor: &'c Executor<E>) -> Self {
         Self {
             executor,
-            statement: SelectStatement::new(),
+            statement: SelectStatement::new(T::TABLE_NAME),
             _marker: PhantomData,
         }
     }

@@ -75,6 +75,22 @@ impl<'a> FromSql<'a> for Value<'a> {
                 let s = <&'a str>::from_sql(ty, raw)?;
                 Ok(Value::Text(Cow::Borrowed(s)))
             }
+
+            Type::JSON | Type::JSONB => {
+                let mut b = raw;
+                // If it is JSONB and there is data,
+                // cut off the version control byte at the beginning (\x01)
+                if *ty == Type::JSONB && !b.is_empty() {
+                    if b[0] != 1 {
+                        return Err("Unsupported JSONB encoding version".into());
+                    }
+                    b = &b[1..]; // Zero-Copy Slicing
+                }
+
+                let s = str::from_utf8(b)?;
+                Ok(Value::Text(Cow::Borrowed(s)))
+            }
+
             Type::BYTEA => {
                 let b = <&'a [u8]>::from_sql(ty, raw)?;
                 Ok(Value::Blob(Cow::Borrowed(b)))

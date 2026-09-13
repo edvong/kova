@@ -4,10 +4,10 @@ use crate::dsl::{
     Projection, ProjectionClause, WhereClause,
 };
 use crate::render::RenderData;
-use crate::types::{Database, Model};
-use std::marker::PhantomData;
+use crate::types::Database;
 
-pub struct SelectStatement<'a, DB: Database, T> {
+pub struct SelectStatement<'a, DB: Database> {
+    table: &'static str,
     distinct: DistinctClause,
     projection: ProjectionClause<'a, DB>,
     join: JoinClause<'a, DB>,
@@ -17,16 +17,15 @@ pub struct SelectStatement<'a, DB: Database, T> {
     order_by: OrderByClause<'a, DB>,
     pagination: PaginationClause<'a, DB>,
     locking: LockingClause<'a, DB>,
-    _marker: PhantomData<T>,
 }
 
-impl<'a, DB, T> SelectStatement<'a, DB, T>
+impl<'a, DB> SelectStatement<'a, DB>
 where
-    T: Model<DB = DB>,
     DB: Database,
 {
-    pub fn new() -> Self {
+    pub fn new(table: &'static str) -> Self {
         Self {
+            table,
             distinct: DistinctClause::new(),
             projection: ProjectionClause::new(),
             join: JoinClause::new(),
@@ -36,7 +35,6 @@ where
             order_by: OrderByClause::new(),
             pagination: PaginationClause::new(),
             locking: LockingClause::new(),
-            _marker: PhantomData,
         }
     }
 

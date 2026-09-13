@@ -1,8 +1,5 @@
 use crate::dsl::component::WithComponent;
-use crate::dsl::{
-    Direction, EraseX, IntoOperand, Operand, Operator, OrderOperand, Ordering, StandardOperand,
-    StandardOperator,
-};
+use crate::dsl::{BuildOrdering, Direction, EraseX, IntoOperand, Operand, Operator, OrderOperand, Ordering, StandardOperand, StandardOperator};
 use crate::types::Database;
 use std::marker::PhantomData;
 use std::ops::{BitAnd, BitOr};
@@ -74,24 +71,12 @@ impl<'a, DB: Database, X> BitOr for Condition<'a, DB, X> {
     }
 }
 
-impl<'a, DB: Database, X> Condition<'a, DB, X> {
-    /// Transforms the boolean condition tree into an ascending `ORDER BY` expression.
-    /// Takes ownership of the condition tree to avoid allocations.
-    pub fn asc(self) -> Ordering<'a, DB, X> {
+impl<'a, DB: Database, X> BuildOrdering<'a, DB, X> for Condition<'a, DB, X> {
+    #[inline(always)]
+    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
         Ordering {
             operand: OrderOperand::from_std(StandardOperand::Condition(self.erase_x())),
-            direction: Some(Direction::Asc),
-            nulls: None,
-            _marker: PhantomData,
-        }
-    }
-
-    /// Transforms the boolean condition tree into a descending `ORDER BY` expression.
-    /// Takes ownership of the condition tree to avoid allocations.
-    pub fn desc(self) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Condition(self.erase_x())),
-            direction: Some(Direction::Desc),
+            direction,
             nulls: None,
             _marker: PhantomData,
         }
@@ -100,7 +85,7 @@ impl<'a, DB: Database, X> Condition<'a, DB, X> {
 
 /// An internal helper trait that standardizes the construction of SQL conditional operators.
 /// It abstracts away the boilerplate of wrapping operands into AST nodes.
-pub trait ConditionBuilder<'a, DB: Database>: Sized {
+pub trait BuildCondition<'a, DB: Database>: Sized {
     /// Requires the implementer to define the logic for converting itself into a generic `Operand`.
     fn build_operand(self) -> Operand<'a, DB>;
 

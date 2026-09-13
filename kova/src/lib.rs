@@ -28,10 +28,10 @@ pub mod types {
 }
 
 pub mod dsl {
-    pub use kova_core::dsl::{Column, Condition};
+    pub use kova_core::dsl::{Alias, Column, Condition};
 
     #[cfg(feature = "pg")]
-    pub use kova_pg::dsl::{LockMode, WaitPolicy};
+    pub use kova_pg::dsl::{LockMode, WaitPolicy, Subselect};
 
     #[doc(hidden)]
     #[cfg(feature = "pg")]
@@ -57,7 +57,9 @@ pub mod dsl {
         };
 
         #[cfg(feature = "pg")]
-        pub use kova_pg::dsl::func::ArrayAgg;
+        pub use kova_pg::dsl::func::{
+            ArrayAgg, JsonbAgg, JsonbObject,
+        };
     }
 }
 

@@ -1,28 +1,40 @@
 #![allow(clippy::wrong_self_convention)]
 
-use crate::dsl::condition::ConditionBuilder;
+use crate::dsl::condition::BuildCondition;
 use crate::dsl::func::Function;
 use crate::dsl::function::StandardFunction;
-use crate::dsl::function::builder::FunctionBuilder;
+use crate::dsl::function::builder::BuildFunction;
 use crate::dsl::{
-    Column, Condition, IntoArg, IntoOperand, Operand, Ordering, Projection, ProjectionExpr,
-    SingleArgMarker, StandardOperator, WithComponent,
+    BuildOrdering, BuildProjection, Column, Condition, Direction, IntoAlias, IntoArg, IntoOperand,
+    Operand, OrderOperand, Ordering, Projection, ProjectionExpr, SingleArgMarker, StandardOperand,
+    StandardOperator, WithComponent,
 };
 use crate::types::Database;
+use std::marker::PhantomData;
 
 pub struct CountAll;
 
-impl<'a, DB: Database> ConditionBuilder<'a, DB> for CountAll {
+impl<'a, DB: Database> BuildCondition<'a, DB> for CountAll {
     #[inline(always)]
     fn build_operand(self) -> Operand<'a, DB> {
         Operand::Function(self.build_func())
     }
 }
 
-impl<'a, DB: Database> FunctionBuilder<'a, DB> for CountAll {
+impl<'a, DB: Database> BuildFunction<'a, DB> for CountAll {
     #[inline(always)]
     fn build_func(self) -> Function<'a, DB> {
         Function::from_std(StandardFunction::CountAll)
+    }
+}
+
+impl<'a, DB: Database, X> BuildProjection<'a, DB, X> for CountAll {
+    #[inline(always)]
+    fn build_alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
+        Projection::new(
+            ProjectionExpr::Function(self.build_func()),
+            Some(col.into_identifier()),
+        )
     }
 }
 
@@ -30,9 +42,21 @@ impl<'a, DB: Database, X> IntoArg<Projection<'a, DB, X>> for CountAll {
     #[inline(always)]
     fn into_arg(self) -> Projection<'a, DB, X> {
         Projection::new(
-            ProjectionExpr::Function(<Self as FunctionBuilder<'a, DB>>::build_func(self)),
+            ProjectionExpr::Function(self.build_func()),
             None,
         )
+    }
+}
+
+impl<'a, DB: Database, X> BuildOrdering<'a, DB, X> for CountAll {
+    #[inline(always)]
+    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
+        Ordering {
+            operand: OrderOperand::from_std(StandardOperand::Function(self.build_func())),
+            direction,
+            nulls: None,
+            _marker: PhantomData,
+        }
     }
 }
 
@@ -132,10 +156,10 @@ impl CountAll {
     }
 
     pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_asc()
+        self.build_ordering(Some(Direction::Asc))
     }
 
     pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_desc()
+        self.build_ordering(Some(Direction::Desc))
     }
 }
