@@ -1,13 +1,13 @@
-use crate::dsl::{Assignment, Column, Function, Locking, OnConflict, Operator, Pagination};
+use crate::dsl::{ExtAssignment, ExtColumn, ExtFunction, ExtOperator, Locking, OnConflict, Pagination};
 
 pub struct Extension;
 
 impl kova_core::types::Extension<'_> for Extension {
-    type Column<T> = Column<T>;
-    type Operator<'o> = Operator;
-    type Function<'t> = Function<'t>;
+    type Column<'c, T: 'c> = ExtColumn<'c, T>;
+    type Operator<'o> = ExtOperator<'o>;
+    type Function<'t> = ExtFunction<'t>;
     type OrderOperand = ();
-    type Assignment<'t> = Assignment;
+    type Assignment<'t> = ExtAssignment;
     type GroupBy = ();
     type Locking = Locking;
     type Pagination = Pagination;

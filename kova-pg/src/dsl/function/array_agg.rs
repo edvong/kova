@@ -1,21 +1,14 @@
 #![allow(clippy::wrong_self_convention)]
 
+use crate::dsl::ExtFunction;
 use crate::types::Postgres;
-use kova_core::dsl::func::Function as CoreFunction;
+use kova_core::dsl::func::Function;
 use kova_core::dsl::{
-    BuildCondition, Column, Condition, EraseX, IntoAlias, IntoOperand, Operand, Ordering,
-    Projection, ProjectionExpr, StandardOperator, WithComponent,
+    Column, Condition, EraseX, IntoAlias, IntoOperand, IntoComparator, Operand, Comparator,
+    Ordering, Projection, ProjectionExpr, WithComponent,
 };
 use kova_core::types::ColumnMeta;
 use std::marker::PhantomData;
-
-// array_agg(x)
-// array_agg(ALL x)
-// array_agg(DISTINCT x)
-// array_agg(x ORDER BY y)
-// array_agg(DISTINCT x ORDER BY y)
-// array_agg(x) FILTER (WHERE ...)
-// array_agg(DISTINCT x ORDER BY y) FILTER (WHERE ...)
 
 pub struct ArrayAggState<'a, X> {
     pub(crate) meta: ColumnMeta,
@@ -112,8 +105,8 @@ where
         )
     }
 
-    fn build_func(self) -> CoreFunction<'a, Postgres> {
-        CoreFunction::from_ext(crate::dsl::Function::ArrayAgg(
+    fn build_func(self) -> Function<'a, Postgres> {
+        Function::from_ext(crate::dsl::ExtFunction::ArrayAgg(
             self.0.into_state().erase_x(),
         ))
     }
@@ -121,13 +114,15 @@ where
 
 // ====================== Operators ======================
 
-impl<'a, T> BuildCondition<'a, Postgres> for ArrayAgg<T>
+impl<'a, T, Target> IntoComparator<'a, Target, Postgres> for ArrayAgg<T>
 where
     T: IntoArrayAggState<'a>,
 {
     #[inline(always)]
-    fn build_operand(self) -> Operand<'a, Postgres> {
-        Operand::Function(self.build_func())
+    fn into_comparator(self) -> Comparator<'a, Target, Postgres> {
+        Comparator::new(Operand::from_function(Function::from_ext(
+            ExtFunction::ArrayAgg(self.0.into_state().erase_x()),
+        )))
     }
 }
 
@@ -139,50 +134,50 @@ where
     where
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.binary_op(v, StandardOperator::Eq)
+        self.into_comparator().eq(v)
     }
 
     pub fn ne<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.binary_op(v, StandardOperator::Ne)
+        self.into_comparator().ne(v)
     }
 
     pub fn gt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.binary_op(v, StandardOperator::Gt)
+        self.into_comparator().gt(v)
     }
 
     pub fn ge<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.binary_op(v, StandardOperator::Ge)
+        self.into_comparator().ge(v)
     }
 
     pub fn lt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.binary_op(v, StandardOperator::Lt)
+        self.into_comparator().lt(v)
     }
 
     pub fn le<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
     where
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.binary_op(v, StandardOperator::Le)
+        self.into_comparator().le(v)
     }
 
     pub fn is_null(self) -> Condition<'a, Postgres, T::X> {
-        self.unary_op(StandardOperator::IsNull)
+        IntoComparator::<'a, (), Postgres>::into_comparator(self).is_null()
     }
 
     pub fn is_not_null(self) -> Condition<'a, Postgres, T::X> {
-        self.unary_op(StandardOperator::IsNotNull)
+        IntoComparator::<'a, (), Postgres>::into_comparator(self).is_not_null()
     }
 
     pub fn between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
@@ -190,7 +185,7 @@ where
         L: IntoOperand<'a, Target, Postgres, K, T::X>,
         U: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.ternary_op(lower, upper, StandardOperator::Between)
+        self.into_comparator().between(lower, upper)
     }
 
     pub fn not_between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
@@ -198,7 +193,7 @@ where
         L: IntoOperand<'a, Target, Postgres, K, T::X>,
         U: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.ternary_op(lower, upper, StandardOperator::NotBetween)
+        self.into_comparator().not_between(lower, upper)
     }
 
     pub fn in_list<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
@@ -206,7 +201,7 @@ where
         I: IntoIterator<Item = V>,
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.list_op(values, StandardOperator::In)
+        self.into_comparator().in_list(values)
     }
 
     pub fn not_in<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
@@ -214,8 +209,15 @@ where
         I: IntoIterator<Item = V>,
         V: IntoOperand<'a, Target, Postgres, K, T::X>,
     {
-        self.list_op(values, StandardOperator::NotIn)
+        self.into_comparator().not_in_list(values)
     }
 
     // Other PG Operators ...
+    // array_agg(x)
+    // array_agg(ALL x)
+    // array_agg(DISTINCT x)
+    // array_agg(x ORDER BY y)
+    // array_agg(DISTINCT x ORDER BY y)
+    // array_agg(x) FILTER (WHERE ...)
+    // array_agg(DISTINCT x ORDER BY y) FILTER (WHERE ...)
 }

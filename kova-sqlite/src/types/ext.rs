@@ -4,7 +4,7 @@ use kova_core::types::Extension;
 pub struct SqliteExtension;
 
 impl Extension<'_> for SqliteExtension {
-    type Column<T> = Column<T>;
+    type Column<'a, T: 'a> = Column<T>;
     type Operator<'o> = Operator;
     type Function<'t> = ();
     type OrderOperand = ();

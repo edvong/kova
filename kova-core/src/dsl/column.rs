@@ -1,18 +1,20 @@
 use crate::dsl::alias::{Identifier, IntoAlias};
 use crate::dsl::arg::SingleArgMarker;
+use crate::dsl::comparator::AsComparator;
 use crate::dsl::component::WithComponent;
-use crate::dsl::condition::{BuildCondition, Condition, ConditionNode};
+use crate::dsl::condition::Condition;
 use crate::dsl::operand::IntoOperand;
-use crate::dsl::operator::{Operator, StandardOperator};
-use crate::dsl::{Assignment, IntoArg, IsAst, Operand, OrderOperand, StandardAssignment};
+use crate::dsl::{
+    Assignment, Comparator, IntoArg, IsAst, Operand, OrderOperand, StandardAssignment,
+};
 use crate::dsl::{BuildOrdering, Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
-pub type ExtColumn<'a, T, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Column<T>;
+pub type ExtColumn<'a, T, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Column<'a, T>;
 
-pub struct Column<'a, T, DB: Database> {
+pub struct Column<'a, T: 'a, DB: Database> {
     pub(crate) meta: ColumnMeta,
     inner: ExtColumn<'a, T, DB>,
 }
@@ -24,19 +26,15 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
     }
 }
 
-// impl<'a, T, DB: Database> IntoIdentifier for Column<'a, T, DB> {
-//     fn into_identifier(self) -> Identifier {
-//         Identifier {
-//             identifier: self.meta().column_name,
-//         }
+// impl<'a, T, DB: Database> DerefMut for Column<'a, T, DB> {
+//     fn deref_mut(&mut self) -> &mut Self::Target {
+//         &mut self.inner
 //     }
 // }
 
 impl<'a, T, DB: Database> IntoAlias<T> for Column<'a, T, DB> {
     fn into_identifier(self) -> Identifier {
-        Identifier {
-            identifier: self.meta().column_name,
-        }
+        Identifier { identifier: self.meta().column_name }
     }
 }
 
@@ -52,15 +50,16 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<'a, T, DB> {
     }
 }
 
-impl<'a, T, DB: Database> BuildCondition<'a, DB> for &Column<'a, T, DB> {
-    fn build_operand(self) -> Operand<'a, DB> {
-        Operand::Column(self.meta)
+impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, IsAst, X> for Column<'a, T, DB> {
+    fn into_operand(self) -> Operand<'a, DB> {
+        Operand::from_column(self.meta)
     }
 }
 
-impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, IsAst, X> for Column<'a, T, DB> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::Column(self.meta)
+impl<'a, T, DB: Database> AsComparator<'a, T, DB> for Column<'a, T, DB> {
+    #[inline(always)]
+    fn as_comparator(&self) -> Comparator<'a, T, DB> {
+        Comparator::new(Operand::from_column(self.meta))
     }
 }
 
@@ -75,10 +74,7 @@ impl<'a, T, DB: Database> SingleArgMarker for Column<'a, T, DB> {}
 impl<'a, T, DB: Database> Column<'a, T, DB> {
     /// The type of alias T must be consistent with the current column
     pub fn alias<X>(self, alias: Column<'a, T, DB>) -> Projection<'a, DB, X> {
-        Projection::new(
-            ProjectionExpr::Column(self.meta),
-            Some(alias.into_identifier()),
-        )
+        Projection::new(ProjectionExpr::Column(self.meta), Some(alias.into_identifier()))
     }
 }
 
@@ -93,54 +89,55 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
 }
 
 impl<'a, T, DB: Database> Column<'a, T, DB> {
+
     pub fn eq<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.binary_op(v, StandardOperator::Eq)
+        self.as_comparator().eq(v)
     }
 
     pub fn ne<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.binary_op(v, StandardOperator::Ne)
+        self.as_comparator().ne(v)
     }
 
     pub fn gt<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.binary_op(v, StandardOperator::Gt)
+        self.as_comparator().gt(v)
     }
 
     pub fn ge<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.binary_op(v, StandardOperator::Ge)
+        self.as_comparator().ge(v)
     }
 
     pub fn lt<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.binary_op(v, StandardOperator::Lt)
+        self.as_comparator().lt(v)
     }
 
     pub fn le<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.binary_op(v, StandardOperator::Le)
+        self.as_comparator().le(v)
     }
 
     pub fn is_null<X>(&self) -> Condition<'a, DB, X> {
-        self.unary_op(StandardOperator::IsNull)
+        self.as_comparator().is_null()
     }
 
     pub fn is_not_null<X>(&self) -> Condition<'a, DB, X> {
-        self.unary_op(StandardOperator::IsNotNull)
+        self.as_comparator().is_not_null()
     }
 
     pub fn between<L, U, K, X>(&self, lower: L, upper: U) -> Condition<'a, DB, X>
@@ -148,7 +145,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         L: IntoOperand<'a, T, DB, K, X>,
         U: IntoOperand<'a, T, DB, K, X>,
     {
-        self.ternary_op(lower, upper, StandardOperator::Between)
+        self.as_comparator().between(lower, upper)
     }
 
     pub fn not_between<L, U, K, X>(&self, lower: L, upper: U) -> Condition<'a, DB, X>
@@ -156,7 +153,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         L: IntoOperand<'a, T, DB, K, X>,
         U: IntoOperand<'a, T, DB, K, X>,
     {
-        self.ternary_op(lower, upper, StandardOperator::NotBetween)
+        self.as_comparator().not_between(lower, upper)
     }
 
     pub fn in_list<I, V, K, X>(&self, values: I) -> Condition<'a, DB, X>
@@ -164,7 +161,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         I: IntoIterator<Item = V>,
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.list_op(values, StandardOperator::In)
+        self.as_comparator().in_list(values)
     }
 
     pub fn not_in<I, V, K, X>(&self, values: I) -> Condition<'a, DB, X>
@@ -172,29 +169,21 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         I: IntoIterator<Item = V>,
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        self.list_op(values, StandardOperator::NotIn)
+        self.as_comparator().not_in_list(values)
     }
 
     pub fn like<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        ConditionNode::Op(Operator::from_std(StandardOperator::Like(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-        .into()
+        self.as_comparator().like(v)
     }
 
     pub fn not_like<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
     where
         V: IntoOperand<'a, T, DB, K, X>,
     {
-        ConditionNode::Op(Operator::from_std(StandardOperator::NotLike(
-            Operand::Column(self.meta),
-            v.into_operand(),
-        )))
-        .into()
+        self.as_comparator().not_like(v)
     }
 
     pub fn asc<X>(&self) -> Ordering<'a, DB, X> {

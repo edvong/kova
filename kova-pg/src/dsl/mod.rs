@@ -6,6 +6,8 @@ mod function;
 mod assignment;
 mod conflict;
 mod subselect;
+mod jsonb_chain;
+mod jsonb_text;
 
 pub mod func {
     pub use crate::dsl::function::JsonbObject;
@@ -14,15 +16,15 @@ pub mod func {
 }
 
 pub use {
-    column::Column,
+    column::ExtColumn,
     locking::{LockMode, WaitPolicy},
-    function::{Function},
-    assignment::Assignment,
+    function::{ExtFunction},
+    assignment::ExtAssignment,
     subselect::Subselect,
 };
 
 pub(crate) use {
-    operator::Operator,
+    operator::ExtOperator,
     pagination::Pagination,
     locking::{Locking, LockItem},
     conflict::{ConflictTarget, OnConflict},

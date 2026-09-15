@@ -1,42 +1,50 @@
 use crate::dsl::function::Function;
+use crate::statement::SelectStatement;
 use crate::types::{ColumnMeta, Database, Encode};
 use crate::{Error, Result};
-use std::sync::Arc;
-use crate::statement::SelectStatement;
 
-/// Represents a generic operand within a SQL expression AST (Abstract Syntax Tree).
-/// An operand can be a dynamically bound database value, a column reference,
-/// or a deferred error captured during the query-building phase.
-// #[derive(Debug, Clone)]
-pub enum Operand<'a, DB: Database> {
+pub struct Operand<'a, DB: Database> {
+    inner: OperandNode<'a, DB>,
+}
+
+enum OperandNode<'a, DB: Database> {
     Value(DB::Value<'a>),
     Column(ColumnMeta),
     Function(Function<'a, DB>),
     Subselect(Box<SelectStatement<'a, DB>>),
     /// Captures conversion or building errors inline to avoid interrupting
     /// the fluent builder API chain, deferring error handling to execution time.
-    Error(Arc<Error>),
+    Error(Box<Error>),
 }
 
-impl<'a, DB: Database> From<ColumnMeta> for Operand<'a, DB> {
-    fn from(value: ColumnMeta) -> Self {
-        Operand::Column(value)
-    }
-}
-
-impl<'a, DB: Database> From<Result<DB::Value<'a>>> for Operand<'a, DB> {
-    fn from(value: Result<DB::Value<'a>>) -> Self {
-        match value {
-            Ok(v) => Operand::Value(v),
-            Err(e) => Operand::Error(Arc::new(e)),
+impl<'a, DB: Database> Operand<'a, DB> {
+    pub fn from_result(r: Result<DB::Value<'a>>) -> Self {
+        match r {
+            Ok(v) => Self::from_value(v),
+            Err(e) => Self::from_error(e),
         }
     }
+
+    pub fn from_value(value: DB::Value<'a>) -> Self {
+        Operand { inner: OperandNode::Value(value) }
+    }
+
+    pub fn from_column(meta: ColumnMeta) -> Self {
+        Operand { inner: OperandNode::Column(meta) }
+    }
+
+    pub fn from_function(f: Function<'a, DB>) -> Self {
+        Operand { inner: OperandNode::Function(f) }
+    }
+
+    pub fn from_subselect(s: SelectStatement<'a, DB>) -> Self {
+        Operand { inner: OperandNode::Subselect(Box::new(s)) }
+    }
+
+    pub fn from_error(err: Error) -> Self {
+        Operand { inner: OperandNode::Error(Box::new(err)) }
+    }
 }
-
-// pub trait BuildOperand<'a, DB: Database> {
-//     fn build_operand(self) -> Operand<'a, DB>;
-// }
-
 
 pub struct IsAst;
 pub struct IsValue;
@@ -51,10 +59,7 @@ where
     T: Encode<'a, DB, X, T>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.encode() {
-            Ok(v) => Operand::Value(v),
-            Err(e) => Operand::Error(Arc::new(e)),
-        }
+        Operand::from_result(self.encode())
     }
 }
 
@@ -64,10 +69,7 @@ where
     &'b T: Encode<'a, DB, X, T>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.encode() {
-            Ok(v) => Operand::Value(v),
-            Err(e) => Operand::Error(Arc::new(e)),
-        }
+        Operand::from_result(self.encode())
     }
 }
 
@@ -78,10 +80,7 @@ where
     &'b str: Encode<'a, DB, X, String>
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.encode() {
-            Ok(v) => Operand::Value(v),
-            Err(e) => Operand::Error(Arc::new(e)),
-        }
+        Operand::from_result(self.encode())
     }
 }
 
@@ -91,9 +90,6 @@ where
     &'b [u8]: Encode<'a, DB, X, Vec<u8>>,
 {
     fn into_operand(self) -> Operand<'a, DB> {
-        match self.encode() {
-            Ok(v) => Operand::Value(v),
-            Err(e) => Operand::Error(Arc::new(e)),
-        }
+        Operand::from_result(self.encode())
     }
 }

@@ -10,6 +10,7 @@ mod operator;
 mod alias;
 mod clause;
 mod rows;
+mod comparator;
 
 pub mod func {
     pub use crate::dsl::function::{
@@ -24,9 +25,10 @@ pub use {
     clause::*,
     column::Column,
     component::{Component, WithComponent},
-    condition::{Condition, BuildCondition},
+    condition::{Condition},
     operand::{IntoOperand, IsAst, IsValue, Operand},
     operator::{Operator, StandardOperator},
+    comparator::{Comparator, IntoComparator, AsComparator},
     rows::{InsertRows, IntoRows},
 };
 

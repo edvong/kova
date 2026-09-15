@@ -5,15 +5,21 @@ mod jsonb_to_recordset;
 mod row_to_json;
 
 use crate::dsl::function::array_agg::ArrayAggState;
-use kova_core::dsl::Projection;
 use crate::types::Postgres;
+use kova_core::dsl::{Operand, Projection};
 
 pub use crate::dsl::function::jsonb_object::JsonbObject;
 pub use crate::dsl::function::jsonb_agg::JsonbAgg;
 pub use crate::dsl::function::array_agg::ArrayAgg;
+use crate::dsl::operator::JsonOp;
 
-pub enum Function<'a> {
+pub enum ExtFunction<'a> {
     JsonbObject(Vec<Projection<'a, Postgres, ()>>),
     JsonbAgg(Box<Projection<'a, Postgres, ()>>),
     ArrayAgg(ArrayAggState<'a, ()>),
+
+    JsonChain {
+        base: Box<Operand<'a, Postgres>>,
+        ops: Vec<JsonOp<'a>>,
+    },
 }

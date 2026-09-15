@@ -35,7 +35,7 @@ pub mod dsl {
 
     #[doc(hidden)]
     #[cfg(feature = "pg")]
-    pub use kova_pg::dsl::Column as ExtColumn;
+    pub use kova_pg::dsl::ExtColumn as ExtColumn;
 
     #[doc(hidden)]
     #[cfg(feature = "sqlite")]

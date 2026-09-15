@@ -1,4 +1,4 @@
-use crate::dsl::Function;
+use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function as CoreFunction;
 use kova_core::dsl::{
@@ -16,7 +16,7 @@ where
 {
     fn into_arg(self) -> Projection<'a, Postgres, X> {
         let inner_proj = self.0.into_arg().erase_x();
-        let func = CoreFunction::from_ext(Function::JsonbAgg(Box::new(inner_proj)));
+        let func = CoreFunction::from_ext(ExtFunction::JsonbAgg(Box::new(inner_proj)));
         Projection::new(ProjectionExpr::Function(func), None)
     }
 }
