@@ -18,52 +18,37 @@ pub struct Select<'c, 'a, DB: Database, T, E, X> {
 }
 
 impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X> for Select<'c, 'a, Sqlite, T, E, X>
-where
-    T: Model<DB = Sqlite>,
+    where
+        T: Model<DB = Sqlite>,
 {
     fn new(executor: &'c Executor<E>) -> Self {
-        Self {
-            executor,
-            statement: SelectStatement::new(T::TABLE_NAME),
-            _marker: PhantomData,
-        }
+        Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
 }
 
 impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
-where
-    T: Model<DB = Sqlite>,
+    where
+        T: Model<DB = Sqlite>,
 {
     pub fn columns<C>(mut self, cols: C) -> Self
-    where
-        C: IntoArgs<Projection<'a, Sqlite, X>>,
-    {
+        where
+            C: IntoArgs<Projection<'a, Sqlite, X>>, {
         self.statement.columns(cols.into_mapped_args(|p| p.erase_x()));
         self
     }
 
     pub fn inner_join<M>(mut self, cond: Condition<'a, Sqlite, X>) -> Self
-    where
-        M: Model<DB = Sqlite>,
-    {
-        let join = Join {
-            typ: JoinType::Inner,
-            target_table: T::TABLE_NAME,
-            on: cond.erase_x(),
-        };
+        where
+            M: Model<DB = Sqlite>, {
+        let join = Join { typ: JoinType::Inner, target_table: T::TABLE_NAME, on: cond.erase_x() };
         self.statement.join(join);
         self
     }
 
     pub fn left_join<M>(mut self, cond: Condition<'a, Sqlite, X>) -> Self
-    where
-        M: Model<DB = Sqlite>,
-    {
-        let join = Join {
-            typ: JoinType::Left,
-            target_table: T::TABLE_NAME,
-            on: cond.erase_x(),
-        };
+        where
+            M: Model<DB = Sqlite>, {
+        let join = Join { typ: JoinType::Left, target_table: T::TABLE_NAME, on: cond.erase_x() };
         self.statement.join(join);
         self
     }
@@ -74,9 +59,8 @@ where
     }
 
     pub fn group_by<C>(mut self, cols: C) -> Self
-    where
-        C: IntoArgs<GroupBy<'a, Sqlite, X>>,
-    {
+        where
+            C: IntoArgs<GroupBy<'a, Sqlite, X>>, {
         self.statement.group_by(cols.into_mapped_args(|g| g.erase_x()));
         self
     }
@@ -87,54 +71,43 @@ where
     }
 
     pub fn order_by<C>(mut self, cols: C) -> Self
-    where
-        C: IntoArgs<Ordering<'a, Sqlite, X>>,
-    {
+        where
+            C: IntoArgs<Ordering<'a, Sqlite, X>>, {
         self.statement.order_by(cols.into_mapped_args(|o| o.erase_x()));
         self
     }
 
     pub fn limit(mut self, limit: usize) -> Self {
-        let ext = self
-            .statement
-            .pagination_ext_mut_or_with(|| Pagination::default());
+        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
         ext.limit = Some(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        let ext = self
-            .statement
-            .pagination_ext_mut_or_with(|| Pagination::default());
+        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
         ext.offset = Some(offset);
         self
     }
 }
 
 impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
-where
-    T: Model<DB = Sqlite>,
-    E: ExecutableSync<Native = rusqlite::Connection>,
+    where
+        T: Model<DB = Sqlite>,
+        E: ExecutableSync<Native = rusqlite::Connection>,
 {
     pub fn load(self) -> Result<Vec<T>> {
         self.load_as::<T>()
     }
 
     pub fn load_as<U>(self) -> Result<Vec<U>>
-    where
-        U: FromRow<DB = Sqlite>,
-    {
-        fetch_rows(self.executor, once(self.statement.build()), |row| {
-            U::from_row(&row)
-        })
+        where
+            U: FromRow<DB = Sqlite>, {
+        fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
     }
 
     pub fn load_in<U>(self) -> Result<Vec<U>>
-    where
-        for<'r> U: FromColumn<'r, Sqlite, X>,
-    {
-        fetch_rows(self.executor, once(self.statement.build()), |row| {
-            U::extract(&row)
-        })
+        where
+            for<'r> U: FromColumn<'r, Sqlite, X>, {
+        fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
     }
 }

@@ -8,7 +8,7 @@ pub use column::Column;
 
 pub(crate) use {
     assignment::Assignment,
-    conflict::{OnConflict, ConflictTarget}, 
-    operator::Operator, 
-    pagination::Pagination
+    conflict::{ConflictTarget, OnConflict},
+    operator::Operator,
+    pagination::Pagination,
 };

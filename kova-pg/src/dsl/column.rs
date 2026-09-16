@@ -35,9 +35,8 @@ impl<'a, T> ExtColumn<'a, T> {
     // =====================================================
 
     pub fn json_path<V, K, X>(&self, key: V) -> JsonbChain<'a, T>
-    where
-        V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         JsonbChain {
             base: self.op(),
             ops: vec![JsonOp::Path(key.into_operand())],
@@ -46,9 +45,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_path_array<V, K, X>(&self, path: V) -> JsonbChain<'a, T>
-    where
-        V: IntoOperand<'a, Vec<String>, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
         JsonbChain {
             base: self.op(),
             ops: vec![JsonOp::PathArray(path.into_operand())],
@@ -57,9 +55,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_concat<V, K, X>(&self, val: V) -> JsonbChain<'a, T>
-    where
-        V: IntoOperand<'a, T, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, Postgres, K, X>, {
         JsonbChain {
             base: self.op(),
             ops: vec![JsonOp::Concat(val.into_operand())],
@@ -68,9 +65,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_delete<V, K, X>(&self, key: V) -> JsonbChain<'a, T>
-    where
-        V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         JsonbChain {
             base: self.op(),
             ops: vec![JsonOp::Delete(key.into_operand())],
@@ -79,9 +75,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_delete_path<V, K, X>(&self, path: V) -> JsonbChain<'a, T>
-    where
-        V: IntoOperand<'a, Vec<String>, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
         JsonbChain {
             base: self.op(),
             ops: vec![JsonOp::DeletePath(path.into_operand())],
@@ -94,16 +89,14 @@ impl<'a, T> ExtColumn<'a, T> {
     // =====================================================
 
     pub fn json_path_text<V, K, X>(&self, key: V) -> JsonbText<'a>
-    where
-        V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         JsonbText { base: self.op(), ops: vec![JsonOp::PathText(key.into_operand())] }
     }
 
     pub fn json_path_text_array<V, K, X>(&self, path: V) -> JsonbText<'a>
-    where
-        V: IntoOperand<'a, Vec<String>, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
         JsonbText { base: self.op(), ops: vec![JsonOp::PathTextArray(path.into_operand())] }
     }
 
@@ -112,9 +105,8 @@ impl<'a, T> ExtColumn<'a, T> {
     // =====================================================
 
     pub fn json_contains<V, K, X>(&self, val: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, T, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonContains(
             self.op(),
             val.into_operand(),
@@ -122,9 +114,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_contained_by<V, K, X>(&self, val: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, T, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonContainedBy(
             self.op(),
             val.into_operand(),
@@ -132,16 +123,14 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_has_key<V, K, X>(&self, key: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonHasKey(self.op(), key.into_operand())))
     }
 
     pub fn json_has_any_keys<V, K, X>(&self, keys: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, Vec<String>, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonHasAnyKeys(
             self.op(),
             keys.into_operand(),
@@ -149,9 +138,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_has_all_keys<V, K, X>(&self, keys: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, Vec<String>, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonHasAllKeys(
             self.op(),
             keys.into_operand(),
@@ -159,9 +147,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_path_exists<V, K, X>(&self, path: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonPathExists(
             self.op(),
             path.into_operand(),
@@ -169,9 +156,8 @@ impl<'a, T> ExtColumn<'a, T> {
     }
 
     pub fn json_path_predicate<V, K, X>(&self, path: V) -> Condition<'a, Postgres, X>
-    where
-        V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+        where
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::JsonPathPredicate(
             self.op(),
             path.into_operand(),

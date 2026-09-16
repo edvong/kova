@@ -26,9 +26,8 @@ impl<'a> CoreRow<'a, Sqlite> for Row<'a> {
     /// Crucially, this leverages `get_ref()` to obtain a `ValueRef`, preserving
     /// exact zero-copy semantics before wrapping it into the ORM's unified `Value` enum.
     fn get_value<'i, I>(&self, idx: I) -> kova_core::Result<Value<'a>>
-    where
-        I: Into<ColumnIndex<'i>>,
-    {
+        where
+            I: Into<ColumnIndex<'i>>, {
         let val_ref = match idx.into() {
             ColumnIndex::Index(i) => self.inner.get_ref(i),
             ColumnIndex::Name(n) => self.inner.get_ref(n),

@@ -15,15 +15,11 @@ impl<'a, DB: Database> WithComponent for Operator<'a, DB> {
     type Extension = ExtOperator<'a, DB>;
 
     fn from_std(std: Self::Standard) -> Self {
-        Self {
-            inner: Component::standard(std),
-        }
+        Self { inner: Component::standard(std) }
     }
 
     fn from_ext(ext: Self::Extension) -> Self {
-        Self {
-            inner: Component::extension(ext),
-        }
+        Self { inner: Component::extension(ext) }
     }
 }
 

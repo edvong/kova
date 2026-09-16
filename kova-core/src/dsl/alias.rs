@@ -15,10 +15,7 @@ pub struct Alias<T> {
 
 impl<T> Alias<T> {
     pub const fn new(column_name: &'static str) -> Self {
-        Self {
-            column_name,
-            _marker: PhantomData,
-        }
+        Self { column_name, _marker: PhantomData }
     }
 }
 

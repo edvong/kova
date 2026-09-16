@@ -10,7 +10,7 @@ impl<'a, DB: Database> AssignmentClause<'a, DB> {
         Self { items: Vec::new() }
     }
 
-    pub fn set(&mut self, assignments: Vec<Assignment<'a, DB,()>>) {
+    pub fn set(&mut self, assignments: Vec<Assignment<'a, DB, ()>>) {
         self.items = assignments;
     }
 }

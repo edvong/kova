@@ -17,7 +17,7 @@ pub mod options {
 
 pub mod types {
     pub use kova_core::types::{
-        ColumnMeta, Database, Decode, DecodeExt, Encode, FromRow, Model, Row, FromColumn,
+        ColumnMeta, Database, Decode, DecodeExt, Encode, FromColumn, FromRow, Model, Row,
     };
 
     #[cfg(feature = "pg")]
@@ -31,11 +31,11 @@ pub mod dsl {
     pub use kova_core::dsl::{Alias, Column, Condition};
 
     #[cfg(feature = "pg")]
-    pub use kova_pg::dsl::{LockMode, WaitPolicy, Subselect};
+    pub use kova_pg::dsl::{LockMode, Subselect, WaitPolicy};
 
     #[doc(hidden)]
     #[cfg(feature = "pg")]
-    pub use kova_pg::dsl::ExtColumn as ExtColumn;
+    pub use kova_pg::dsl::ExtColumn;
 
     #[doc(hidden)]
     #[cfg(feature = "sqlite")]
@@ -57,9 +57,7 @@ pub mod dsl {
         };
 
         #[cfg(feature = "pg")]
-        pub use kova_pg::dsl::func::{
-            ArrayAgg, JsonbAgg, JsonbObject,
-        };
+        pub use kova_pg::dsl::func::{ArrayAgg, JsonbAgg, JsonbObject};
     }
 }
 

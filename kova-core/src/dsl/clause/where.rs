@@ -2,7 +2,7 @@ use crate::dsl::Condition;
 use crate::types::Database;
 
 pub struct WhereClause<'a, DB: Database> {
-    cond: Option<Condition<'a, DB, ()>>
+    cond: Option<Condition<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> WhereClause<'a, DB> {
@@ -18,4 +18,3 @@ impl<'a, DB: Database> WhereClause<'a, DB> {
         self.cond = Some(cond);
     }
 }
-

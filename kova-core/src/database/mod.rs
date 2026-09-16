@@ -1,5 +1,5 @@
-mod executor;
 mod client;
+mod executor;
 mod operations;
 
 pub use {

@@ -20,10 +20,7 @@ pub(crate) fn parse_model_def(ast: &DeriveInput) -> Result<ModelDef, Error> {
 
     let data_struct = match &ast.data {
         Data::Struct(s) => s,
-        _ => return Err(Error::new(
-            struct_ident.span(),
-            "Macros can only be derived for structs"
-        )),
+        _ => return Err(Error::new(struct_ident.span(), "Macros can only be derived for structs")),
     };
 
     let mut fields = Vec::new();
@@ -33,11 +30,7 @@ pub(crate) fn parse_model_def(ast: &DeriveInput) -> Result<ModelDef, Error> {
         }
     }
 
-    Ok(ModelDef {
-        ident: struct_ident,
-        table_name,
-        fields,
-    })
+    Ok(ModelDef { ident: struct_ident, table_name, fields })
 }
 
 fn parse_field(field: &Field) -> Result<FieldDef, Error> {
@@ -69,7 +62,6 @@ fn parse_field(field: &Field) -> Result<FieldDef, Error> {
         }
     }
 
-    
     if is_ignored && (is_autoincrement || is_json || override_column) {
         let msg = "Field marked as 'ignore' cannot also have the following attributes: 'autoincrement', 'json', 'column'.";
         return Err(Error::new(field_ident.span(), msg));
@@ -79,7 +71,7 @@ fn parse_field(field: &Field) -> Result<FieldDef, Error> {
         let msg = "The 'autoincrement' and 'json' attributes cannot be used together.";
         return Err(Error::new(field_ident.span(), msg));
     }
-    
+
     Ok(FieldDef {
         ident: field_ident,
         ty: field_type,

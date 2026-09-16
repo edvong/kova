@@ -21,8 +21,7 @@ impl_native_extract_column!(
     bool,
     String,
     // str,
-    Vec<u8>
-    // [u8]
+    Vec<u8> // [u8]
 );
 // impl<const N: usize, X> ScalarMarker<Sqlite, X> for [u8; N] {}
 
@@ -95,7 +94,6 @@ macro_rules! impl_sqlite_int {
 
 impl_sqlite_int!(i8, u8, i16, u16, i32, u32, u64, isize, usize);
 
-
 // ==========================================
 // Floating-Point Numbers (Float / Real)
 // ==========================================
@@ -151,9 +149,7 @@ impl FromValue<Sqlite> for bool {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Int8(i) => Ok(i != 0),
-            _ => Err(Error::TypeMismatch(
-                "Expected Int8 (0 or 1) for bool".into(),
-            )),
+            _ => Err(Error::TypeMismatch("Expected Int8 (0 or 1) for bool".into())),
         }
     }
 }
@@ -194,7 +190,6 @@ impl<'a> IntoValue<'a, Sqlite> for &'a str {
     }
 }
 
-
 // ==========================================
 // Binary Type (Blob)
 // ==========================================
@@ -217,8 +212,6 @@ impl FromValue<Sqlite> for Vec<u8> {
     }
 }
 
-
-
 // &'a Vec<u8>: Convenience conversion for references
 impl<'a> IntoValue<'a, Sqlite> for &'a Vec<u8> {
     fn into_value(self) -> Result<Value<'a>> {
@@ -232,7 +225,6 @@ impl<'a> IntoValue<'a, Sqlite> for &'a [u8] {
         Ok(Value::Blob(Cow::Borrowed(self)))
     }
 }
-
 
 /// Fixed-size array support (e.g., cryptographic hashes, UUIDs like `[u8; 16]`, `[u8; 32]`).
 /// Ensures the blob length exactly matches the expected array size during deserialization.
@@ -257,9 +249,7 @@ impl<const N: usize> FromValue<Sqlite> for [u8; N] {
                     .try_into()
                     .map_err(|_| Error::ParseError(format!("Expected Blob of length {}", N)))
             }
-            _ => Err(Error::TypeMismatch(
-                "Expected Blob for fixed-size array".into(),
-            )),
+            _ => Err(Error::TypeMismatch("Expected Blob for fixed-size array".into())),
         }
     }
 }

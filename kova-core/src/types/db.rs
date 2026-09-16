@@ -5,22 +5,22 @@ pub trait Database: 'static + Sized {
     const MAX_PARAMS: usize;
 
     type Value<'a>: Value
-    where
-        Self: 'a;
+        where
+            Self: 'a;
 
     type Row<'a>: Row<'a, Self>
-    where
-        Self: 'a;
+        where
+            Self: 'a;
 
     type Connection<'a>: Connection + Executable
-    where
-        Self: 'a;
+        where
+            Self: 'a;
 
     type Query<'a>: Query<'a, Self>
-    where
-        Self: 'a;
+        where
+            Self: 'a;
 
     type Extension<'a>: Extension<'a>
-    where
-        Self: 'a;
+        where
+            Self: 'a;
 }

@@ -1,5 +1,3 @@
 mod select;
 
-pub use {
-    select::SelectContext,
-};
+pub use select::SelectContext;

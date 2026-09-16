@@ -25,8 +25,7 @@ impl Options {
     // Accepts standard Postgres connection strings,
     // like "host=localhost user=postgres dbname=kova"
     pub fn from<T: AsRef<str>>(conn: T) -> Self {
-        let config = Config::from_str(conn.as_ref())
-            .map_err(|e| Error::Database(Box::new(e)));
+        let config = Config::from_str(conn.as_ref()).map_err(|e| Error::Database(Box::new(e)));
 
         Self {
             config,
@@ -66,21 +65,18 @@ impl Options {
         self
     }
 
-
     #[cfg(feature = "rustls")]
     pub fn tls<F>(mut self, setup: F) -> Self
-    where
-        F: FnOnce() -> Result<rustls::ClientConfig>,
-    {
+        where
+            F: FnOnce() -> Result<rustls::ClientConfig>, {
         self.rustls_state = Some(setup());
         self
     }
 
     #[cfg(feature = "native-tls")]
     pub fn tls<F>(mut self, setup: F) -> Self
-    where
-        F: FnOnce() -> Result<native_tls::TlsConnector>,
-    {
+        where
+            F: FnOnce() -> Result<native_tls::TlsConnector>, {
         self.native_tls_state = Some(setup());
         self
     }
@@ -114,7 +110,8 @@ impl Options {
             return Ok(Client::new(PgPool(pool)));
         }
 
-        let manager = Manager::from_config(self.config?, tokio_postgres::NoTls, self.manager_config);
+        let manager =
+            Manager::from_config(self.config?, tokio_postgres::NoTls, self.manager_config);
         let pool = Pool::builder(manager)
             .config(self.pool_config)
             .runtime(Runtime::Tokio1)

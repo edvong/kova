@@ -23,9 +23,9 @@ pub trait Model: FromRow {
 }
 
 impl<T, DB> FromRow for Option<T>
-where
-    DB: Database,
-    T: FromRow<DB = DB>,
+    where
+        DB: Database,
+        T: FromRow<DB = DB>,
 {
     type DB = DB;
     fn from_row(row: &<DB as Database>::Row<'_>) -> Result<Self, Error> {
@@ -42,9 +42,9 @@ macro_rules! impl_from_row_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<$($T,)+ DB> FromRow for ($($T,)+)
-        where
-            DB: Database,
-            $( $T: FromRow<DB = DB>, )+
+            where
+                DB: Database,
+                $( $T: FromRow<DB = DB>, )+
         {
             type DB = DB;
             fn from_row(row: &<DB as Database>::Row<'_>) -> Result<Self, Error> {
@@ -70,12 +70,8 @@ impl_from_row_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11);
 impl_from_row_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12);
 impl_from_row_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13);
 impl_from_row_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14);
-impl_from_row_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15
-);
-impl_from_row_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16
-);
+impl_from_row_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15);
+impl_from_row_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16);
 impl_from_row_for_tuple!(
     T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17
 );

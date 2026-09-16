@@ -16,10 +16,7 @@ impl<'a, DB: Database, X> EraseX for Assignment<'a, DB, X> {
     type Erased = Assignment<'a, DB, ()>;
 
     fn erase_x(self) -> Self::Erased {
-        Assignment {
-            inner: self.inner,
-            _marker: PhantomData,
-        }
+        Assignment { inner: self.inner, _marker: PhantomData }
     }
 }
 
@@ -28,17 +25,11 @@ impl<'a, DB: Database, X> WithComponent for Assignment<'a, DB, X> {
     type Extension = ExtAssignment<'a, DB>;
 
     fn from_std(std: Self::Standard) -> Self {
-        Self {
-            inner: Component::standard(std),
-            _marker: PhantomData,
-        }
+        Self { inner: Component::standard(std), _marker: PhantomData }
     }
 
     fn from_ext(ext: Self::Extension) -> Self {
-        Self {
-            inner: Component::extension(ext),
-            _marker: PhantomData,
-        }
+        Self { inner: Component::extension(ext), _marker: PhantomData }
     }
 }
 

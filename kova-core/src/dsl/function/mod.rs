@@ -6,8 +6,8 @@ pub use aggregate::*;
 pub use builder::BuildFunction;
 pub use scalar::*;
 
-use crate::dsl::component::WithComponent;
 use crate::dsl::Component;
+use crate::dsl::component::WithComponent;
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
 
@@ -22,15 +22,11 @@ impl<'a, DB: Database> WithComponent for Function<'a, DB> {
     type Extension = ExtFunction<'a, DB>;
 
     fn from_std(std: Self::Standard) -> Self {
-        Self {
-            inner: Component::standard(std),
-        }
+        Self { inner: Component::standard(std) }
     }
 
     fn from_ext(ext: Self::Extension) -> Self {
-        Self {
-            inner: Component::extension(ext),
-        }
+        Self { inner: Component::extension(ext) }
     }
 }
 
@@ -58,7 +54,7 @@ pub enum StandardFunction<'a, DB: Database> {
 //             Some(col.identifier())
 //         )
 //     }
-// 
+//
 //     pub fn asc<X>(self) -> Ordering<'a, DB, X> {
 //         Ordering {
 //             operand: OrderOperand::from_std(StandardOperand::Function(self)),
@@ -67,7 +63,7 @@ pub enum StandardFunction<'a, DB: Database> {
 //             _marker:PhantomData,
 //         }
 //     }
-// 
+//
 //     pub fn desc<X>(self) -> Ordering<'a, DB, X> {
 //         Ordering {
 //             operand: OrderOperand::from_std(StandardOperand::Function(self)),

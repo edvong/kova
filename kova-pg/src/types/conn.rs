@@ -15,9 +15,8 @@ impl Executable for PgPool {
 
 impl ExecutableAsync for PgPool {
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
-    where
-        F: AsyncFnOnce(&Self::Native) -> Result<R> + Send
-    {
+        where
+            F: AsyncFnOnce(&Self::Native) -> Result<R> + Send, {
         let guard = self.0.get().await.map_err(|e| Error::Database(e.into()))?;
         f(&guard).await
     }
@@ -30,9 +29,8 @@ impl<'t> Executable for PgTx<'t> {
 
 impl<'t> ExecutableAsync for PgTx<'t> {
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
-    where
-        F: AsyncFnOnce(&Self::Native) -> Result<R> + Send
-    {
+        where
+            F: AsyncFnOnce(&Self::Native) -> Result<R> + Send, {
         // Borrow original transaction to execute query
         f(&self.0).await
     }
@@ -44,9 +42,8 @@ impl Connection for PgPool {
 
 impl ConnectionAsync for PgPool {
     async fn transaction_async<F, R>(&self, f: F) -> Result<R>
-    where
-        F: AsyncFnOnce(&mut Self::Transaction<'_>) -> Result<R> + Send
-    {
+        where
+            F: AsyncFnOnce(&mut Self::Transaction<'_>) -> Result<R> + Send, {
         let mut guard = self.0.get().await.map_err(|e| Error::Database(e.into()))?;
         let native_tx = guard.transaction().await.map_err(|e| Error::Database(e.into()))?;
         let mut tx = PgTx(native_tx);

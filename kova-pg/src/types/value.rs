@@ -98,10 +98,7 @@ impl<'a> FromSql<'a> for Value<'a> {
 
             // Fallback/Escape hatch: Any PostgreSQL type not explicitly mapped by the ORM
             // is preserved in its raw byte form along with its type OID metadata.
-            _ => Ok(Value::RawRead {
-                ty: ty.clone(),
-                raw,
-            }),
+            _ => Ok(Value::RawRead { ty: ty.clone(), raw }),
         }
     }
 
@@ -114,9 +111,7 @@ impl<'a> FromSql<'a> for Value<'a> {
 
 impl<'a> ToSql for Value<'a> {
     fn to_sql(
-        &self,
-        ty: &Type,
-        out: &mut BytesMut,
+        &self, ty: &Type, out: &mut BytesMut,
     ) -> Result<IsNull, Box<dyn Error + Sync + Send>> {
         match self {
             Value::Null => Ok(IsNull::Yes),
@@ -151,9 +146,7 @@ impl<'a> ToSql for Value<'a> {
     }
 
     fn to_sql_checked(
-        &self,
-        ty: &Type,
-        out: &mut BytesMut,
+        &self, ty: &Type, out: &mut BytesMut,
     ) -> Result<IsNull, Box<dyn Error + Sync + Send>> {
         self.to_sql(ty, out)
     }

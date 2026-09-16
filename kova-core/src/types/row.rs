@@ -27,8 +27,8 @@ pub trait Row<'a, DB: Database> {
     /// Retrieves a dynamically typed database value using either a zero-based index
     /// (`0_usize`) or a string-based column name (`"column_name"`).
     fn get_value<'i, I>(&self, idx: I) -> Result<DB::Value<'a>>
-    where
-        I: Into<ColumnIndex<'i>>;
+        where
+            I: Into<ColumnIndex<'i>>;
 }
 
 #[diagnostic::on_unimplemented(
@@ -47,9 +47,8 @@ pub trait FromColumn<'a, DB: Database, X>: Sized {
 
     #[inline(always)]
     fn extract_by<F>(row: &DB::Row<'a>, idx: &mut usize, f: F) -> Result<Self>
-    where
-        F: FnOnce(DB::Value<'a>) -> Result<Self>,
-    {
+        where
+            F: FnOnce(DB::Value<'a>) -> Result<Self>, {
         let val = Row::get_value(row, *idx)?;
         *idx += 1;
         f(val)
@@ -57,9 +56,8 @@ pub trait FromColumn<'a, DB: Database, X>: Sized {
 
     #[inline(always)]
     fn extract_value(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self>
-    where
-        Self: Decode<'a, DB, X>,
-    {
+        where
+            Self: Decode<'a, DB, X>, {
         Self::extract_by(row, idx, Self::decode)
     }
 }

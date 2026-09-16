@@ -1,7 +1,6 @@
 use crate::dsl::function::{Function, Quantifier};
 use crate::types::Database;
 
-
 pub trait BuildFunction<'a, DB: Database>: Sized {
     fn build_func(self) -> Function<'a, DB>;
 }

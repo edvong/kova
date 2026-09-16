@@ -35,11 +35,7 @@ impl<'a, DB: Database, X> EraseX for Projection<'a, DB, X> {
     type Erased = Projection<'a, DB, ()>;
 
     fn erase_x(self) -> Self::Erased {
-        Projection {
-            expr: self.expr, 
-            alias: self.alias,
-            _marker: PhantomData,
-        }
+        Projection { expr: self.expr, alias: self.alias, _marker: PhantomData }
     }
 }
 

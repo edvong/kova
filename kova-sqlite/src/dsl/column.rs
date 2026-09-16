@@ -16,10 +16,7 @@ impl<T> Column<T> {
     }
 
     const fn new(meta: ColumnMeta) -> Column<T> {
-        Self {
-            meta,
-            _marker: PhantomData,
-        }
+        Self { meta, _marker: PhantomData }
     }
 }
 

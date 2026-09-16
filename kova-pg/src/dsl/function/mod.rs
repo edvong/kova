@@ -8,9 +8,9 @@ use crate::dsl::function::array_agg::ArrayAggState;
 use crate::types::Postgres;
 use kova_core::dsl::{Operand, Projection};
 
-pub use crate::dsl::function::jsonb_object::JsonbObject;
-pub use crate::dsl::function::jsonb_agg::JsonbAgg;
 pub use crate::dsl::function::array_agg::ArrayAgg;
+pub use crate::dsl::function::jsonb_agg::JsonbAgg;
+pub use crate::dsl::function::jsonb_object::JsonbObject;
 use crate::dsl::operator::JsonOp;
 
 pub enum ExtFunction<'a> {

@@ -34,8 +34,8 @@ pub trait Decode<'a, DB: Database, X>: Sized {
 // }
 
 impl<'a, DB: Database, X, T> Encode<'a, DB, X, Option<T>> for Option<T>
-where
-    T: Encode<'a, DB, X, T>,
+    where
+        T: Encode<'a, DB, X, T>,
 {
     fn encode(self) -> Result<DB::Value<'a>> {
         match self {
@@ -46,8 +46,8 @@ where
 }
 
 impl<'a, 'b, DB: Database, X, T> Encode<'a, DB, X, Option<T>> for &'b Option<T>
-where
-    &'b T: Encode<'a, DB, X, T>,
+    where
+        &'b T: Encode<'a, DB, X, T>,
 {
     fn encode(self) -> Result<DB::Value<'a>> {
         match self {
@@ -58,8 +58,8 @@ where
 }
 
 impl<'a, DB: Database, X, T> Decode<'a, DB, X> for Option<T>
-where
-    T: Decode<'a, DB, X>,
+    where
+        T: Decode<'a, DB, X>,
 {
     fn decode(value: DB::Value<'a>) -> Result<Self> {
         if value.is_none() {
@@ -71,8 +71,8 @@ where
 }
 
 impl<'a, 'b, DB: Database, X> Encode<'a, DB, X, String> for &'b str
-where
-    &'b str: IntoValue<'a, DB>,
+    where
+        &'b str: IntoValue<'a, DB>,
 {
     fn encode(self) -> Result<DB::Value<'a>> {
         self.into_value()
@@ -80,8 +80,8 @@ where
 }
 
 impl<'a, 'b, DB: Database, X> Encode<'a, DB, X, Vec<u8>> for &'b [u8]
-where
-    &'b [u8]: IntoValue<'a, DB>,
+    where
+        &'b [u8]: IntoValue<'a, DB>,
 {
     fn encode(self) -> Result<DB::Value<'a>> {
         self.into_value()
@@ -89,8 +89,8 @@ where
 }
 
 impl<'a, DB: Database, X, const N: usize> Encode<'a, DB, X, [u8; N]> for [u8; N]
-where
-    [u8; N]: IntoValue<'a, DB>,
+    where
+        [u8; N]: IntoValue<'a, DB>,
 {
     fn encode(self) -> Result<DB::Value<'a>> {
         self.into_value()
@@ -98,8 +98,8 @@ where
 }
 
 impl<'a, 'b, DB: Database, X, const N: usize> Encode<'a, DB, X, [u8; N]> for &'b [u8; N]
-where
-    &'b [u8; N]: IntoValue<'a, DB>,
+    where
+        &'b [u8; N]: IntoValue<'a, DB>,
 {
     fn encode(self) -> Result<DB::Value<'a>> {
         self.into_value()
@@ -124,8 +124,8 @@ pub trait DecodeExt<'a, DB: Database, X>: Decode<'a, DB, X> {
 
 // Any type that implements Decode automatically gains the DecodeExt capability
 impl<'a, DB, X, T> DecodeExt<'a, DB, X> for T
-where
-    DB: Database,
-    T: Decode<'a, DB, X>,
+    where
+        DB: Database,
+        T: Decode<'a, DB, X>,
 {
 }

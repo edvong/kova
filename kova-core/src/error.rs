@@ -6,7 +6,6 @@ pub enum Error {
     // ==========================================
     // Infrastructure Errors
     // ==========================================
-
     /// Wraps errors returned directly from the underlying database driver (rusqlite, tokio-postgres).
     #[error("database internal error: {0}")]
     Database(#[source] Box<dyn std::error::Error + Send + Sync>),
@@ -22,7 +21,6 @@ pub enum Error {
     // ==========================================
     // Mapping & Parsing Errors
     // ==========================================
-
     /// Occurs when a requested column index or name does not exist in the returned row.
     /// Crucial for dynamic tuple projections and JOIN offset extractions.
     #[error("column not found: {0}")]
@@ -44,7 +42,6 @@ pub enum Error {
     // ==========================================
     // Business & Query Errors
     // ==========================================
-
     /// Indicates that a requested record does not exist in the database.
     /// Uses String to support various Primary Key types (i32, i64, UUID, String).
     #[error("record not found (ID: {0})")]

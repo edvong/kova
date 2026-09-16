@@ -14,17 +14,11 @@ pub struct Options {
 
 impl Options {
     pub fn from<P: AsRef<Path>>(path: P) -> Self {
-        Self {
-            manager: SqliteConnectionManager::file(path),
-            pool_builder: r2d2::Pool::builder(),
-        }
+        Self { manager: SqliteConnectionManager::file(path), pool_builder: r2d2::Pool::builder() }
     }
 
     pub fn in_memory() -> Self {
-        Self {
-            manager: SqliteConnectionManager::memory(),
-            pool_builder: r2d2::Pool::builder(),
-        }
+        Self { manager: SqliteConnectionManager::memory(), pool_builder: r2d2::Pool::builder() }
     }
 
     pub fn max_size(mut self, v: u32) -> Self {
@@ -58,18 +52,15 @@ impl Options {
     }
 
     pub fn init<F>(mut self, f: F) -> Self
-    where
-        F: Fn(&mut Connection) -> Result<(), rusqlite::Error> + Send + Sync + 'static,
-    {
+        where
+            F: Fn(&mut Connection) -> Result<(), rusqlite::Error> + Send + Sync + 'static, {
         self.manager = self.manager.with_init(f);
         self
     }
 
     pub fn build(self) -> Result<Client<'static, Sqlite, kova_core::types::Sync, ()>> {
-        let pool = self
-            .pool_builder
-            .build(self.manager)
-            .map_err(|e| Error::Database(Box::new(e)))?;
+        let pool =
+            self.pool_builder.build(self.manager).map_err(|e| Error::Database(Box::new(e)))?;
 
         Ok(Client::new(SqlitePool(pool)))
     }

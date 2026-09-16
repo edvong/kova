@@ -19,39 +19,30 @@ pub struct Delete<'c, 'a, DB: Database, T, E, X, R = NoReturn> {
 
 impl<'c, 'a, T, E, X> CoreDelete<'c, 'a, Sqlite, T, E, X>
     for Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
-where
-    T: Model<DB = Sqlite>,
+    where
+        T: Model<DB = Sqlite>,
 {
     fn new(executor: &'c Executor<E>) -> Self {
-        Self {
-            executor,
-            statement: DeleteStatement::new(),
-            _marker: PhantomData,
-        }
+        Self { executor, statement: DeleteStatement::new(), _marker: PhantomData }
     }
 }
 
 impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
-where
-    T: Model<DB = Sqlite>,
+    where
+        T: Model<DB = Sqlite>,
 {
     pub fn returning<P>(mut self, cols: P) -> Delete<'c, 'a, Sqlite, T, E, X, Returning>
-    where
-        P: IntoArgs<Projection<'a, Sqlite, X>>,
-    {
+        where
+            P: IntoArgs<Projection<'a, Sqlite, X>>, {
         self.statement.returning(cols.into_mapped_args(|p| p.erase_x()));
 
-        Delete {
-            executor: self.executor,
-            statement: self.statement,
-            _marker: PhantomData,
-        }
+        Delete { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
 
 impl<'c, 'a, T, E, X, R> Delete<'c, 'a, Sqlite, T, E, X, R>
-where
-    T: Model<DB = Sqlite>,
+    where
+        T: Model<DB = Sqlite>,
 {
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
         self.statement.r#where(cond.erase_x());
@@ -60,9 +51,9 @@ where
 }
 
 impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
-where
-    T: Model<DB = Sqlite>,
-    E: ExecutableSync<Native = rusqlite::Connection>,
+    where
+        T: Model<DB = Sqlite>,
+        E: ExecutableSync<Native = rusqlite::Connection>,
 {
     pub fn execute(self) -> Result<u64> {
         execute_affected(self.executor, once(self.statement.build()))
@@ -70,25 +61,19 @@ where
 }
 
 impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, Returning>
-where
-    T: Model<DB = Sqlite>,
-    E: ExecutableSync<Native = rusqlite::Connection>,
+    where
+        T: Model<DB = Sqlite>,
+        E: ExecutableSync<Native = rusqlite::Connection>,
 {
     pub fn execute_as<U>(self) -> Result<Vec<U>>
-    where
-        U: FromRow<DB = Sqlite>,
-    {
-        fetch_rows(self.executor, once(self.statement.build()), |row| {
-            U::from_row(&row)
-        })
+        where
+            U: FromRow<DB = Sqlite>, {
+        fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
     }
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
-    where
-        for<'r> U: FromColumn<'r, Sqlite, X>,
-    {
-        fetch_rows(self.executor, once(self.statement.build()), |row| {
-            U::extract(&row)
-        })
+        where
+            for<'r> U: FromColumn<'r, Sqlite, X>, {
+        fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
     }
 }

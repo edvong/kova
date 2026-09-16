@@ -21,8 +21,7 @@ impl_native_extract_column!(
     bool,
     String,
     // str,
-    Vec<u8>
-    // [u8]
+    Vec<u8> // [u8]
 );
 // impl<const N: usize, X> ScalarMarker<Postgres, X> for [u8; N] {}
 
@@ -237,9 +236,7 @@ impl<const N: usize> FromValue<Postgres> for [u8; N] {
                     .try_into()
                     .map_err(|_| Error::ParseError(format!("Expected Blob of length {}", N)))
             }
-            _ => Err(Error::TypeMismatch(
-                "Expected Blob for fixed-size array".into(),
-            )),
+            _ => Err(Error::TypeMismatch("Expected Blob for fixed-size array".into())),
         }
     }
 }

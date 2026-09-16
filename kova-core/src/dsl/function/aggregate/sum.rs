@@ -7,8 +7,8 @@ use crate::dsl::comparator::IntoComparator;
 use crate::dsl::function::builder::{AggregateBuilder, BuildFunction};
 use crate::dsl::function::{Function, Quantifier, StandardFunction};
 use crate::dsl::{
-    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, GroupBy, IntoAlias, IntoArg,
-    IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
+    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, GroupBy, IntoAlias,
+    IntoArg, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
     SingleArgMarker, StandardGroupBy, StandardOperand, WithComponent,
 };
 use crate::types::Database;
@@ -33,10 +33,7 @@ impl<'a, T, DB: Database> AggregateBuilder<'a, DB> for Sum<Column<'a, T, DB>> {
 impl<'a, T, DB: Database, X> BuildProjection<'a, DB, X> for Sum<Column<'a, T, DB>> {
     #[inline(always)]
     fn build_alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        Projection::new(
-            ProjectionExpr::Function(self.build_func()),
-            Some(col.into_identifier()),
-        )
+        Projection::new(ProjectionExpr::Function(self.build_func()), Some(col.into_identifier()))
     }
 }
 
@@ -65,18 +62,17 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for Sum<Column<'a, T, DB>>
 impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Sum<Column<'a, T, DB>> {
     #[inline(always)]
     fn into_arg(self) -> GroupBy<'a, DB, X> {
-        GroupBy::standard(StandardGroupBy::Function(
-            <Self as BuildFunction<'a, DB>>::build_func(self),
-        ))
+        GroupBy::standard(StandardGroupBy::Function(self.build_func()))
     }
 }
 
 impl<'a, T, DB: Database> IntoComparator<'a, T, DB> for Sum<Column<'a, T, DB>> {
     #[inline(always)]
     fn into_comparator(self) -> Comparator<'a, T, DB> {
-        Comparator::new(Operand::from_function(Function::from_std(
-            StandardFunction::Sum(self.0.meta, Quantifier::All),
-        )))
+        Comparator::new(Operand::from_function(Function::from_std(StandardFunction::Sum(
+            self.0.meta,
+            Quantifier::All,
+        ))))
     }
 }
 
@@ -84,44 +80,38 @@ impl<'a, T, DB: Database> SingleArgMarker for Sum<Column<'a, T, DB>> {}
 
 impl<'a, T, DB: Database> Sum<Column<'a, T, DB>> {
     pub fn eq<V, K, X>(self, v: V) -> Condition<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().eq(v)
     }
 
     pub fn ne<V, K, X>(self, v: V) -> Condition<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().ne(v)
     }
 
     pub fn gt<V, K, X>(self, v: V) -> Condition<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().gt(v)
     }
 
     pub fn ge<V, K, X>(self, v: V) -> Condition<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().ge(v)
     }
 
     pub fn lt<V, K, X>(self, v: V) -> Condition<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().lt(v)
     }
 
     pub fn le<V, K, X>(self, v: V) -> Condition<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().le(v)
     }
 
@@ -134,34 +124,30 @@ impl<'a, T, DB: Database> Sum<Column<'a, T, DB>> {
     }
 
     pub fn between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
-    where
-        L: IntoOperand<'a, T, DB, K, X>,
-        U: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            L: IntoOperand<'a, T, DB, K, X>,
+            U: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().between(lower, upper)
     }
 
     pub fn not_between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
-    where
-        L: IntoOperand<'a, T, DB, K, X>,
-        U: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            L: IntoOperand<'a, T, DB, K, X>,
+            U: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().not_between(lower, upper)
     }
 
     pub fn in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
-    where
-        I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().in_list(values)
     }
 
     pub fn not_in<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
-    where
-        I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, T, DB, K, X>,
-    {
+        where
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, T, DB, K, X>, {
         self.into_comparator().not_in_list(values)
     }
 

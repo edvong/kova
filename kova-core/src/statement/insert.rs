@@ -1,6 +1,6 @@
 use crate::dsl::{
-    ExtOnConflict, ExtensionClause, InsertRows, OnConflictClause, Projection,
-    ProjectionClause, ValuesClause,
+    ExtOnConflict, ExtensionClause, InsertRows, OnConflictClause, Projection, ProjectionClause,
+    ValuesClause,
 };
 use crate::render::RenderData;
 use crate::types::{Database, Model};
@@ -14,8 +14,8 @@ pub struct InsertStatement<'a, DB: Database, T> {
 }
 
 impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
-where
-    T: Model<DB = DB>,
+    where
+        T: Model<DB = DB>,
 {
     pub fn new(rows: InsertRows<'a, T>) -> Self {
         Self {
@@ -35,9 +35,8 @@ where
     }
 
     pub fn on_conflict_ext_mut_or<F>(&mut self, f: F) -> &mut ExtOnConflict<'a, DB>
-    where
-        F: FnOnce() -> ExtOnConflict<'a, DB>,
-    {
+        where
+            F: FnOnce() -> ExtOnConflict<'a, DB>, {
         self.on_conflict.ext_mut_or_with(f)
     }
 }

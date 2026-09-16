@@ -20,8 +20,8 @@ pub struct SelectStatement<'a, DB: Database> {
 }
 
 impl<'a, DB> SelectStatement<'a, DB>
-where
-    DB: Database,
+    where
+        DB: Database,
 {
     pub fn new(table: &'static str) -> Self {
         Self {
@@ -74,16 +74,14 @@ where
     }
 
     pub fn pagination_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtPagination<'a, DB>
-    where
-        F: FnOnce() -> ExtPagination<'a, DB>,
-    {
+        where
+            F: FnOnce() -> ExtPagination<'a, DB>, {
         self.pagination.ext_mut_or_with(f)
     }
 
     pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
-    where
-        F: FnOnce() -> ExtLocking<'a, DB>,
-    {
+        where
+            F: FnOnce() -> ExtLocking<'a, DB>, {
         self.locking.ext_mut_or_with(f)
     }
 }

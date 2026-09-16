@@ -18,9 +18,8 @@ pub struct Subselect<'a, T: Model, State = Entry> {
 
 impl<'a, T: Model<DB = Postgres>> Subselect<'a, T, Entry> {
     pub fn columns<C, X>(cols: C) -> Subselect<'a, T, Chain<X>>
-    where
-        C: IntoArgs<Projection<'a, Postgres, X>>,
-    {
+        where
+            C: IntoArgs<Projection<'a, Postgres, X>>, {
         let mut statement = SelectStatement::new(T::TABLE_NAME);
         statement.columns(cols.into_mapped_args(|p| p.erase_x()));
         Subselect { statement, _marker: PhantomData }
@@ -52,9 +51,8 @@ impl<'a, T: Model<DB = Postgres>, X> Subselect<'a, T, Chain<X>> {
     }
 
     pub fn group_by<C>(mut self, cols: C) -> Self
-    where
-        C: IntoArgs<GroupBy<'a, T::DB, X>>,
-    {
+        where
+            C: IntoArgs<GroupBy<'a, T::DB, X>>, {
         self.statement.group_by(cols.into_mapped_args(|g| g.erase_x()));
         self
     }
@@ -65,9 +63,8 @@ impl<'a, T: Model<DB = Postgres>, X> Subselect<'a, T, Chain<X>> {
     }
 
     pub fn order_by<C>(mut self, cols: C) -> Self
-    where
-        C: IntoArgs<Ordering<'a, T::DB, X>>,
-    {
+        where
+            C: IntoArgs<Ordering<'a, T::DB, X>>, {
         self.statement.order_by(cols.into_mapped_args(|o| o.erase_x()));
         self
     }

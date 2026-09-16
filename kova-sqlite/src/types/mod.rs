@@ -1,11 +1,11 @@
-mod value;
-mod row;
-mod impls;
+mod conn;
 mod db;
 mod ext;
-mod conn;
+mod impls;
+mod row;
+mod value;
 
 pub use conn::SqlitePool;
-pub use value::Value;
-pub use row::Row;
 pub use db::Sqlite;
+pub use row::Row;
+pub use value::Value;

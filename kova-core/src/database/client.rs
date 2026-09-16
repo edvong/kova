@@ -12,17 +12,11 @@ pub struct Client<'a, DB: Database, M, X> {
 
 impl<'a, DB: Database, M: Mode, X> Client<'a, DB, M, X> {
     pub fn new(conn: DB::Connection<'a>) -> Self {
-        Self {
-            inner: Operations::new(Executor::new(conn)),
-            _marker: PhantomData,
-        }
+        Self { inner: Operations::new(Executor::new(conn)), _marker: PhantomData }
     }
 
     pub fn with<Codec>(self) -> Client<'a, DB, M, Codec> {
-        Client {
-            inner: self.inner.with::<Codec>(),
-            _marker: self._marker,
-        }
+        Client { inner: self.inner.with::<Codec>(), _marker: self._marker }
     }
 }
 
@@ -44,15 +38,14 @@ pub type Transaction<'a, 'b, 't, DB, X> = Operations<
 >;
 
 impl<'a, DB, X> Client<'a, DB, Sync, X>
-where
-    DB::Connection<'a>: ConnectionSync,
-    DB: Database,
-    X: 'a,
+    where
+        DB::Connection<'a>: ConnectionSync,
+        DB: Database,
+        X: 'a,
 {
     pub fn transaction<F, R>(&self, f: F) -> Result<R>
-    where
-        F: FnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R>,
-    {
+        where
+            F: FnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R>, {
         self.executor
             .inner
             .transaction_sync(|native_tx| f(Operations::new(Executor::new(native_tx))))
@@ -60,15 +53,14 @@ where
 }
 
 impl<'a, DB, X> Client<'a, DB, Async, X>
-where
-    DB::Connection<'a>: ConnectionAsync,
-    DB: Database,
-    X: 'a,
+    where
+        DB::Connection<'a>: ConnectionAsync,
+        DB: Database,
+        X: 'a,
 {
     pub async fn transaction<F, R>(&self, f: F) -> Result<R>
-    where
-        F: AsyncFnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> + Send,
-    {
+        where
+            F: AsyncFnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> + Send, {
         self.executor
             .inner
             .transaction_async(async |native_tx| f(Operations::new(Executor::new(native_tx))).await)

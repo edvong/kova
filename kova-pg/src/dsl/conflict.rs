@@ -1,5 +1,5 @@
 use crate::types::Postgres;
-use kova_core::dsl::func::{Abs, Function, BuildFunction, Length, Lower, Upper};
+use kova_core::dsl::func::{Abs, BuildFunction, Function, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArgs};
 use kova_core::types::ColumnMeta;
 
@@ -10,10 +10,7 @@ pub struct OnConflict<'a> {
 
 impl<'a> OnConflict<'a> {
     pub(crate) fn new() -> Self {
-        Self {
-            items: Vec::new(),
-            assignments: Vec::new(),
-        }
+        Self { items: Vec::new(), assignments: Vec::new() }
     }
 
     pub fn set_conflict(&mut self, args: Vec<ConflictTarget<'a>>) {
@@ -44,15 +41,12 @@ impl<'a, T> IntoArgs<ConflictTarget<'a>> for Column<'a, T, Postgres> {
     fn size_hint(&self) -> usize {
         1
     }
-    
+
     #[inline(always)]
     fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(ConflictTarget<'a>),
-    {
-        f(ConflictTarget {
-            target: TargetExpr::Column(self.meta()),
-        });
+        where
+            F: FnMut(ConflictTarget<'a>), {
+        f(ConflictTarget { target: TargetExpr::Column(self.meta()) });
     }
 }
 
@@ -65,8 +59,8 @@ macro_rules! impl_conflict_target_args_for_func {
 
                 #[inline(always)]
                 fn for_each_arg<F>(self, f: &mut F)
-                where
-                    F: FnMut(ConflictTarget<'a>)
+                    where
+                        F: FnMut(ConflictTarget<'a>)
                 {
                     f(ConflictTarget {
                         target: TargetExpr::Function(self.build_func())

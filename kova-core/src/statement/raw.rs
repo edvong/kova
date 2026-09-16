@@ -11,10 +11,7 @@ pub struct RawStatement<'a, DB: Database> {
 
 impl<'a, DB: Database> RawStatement<'a, DB> {
     pub fn new<S: Into<Cow<'a, str>>>(sql: S) -> Self {
-        Self {
-            sql: sql.into(),
-            binds: BindClause::new(),
-        }
+        Self { sql: sql.into(), binds: BindClause::new() }
     }
 
     pub fn bind(&mut self, args: Vec<Bind<'a, DB>>) {
@@ -22,9 +19,6 @@ impl<'a, DB: Database> RawStatement<'a, DB> {
     }
 
     pub fn build(self) -> Result<StatementPayload<'a, DB>> {
-        Ok(StatementPayload {
-            sql: self.sql,
-            params: self.binds.to_values()?,
-        })
+        Ok(StatementPayload { sql: self.sql, params: self.binds.to_values()? })
     }
 }

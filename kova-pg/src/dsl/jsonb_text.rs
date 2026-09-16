@@ -4,7 +4,9 @@ use crate::dsl::operator::JsonOp;
 use crate::dsl::{ExtFunction, ExtOperator};
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{Comparator, Condition, IntoComparator, IntoOperand, Operand, Operator, WithComponent};
+use kova_core::dsl::{
+    Comparator, Condition, IntoComparator, IntoOperand, Operand, Operator, WithComponent,
+};
 
 pub struct JsonbText<'a> {
     pub(crate) base: Operand<'a, Postgres>,
@@ -21,53 +23,44 @@ impl<'a, T> IntoComparator<'a, T, Postgres> for JsonbText<'a> {
 impl<'a> JsonbText<'a> {
     #[inline(always)]
     fn into_core_operand(self) -> Operand<'a, Postgres> {
-        let pg_func = ExtFunction::JsonChain {
-            base: Box::new(self.base),
-            ops: self.ops,
-        };
+        let pg_func = ExtFunction::JsonChain { base: Box::new(self.base), ops: self.ops };
         Operand::from_function(Function::from_ext(pg_func))
     }
 
     // --- Standard Operator Proxy ---
     pub fn eq<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().eq(v)
     }
 
     pub fn ne<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().ne(v)
     }
 
     pub fn gt<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().gt(v)
     }
 
     pub fn ge<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().ge(v)
     }
 
     pub fn lt<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().lt(v)
     }
 
     pub fn le<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().le(v)
     }
 
@@ -81,39 +74,34 @@ impl<'a> JsonbText<'a> {
 
     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().like(v)
     }
 
     pub fn not_like<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().not_like(v)
     }
 
     pub fn in_list<I, V, K, X>(self, values: I) -> Condition<'a, Postgres, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().in_list(values)
     }
 
     pub fn not_in_list<I, V, K, X>(self, values: I) -> Condition<'a, Postgres, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         self.into_comparator().not_in_list(values)
     }
 
     // --- PG Proprietary Text Expansion Operators ---
     pub fn ilike<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::ILike(
             self.into_core_operand(),
             v.into_operand(),
@@ -122,8 +110,7 @@ impl<'a> JsonbText<'a> {
 
     pub fn not_ilike<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::NotILike(
             self.into_core_operand(),
             v.into_operand(),
@@ -132,8 +119,7 @@ impl<'a> JsonbText<'a> {
 
     pub fn matches<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::Matches(
             self.into_core_operand(),
             v.into_operand(),
@@ -142,8 +128,7 @@ impl<'a> JsonbText<'a> {
 
     pub fn not_matches<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::NotMatches(
             self.into_core_operand(),
             v.into_operand(),
@@ -152,8 +137,7 @@ impl<'a> JsonbText<'a> {
 
     pub fn imatches<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::IMatches(
             self.into_core_operand(),
             v.into_operand(),
@@ -162,8 +146,7 @@ impl<'a> JsonbText<'a> {
 
     pub fn not_imatches<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>,
-    {
+            V: IntoOperand<'a, String, Postgres, K, X>, {
         Condition::from(Operator::from_ext(ExtOperator::NotIMatches(
             self.into_core_operand(),
             v.into_operand(),

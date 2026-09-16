@@ -47,7 +47,6 @@ impl<'a, DB: Database, X> EraseX for Ordering<'a, DB, X> {
     }
 }
 
-
 impl<'a, DB: Database, X> Ordering<'a, DB, X> {
     pub fn nulls_first(mut self) -> Self {
         self.nulls = Some(NullsOrder::First);
@@ -60,11 +59,10 @@ impl<'a, DB: Database, X> Ordering<'a, DB, X> {
     }
 }
 
-
 pub struct OrderOperand<'a, DB: Database> {
     pub(crate) inner: Component<
         StandardOperand<'a, DB>,
-        <<DB as Database>::Extension<'a> as Extension<'a>>::OrderOperand
+        <<DB as Database>::Extension<'a> as Extension<'a>>::OrderOperand,
     >,
 }
 
@@ -82,8 +80,6 @@ impl<'a, DB: Database> WithComponent for OrderOperand<'a, DB> {
         Self { inner: Component::extension(ext) }
     }
 }
-
-
 
 pub enum StandardOperand<'a, DB: Database> {
     Column(ColumnMeta),

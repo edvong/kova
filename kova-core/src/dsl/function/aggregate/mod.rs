@@ -1,9 +1,9 @@
-mod count_all;
-mod sum;
-mod max;
-mod min;
 mod avg;
 mod count;
+mod count_all;
+mod max;
+mod min;
+mod sum;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Quantifier {
@@ -11,11 +11,4 @@ pub enum Quantifier {
     Distinct,
 }
 
-pub use {
-    count_all::CountAll,
-    count::Count,
-    sum::Sum,
-    avg::Avg,
-    max::Max,
-    min::Min,
-};
+pub use {avg::Avg, count::Count, count_all::CountAll, max::Max, min::Min, sum::Sum};

@@ -1,4 +1,6 @@
-use crate::dsl::{ExtAssignment, ExtColumn, ExtFunction, ExtOperator, Locking, OnConflict, Pagination};
+use crate::dsl::{
+    ExtAssignment, ExtColumn, ExtFunction, ExtOperator, Locking, OnConflict, Pagination,
+};
 
 pub struct Extension;
 

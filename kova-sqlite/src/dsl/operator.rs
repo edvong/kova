@@ -1,4 +1,1 @@
-
-pub enum Operator {
-    
-}
+pub enum Operator {}

@@ -1,31 +1,31 @@
-mod column;
-mod operator;
-mod pagination;
-mod locking;
-mod function;
 mod assignment;
+mod column;
 mod conflict;
-mod subselect;
+mod function;
 mod jsonb_chain;
 mod jsonb_text;
+mod locking;
+mod operator;
+mod pagination;
+mod subselect;
 
 pub mod func {
-    pub use crate::dsl::function::JsonbObject;
-    pub use crate::dsl::function::JsonbAgg;
     pub use crate::dsl::function::ArrayAgg;
+    pub use crate::dsl::function::JsonbAgg;
+    pub use crate::dsl::function::JsonbObject;
 }
 
 pub use {
-    column::ExtColumn,
-    locking::{LockMode, WaitPolicy},
-    function::{ExtFunction},
     assignment::ExtAssignment,
+    column::ExtColumn,
+    function::ExtFunction,
+    locking::{LockMode, WaitPolicy},
     subselect::Subselect,
 };
 
 pub(crate) use {
+    conflict::{ConflictTarget, OnConflict},
+    locking::{LockItem, Locking},
     operator::ExtOperator,
     pagination::Pagination,
-    locking::{Locking, LockItem},
-    conflict::{ConflictTarget, OnConflict},
 };

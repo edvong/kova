@@ -1,8 +1,8 @@
-use std::marker::PhantomData;
 use crate::dsl::arg::{IntoArg, SingleArgMarker};
 use crate::dsl::function::Function;
 use crate::dsl::{Column, Component, EraseX};
 use crate::types::{ColumnMeta, Database, Extension};
+use std::marker::PhantomData;
 
 pub struct GroupByClause<'a, DB: Database> {
     items: Vec<GroupBy<'a, DB, ()>>,
@@ -22,26 +22,21 @@ impl<'a, DB: Database> GroupByClause<'a, DB> {
     }
 }
 
-
 pub struct GroupBy<'a, DB: Database, X> {
     pub(crate) inner: Component<
         StandardGroupBy<'a, DB>,
         <<DB as Database>::Extension<'a> as Extension<'a>>::GroupBy,
     >,
-    _marker: PhantomData<X>
+    _marker: PhantomData<X>,
 }
 
 impl<'a, DB: Database, X> EraseX for GroupBy<'a, DB, X> {
     type Erased = GroupBy<'a, DB, ()>;
 
     fn erase_x(self) -> Self::Erased {
-        GroupBy {
-            inner: self.inner,
-            _marker: PhantomData,
-        }
+        GroupBy { inner: self.inner, _marker: PhantomData }
     }
 }
-
 
 impl<'a, DB: Database, X> GroupBy<'a, DB, X> {
     pub fn standard(std: StandardGroupBy<'a, DB>) -> Self {
@@ -53,13 +48,11 @@ impl<'a, DB: Database, X> GroupBy<'a, DB, X> {
     }
 }
 
-
 // Core difference from Projection: only columns and functions, no Option<ColumnMeta> alias
 pub enum StandardGroupBy<'a, DB: Database> {
     Column(ColumnMeta),
     Function(Function<'a, DB>),
 }
-
 
 impl<'a, DB: Database, X> SingleArgMarker for GroupBy<'a, DB, X> {}
 

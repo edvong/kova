@@ -1,4 +1,3 @@
-
 #[derive(Debug, Copy, Clone)]
 pub struct ColumnMeta {
     pub table_name: &'static str,

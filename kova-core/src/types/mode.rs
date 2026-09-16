@@ -1,4 +1,3 @@
-
 pub trait Mode {}
 
 pub struct Sync;

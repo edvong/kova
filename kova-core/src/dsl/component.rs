@@ -17,15 +17,11 @@ pub trait WithComponent {
 
 impl<S, E> Component<S, E> {
     pub fn standard(s: S) -> Self {
-        Self {
-            inner: ComponentKind::Standard(s),
-        }
+        Self { inner: ComponentKind::Standard(s) }
     }
 
     pub fn extension(e: E) -> Self {
-        Self {
-            inner: ComponentKind::Extension(e),
-        }
+        Self { inner: ComponentKind::Extension(e) }
     }
 
     pub fn ext(&self) -> Option<&E> {

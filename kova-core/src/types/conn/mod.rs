@@ -1,11 +1,11 @@
 #![allow(async_fn_in_trait)]
 
-mod sync;
 mod r#async;
+mod sync;
 
-use crate::types::Mode;
-pub use self::sync::{ConnectionSync, ExecutableSync};
 pub use self::r#async::{ConnectionAsync, ExecutableAsync};
+pub use self::sync::{ConnectionSync, ExecutableSync};
+use crate::types::Mode;
 
 pub trait Executable: Sized {
     type Mode: Mode;
@@ -13,7 +13,9 @@ pub trait Executable: Sized {
 }
 
 pub trait Connection {
-    type Transaction<'t> where Self: 't;
+    type Transaction<'t>
+        where
+            Self: 't;
 }
 
 impl<E: Executable> Executable for &mut E {

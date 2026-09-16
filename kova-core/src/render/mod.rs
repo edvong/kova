@@ -1,10 +1,9 @@
 use crate::types::Database;
 
-mod query;
 mod dsl;
+mod query;
 
 pub use query::SelectContext;
-
 
 pub trait Render<C> {
     fn render(&self, ctx: &mut C);
@@ -21,15 +20,14 @@ pub(crate) trait RenderDispatch<T, C> {
 }
 
 impl<Ext, T, C> RenderDispatch<T, C> for Ext
-where
-    Ext: PlatformRender<T, C>,
+    where
+        Ext: PlatformRender<T, C>,
 {
     fn dispatch(t: &T, ctx: &mut C) {
         // Direct passthrough to the underlying platform renderer
         <Self as PlatformRender<T, C>>::render(t, ctx)
     }
 }
-
 
 pub struct RenderData<'a, DB: Database> {
     pub sql: String,
@@ -54,7 +52,6 @@ impl<'a, DB: Database> RenderData<'a, DB> {
         }
     }
 }
-
 
 impl<C> Render<C> for () {
     fn render(&self, _: &mut C) {

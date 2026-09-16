@@ -1,4 +1,3 @@
-
 #[derive(Default)]
 pub struct Locking {
     pub locks: Vec<LockItem>,
