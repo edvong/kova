@@ -44,10 +44,10 @@ impl PostView {
 }
 
 
-pub struct AppCodec;
+pub struct ViewCodec;
 
 
-impl<'a> Decode<'a, Engine, AppCodec> for Author {
+impl<'a> Decode<'a, Engine, ViewCodec> for Author {
     fn decode(value: Value<'a>) -> kova::Result<Self> {
         match value {
             Value::Text(t) => {
@@ -57,10 +57,10 @@ impl<'a> Decode<'a, Engine, AppCodec> for Author {
         }
     }
 }
-bind_type!(AppCodec, Author);
+bind_type!(ViewCodec, Author);
 
 
-impl<'a> Decode<'a, Engine, AppCodec> for Vec<CommentDto> {
+impl<'a> Decode<'a, Engine, ViewCodec> for Vec<CommentDto> {
     fn decode(value: Value<'a>) -> kova::Result<Self> {
         match value {
             Value::Text(t) => {
@@ -71,4 +71,4 @@ impl<'a> Decode<'a, Engine, AppCodec> for Vec<CommentDto> {
         }
     }
 }
-bind_type!(AppCodec, Vec<CommentDto>);
+bind_type!(ViewCodec, Vec<CommentDto>);

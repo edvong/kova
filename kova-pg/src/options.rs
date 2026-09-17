@@ -68,7 +68,7 @@ impl Options {
     #[cfg(feature = "rustls")]
     pub fn tls<F>(mut self, setup: F) -> Self
         where
-            F: FnOnce() -> Result<rustls::ClientConfig>, {
+            F: FnOnce() -> Result<rustls::ClientConfig> {
         self.rustls_state = Some(setup());
         self
     }
@@ -76,7 +76,7 @@ impl Options {
     #[cfg(feature = "native-tls")]
     pub fn tls<F>(mut self, setup: F) -> Self
         where
-            F: FnOnce() -> Result<native_tls::TlsConnector>, {
+            F: FnOnce() -> Result<native_tls::TlsConnector> {
         self.native_tls_state = Some(setup());
         self
     }

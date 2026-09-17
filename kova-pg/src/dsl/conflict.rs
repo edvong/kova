@@ -45,7 +45,7 @@ impl<'a, T> IntoArgs<ConflictTarget<'a>> for Column<'a, T, Postgres> {
     #[inline(always)]
     fn for_each_arg<F>(self, f: &mut F)
         where
-            F: FnMut(ConflictTarget<'a>), {
+            F: FnMut(ConflictTarget<'a>) {
         f(ConflictTarget { target: TargetExpr::Column(self.meta()) });
     }
 }
@@ -58,10 +58,7 @@ macro_rules! impl_conflict_target_args_for_func {
                 fn size_hint(&self) -> usize { 1 }
 
                 #[inline(always)]
-                fn for_each_arg<F>(self, f: &mut F)
-                    where
-                        F: FnMut(ConflictTarget<'a>)
-                {
+                fn for_each_arg<F>(self, f: &mut F) where F: FnMut(ConflictTarget<'a>) {
                     f(ConflictTarget {
                         target: TargetExpr::Function(self.build_func())
                     });

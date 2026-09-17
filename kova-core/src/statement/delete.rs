@@ -11,8 +11,7 @@ pub struct DeleteStatement<'a, DB: Database, T> {
 
 impl<'a, DB: Database, T> DeleteStatement<'a, DB, T>
     where
-        T: Model<DB = DB>,
-{
+        T: Model<DB = DB> {
     pub fn new() -> Self {
         Self {
             r#where: WhereClause::new(),

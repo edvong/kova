@@ -53,7 +53,7 @@ impl Options {
 
     pub fn init<F>(mut self, f: F) -> Self
         where
-            F: Fn(&mut Connection) -> Result<(), rusqlite::Error> + Send + Sync + 'static, {
+            F: Fn(&mut Connection) -> Result<(), rusqlite::Error> + Send + Sync + 'static {
         self.manager = self.manager.with_init(f);
         self
     }

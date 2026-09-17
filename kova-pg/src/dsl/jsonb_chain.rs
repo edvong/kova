@@ -8,20 +8,20 @@ use kova_core::dsl::func::Function;
 use kova_core::dsl::{Condition, IntoOperand, IsAst, Operand, Operator, WithComponent};
 use std::marker::PhantomData;
 
-pub struct JsonbChain<'a, T> {
+pub struct JsonbChain<'a, T, X> {
     pub(crate) base: Operand<'a, Postgres>,
     pub(crate) ops: Vec<JsonOp<'a>>,
-    pub(crate) _marker: PhantomData<T>,
+    pub(crate) _marker: PhantomData<(T, X)>,
 }
 
 // JsonbChain also an Operand
-impl<'a, T, X> IntoOperand<'a, T, Postgres, IsAst, X> for JsonbChain<'a, T> {
+impl<'a, T, X> IntoOperand<'a, T, Postgres, IsAst, X> for JsonbChain<'a, T, X> {
     fn into_operand(self) -> Operand<'a, Postgres> {
         self.to_operand()
     }
 }
 
-impl<'a, T> JsonbChain<'a, T> {
+impl<'a, T, X> JsonbChain<'a, T, X> {
     #[inline(always)]
     fn to_operand(self) -> Operand<'a, Postgres> {
         // JsonChain is a function node that produces a value
@@ -30,60 +30,63 @@ impl<'a, T> JsonbChain<'a, T> {
     }
 
     // --- Concatenation method: append Vec directly and return Self ---
-    pub fn json_path<V, K, X>(mut self, key: V) -> Self
+    pub fn json_path<V, K>(mut self, key: V) -> Self
         where
-            V: IntoOperand<'a, String, Postgres, K, X>, {
+            V: IntoOperand<'a, String, Postgres, K, X> {
         self.ops.push(JsonOp::Path(key.into_operand()));
         self
     }
 
-    pub fn json_path_array<V, K, X>(mut self, path: V) -> Self
+    pub fn json_path_array<I, V, K>(mut self, path: I) -> Self
         where
-            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
-        self.ops.push(JsonOp::PathArray(path.into_operand()));
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, String, Postgres, K, X> {
+        self.ops.push(JsonOp::PathArray(ExtFunction::from_iter(path)));
         self
     }
 
-    pub fn json_concat<V, K, X>(mut self, val: V) -> Self
+    pub fn json_concat<V, K>(mut self, val: V) -> Self
         where
-            V: IntoOperand<'a, T, Postgres, K, X>, {
+            V: IntoOperand<'a, T, Postgres, K, X> {
         self.ops.push(JsonOp::Concat(val.into_operand()));
         self
     }
 
-    pub fn json_delete<V, K, X>(mut self, key: V) -> Self
+    pub fn json_delete<V, K>(mut self, key: V) -> Self
         where
-            V: IntoOperand<'a, String, Postgres, K, X>, {
+            V: IntoOperand<'a, String, Postgres, K, X> {
         self.ops.push(JsonOp::Delete(key.into_operand()));
         self
     }
 
-    pub fn json_delete_path<V, K, X>(mut self, path: V) -> Self
+    pub fn json_delete_path<I, V, K>(mut self, path: I) -> Self
         where
-            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
-        self.ops.push(JsonOp::DeletePath(path.into_operand()));
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, String, Postgres, K, X> {
+        self.ops.push(JsonOp::DeletePath(ExtFunction::from_iter(path)));
         self
     }
 
     // --- State transition: Switch to the Text extraction endpoint ---
-    pub fn json_path_text<V, K, X>(mut self, key: V) -> JsonbText<'a>
+    pub fn json_path_text<V, K>(mut self, key: V) -> JsonbText<'a, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>, {
+            V: IntoOperand<'a, String, Postgres, K, X> {
         self.ops.push(JsonOp::PathText(key.into_operand()));
-        JsonbText { base: self.base, ops: self.ops }
+        JsonbText { base: self.base, ops: self.ops, _marker: PhantomData }
     }
 
-    pub fn json_path_text_array<V, K, X>(mut self, path: V) -> JsonbText<'a>
+    pub fn json_path_text_array<I, V, K>(mut self, path: I) -> JsonbText<'a, X>
         where
-            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
-        self.ops.push(JsonOp::PathTextArray(path.into_operand()));
-        JsonbText { base: self.base, ops: self.ops }
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, Vec<String>, Postgres, K, X> {
+        self.ops.push(JsonOp::PathTextArray(ExtFunction::from_iter(path)));
+        JsonbText { base: self.base, ops: self.ops, _marker: PhantomData }
     }
 
     // --- JSONB-specific Boolean endpoint methods ---
-    pub fn json_contains<V, K, X>(self, val: V) -> Condition<'a, Postgres, X>
+    pub fn json_contains<V, K>(self, val: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, T, Postgres, K, X>, {
+            V: IntoOperand<'a, T, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonContains(
             // IntoOperand::<'a, T, Postgres, K, X>::into_operand(self),
             self.to_operand(),
@@ -91,54 +94,56 @@ impl<'a, T> JsonbChain<'a, T> {
         )))
     }
 
-    pub fn json_contained_by<V, K, X>(self, val: V) -> Condition<'a, Postgres, X>
+    pub fn json_contained_by<V, K>(self, val: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, T, Postgres, K, X>, {
+            V: IntoOperand<'a, T, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonContainedBy(
             self.to_operand(),
             val.into_operand(),
         )))
     }
 
-    pub fn json_has_key<V, K, X>(self, key: V) -> Condition<'a, Postgres, X>
+    pub fn json_has_key<V, K>(self, key: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>, {
+            V: IntoOperand<'a, String, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonHasKey(
             self.to_operand(),
             key.into_operand(),
         )))
     }
 
-    pub fn json_has_any_keys<V, K, X>(self, keys: V) -> Condition<'a, Postgres, X>
+    pub fn json_has_any_keys<I, V, K>(self, keys: I) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, String, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonHasAnyKeys(
             self.to_operand(),
-            keys.into_operand(),
+            ExtFunction::from_iter(keys),
         )))
     }
 
-    pub fn json_has_all_keys<V, K, X>(self, keys: V) -> Condition<'a, Postgres, X>
+    pub fn json_has_all_keys<I, V, K>(self, keys: I) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Vec<String>, Postgres, K, X>, {
+            I: IntoIterator<Item = V>,
+            V: IntoOperand<'a, String, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonHasAllKeys(
             self.to_operand(),
-            keys.into_operand(),
+            ExtFunction::from_iter(keys),
         )))
     }
 
-    pub fn json_path_exists<V, K, X>(self, path: V) -> Condition<'a, Postgres, X>
+    pub fn json_path_exists<V, K>(self, path: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>, {
+            V: IntoOperand<'a, String, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonPathExists(
             self.to_operand(),
             path.into_operand(),
         )))
     }
 
-    pub fn json_path_predicate<V, K, X>(self, path: V) -> Condition<'a, Postgres, X>
+    pub fn json_path_predicate<V, K>(self, path: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, String, Postgres, K, X>, {
+            V: IntoOperand<'a, String, Postgres, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::JsonPathPredicate(
             self.to_operand(),
             path.into_operand(),

@@ -13,7 +13,7 @@ pub(crate) async fn execute_affected<'a, E, I, D>(
         E: ExecutableAsync,
         E::Native: GenericClient + Sync,
         I: IntoIterator<Item = D> + Send,
-        D: Into<StatementPayload<'a, Postgres>>, {
+        D: Into<StatementPayload<'a, Postgres>> {
     executor
         .with_conn_async(async move |native| {
             let mut total_affected = 0;
@@ -45,7 +45,7 @@ pub(crate) async fn fetch_rows<'a, E, I, D, U, F>(
         E::Native: GenericClient + Sync,
         I: IntoIterator<Item = D> + Send,
         D: Into<StatementPayload<'a, Postgres>>,
-        F: FnMut(Row<'_>) -> Result<U> + Send, {
+        F: FnMut(Row<'_>) -> Result<U> + Send {
     executor
         .with_conn_async(async move |native| {
             let mut result = Vec::new();

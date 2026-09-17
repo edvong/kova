@@ -45,7 +45,7 @@ impl<'a, T> IntoArgs<ConflictTarget<'a>> for Column<'a, T, Sqlite> {
 
     fn for_each_arg<F>(self, f: &mut F)
         where
-            F: FnMut(ConflictTarget<'a>), {
+            F: FnMut(ConflictTarget<'a>) {
         f(ConflictTarget { target: TargetExpr::Column(self.meta()) });
     }
 }
@@ -59,9 +59,8 @@ macro_rules! impl_conflict_target_for_func {
 
                 #[inline(always)]
                 fn for_each_arg<F>(self, f: &mut F)
-                    where
-                        F: FnMut(ConflictTarget<'a>)
-                {
+                                    where
+                                        F: FnMut(ConflictTarget<'a>) {
                     f(ConflictTarget {
                         target: TargetExpr::Function(self.build_func())
                     });

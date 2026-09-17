@@ -26,7 +26,7 @@ impl<'a> CoreRow<'a, Postgres> for Row<'a> {
     /// Driver-level retrieval errors are safely caught and boxed into the uniform `kova_core::Error`.
     fn get_value<'i, I>(&self, idx: I) -> kova_core::Result<Value<'a>>
         where
-            I: Into<ColumnIndex<'i>>, {
+            I: Into<ColumnIndex<'i>> {
         match idx.into() {
             ColumnIndex::Index(i) => {
                 self.inner.try_get(i).map_err(|e| Error::Database(Box::new(e)))

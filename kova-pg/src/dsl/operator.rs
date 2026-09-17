@@ -20,6 +20,10 @@ pub enum ExtOperator<'a> {
     NotMatches(Operand<'a, Postgres>, Operand<'a, Postgres>), // !~
     IMatches(Operand<'a, Postgres>, Operand<'a, Postgres>), // ~* (case-insensitive regular)
     NotIMatches(Operand<'a, Postgres>, Operand<'a, Postgres>), // !~*
+
+    // Array Contains and Overlap
+    ArrayContains(Operand<'a, Postgres>, Operand<'a, Postgres>), // @>
+    ArrayOverlap(Operand<'a, Postgres>, Operand<'a, Postgres>),  // &&
 }
 
 // Tiling nodes in chain operations

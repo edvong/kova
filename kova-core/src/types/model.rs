@@ -25,8 +25,7 @@ pub trait Model: FromRow {
 impl<T, DB> FromRow for Option<T>
     where
         DB: Database,
-        T: FromRow<DB = DB>,
-{
+        T: FromRow<DB = DB> {
     type DB = DB;
     fn from_row(row: &<DB as Database>::Row<'_>) -> Result<Self, Error> {
         match T::from_row(row) {
@@ -42,10 +41,9 @@ macro_rules! impl_from_row_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<$($T,)+ DB> FromRow for ($($T,)+)
-            where
-                DB: Database,
-                $( $T: FromRow<DB = DB>, )+
-        {
+                            where
+                                DB: Database,
+                                $( $T: FromRow<DB = DB>, )+ {
             type DB = DB;
             fn from_row(row: &<DB as Database>::Row<'_>) -> Result<Self, Error> {
                 Ok((

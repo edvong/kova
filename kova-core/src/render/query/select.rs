@@ -14,8 +14,7 @@ impl<'ctx, 'a, DB: Database> SelectContext<'ctx, 'a, DB> {
 
 impl<'ctc, 'a, DB> Render<SelectContext<'ctc, 'a, DB>> for SelectStatement<'a, DB>
     where
-        DB: Database,
-{
+        DB: Database {
     fn render(&self, ctx: &mut SelectContext<'ctc, 'a, DB>) {
         todo!()
     }

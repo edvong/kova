@@ -23,22 +23,20 @@ pub struct Insert<'c, 'a, DB: Database, T, E, X, R = NoReturn, C = NoConflict> {
 impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, Sqlite, T, E, X>
     for Insert<'c, 'a, Sqlite, T, E, X, NoReturn, NoConflict>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     fn new<D, M>(executor: &'c Executor<E>, data: D) -> Self
         where
-            D: IntoRows<'a, T, M>, {
+            D: IntoRows<'a, T, M> {
         Self { executor, statement: InsertStatement::new(data.into_rows()), _marker: PhantomData }
     }
 }
 
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     pub fn returning<P>(mut self, cols: P) -> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
         where
-            P: IntoArgs<Projection<'a, Sqlite, X>>, {
+            P: IntoArgs<Projection<'a, Sqlite, X>> {
         self.statement.retuning(cols.into_mapped_args(|p| p.erase_x()));
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
@@ -46,11 +44,10 @@ impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
 
 impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, NoConflict>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
         where
-            A: IntoArgs<ConflictTarget<'a>>, {
+            A: IntoArgs<ConflictTarget<'a>> {
         self.statement
             .on_conflict_ext_mut_or(|| OnConflict::new())
             .set_conflict(targets.into_args());
@@ -61,8 +58,7 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, NoConflict>
 
 impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     pub fn do_nothing(mut self) -> Self {
         self.statement.on_conflict_ext_mut_or(|| OnConflict::new()).set_ignore();
 
@@ -71,7 +67,7 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
 
     pub fn update<A>(mut self, assignments: A) -> Self
         where
-            A: IntoArgs<Assignment<'a, Sqlite, X>>, {
+            A: IntoArgs<Assignment<'a, Sqlite, X>> {
         self.statement
             .on_conflict_ext_mut_or(|| OnConflict::new())
             .set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
@@ -83,8 +79,7 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
     where
         T: Model<DB = Sqlite>,
-        E: ExecutableSync<Native = rusqlite::Connection>,
-{
+        E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute(self) -> Result<u64> {
         execute_affected(self.executor, self.statement.build())
     }
@@ -93,17 +88,16 @@ impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
     where
         T: Model<DB = Sqlite>,
-        E: ExecutableSync<Native = rusqlite::Connection>,
-{
+        E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Sqlite>, {
+            U: FromRow<DB = Sqlite> {
         fetch_rows(self.executor, self.statement.build(), |row| U::from_row(&row))
     }
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Sqlite, X>, {
+            for<'r> U: FromColumn<'r, Sqlite, X> {
         fetch_rows(self.executor, self.statement.build(), |row| U::extract(&row))
     }
 }

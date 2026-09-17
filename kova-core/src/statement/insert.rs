@@ -15,8 +15,7 @@ pub struct InsertStatement<'a, DB: Database, T> {
 
 impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
     where
-        T: Model<DB = DB>,
-{
+        T: Model<DB = DB> {
     pub fn new(rows: InsertRows<'a, T>) -> Self {
         Self {
             values: ValuesClause::new(T::COLUMNS_META.to_vec(), rows),
@@ -36,7 +35,7 @@ impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
 
     pub fn on_conflict_ext_mut_or<F>(&mut self, f: F) -> &mut ExtOnConflict<'a, DB>
         where
-            F: FnOnce() -> ExtOnConflict<'a, DB>, {
+            F: FnOnce() -> ExtOnConflict<'a, DB> {
         self.on_conflict.ext_mut_or_with(f)
     }
 }

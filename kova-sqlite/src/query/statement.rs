@@ -24,28 +24,27 @@ impl<'c, 'a, E, X> CoreStatement<'c, 'a, Sqlite, E, X> for Statement<'c, 'a, Sql
 impl<'c, 'a, E, X> Statement<'c, 'a, Sqlite, E, X> {
     pub fn bind<A>(&mut self, args: A)
         where
-            A: IntoArgs<Bind<'a, Sqlite>>, {
+            A: IntoArgs<Bind<'a, Sqlite>> {
         self.statement.bind(args.into_args());
     }
 }
 
 impl<'c, 'a, E, X> Statement<'c, 'a, Sqlite, E, X>
     where
-        E: ExecutableSync<Native = rusqlite::Connection>,
-{
+        E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute(self) -> Result<u64> {
         execute_affected(self.executor, once(self.statement.build()?))
     }
 
     pub fn load_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Sqlite>, {
+            U: FromRow<DB = Sqlite> {
         fetch_rows(self.executor, once(self.statement.build()?), |row| U::from_row(&row))
     }
 
     pub fn load_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Sqlite, X>, {
+            for<'r> U: FromColumn<'r, Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()?), |row| U::extract(&row))
     }
 }

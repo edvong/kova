@@ -21,8 +21,7 @@ pub(crate) trait RenderDispatch<T, C> {
 
 impl<Ext, T, C> RenderDispatch<T, C> for Ext
     where
-        Ext: PlatformRender<T, C>,
-{
+        Ext: PlatformRender<T, C> {
     fn dispatch(t: &T, ctx: &mut C) {
         // Direct passthrough to the underlying platform renderer
         <Self as PlatformRender<T, C>>::render(t, ctx)

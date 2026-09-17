@@ -24,7 +24,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         where
             T: Model<DB = DB>,
             'a: 'c,
-            E: 'c, {
+            E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Select::new(&self.executor)
     }
 
@@ -35,7 +35,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
             T: Model<DB = DB>,
             D: IntoRows<'a, T, M>,
             'a: 'c,
-            E: 'c, {
+            E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Insert::new(&self.executor, data)
     }
 
@@ -43,7 +43,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         where
             T: Model<DB = DB>,
             'a: 'c,
-            E: 'c, {
+            E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Update::new(&self.executor)
     }
 
@@ -51,7 +51,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         where
             T: Model<DB = DB>,
             'a: 'c,
-            E: 'c, {
+            E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Delete::new(&self.executor)
     }
 
@@ -61,7 +61,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         where
             S: Into<Cow<'a, str>>,
             'a: 'c,
-            E: 'c, {
+            E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Statement::new(&self.executor, sql)
     }
 }

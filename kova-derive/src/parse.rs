@@ -20,7 +20,9 @@ pub(crate) fn parse_model_def(ast: &DeriveInput) -> Result<ModelDef, Error> {
 
     let data_struct = match &ast.data {
         Data::Struct(s) => s,
-        _ => return Err(Error::new(struct_ident.span(), "Macros can only be derived for structs")),
+        _ => {
+            return Err(Error::new(struct_ident.span(), "Macros can only be derived for structs"));
+        }
     };
 
     let mut fields = Vec::new();

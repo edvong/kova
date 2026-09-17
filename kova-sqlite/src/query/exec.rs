@@ -8,7 +8,7 @@ pub(crate) fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) 
     where
         E: ExecutableSync<Native = rusqlite::Connection>,
         I: IntoIterator<Item = D>,
-        D: Into<StatementPayload<'a, Sqlite>>, {
+        D: Into<StatementPayload<'a, Sqlite>> {
     executor.with_conn_sync(|native| {
         let mut total_affected = 0;
 
@@ -33,7 +33,7 @@ pub(crate) fn fetch_rows<'a, E, I, D, U, F>(
         E: ExecutableSync<Native = rusqlite::Connection>,
         I: IntoIterator<Item = D>,
         D: Into<StatementPayload<'a, Sqlite>>,
-        F: FnMut(Row<'_>) -> Result<U>, {
+        F: FnMut(Row<'_>) -> Result<U> {
     executor.with_conn_sync(|native| {
         let mut result = Vec::with_capacity(32);
 

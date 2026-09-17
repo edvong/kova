@@ -61,37 +61,37 @@ type Target = i64;
 impl CountAll {
     pub fn eq<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().eq(v)
     }
 
     pub fn ne<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().ne(v)
     }
 
     pub fn gt<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().gt(v)
     }
 
     pub fn ge<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().ge(v)
     }
 
     pub fn lt<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().lt(v)
     }
 
     pub fn le<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().le(v)
     }
 
@@ -108,7 +108,7 @@ impl CountAll {
     pub fn between<'a, DB: Database, L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
         where
             L: IntoOperand<'a, Target, DB, K, X>,
-            U: IntoOperand<'a, Target, DB, K, X>, {
+            U: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().between(lower, upper)
     }
 
@@ -117,21 +117,21 @@ impl CountAll {
     ) -> Condition<'a, DB, X>
         where
             L: IntoOperand<'a, Target, DB, K, X>,
-            U: IntoOperand<'a, Target, DB, K, X>, {
+            U: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().not_between(lower, upper)
     }
 
     pub fn in_list<'a, DB: Database, I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().in_list(values)
     }
 
     pub fn not_in<'a, DB: Database, I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, DB, K, X>, {
+            V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().not_in_list(values)
     }
 

@@ -14,7 +14,7 @@ impl<'a, E> Executor<E> {
 impl<'a, E: ExecutableSync> Executor<E> {
     pub fn with_conn_sync<F, R>(&self, f: F) -> Result<R>
         where
-            F: FnOnce(&E::Native) -> Result<R>, {
+            F: FnOnce(&E::Native) -> Result<R> {
         self.inner.with_native_sync(f)
     }
 }
@@ -22,7 +22,7 @@ impl<'a, E: ExecutableSync> Executor<E> {
 impl<'a, E: ExecutableAsync> Executor<E> {
     pub async fn with_conn_async<F, R>(&self, f: F) -> Result<R>
         where
-            F: AsyncFnOnce(&E::Native) -> Result<R> + Send, {
+            F: AsyncFnOnce(&E::Native) -> Result<R> + Send {
         self.inner.with_native_async(f).await
     }
 }

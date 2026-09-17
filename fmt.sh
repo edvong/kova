@@ -23,43 +23,77 @@ trap "rm -f $TEMP_CONFIG" EXIT
 
 
 # ==========================================
-# Perl state machine: indent 'where' block
-# Adds 4 spaces to 'where' and its generic bounds
+# Perl state machine (Slurp mode)
+# Goal: Indent 'where' block 4 spaces, drop comma, pull up '{'
 # ==========================================
 PERL_SCRIPT='
-if (/^[ \t]*where\b/) {
-    $_ = "    " . $_;
-    $in_w = 1 unless /\{|;/;
-} elsif ($in_w) {
-    if (/^[ \t]*[\{;]/) {
-        $in_w = 0;
-    } else {
-        $_ = "    " . $_;
-        $in_w = 0 if /\{|;/;
-    }
-}'
+# Split file into lines, preserving newlines
+my @lines = split(/^/m, $_);
+my $in_w = 0;
 
+for (my $i = 0; $i < @lines; $i++) {
+    if ($lines[$i] =~ /^[ \t]*where\b/) {
+        # Edge case: if rustfmt puts "where ..., {" on a single line
+        $lines[$i] =~ s/,[ \t]*\{/ {/;
+        $lines[$i] = "    " . $lines[$i];
+        $in_w = 1 unless $lines[$i] =~ /\{|;/;
+    } elsif ($in_w) {
+        if ($lines[$i] =~ /^[ \t]*\{/) {
+            $in_w = 0;
+
+            # Found isolated "{", merge it to the previous line
+            my $prev = $lines[$i-1];
+            my $nl = ($prev =~ s/(\r?\n)$//) ? $1 : "\n";
+            $prev =~ s/[ \t]+$//;
+
+            # Case A: comma + comment -> drop comma, insert "{" before comment
+            if ($prev =~ s/,[ \t]*(\/\/.*)$/ {$1/) {}
+            # Case B: ends with comma -> drop comma, append " {"
+            elsif ($prev =~ s/,$//) { $prev .= " {"; }
+            # Case C: comment only -> insert "{" before comment
+            elsif ($prev =~ s/([ \t]*)(\/\/.*)$/ {$1$2/) {}
+            # Case D: normal -> append " {"
+            else { $prev .= " {"; }
+
+            $lines[$i-1] = $prev . $nl;
+
+            # Remove "{" from current line, drop line entirely if empty
+            $lines[$i] =~ s/^[ \t]*\{//;
+            $lines[$i] = "" if $lines[$i] =~ /^[ \t]*\n$/;
+
+        } elsif ($lines[$i] =~ /^[ \t]*;/) {
+            $in_w = 0; # Found ";", exit state
+        } else {
+            # Kill inline comma if rustfmt puts "{" at the end of this constraint line
+            $lines[$i] =~ s/,[ \t]*\{/ {/;
+
+            $lines[$i] = "    " . $lines[$i];
+            $in_w = 0 if $lines[$i] =~ /\{|;/;
+        }
+    }
+}
+# Join lines back into a single string
+$_ = join("", @lines);
+'
 
 # ==========================================
 # Execution: Single file vs Workspace
 # ==========================================
 if [ -n "$1" ]; then
-    # Case A: Target file provided (e.g., via RustRover shortcut)
+    # Case A: IDE triggered (Target file provided)
     TARGET_FILE="$1"
 
-    # rustfmt automatically picks up the temp rustfmt.toml
     rustfmt +nightly "$TARGET_FILE"
-    perl -pi -e "$PERL_SCRIPT" "$TARGET_FILE"
+    # -0777 enables Slurp mode (reads whole file into memory)
+    perl -i -0777 -pe "$PERL_SCRIPT" "$TARGET_FILE"
 else
-    # Case B: No args (running ./fmt.sh in terminal)
-
+    # Case B: Terminal triggered (Format workspace)
     cargo +nightly fmt
 
-    # Find all .rs files, strictly excluding target/ and .git/ dirs
     find . -type f -name "*.rs" \
         -not -path "*/target/*" \
         -not -path "*/.git/*" \
-        -exec perl -pi -e "$PERL_SCRIPT" {} +
+        -exec perl -i -0777 -pe "$PERL_SCRIPT" {} +
 
-    echo "Workspace formatting and where-clause indentation complete."
+    echo "Workspace formatting, where-clause indentation, and brace folding complete."
 fi

@@ -20,8 +20,7 @@ pub struct Update<'c, 'a, DB: Database, T, E, X, R = NoReturn> {
 impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, Sqlite, T, E, X>
     for Update<'c, 'a, Sqlite, T, E, X, NoReturn>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     fn new(executor: &'c Executor<E>) -> Self {
         Self { executor, statement: UpdateStatement::new(), _marker: PhantomData }
     }
@@ -29,18 +28,17 @@ impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, Sqlite, T, E, X>
 
 impl<'c, 'a, T, E, X> Update<'c, 'a, Sqlite, T, E, X, NoReturn>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     pub fn set<A>(mut self, assignments: A) -> Self
         where
-            A: IntoArgs<Assignment<'a, Sqlite, X>>, {
+            A: IntoArgs<Assignment<'a, Sqlite, X>> {
         self.statement.set(assignments.into_mapped_args(|a| a.erase_x()));
         self
     }
 
     pub fn returning<P>(mut self, cols: P) -> Update<'c, 'a, Sqlite, T, E, X, Returning>
         where
-            P: IntoArgs<Projection<'a, Sqlite, X>>, {
+            P: IntoArgs<Projection<'a, Sqlite, X>> {
         self.statement.returning(cols.into_mapped_args(|p| p.erase_x()));
 
         Update { executor: self.executor, statement: self.statement, _marker: PhantomData }
@@ -49,8 +47,7 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Sqlite, T, E, X, NoReturn>
 
 impl<'c, 'a, T, E, X, R> Update<'c, 'a, Sqlite, T, E, X, R>
     where
-        T: Model<DB = Sqlite>,
-{
+        T: Model<DB = Sqlite> {
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
         self.statement.r#where(cond.erase_x());
         self
@@ -60,8 +57,7 @@ impl<'c, 'a, T, E, X, R> Update<'c, 'a, Sqlite, T, E, X, R>
 impl<'c, 'a, T, E, X> Update<'c, 'a, Sqlite, T, E, X, NoReturn>
     where
         T: Model<DB = Sqlite>,
-        E: ExecutableSync<Native = rusqlite::Connection>,
-{
+        E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute(self) -> Result<u64> {
         execute_affected(self.executor, once(self.statement.build()))
     }
@@ -70,17 +66,16 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Sqlite, T, E, X, NoReturn>
 impl<'c, 'a, T, E, X> Update<'c, 'a, Sqlite, T, E, X, Returning>
     where
         T: Model<DB = Sqlite>,
-        E: ExecutableSync<Native = rusqlite::Connection>,
-{
+        E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Sqlite>, {
+            U: FromRow<DB = Sqlite> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
     }
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Sqlite, X>, {
+            for<'r> U: FromColumn<'r, Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
     }
 }

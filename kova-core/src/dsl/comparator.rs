@@ -30,14 +30,14 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
     fn binary_op<V, Target, X, K, F>(self, v: V, op_fn: F) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, Target, DB, K, X>,
-            F: FnOnce(Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB>, {
+            F: FnOnce(Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB> {
         Condition::from(Operator::from_std(op_fn(self.operand, v.into_operand())))
     }
 
     #[inline(always)]
     fn unary_op<F, X>(self, op_fn: F) -> Condition<'a, DB, X>
         where
-            F: FnOnce(Operand<'a, DB>) -> StandardOperator<'a, DB>, {
+            F: FnOnce(Operand<'a, DB>) -> StandardOperator<'a, DB> {
         Condition::from(Operator::from_std(op_fn(self.operand)))
     }
 
@@ -48,8 +48,7 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
         where
             L: IntoOperand<'a, Target, DB, K, X>,
             U: IntoOperand<'a, Target, DB, K, X>,
-            F: FnOnce(Operand<'a, DB>, Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB>,
-    {
+            F: FnOnce(Operand<'a, DB>, Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB> {
         Condition::from(Operator::from_std(op_fn(
             self.operand,
             lower.into_operand(),
@@ -62,44 +61,44 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Target, DB, K, X>,
-            F: FnOnce(Operand<'a, DB>, Vec<Operand<'a, DB>>) -> StandardOperator<'a, DB>, {
+            F: FnOnce(Operand<'a, DB>, Vec<Operand<'a, DB>>) -> StandardOperator<'a, DB> {
         let vec = values.into_iter().map(|val| val.into_operand()).collect();
         Condition::from(Operator::from_std(op_fn(self.operand, vec)))
     }
 
     pub fn eq<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Eq)
     }
 
     pub fn ne<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Ne)
     }
 
     pub fn gt<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Gt)
     }
 
     pub fn ge<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Ge)
     }
 
     pub fn lt<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Lt)
     }
 
     pub fn le<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Le)
     }
 
@@ -114,40 +113,40 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
     pub fn between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
         where
             L: IntoOperand<'a, T, DB, K, X>,
-            U: IntoOperand<'a, T, DB, K, X>, {
+            U: IntoOperand<'a, T, DB, K, X> {
         self.ternary_op(lower, upper, StandardOperator::Between)
     }
 
     pub fn not_between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
         where
             L: IntoOperand<'a, T, DB, K, X>,
-            U: IntoOperand<'a, T, DB, K, X>, {
+            U: IntoOperand<'a, T, DB, K, X> {
         self.ternary_op(lower, upper, StandardOperator::NotBetween)
     }
 
     pub fn in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.list_op(values, StandardOperator::In)
     }
 
     pub fn not_in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.list_op(values, StandardOperator::NotIn)
     }
 
     pub fn like<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::Like)
     }
 
     pub fn not_like<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
-            V: IntoOperand<'a, T, DB, K, X>, {
+            V: IntoOperand<'a, T, DB, K, X> {
         self.binary_op(v, StandardOperator::NotLike)
     }
 }

@@ -18,7 +18,7 @@ pub trait ConnectionSync: Connection + ExecutableSync {
 impl<E: ExecutableSync> ExecutableSync for &mut E {
     fn with_native_sync<F, R>(&self, f: F) -> Result<R>
         where
-            F: FnOnce(&Self::Native) -> Result<R>, {
+            F: FnOnce(&Self::Native) -> Result<R> {
         (**self).with_native_sync(f)
     }
 }

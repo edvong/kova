@@ -35,8 +35,7 @@ pub trait Decode<'a, DB: Database, X>: Sized {
 
 impl<'a, DB: Database, X, T> Encode<'a, DB, X, Option<T>> for Option<T>
     where
-        T: Encode<'a, DB, X, T>,
-{
+        T: Encode<'a, DB, X, T> {
     fn encode(self) -> Result<DB::Value<'a>> {
         match self {
             Some(val) => val.encode(),
@@ -47,8 +46,7 @@ impl<'a, DB: Database, X, T> Encode<'a, DB, X, Option<T>> for Option<T>
 
 impl<'a, 'b, DB: Database, X, T> Encode<'a, DB, X, Option<T>> for &'b Option<T>
     where
-        &'b T: Encode<'a, DB, X, T>,
-{
+        &'b T: Encode<'a, DB, X, T> {
     fn encode(self) -> Result<DB::Value<'a>> {
         match self {
             Some(val) => val.encode(),
@@ -59,8 +57,7 @@ impl<'a, 'b, DB: Database, X, T> Encode<'a, DB, X, Option<T>> for &'b Option<T>
 
 impl<'a, DB: Database, X, T> Decode<'a, DB, X> for Option<T>
     where
-        T: Decode<'a, DB, X>,
-{
+        T: Decode<'a, DB, X> {
     fn decode(value: DB::Value<'a>) -> Result<Self> {
         if value.is_none() {
             Ok(None)
@@ -72,8 +69,7 @@ impl<'a, DB: Database, X, T> Decode<'a, DB, X> for Option<T>
 
 impl<'a, 'b, DB: Database, X> Encode<'a, DB, X, String> for &'b str
     where
-        &'b str: IntoValue<'a, DB>,
-{
+        &'b str: IntoValue<'a, DB> {
     fn encode(self) -> Result<DB::Value<'a>> {
         self.into_value()
     }
@@ -81,8 +77,7 @@ impl<'a, 'b, DB: Database, X> Encode<'a, DB, X, String> for &'b str
 
 impl<'a, 'b, DB: Database, X> Encode<'a, DB, X, Vec<u8>> for &'b [u8]
     where
-        &'b [u8]: IntoValue<'a, DB>,
-{
+        &'b [u8]: IntoValue<'a, DB> {
     fn encode(self) -> Result<DB::Value<'a>> {
         self.into_value()
     }
@@ -126,6 +121,5 @@ pub trait DecodeExt<'a, DB: Database, X>: Decode<'a, DB, X> {
 impl<'a, DB, X, T> DecodeExt<'a, DB, X> for T
     where
         DB: Database,
-        T: Decode<'a, DB, X>,
-{
+        T: Decode<'a, DB, X> {
 }

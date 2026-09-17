@@ -31,8 +31,7 @@ impl<'a, T: ?Sized> SingleArgMarker for &'a T where T: SingleArgMarker {}
 impl<'a, 'b, DB: Database, T: ?Sized> IntoArg<Bind<'a, DB>> for &'b T
     where
         &'b T: IntoValue<'a, DB>,
-        T: SingleArgMarker,
-{
+        T: SingleArgMarker {
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
     }
@@ -57,8 +56,7 @@ impl<T> SingleArgMarker for Option<T> where T: SingleArgMarker {}
 impl<'a, DB: Database, T> IntoArg<Bind<'a, DB>> for Option<T>
     where
         Option<T>: IntoValue<'a, DB>,
-        T: SingleArgMarker,
-{
+        T: SingleArgMarker {
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
     }
@@ -69,8 +67,7 @@ impl<T> SingleArgMarker for Box<T> where T: SingleArgMarker {}
 impl<'a, DB: Database, T> IntoArg<Bind<'a, DB>> for Box<T>
     where
         Box<T>: IntoValue<'a, DB>,
-        T: SingleArgMarker,
-{
+        T: SingleArgMarker {
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
     }
@@ -82,7 +79,7 @@ macro_rules! impl_native_bind {
             impl $crate::dsl::SingleArgMarker for $T {}
 
             impl<'a, DB: $crate::types::Database> $crate::dsl::IntoArg<Bind<'a, DB>> for $T
-                where $T: $crate::types::IntoValue<'a, DB> {
+                                where $T: $crate::types::IntoValue<'a, DB> {
                 fn into_arg(self) -> Bind<'a, DB> { Bind(self.into_value()) }
             }
         )+

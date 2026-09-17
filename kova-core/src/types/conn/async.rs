@@ -18,7 +18,7 @@ pub trait ConnectionAsync: Connection + ExecutableAsync {
 impl<E: ExecutableAsync> ExecutableAsync for &mut E {
     async fn with_native_async<F, R>(&self, f: F) -> Result<R>
         where
-            F: AsyncFnOnce(&Self::Native) -> Result<R> + Send, {
+            F: AsyncFnOnce(&Self::Native) -> Result<R> + Send {
         (**self).with_native_async(f).await
     }
 }

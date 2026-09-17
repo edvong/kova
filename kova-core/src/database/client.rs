@@ -41,11 +41,10 @@ impl<'a, DB, X> Client<'a, DB, Sync, X>
     where
         DB::Connection<'a>: ConnectionSync,
         DB: Database,
-        X: 'a,
-{
+        X: 'a {
     pub fn transaction<F, R>(&self, f: F) -> Result<R>
         where
-            F: FnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R>, {
+            F: FnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> {
         self.executor
             .inner
             .transaction_sync(|native_tx| f(Operations::new(Executor::new(native_tx))))
@@ -56,11 +55,10 @@ impl<'a, DB, X> Client<'a, DB, Async, X>
     where
         DB::Connection<'a>: ConnectionAsync,
         DB: Database,
-        X: 'a,
-{
+        X: 'a {
     pub async fn transaction<F, R>(&self, f: F) -> Result<R>
         where
-            F: AsyncFnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> + Send, {
+            F: AsyncFnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> + Send {
         self.executor
             .inner
             .transaction_async(async |native_tx| f(Operations::new(Executor::new(native_tx))).await)

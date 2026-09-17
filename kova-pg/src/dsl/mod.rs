@@ -10,6 +10,8 @@ mod pagination;
 mod subselect;
 
 pub mod func {
+    pub use crate::dsl::function::All;
+    pub use crate::dsl::function::Any;
     pub use crate::dsl::function::ArrayAgg;
     pub use crate::dsl::function::JsonbAgg;
     pub use crate::dsl::function::JsonbObject;

@@ -57,7 +57,7 @@ pub mod dsl {
         };
 
         #[cfg(feature = "pg")]
-        pub use kova_pg::dsl::func::{ArrayAgg, JsonbAgg, JsonbObject};
+        pub use kova_pg::dsl::func::{All, Any, ArrayAgg, JsonbAgg, JsonbObject};
     }
 }
 

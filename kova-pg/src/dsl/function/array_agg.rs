@@ -63,8 +63,7 @@ pub struct ArrayAgg<T>(pub T);
 
 impl<'a, T> ArrayAgg<T>
     where
-        T: IntoArrayAggState<'a>,
-{
+        T: IntoArrayAggState<'a> {
     // --- State Transition (Keep the current T::X unchanged) ---
 
     pub fn distinct(self) -> ArrayAgg<ArrayAggState<'a, T::X>> {
@@ -109,8 +108,7 @@ impl<'a, T> ArrayAgg<T>
 
 impl<'a, T, Target> IntoComparator<'a, Target, Postgres> for ArrayAgg<T>
     where
-        T: IntoArrayAggState<'a>,
-{
+        T: IntoArrayAggState<'a> {
     #[inline(always)]
     fn into_comparator(self) -> Comparator<'a, Target, Postgres> {
         Comparator::new(Operand::from_function(Function::from_ext(ExtFunction::ArrayAgg(
@@ -121,41 +119,40 @@ impl<'a, T, Target> IntoComparator<'a, Target, Postgres> for ArrayAgg<T>
 
 impl<'a, T> ArrayAgg<T>
     where
-        T: IntoArrayAggState<'a>,
-{
+        T: IntoArrayAggState<'a> {
     pub fn eq<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().eq(v)
     }
 
     pub fn ne<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().ne(v)
     }
 
     pub fn gt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().gt(v)
     }
 
     pub fn ge<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().ge(v)
     }
 
     pub fn lt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().lt(v)
     }
 
     pub fn le<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().le(v)
     }
 
@@ -170,28 +167,28 @@ impl<'a, T> ArrayAgg<T>
     pub fn between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
         where
             L: IntoOperand<'a, Target, Postgres, K, T::X>,
-            U: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            U: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().between(lower, upper)
     }
 
     pub fn not_between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
         where
             L: IntoOperand<'a, Target, Postgres, K, T::X>,
-            U: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            U: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().not_between(lower, upper)
     }
 
     pub fn in_list<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().in_list(values)
     }
 
     pub fn not_in<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Postgres, K, T::X>, {
+            V: IntoOperand<'a, Target, Postgres, K, T::X> {
         self.into_comparator().not_in_list(values)
     }
 
