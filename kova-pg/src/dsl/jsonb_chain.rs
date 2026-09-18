@@ -5,7 +5,7 @@ use crate::dsl::jsonb_text::JsonbText;
 use crate::dsl::operator::{ExtOperator, JsonOp};
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{Condition, IntoOperand, IsAst, Operand, Operator, WithComponent};
+use kova_core::dsl::{Condition, IntoOperand, OpAst, Operand, Operator, WithComponent};
 use std::marker::PhantomData;
 
 pub struct JsonbChain<'a, T, X> {
@@ -15,7 +15,7 @@ pub struct JsonbChain<'a, T, X> {
 }
 
 // JsonbChain also an Operand
-impl<'a, T, X> IntoOperand<'a, T, Postgres, IsAst, X> for JsonbChain<'a, T, X> {
+impl<'a, T, X> IntoOperand<'a, T, Postgres, OpAst, X> for JsonbChain<'a, T, X> {
     fn into_operand(self) -> Operand<'a, Postgres> {
         self.to_operand()
     }

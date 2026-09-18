@@ -4,11 +4,12 @@
 #![allow(clippy::wrong_self_convention)]
 
 use crate::dsl::comparator::IntoComparator;
-use crate::dsl::function::builder::{AggregateBuilder, BuildFunction};
+use crate::dsl::function::window::Window;
 use crate::dsl::function::{Function, Quantifier, StandardFunction};
+use crate::dsl::function::{IntoAggregate, IntoFunction};
 use crate::dsl::{
-    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, GroupBy, IntoAlias,
-    IntoArg, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
+    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, GroupBy, IntoArg,
+    IntoIdentifier, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
     SingleArgMarker, StandardGroupBy, StandardOperand, WithComponent,
 };
 use crate::types::Database;
@@ -16,24 +17,29 @@ use std::marker::PhantomData;
 
 pub struct Min<T>(pub T);
 
-impl<'a, T, DB: Database> BuildFunction<'a, DB> for Min<Column<'a, T, DB>> {
+impl<'a, T, DB: Database> IntoFunction<'a, DB> for Min<Column<'a, T, DB>> {
     #[inline(always)]
-    fn build_func(self) -> Function<'a, DB> {
-        self.build_aggr(Quantifier::All)
+    fn into_func(self) -> Function<'a, DB> {
+        self.into_aggregate_with(Quantifier::All)
     }
 }
 
-impl<'a, T, DB: Database> AggregateBuilder<'a, DB> for Min<Column<'a, T, DB>> {
+impl<'a, T, DB: Database> IntoAggregate<'a, DB> for Min<Column<'a, T, DB>> {
     #[inline(always)]
-    fn build_aggr(self, quantifier: Quantifier) -> Function<'a, DB> {
+    fn into_aggregate_with(self, quantifier: Quantifier) -> Function<'a, DB> {
         Function::from_std(StandardFunction::Min(self.0.meta(), quantifier))
     }
 }
 
 impl<'a, T, DB: Database, X> BuildProjection<'a, DB, X> for Min<Column<'a, T, DB>> {
     #[inline(always)]
-    fn build_alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Function(self.build_func()), Some(col.into_identifier()))
+    fn build_projection<A, U>(self, alias: A) -> Projection<'a, DB, X>
+        where
+            A: IntoIdentifier<U> {
+        Projection::new(
+            ProjectionExpr::Function(self.into_func()),
+            Some(alias.into_identifier().meta),
+        )
     }
 }
 
@@ -41,7 +47,7 @@ impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Min<Column<'a, T
     #[inline(always)]
     fn into_arg(self) -> Projection<'a, DB, X> {
         Projection::new(
-            ProjectionExpr::Function(<Self as BuildFunction<'a, DB>>::build_func(self)),
+            ProjectionExpr::Function(<Self as IntoFunction<'a, DB>>::into_func(self)),
             None,
         )
     }
@@ -51,7 +57,7 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for Min<Column<'a, T, DB>>
     #[inline(always)]
     fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
         Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(self.build_func())),
+            operand: OrderOperand::from_std(StandardOperand::Function(self.into_func())),
             direction,
             nulls: None,
             _marker: PhantomData,
@@ -62,7 +68,7 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for Min<Column<'a, T, DB>>
 impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Min<Column<'a, T, DB>> {
     #[inline(always)]
     fn into_arg(self) -> GroupBy<'a, DB, X> {
-        GroupBy::standard(StandardGroupBy::Function(self.build_func()))
+        GroupBy::standard(StandardGroupBy::Function(self.into_func()))
     }
 }
 
@@ -79,6 +85,30 @@ impl<'a, T, DB: Database> IntoComparator<'a, T, DB> for Min<Column<'a, T, DB>> {
 impl<'a, T, DB: Database> SingleArgMarker for Min<Column<'a, T, DB>> {}
 
 impl<'a, T, DB: Database> Min<Column<'a, T, DB>> {
+    pub fn over<X>(self) -> Window<'a, DB, X> {
+        Window {
+            func: self.into_func(),
+            partition_by: vec![],
+            order_by: vec![],
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
+        self.build_projection(col)
+    }
+    pub fn distinct(self) -> Function<'a, DB> {
+        self.into_aggregate_distinct()
+    }
+
+    pub fn asc<X>(self) -> Ordering<'a, DB, X> {
+        self.build_ordering(Some(Direction::Asc))
+    }
+
+    pub fn desc<X>(self) -> Ordering<'a, DB, X> {
+        self.build_ordering(Some(Direction::Desc))
+    }
+
     pub fn eq<V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, T, DB, K, X> {
@@ -149,20 +179,5 @@ impl<'a, T, DB: Database> Min<Column<'a, T, DB>> {
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {
         self.into_comparator().not_in_list(values)
-    }
-
-    pub fn distinct(self) -> Function<'a, DB> {
-        self.build_distinct()
-    }
-    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        self.build_alias(col)
-    }
-
-    pub fn asc<X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Asc))
-    }
-
-    pub fn desc<X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Desc))
     }
 }

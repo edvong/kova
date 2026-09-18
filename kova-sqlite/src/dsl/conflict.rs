@@ -1,5 +1,5 @@
 use crate::types::Sqlite;
-use kova_core::dsl::func::{Abs, BuildFunction, Function, Length, Lower, Upper};
+use kova_core::dsl::func::{Abs, IntoFunction, Function, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArg, IntoArgs, SingleArgMarker};
 use kova_core::types::ColumnMeta;
 
@@ -62,7 +62,7 @@ macro_rules! impl_conflict_target_for_func {
                                     where
                                         F: FnMut(ConflictTarget<'a>) {
                     f(ConflictTarget {
-                        target: TargetExpr::Function(self.build_func())
+                        target: TargetExpr::Function(self.into_func())
                     });
                 }
             }

@@ -23,8 +23,8 @@ pub trait ExtensionClause<E> {
     /// using the provided closure.
     /// This method is guaranteed to return a valid mutable reference.
     fn ext_mut_or_with<F>(&mut self, f: F) -> &mut E
-        where
-            F: FnOnce() -> E {
+    where
+        F: FnOnce() -> E, {
         // Delegates directly to `Option::get_or_insert_with` for a zero-cost abstraction.
         self.ext_opt_mut().get_or_insert_with(f)
     }

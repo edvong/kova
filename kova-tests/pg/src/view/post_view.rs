@@ -1,6 +1,6 @@
-use kova::{bind_type, Error};
-use kova::dsl::Alias;
+use kova::dsl::Identifier;
 use kova::types::{Database, Decode, Engine, FromRow, Value};
+use kova::{Error, bind_type};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -18,7 +18,7 @@ pub struct CommentDto {
 
 #[allow(non_upper_case_globals)]
 impl CommentDto {
-    pub const commenter: Alias<Author> = Alias::new("commenter");
+    pub const commenter: Identifier<Author> = Identifier::new("comment_dto", "commenter");
 }
 
 pub struct PostView {
@@ -39,13 +39,11 @@ impl FromRow for PostView {
 
 #[allow(non_upper_case_globals)]
 impl PostView {
-    pub const author: Alias<Author> = Alias::new("author");
-    pub const comments: Alias<Vec<CommentDto>> = Alias::new("comments");
+    pub const author: Identifier<Author> = Identifier::new("post_view", "author");
+    pub const comments: Identifier<Vec<CommentDto>> = Identifier::new("post_view", "comments");
 }
 
-
 pub struct ViewCodec;
-
 
 impl<'a> Decode<'a, Engine, ViewCodec> for Author {
     fn decode(value: Value<'a>) -> kova::Result<Self> {
@@ -59,14 +57,13 @@ impl<'a> Decode<'a, Engine, ViewCodec> for Author {
 }
 bind_type!(ViewCodec, Author);
 
-
 impl<'a> Decode<'a, Engine, ViewCodec> for Vec<CommentDto> {
     fn decode(value: Value<'a>) -> kova::Result<Self> {
         match value {
             Value::Text(t) => {
                 serde_json::from_str(&t).map_err(|e| Error::ParseError(e.to_string()))
             }
-            // Value::Null => Ok(Vec::new()), autowrap COALESCE(..., '[]'::jsonb)
+            Value::Null => Ok(Vec::new()), // autowrap COALESCE(..., '[]'::jsonb)
             _ => Err(Error::TypeMismatch("Expected Text(JSON) for Vec<CommentDto>".into())),
         }
     }

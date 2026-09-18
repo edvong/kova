@@ -28,7 +28,7 @@ pub mod types {
 }
 
 pub mod dsl {
-    pub use kova_core::dsl::{Alias, Column, Condition};
+    pub use kova_core::dsl::{Identifier, Column, Condition};
 
     #[cfg(feature = "pg")]
     pub use kova_pg::dsl::{LockMode, Subselect, WaitPolicy};

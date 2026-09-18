@@ -7,19 +7,18 @@ mod function;
 mod operand;
 mod operator;
 
-mod alias;
 mod clause;
 mod comparator;
+mod identifier;
 mod rows;
 
 pub mod func {
     pub use crate::dsl::function::{
-        Abs, Avg, BuildFunction, Count, CountAll, Function, Length, Lower, Max, Min, Sum, Upper,
+        Abs, Avg, IntoFunction, Count, CountAll, Function, Length, Lower, Max, Min, Sum, Upper,
     };
 }
 
 pub use {
-    alias::{Alias, Identifier, IntoAlias},
     arg::{IntoArg, IntoArgs, SingleArgMarker},
     assignment::{Assignment, StandardAssignment},
     clause::*,
@@ -27,7 +26,8 @@ pub use {
     comparator::{AsComparator, Comparator, IntoComparator},
     component::{Component, WithComponent},
     condition::Condition,
-    operand::{IntoOperand, IsAst, IsValue, Operand},
+    identifier::{Identifier, IntoIdentifier},
+    operand::{IntoOperand, OpAst, OpValue, Operand},
     operator::{Operator, StandardOperator},
     rows::{InsertRows, IntoRows},
 };

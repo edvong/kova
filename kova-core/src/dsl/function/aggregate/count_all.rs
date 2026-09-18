@@ -3,35 +3,40 @@
 use crate::dsl::comparator::IntoComparator;
 use crate::dsl::func::Function;
 use crate::dsl::function::StandardFunction;
-use crate::dsl::function::builder::BuildFunction;
+use crate::dsl::function::IntoFunction;
 use crate::dsl::{
-    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, IntoAlias, IntoArg,
-    IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr, SingleArgMarker,
-    StandardOperand, WithComponent,
+    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, IntoArg,
+    IntoIdentifier, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
+    SingleArgMarker, StandardOperand, WithComponent,
 };
 use crate::types::Database;
 use std::marker::PhantomData;
+use crate::dsl::function::window::Window;
 
 pub struct CountAll;
 
-impl<'a, DB: Database> BuildFunction<'a, DB> for CountAll {
+impl<'a, DB: Database> IntoFunction<'a, DB> for CountAll {
     #[inline(always)]
-    fn build_func(self) -> Function<'a, DB> {
+    fn into_func(self) -> Function<'a, DB> {
         Function::from_std(StandardFunction::CountAll)
     }
 }
 
 impl<'a, DB: Database, X> BuildProjection<'a, DB, X> for CountAll {
-    #[inline(always)]
-    fn build_alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Function(self.build_func()), Some(col.into_identifier()))
+    fn build_projection<A, T>(self, alias: A) -> Projection<'a, DB, X>
+        where
+            A: IntoIdentifier<T> {
+        Projection::new(
+            ProjectionExpr::Function(self.into_func()),
+            Some(alias.into_identifier().meta),
+        )
     }
 }
 
 impl<'a, DB: Database, X> IntoArg<Projection<'a, DB, X>> for CountAll {
     #[inline(always)]
     fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Function(self.build_func()), None)
+        Projection::new(ProjectionExpr::Function(self.into_func()), None)
     }
 }
 
@@ -46,7 +51,7 @@ impl<'a, DB: Database, X> BuildOrdering<'a, DB, X> for CountAll {
     #[inline(always)]
     fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
         Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(self.build_func())),
+            operand: OrderOperand::from_std(StandardOperand::Function(self.into_func())),
             direction,
             nulls: None,
             _marker: PhantomData,
@@ -59,6 +64,27 @@ impl SingleArgMarker for CountAll {}
 type Target = i64;
 
 impl CountAll {
+    pub fn over<'a, DB: Database, X>(self) -> Window<'a, DB, X> {
+        Window {
+            func: self.into_func(),
+            partition_by: vec![],
+            order_by: vec![],
+            _marker: PhantomData,
+        }
+    }
+    
+    pub fn alias<DB: Database, U, X>(self, col: Column<U, DB>) -> Projection<DB, X> {
+        self.build_projection(col)
+    }
+
+    pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
+        self.build_ordering(Some(Direction::Asc))
+    }
+
+    pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
+        self.build_ordering(Some(Direction::Desc))
+    }
+    
     pub fn eq<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, Target, DB, K, X> {
@@ -96,13 +122,11 @@ impl CountAll {
     }
 
     pub fn is_null<'a, DB: Database, T, X>(self) -> Condition<'a, DB, X> {
-        let expr: Comparator<'a, Target, DB> = self.into_comparator();
-        expr.is_null()
+        IntoComparator::<'a, T, DB>::into_comparator(self).is_null()
     }
 
-    pub fn is_not_null<'a, DB: Database, X>(self) -> Condition<'a, DB, X> {
-        let expr: Comparator<'a, Target, DB> = self.into_comparator();
-        expr.is_not_null()
+    pub fn is_not_null<'a, DB: Database, T, X>(self) -> Condition<'a, DB, X> {
+        IntoComparator::<'a, T, DB>::into_comparator(self).is_not_null()
     }
 
     pub fn between<'a, DB: Database, L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
@@ -133,17 +157,5 @@ impl CountAll {
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Target, DB, K, X> {
         self.into_comparator().not_in_list(values)
-    }
-
-    pub fn alias<DB: Database, U, X>(self, col: Column<U, DB>) -> Projection<DB, X> {
-        self.build_alias(col)
-    }
-
-    pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Asc))
-    }
-
-    pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Desc))
     }
 }

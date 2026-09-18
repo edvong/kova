@@ -1,4 +1,4 @@
-use crate::dsl::{LockItem, LockMode, Locking, Pagination, WaitPolicy};
+use crate::dsl::{LockItem, LockMode, Locking, Pagination, Subselect, WaitPolicy};
 use crate::query::exec::fetch_rows;
 use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
@@ -6,9 +6,7 @@ use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::{Condition, EraseX, GroupBy, IntoArgs, Join, JoinType, Ordering, Projection};
 use kova_core::statement::SelectStatement;
-use kova_core::types::{
-    Database, ExecutableAsync, FromColumn, FromRow, Model, Select as CoreSelect,
-};
+use kova_core::types::{Database, ExecutableAsync, FromColumn, FromRow, Model, Select as CoreSelect};
 use std::iter::once;
 use std::marker::PhantomData;
 

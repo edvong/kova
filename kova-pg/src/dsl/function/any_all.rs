@@ -2,7 +2,7 @@ use crate::dsl::subselect::Chain;
 use crate::dsl::{ExtFunction, Subselect};
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{IntoOperand, IsAst, IsValue, Operand, WithComponent};
+use kova_core::dsl::{IntoOperand, OpAst, OpValue, Operand, WithComponent};
 use kova_core::types::Model;
 
 pub struct Any<I>(pub I);
@@ -10,10 +10,10 @@ pub struct All<I>(pub I);
 
 // Core thought: As long as the elements V in the collection can be converted into an Operand,
 // the collection I itself is good to go as an argument for Any.
-impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X> for Any<I>
+impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X> for Any<I>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, Target, Postgres, IsValue, X> {
+        V: IntoOperand<'a, Target, Postgres, OpValue, X> {
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, Postgres> {
         let operands: Vec<Operand<'a, Postgres>> =
@@ -24,10 +24,10 @@ impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X> for Any<I>
 }
 
 // Implementation for All follows the exact same pattern.
-impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X> for All<I>
+impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X> for All<I>
     where
         I: IntoIterator<Item = V>,
-        V: IntoOperand<'a, Target, Postgres, IsValue, X> {
+        V: IntoOperand<'a, Target, Postgres, OpValue, X> {
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, Postgres> {
         let operands: Vec<Operand<'a, Postgres>> =
@@ -37,7 +37,7 @@ impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X> for All<I>
     }
 }
 
-impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X>
+impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X>
     for Any<Subselect<'a, M, Chain<Target>>>
     where
         M: Model<DB = Postgres> {
@@ -52,7 +52,7 @@ impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X>
 }
 
 // Same trick applies to All.
-impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, IsAst, X>
+impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X>
     for All<Subselect<'a, M, Chain<Target>>>
     where
         M: Model<DB = Postgres> {

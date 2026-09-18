@@ -1,6 +1,7 @@
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::function::Function;
-use crate::dsl::{Column, EraseX, Identifier};
+use crate::dsl::identifier::IdentifierMeta;
+use crate::dsl::{EraseX, IntoIdentifier};
 use crate::statement::SelectStatement;
 use crate::types::{ColumnMeta, Database};
 use std::marker::PhantomData;
@@ -23,12 +24,14 @@ impl<'a, DB: Database> ProjectionClause<'a, DB> {
 
 pub struct Projection<'a, DB: Database, X> {
     pub(crate) expr: ProjectionExpr<'a, DB>,
-    pub(crate) alias: Option<Identifier>,
+    pub(crate) alias: Option<IdentifierMeta>,
     _marker: PhantomData<X>,
 }
 
 pub trait BuildProjection<'a, DB: Database, X> {
-    fn build_alias<U>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X>;
+    fn build_projection<A, T>(self, alias: A) -> Projection<'a, DB, X>
+        where
+            A: IntoIdentifier<T>;
 }
 
 impl<'a, DB: Database, X> EraseX for Projection<'a, DB, X> {
@@ -40,12 +43,14 @@ impl<'a, DB: Database, X> EraseX for Projection<'a, DB, X> {
 }
 
 impl<'a, DB: Database, X> Projection<'a, DB, X> {
-    pub fn new(expr: ProjectionExpr<'a, DB>, alias: Option<Identifier>) -> Self {
+    pub fn new(expr: ProjectionExpr<'a, DB>, alias: Option<IdentifierMeta>) -> Self {
         Self { expr, alias, _marker: PhantomData }
     }
 
-    pub fn alias(&mut self, alias: Identifier) {
-        self.alias = Some(alias);
+    pub fn alias<A, T>(&mut self, alias: A)
+        where
+            A: IntoIdentifier<T> {
+        self.alias = Some(alias.into_identifier().meta);
     }
 }
 

@@ -12,6 +12,7 @@ mod order;
 mod pagination;
 mod projection;
 mod r#where;
+mod with;
 
 pub use {
     bind::Bind,

@@ -1,11 +1,11 @@
-use crate::dsl::alias::{Identifier, IntoAlias};
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::comparator::AsComparator;
 use crate::dsl::component::WithComponent;
 use crate::dsl::condition::Condition;
+use crate::dsl::identifier::{Identifier, IntoIdentifier};
 use crate::dsl::operand::IntoOperand;
 use crate::dsl::{
-    Assignment, Comparator, IntoArg, IsAst, Operand, OrderOperand, StandardAssignment,
+    Assignment, Comparator, IntoArg, OpAst, Operand, OrderOperand, StandardAssignment,
 };
 use crate::dsl::{BuildOrdering, Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
 use crate::types::{ColumnMeta, Database, Extension};
@@ -32,9 +32,9 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
 //     }
 // }
 
-impl<'a, T, DB: Database> IntoAlias<T> for Column<'a, T, DB> {
-    fn into_identifier(self) -> Identifier {
-        Identifier { identifier: self.meta().column_name }
+impl<'a, T, DB: Database> IntoIdentifier<T> for Column<'a, T, DB> {
+    fn into_identifier(self) -> Identifier<T> {
+        Identifier::new(self.meta.table_name, self.meta.column_name)
     }
 }
 
@@ -50,7 +50,7 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<'a, T, DB> {
     }
 }
 
-impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, IsAst, X> for Column<'a, T, DB> {
+impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, OpAst, X> for Column<'a, T, DB> {
     fn into_operand(self) -> Operand<'a, DB> {
         Operand::from_column(self.meta)
     }
@@ -74,7 +74,7 @@ impl<'a, T, DB: Database> SingleArgMarker for Column<'a, T, DB> {}
 impl<'a, T, DB: Database> Column<'a, T, DB> {
     /// The type of alias T must be consistent with the current column
     pub fn alias<X>(self, alias: Column<'a, T, DB>) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.meta), Some(alias.into_identifier()))
+        Projection::new(ProjectionExpr::Column(self.meta), Some(alias.into_identifier().meta))
     }
 }
 

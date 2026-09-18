@@ -1,5 +1,5 @@
 use crate::types::Postgres;
-use kova_core::dsl::func::{Abs, BuildFunction, Function, Length, Lower, Upper};
+use kova_core::dsl::func::{Abs, IntoFunction, Function, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArgs};
 use kova_core::types::ColumnMeta;
 
@@ -60,7 +60,7 @@ macro_rules! impl_conflict_target_args_for_func {
                 #[inline(always)]
                 fn for_each_arg<F>(self, f: &mut F) where F: FnMut(ConflictTarget<'a>) {
                     f(ConflictTarget {
-                        target: TargetExpr::Function(self.build_func())
+                        target: TargetExpr::Function(self.into_func())
                     });
                 }
             }

@@ -4,7 +4,7 @@ use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{
-    Column, Comparator, Condition, EraseX, IntoAlias, IntoComparator, IntoOperand, Operand,
+    Column, Comparator, Condition, EraseX, IntoComparator, IntoIdentifier, IntoOperand, Operand,
     Ordering, Projection, ProjectionExpr, WithComponent,
 };
 use kova_core::types::ColumnMeta;
@@ -96,7 +96,10 @@ impl<'a, T> ArrayAgg<T>
     // --- Delivery (Extract T::X) ---
 
     pub fn alias<U>(self, col: Column<'a, U, Postgres>) -> Projection<'a, Postgres, T::X> {
-        Projection::new(ProjectionExpr::Function(self.build_func()), Some(col.into_identifier()))
+        Projection::new(
+            ProjectionExpr::Function(self.build_func()),
+            Some(col.into_identifier().meta),
+        )
     }
 
     fn build_func(self) -> Function<'a, Postgres> {

@@ -1,8 +1,8 @@
 use crate::dsl::Pagination;
 use crate::types::Postgres;
 use kova_core::dsl::{
-    Condition, EraseX, GroupBy, IntoAlias, IntoArgs, IntoOperand, IsAst, Join, JoinType, Operand,
-    Ordering, Projection, ProjectionExpr, SingleArgMarker,
+    Condition, EraseX, GroupBy, IntoArgs, IntoIdentifier, IntoOperand, OpAst, Join, JoinType,
+    Operand, Ordering, Projection, ProjectionExpr, SingleArgMarker,
 };
 use kova_core::statement::SelectStatement;
 use kova_core::types::Model;
@@ -82,17 +82,17 @@ impl<'a, T: Model<DB = Postgres>, X> Subselect<'a, T, Chain<X>> {
     }
 
     // An alias must be specified to be converted to a projection
-    pub fn alias<I: IntoAlias<A>, A>(self, alias: I) -> Projection<'a, T::DB, X> {
+    pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, T::DB, X> {
         Projection::new(
             ProjectionExpr::Subselect(Box::new(self.statement)),
-            Some(alias.into_identifier()),
+            Some(alias.into_identifier().meta),
         )
     }
 }
 
 impl<'a, T: Model, X> SingleArgMarker for Subselect<'a, T, Chain<X>> {}
 
-impl<'a, T: Model<DB = Postgres>, X> IntoOperand<'a, T, Postgres, IsAst, X>
+impl<'a, T: Model<DB = Postgres>, X> IntoOperand<'a, T, Postgres, OpAst, X>
     for Subselect<'a, T, Chain<X>>
 {
     fn into_operand(self) -> Operand<'a, Postgres> {

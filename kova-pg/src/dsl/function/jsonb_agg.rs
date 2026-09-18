@@ -2,7 +2,7 @@ use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function as CoreFunction;
 use kova_core::dsl::{
-    EraseX, IntoAlias, IntoArg, Projection, ProjectionExpr, SingleArgMarker, WithComponent,
+    EraseX, IntoIdentifier, IntoArg, Projection, ProjectionExpr, SingleArgMarker, WithComponent,
 };
 
 // Only accept single projection
@@ -22,7 +22,7 @@ impl<'a, T, X> IntoArg<Projection<'a, Postgres, X>> for JsonbAgg<T>
 }
 
 impl<'a, T> JsonbAgg<T> {
-    pub fn alias<I: IntoAlias<A>, A, X>(self, alias: I) -> Projection<'a, Postgres, X>
+    pub fn alias<I: IntoIdentifier<A>, A, X>(self, alias: I) -> Projection<'a, Postgres, X>
         where
             T: IntoArg<Projection<'a, Postgres, X>> {
         let mut proj: Projection<'a, Postgres, X> = self.into_arg();

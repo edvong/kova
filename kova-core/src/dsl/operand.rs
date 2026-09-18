@@ -46,14 +46,14 @@ impl<'a, DB: Database> Operand<'a, DB> {
     }
 }
 
-pub struct IsAst;
-pub struct IsValue;
+pub struct OpAst;
+pub struct OpValue;
 
 pub trait IntoOperand<'a, Target, DB: Database, K, X> {
     fn into_operand(self) -> Operand<'a, DB>;
 }
 
-impl<'a, T, DB, X> IntoOperand<'a, T, DB, IsValue, X> for T
+impl<'a, T, DB, X> IntoOperand<'a, T, DB, OpValue, X> for T
     where
         DB: Database,
         T: Encode<'a, DB, X, T> {
@@ -62,7 +62,7 @@ impl<'a, T, DB, X> IntoOperand<'a, T, DB, IsValue, X> for T
     }
 }
 
-impl<'a, 'b, T, DB, X> IntoOperand<'a, T, DB, IsValue, X> for &'b T
+impl<'a, 'b, T, DB, X> IntoOperand<'a, T, DB, OpValue, X> for &'b T
     where
         DB: Database,
         &'b T: Encode<'a, DB, X, T> {
@@ -72,7 +72,7 @@ impl<'a, 'b, T, DB, X> IntoOperand<'a, T, DB, IsValue, X> for &'b T
 }
 
 // Allow String Column accept &str
-impl<'a, 'b, DB: Database, X> IntoOperand<'a, String, DB, IsValue, X> for &'b str
+impl<'a, 'b, DB: Database, X> IntoOperand<'a, String, DB, OpValue, X> for &'b str
     where
         &'b str: Encode<'a, DB, X, String> {
     fn into_operand(self) -> Operand<'a, DB> {
@@ -81,7 +81,7 @@ impl<'a, 'b, DB: Database, X> IntoOperand<'a, String, DB, IsValue, X> for &'b st
 }
 
 // Allow Vec<u8> Column accept &[u8]
-impl<'a, 'b, DB: Database, X> IntoOperand<'a, Vec<u8>, DB, IsValue, X> for &'b [u8]
+impl<'a, 'b, DB: Database, X> IntoOperand<'a, Vec<u8>, DB, OpValue, X> for &'b [u8]
     where
         &'b [u8]: Encode<'a, DB, X, Vec<u8>> {
     fn into_operand(self) -> Operand<'a, DB> {

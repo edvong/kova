@@ -1,15 +1,15 @@
 mod aggregate;
-mod builder;
 mod scalar;
+mod window;
 
 pub use aggregate::*;
-pub use builder::BuildFunction;
 pub use scalar::*;
 
-use crate::dsl::Component;
+use crate::dsl::{Component, Operand, Ordering};
 use crate::dsl::component::WithComponent;
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
+use crate::dsl::function::window::Window;
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
 
@@ -43,8 +43,20 @@ pub enum StandardFunction<'a, DB: Database> {
     Upper(ColumnMeta),
     Abs(ColumnMeta),
 
-    #[doc(hidden)]
-    _Marker(PhantomData<&'a DB>),
+    Window(Box<Window<'a, DB, ()>>),
+}
+
+pub trait IntoFunction<'a, DB: Database>: Sized {
+    fn into_func(self) -> Function<'a, DB>;
+}
+
+pub(crate) trait IntoAggregate<'a, DB: Database>: IntoFunction<'a, DB> {
+    fn into_aggregate_with(self, quantifier: Quantifier) -> Function<'a, DB>;
+
+    #[inline(always)]
+    fn into_aggregate_distinct(self) -> Function<'a, DB> {
+        self.into_aggregate_with(Quantifier::Distinct)
+    }
 }
 
 // impl<'a, DB: Database> Function<'a, DB> {
