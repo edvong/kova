@@ -14,7 +14,7 @@ use uuid::Uuid;
 
 /// Stress Test: Custom Types with PostgreSQL-specific boundaries
 async fn compile_check_custom_types() -> Result<()> {
-    let client = Options::from("").build()?.with::<AppCodec>();
+    let client = Options::from("").build()?.codec::<AppCodec>();
 
     let target_uuid = Uuid::new_v4();
     let current_time = Utc::now();

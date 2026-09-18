@@ -1,6 +1,6 @@
 use crate::dsl::{
-    ExtOnConflict, ExtensionClause, InsertRows, OnConflictClause, Projection, ProjectionClause,
-    ValuesClause,
+    EraseX, ExtOnConflict, ExtensionClause, InsertRows, IntoArgs, OnConflictClause, Projection,
+    ProjectionClause, ValuesClause,
 };
 use crate::render::RenderData;
 use crate::types::{Database, Model};
@@ -29,8 +29,10 @@ impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
         unimplemented!()
     }
 
-    pub fn retuning(&mut self, cols: Vec<Projection<'a, DB, ()>>) {
-        self.returning.set(cols);
+    pub fn retuning<A, X>(&mut self, cols: A)
+        where
+            A: IntoArgs<Projection<'a, DB, X>> {
+        self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
     pub fn on_conflict_ext_mut_or<F>(&mut self, f: F) -> &mut ExtOnConflict<'a, DB>

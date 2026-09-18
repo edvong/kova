@@ -27,8 +27,8 @@ macro_rules! impl_native_extract_column {
 
 
             impl<'a, X> $crate::types::FromColumn<'a, $db, X> for $type
-                                where
-                                    $type: $crate::types::Decode<'a, $db, X> {
+                                                    where
+                                                        $type: $crate::types::Decode<'a, $db, X> {
                 #[inline(always)]
                 fn extract_next(row: &<$db as $crate::types::Database>::Row<'a>, idx: &mut usize) -> $crate::Result<Self> {
                     Self::extract_value(row, idx)
@@ -36,8 +36,8 @@ macro_rules! impl_native_extract_column {
             }
 
             impl<'a, X> $crate::types::FromColumn<'a, $db, X> for Option<$type>
-                                where
-                                    $type: $crate::types::Decode<'a, $db, X> {
+                                                    where
+                                                        $type: $crate::types::Decode<'a, $db, X> {
                 #[inline(always)]
                 fn extract_next(row: &<$db as $crate::types::Database>::Row<'a>, idx: &mut usize) -> $crate::Result<Self> {
                     Self::extract_by(row, idx, <$type as $crate::types::DecodeExt<'a, $db, X>>::decode_opt)
@@ -45,8 +45,8 @@ macro_rules! impl_native_extract_column {
             }
 
             impl<'a, X> $crate::types::FromColumn<'a, $db, X> for Box<$type>
-                                where
-                                    $type: $crate::types::Decode<'a, $db, X> {
+                                                    where
+                                                        $type: $crate::types::Decode<'a, $db, X> {
                 #[inline(always)]
                 fn extract_next(row: &<$db as $crate::types::Database>::Row<'a>, idx: &mut usize) -> $crate::Result<Self> {
                     Self::extract_by(row, idx, <$type as $crate::types::DecodeExt<'a, $db, X>>::decode_box)
@@ -62,8 +62,8 @@ macro_rules! bind_extract_column_tuple_inner {
     ($DB:ty, $($T:ident),+) => {
         #[diagnostic::do_not_recommend]
         impl<'a, $($T),+, X> $crate::types::FromColumn<'a, $DB, X> for ($($T,)+)
-                            where
-                                $( $T: $crate::types::FromColumn<'a, $DB, X> ),+ {
+                                                where
+                                                    $( $T: $crate::types::FromColumn<'a, $DB, X> ),+ {
             fn extract_next(
                 row: &<$DB as $crate::types::Database>::Row<'a>,
                 idx: &mut usize

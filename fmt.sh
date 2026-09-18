@@ -23,56 +23,66 @@ trap "rm -f $TEMP_CONFIG" EXIT
 
 
 # ==========================================
-# Perl state machine (Slurp mode)
-# Goal: Indent 'where' block 4 spaces, drop comma, pull up '{'
+# Perl state machine (Dual-track)
+# Track A: Indent 'where' block 4 spaces
+# Track B: Hunt down any isolated '{' for long signatures
 # ==========================================
 PERL_SCRIPT='
-# Split file into lines, preserving newlines
 my @lines = split(/^/m, $_);
+my $wait_brace = 0;
 my $in_w = 0;
 
 for (my $i = 0; $i < @lines; $i++) {
+
+    # --- Track B Trigger: Catch start of any item declaration ---
+    if ($lines[$i] =~ /^[ \t]*(?:(?:pub(?:\([^)]+\))?|async|const|unsafe|extern|default)[ \t]+)*(fn|struct|enum|union|trait|impl)\b/) {
+        $wait_brace = 1;
+        $wait_brace = 0 if $lines[$i] =~ /\{|;/;
+    }
+
+    # --- Track A Trigger: Handle where clauses ---
     if ($lines[$i] =~ /^[ \t]*where\b/) {
-        # Edge case: if rustfmt puts "where ..., {" on a single line
+        $in_w = 1;
+        $in_w = 0 if $lines[$i] =~ /\{|;/;
+
         $lines[$i] =~ s/,[ \t]*\{/ {/;
         $lines[$i] = "    " . $lines[$i];
-        $in_w = 1 unless $lines[$i] =~ /\{|;/;
     } elsif ($in_w) {
-        if ($lines[$i] =~ /^[ \t]*\{/) {
-            $in_w = 0;
-
-            # Found isolated "{", merge it to the previous line
-            my $prev = $lines[$i-1];
-            my $nl = ($prev =~ s/(\r?\n)$//) ? $1 : "\n";
-            $prev =~ s/[ \t]+$//;
-
-            # Case A: comma + comment -> drop comma, insert "{" before comment
-            if ($prev =~ s/,[ \t]*(\/\/.*)$/ {$1/) {}
-            # Case B: ends with comma -> drop comma, append " {"
-            elsif ($prev =~ s/,$//) { $prev .= " {"; }
-            # Case C: comment only -> insert "{" before comment
-            elsif ($prev =~ s/([ \t]*)(\/\/.*)$/ {$1$2/) {}
-            # Case D: normal -> append " {"
-            else { $prev .= " {"; }
-
-            $lines[$i-1] = $prev . $nl;
-
-            # Remove "{" from current line, drop line entirely if empty
-            $lines[$i] =~ s/^[ \t]*\{//;
-            $lines[$i] = "" if $lines[$i] =~ /^[ \t]*\n$/;
-
-        } elsif ($lines[$i] =~ /^[ \t]*;/) {
-            $in_w = 0; # Found ";", exit state
-        } else {
-            # Kill inline comma if rustfmt puts "{" at the end of this constraint line
+        if ($lines[$i] !~ /^[ \t]*[\{;]/) {
             $lines[$i] =~ s/,[ \t]*\{/ {/;
-
             $lines[$i] = "    " . $lines[$i];
-            $in_w = 0 if $lines[$i] =~ /\{|;/;
         }
     }
+
+    # --- Execution: Fold the orphan brace ---
+    # If we are waiting for a brace, and this line is exactly just "{"
+    if ($wait_brace && $lines[$i] =~ /^[ \t]*\{[ \t]*\r?\n?$/) {
+        my $prev = $lines[$i-1];
+
+        # Safely extract newline
+        my $nl = ($prev =~ s/(\r?\n)$//) ? $1 : "\n";
+        $prev =~ s/[ \t]+$//;
+
+        # Merge logic
+        if ($prev =~ s/,[ \t]*(\/\/.*)$/ {$1/) {}
+        elsif ($prev =~ s/,$//) { $prev .= " {"; }
+        elsif ($prev =~ s/([ \t]*)(\/\/.*)$/ {$1$2/) {}
+        else { $prev .= " {"; }
+
+        $lines[$i-1] = $prev . $nl;
+        $lines[$i] = ""; # Erase the orphan line
+
+        # Target destroyed, reset states
+        $wait_brace = 0;
+        $in_w = 0;
+    }
+
+    # --- Safety Fallback Reset ---
+    if ($lines[$i] =~ /\{|;/) {
+        $wait_brace = 0;
+        $in_w = 0;
+    }
 }
-# Join lines back into a single string
 $_ = join("", @lines);
 '
 
@@ -83,12 +93,21 @@ if [ -n "$1" ]; then
     # Case A: IDE triggered (Target file provided)
     TARGET_FILE="$1"
 
-    rustfmt +nightly "$TARGET_FILE"
+    # rustfmt +nightly "$TARGET_FILE"
+    rustfmt +nightly "$TARGET_FILE" || {
+        echo "rustfmt failed on $TARGET_FILE. Aborting perl formatting."
+        exit 1
+    }
+
     # -0777 enables Slurp mode (reads whole file into memory)
     perl -i -0777 -pe "$PERL_SCRIPT" "$TARGET_FILE"
 else
     # Case B: Terminal triggered (Format workspace)
-    cargo +nightly fmt
+    # cargo +nightly fmt
+    cargo +nightly fmt || {
+        echo "cargo fmt failed. Aborting perl formatting."
+        exit 1
+    }
 
     find . -type f -name "*.rs" \
         -not -path "*/target/*" \

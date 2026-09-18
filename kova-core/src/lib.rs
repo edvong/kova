@@ -2,7 +2,6 @@ pub mod database;
 pub mod dsl;
 mod error;
 pub mod render;
-pub mod statement;
 pub mod types;
 
 pub use error::Error;

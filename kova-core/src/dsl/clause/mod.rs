@@ -29,8 +29,16 @@ pub use {
 };
 
 pub(crate) use {
-    assignment::AssignmentClause, bind::BindClause, conflict::OnConflictClause,
-    distinct::DistinctClause, ext::ExtensionClause, group_by::GroupByClause, having::HavingClause,
-    insert::ValuesClause, locking::LockingClause, projection::ProjectionClause,
+    assignment::AssignmentClause,
+    bind::BindClause,
+    conflict::OnConflictClause,
+    distinct::DistinctClause,
+    ext::ExtensionClause,
+    group_by::GroupByClause,
+    having::HavingClause,
+    insert::ValuesClause,
+    locking::LockingClause,
+    projection::ProjectionClause,
     r#where::WhereClause,
+    with::{CteNode, WithClause},
 };

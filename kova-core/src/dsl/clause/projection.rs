@@ -1,9 +1,9 @@
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::function::Function;
 use crate::dsl::identifier::IdentifierMeta;
+use crate::dsl::statement::SelectStatement;
 use crate::dsl::{EraseX, IntoIdentifier};
-use crate::statement::SelectStatement;
-use crate::types::{ColumnMeta, Database};
+use crate::types::Database;
 use std::marker::PhantomData;
 
 pub struct ProjectionClause<'a, DB: Database> {
@@ -55,7 +55,7 @@ impl<'a, DB: Database, X> Projection<'a, DB, X> {
 }
 
 pub enum ProjectionExpr<'a, DB: Database> {
-    Column(ColumnMeta),
+    Identifier(IdentifierMeta),
     Function(Function<'a, DB>),
     Subselect(Box<SelectStatement<'a, DB>>),
 }

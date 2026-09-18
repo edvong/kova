@@ -1,4 +1,4 @@
-use crate::dsl::{Condition, Projection, ProjectionClause, WhereClause};
+use crate::dsl::{Condition, EraseX, IntoArgs, Projection, ProjectionClause, WhereClause};
 use crate::render::RenderData;
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
@@ -24,11 +24,13 @@ impl<'a, DB: Database, T> DeleteStatement<'a, DB, T>
         unimplemented!()
     }
 
-    pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {
-        self.r#where.set(cond);
+    pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {
+        self.r#where.set(cond.erase_x());
     }
 
-    pub fn returning(&mut self, cols: Vec<Projection<'a, DB, ()>>) {
-        self.returning.set(cols);
+    pub fn returning<A, X>(&mut self, cols: A)
+        where
+            A: IntoArgs<Projection<'a, DB, X>> {
+        self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 }

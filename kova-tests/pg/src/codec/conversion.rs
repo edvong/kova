@@ -123,8 +123,7 @@ impl<'a> Encode<'a, Engine, AppCodec> for HashMap<String, String> {
 }
 // 'b: 'a constraint and Target = HashMap
 impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, HashMap<String, String>>
-    for &'b HashMap<String, String>
-{
+    for &'b HashMap<String, String> {
     fn encode(self) -> Result<Value<'a>> {
         let json_str =
             serde_json::to_string(self).map_err(|e| Error::ConversionError(e.to_string()))?;

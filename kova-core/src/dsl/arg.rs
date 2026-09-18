@@ -25,8 +25,8 @@ pub trait IntoArgs<A>: Sized {
     fn size_hint(&self) -> usize;
 
     fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(A);
+        where
+            F: FnMut(A);
 
     #[inline(always)]
     fn into_args(self) -> Vec<A> {
@@ -37,8 +37,8 @@ pub trait IntoArgs<A>: Sized {
 
     #[inline(always)]
     fn into_mapped_args<B, M>(self, mut map_fn: M) -> Vec<B>
-    where
-        M: FnMut(A) -> B, {
+        where
+            M: FnMut(A) -> B {
         let mut vec = Vec::with_capacity(self.size_hint());
         self.for_each_arg(&mut |item| vec.push(map_fn(item)));
         vec
@@ -46,17 +46,16 @@ pub trait IntoArgs<A>: Sized {
 }
 
 impl<T, A> IntoArgs<A> for T
-where
-    T: IntoArg<A> + SingleArgMarker,
-{
+    where
+        T: IntoArg<A> + SingleArgMarker {
     fn size_hint(&self) -> usize {
         1
     }
 
     #[inline(always)]
     fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(A), {
+        where
+            F: FnMut(A) {
         f(self.into_arg());
     }
 }
@@ -69,8 +68,8 @@ impl<A> IntoArgs<A> for Vec<A> {
 
     #[inline(always)]
     fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(A), {
+        where
+            F: FnMut(A) {
         for item in self {
             f(item);
         }
@@ -81,8 +80,8 @@ macro_rules! impl_into_args_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<A, $($T),+> IntoArgs<A> for ($($T,)+)
-                            where
-                                $( $T: IntoArgs<A> ),+ {
+                                                where
+                                                    $( $T: IntoArgs<A> ),+ {
             fn size_hint(&self) -> usize {
                 #[allow(non_snake_case)]
                 let ( $( $T, )+ ) = self;
@@ -91,8 +90,8 @@ macro_rules! impl_into_args_for_tuple {
             }
 
             fn for_each_arg<F>(self, f: &mut F)
-                                where
-                                    F: FnMut(A) {
+                                                    where
+                                                        F: FnMut(A) {
                 #[allow(non_snake_case)]
                 let ( $($T,)+ ) = self;
                 $(

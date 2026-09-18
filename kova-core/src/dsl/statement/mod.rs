@@ -9,8 +9,8 @@ use std::borrow::Cow;
 
 use crate::render::RenderData;
 pub use {
-    delete::DeleteStatement, insert::InsertStatement, raw::RawStatement, select::SelectStatement,
-    update::UpdateStatement,
+    delete::DeleteStatement, insert::InsertStatement, raw::RawStatement,
+    select::IntoSelectStatement, select::SelectStatement, update::UpdateStatement,
 };
 
 pub struct StatementPayload<'a, DB: Database> {

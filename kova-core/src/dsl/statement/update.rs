@@ -1,5 +1,6 @@
 use crate::dsl::{
-    Assignment, AssignmentClause, Condition, Projection, ProjectionClause, WhereClause,
+    Assignment, AssignmentClause, Condition, EraseX, IntoArgs, Projection, ProjectionClause,
+    WhereClause,
 };
 use crate::render::RenderData;
 use crate::types::{Database, Model};
@@ -28,15 +29,19 @@ impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
         unimplemented!()
     }
 
-    pub fn set(&mut self, assignments: Vec<Assignment<'a, DB, ()>>) {
-        self.assignments.set(assignments);
+    pub fn set<A, X>(&mut self, assignments: A)
+        where
+            A: IntoArgs<Assignment<'a, DB, X>> {
+        self.assignments.set(assignments.into_mapped_args(|a| a.erase_x()));
     }
 
-    pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {
-        self.r#where.set(cond);
+    pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {
+        self.r#where.set(cond.erase_x());
     }
 
-    pub fn returning(&mut self, args: Vec<Projection<'a, DB, ()>>) {
-        self.returning.set(args);
+    pub fn returning<A, X>(&mut self, cols: A)
+        where
+            A: IntoArgs<Projection<'a, DB, X>> {
+        self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 }

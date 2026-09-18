@@ -1,20 +1,21 @@
 mod arg;
 mod assignment;
+mod clause;
 mod column;
+mod comparator;
 mod component;
 mod condition;
 mod function;
+mod identifier;
 mod operand;
 mod operator;
-
-mod clause;
-mod comparator;
-mod identifier;
 mod rows;
+
+pub mod statement;
 
 pub mod func {
     pub use crate::dsl::function::{
-        Abs, Avg, IntoFunction, Count, CountAll, Function, Length, Lower, Max, Min, Sum, Upper,
+        Abs, Avg, Count, CountAll, Function, IntoFunction, Length, Lower, Max, Min, Sum, Upper,
     };
 }
 

@@ -4,7 +4,8 @@ use crate::dsl::operator::JsonOp;
 use crate::dsl::{ExtAssignment, ExtFunction, ExtOperator};
 use crate::types::Postgres;
 use kova_core::dsl::{
-    Assignment, Column, Condition, IntoOperand, Operand, Operator, WithComponent,
+    Assignment, Column, Condition, Identifier, IntoIdentifier, IntoOperand, Operand, Operator,
+    WithComponent,
 };
 use kova_core::types::ColumnMeta;
 use std::marker::PhantomData;
@@ -12,6 +13,18 @@ use std::marker::PhantomData;
 pub struct ExtColumn<'a, T> {
     pub meta: ColumnMeta,
     pub _marker: PhantomData<&'a T>,
+}
+
+impl<'a, T> IntoIdentifier<T> for ExtColumn<'a, T> {
+    fn into_identifier(self) -> Identifier<T> {
+        Identifier::new(self.meta.table_name, self.meta.column_name)
+    }
+}
+
+impl<'a, T> IntoIdentifier<T> for &ExtColumn<'a, T> {
+    fn into_identifier(self) -> Identifier<T> {
+        Identifier::new(self.meta.table_name, self.meta.column_name)
+    }
 }
 
 impl<'a, T> ExtColumn<'a, T> {
@@ -26,7 +39,7 @@ impl<'a, T> ExtColumn<'a, T> {
 
     #[inline(always)]
     fn op(&self) -> Operand<'a, Postgres> {
-        Operand::from_column(self.meta)
+        Operand::from_identifier(self.into_identifier().meta)
     }
 
     // =====================================================

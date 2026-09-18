@@ -3,8 +3,8 @@ use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
+use kova_core::dsl::statement::RawStatement;
 use kova_core::dsl::{Bind, IntoArgs};
-use kova_core::statement::RawStatement;
 use kova_core::types::{
     Database, ExecutableAsync, FromColumn, FromRow, Statement as CoreStatement,
 };

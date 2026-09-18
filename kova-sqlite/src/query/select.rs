@@ -3,10 +3,10 @@ use crate::query::exec::fetch_rows;
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
-use kova_core::dsl::{Condition, EraseX, GroupBy, IntoArgs, Join, JoinType, Ordering, Projection};
-use kova_core::statement::SelectStatement;
+use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
+use kova_core::dsl::{Condition, GroupBy, IntoArgs, JoinType, Ordering, Projection};
 use kova_core::types::{
-    Database, ExecutableSync, FromColumn, FromRow, Model, Select as CoreSelect,
+    Cte, Database, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
 use std::iter::once;
 use std::marker::PhantomData;
@@ -28,50 +28,43 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X> for Select<'c, 'a, Sql
 impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
     where
         T: Model<DB = Sqlite> {
-    pub fn columns<C>(mut self, cols: C) -> Self
-        where
-            C: IntoArgs<Projection<'a, Sqlite, X>> {
-        self.statement.columns(cols.into_mapped_args(|p| p.erase_x()));
+    pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Sqlite>) -> Self {
+        self.statement.with::<C>(query);
         self
     }
 
-    pub fn inner_join<M>(mut self, cond: Condition<'a, Sqlite, X>) -> Self
-        where
-            M: Model<DB = Sqlite> {
-        let join = Join { typ: JoinType::Inner, target_table: T::TABLE_NAME, on: cond.erase_x() };
-        self.statement.join(join);
+    pub fn columns<A: IntoArgs<Projection<'a, Sqlite, X>>>(mut self, cols: A) -> Self {
+        self.statement.columns(cols);
         self
     }
 
-    pub fn left_join<M>(mut self, cond: Condition<'a, Sqlite, X>) -> Self
-        where
-            M: Model<DB = Sqlite> {
-        let join = Join { typ: JoinType::Left, target_table: T::TABLE_NAME, on: cond.erase_x() };
-        self.statement.join(join);
+    pub fn inner_join<R: Relation>(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
+        self.statement.join::<R, X>(JoinType::Inner, cond);
+        self
+    }
+
+    pub fn left_join<R: Relation>(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
+        self.statement.join::<R, X>(JoinType::Left, cond);
         self
     }
 
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
-        self.statement.r#where(cond.erase_x());
+        self.statement.r#where(cond);
         self
     }
 
-    pub fn group_by<C>(mut self, cols: C) -> Self
-        where
-            C: IntoArgs<GroupBy<'a, Sqlite, X>> {
-        self.statement.group_by(cols.into_mapped_args(|g| g.erase_x()));
+    pub fn group_by<A: IntoArgs<GroupBy<'a, Sqlite, X>>>(mut self, cols: A) -> Self {
+        self.statement.group_by(cols);
         self
     }
 
     pub fn having(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
-        self.statement.having(cond.erase_x());
+        self.statement.having(cond);
         self
     }
 
-    pub fn order_by<C>(mut self, cols: C) -> Self
-        where
-            C: IntoArgs<Ordering<'a, Sqlite, X>> {
-        self.statement.order_by(cols.into_mapped_args(|o| o.erase_x()));
+    pub fn order_by<A: IntoArgs<Ordering<'a, Sqlite, X>>>(mut self, cols: A) -> Self {
+        self.statement.order_by(cols);
         self
     }
 

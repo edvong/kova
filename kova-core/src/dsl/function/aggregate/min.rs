@@ -27,7 +27,7 @@ impl<'a, T, DB: Database> IntoFunction<'a, DB> for Min<Column<'a, T, DB>> {
 impl<'a, T, DB: Database> IntoAggregate<'a, DB> for Min<Column<'a, T, DB>> {
     #[inline(always)]
     fn into_aggregate_with(self, quantifier: Quantifier) -> Function<'a, DB> {
-        Function::from_std(StandardFunction::Min(self.0.meta(), quantifier))
+        Function::from_std(StandardFunction::Min(self.0.into_identifier().meta, quantifier))
     }
 }
 
@@ -76,7 +76,7 @@ impl<'a, T, DB: Database> IntoComparator<'a, T, DB> for Min<Column<'a, T, DB>> {
     #[inline(always)]
     fn into_comparator(self) -> Comparator<'a, T, DB> {
         Comparator::new(Operand::from_function(Function::from_std(StandardFunction::Min(
-            self.0.meta,
+            self.0.into_identifier().meta,
             Quantifier::All,
         ))))
     }

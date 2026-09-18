@@ -14,7 +14,7 @@ use uuid::Uuid;
 
 /// Stress Test: JSONB Chain & Advanced JSON Operators
 async fn compile_check_jsonb_operators() -> Result<()> {
-    let client = Options::from("").build()?.with::<AppCodec>();
+    let client = Options::from("").build()?.codec::<AppCodec>();
 
     let _ = client
         .select::<EventLog>()
@@ -75,7 +75,7 @@ async fn compile_check_jsonb_text_operators() -> Result<()> {
 
 /// Stress Test: ANY / ALL Predicates with Arrays and Subqueries
 async fn compile_check_any_all_and_subselect() -> Result<()> {
-    let client = Options::from("").build()?.with::<AppCodec>();
+    let client = Options::from("").build()?.codec::<AppCodec>();
 
     // ==========================================
     // Scenario 1: Native arrays & borrowed slices

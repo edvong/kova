@@ -1,6 +1,6 @@
 use crate::Result;
+use crate::dsl::statement::StatementPayload;
 use crate::dsl::{Bind, BindClause};
-use crate::statement::StatementPayload;
 use crate::types::Database;
 use std::borrow::Cow;
 

@@ -1,6 +1,14 @@
 use crate::types::{ColumnMeta, Database};
 use crate::{Error, Result};
 
+pub trait Relation: Sized {
+    const RELATION_NAME: &'static str;
+}
+
+pub trait Cte: Relation {
+    const CTE_NAME: &'static str = <Self as Relation>::RELATION_NAME;
+}
+
 #[diagnostic::on_unimplemented(
     message = "cannot map a database row to `{Self}`",
     label = "invalid row mapping target",
@@ -12,8 +20,8 @@ pub trait FromRow: Sized {
     fn from_row(row: &<Self::DB as Database>::Row<'_>) -> Result<Self, Error>;
 }
 
-pub trait Model: FromRow {
-    const TABLE_NAME: &'static str;
+pub trait Model: FromRow + Relation {
+    const TABLE_NAME: &'static str = <Self as Relation>::RELATION_NAME;
 
     const COLUMNS_META: &'static [ColumnMeta];
 
@@ -41,9 +49,9 @@ macro_rules! impl_from_row_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<$($T,)+ DB> FromRow for ($($T,)+)
-                            where
-                                DB: Database,
-                                $( $T: FromRow<DB = DB>, )+ {
+                        where
+                            DB: Database,
+                            $( $T: FromRow<DB = DB>, )+ {
             type DB = DB;
             fn from_row(row: &<DB as Database>::Row<'_>) -> Result<Self, Error> {
                 Ok((

@@ -1,6 +1,6 @@
 use kova::Error;
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 
 pub struct Order;
 
@@ -11,8 +11,11 @@ impl FromRow for Order {
     }
 }
 
+impl Relation for Order { 
+    const RELATION_NAME: &'static str = "order"; 
+}
+
 impl Model for Order {
-    const TABLE_NAME: &'static str = "order";
     const COLUMNS_META: &'static [ColumnMeta] = &[];
     fn to_values<'a>(
         &'a self,

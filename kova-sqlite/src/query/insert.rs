@@ -4,8 +4,8 @@ use crate::query::{NoReturn, Returning};
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
+use kova_core::dsl::statement::InsertStatement;
 use kova_core::dsl::{Assignment, EraseX, IntoArgs, IntoRows, Projection};
-use kova_core::statement::InsertStatement;
 use kova_core::types::{
     Database, ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
@@ -34,10 +34,10 @@ impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, Sqlite, T, E, X>
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
     where
         T: Model<DB = Sqlite> {
-    pub fn returning<P>(mut self, cols: P) -> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
+    pub fn returning<A>(mut self, cols: A) -> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
         where
-            P: IntoArgs<Projection<'a, Sqlite, X>> {
-        self.statement.retuning(cols.into_mapped_args(|p| p.erase_x()));
+            A: IntoArgs<Projection<'a, Sqlite, X>> {
+        self.statement.retuning(cols);
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }

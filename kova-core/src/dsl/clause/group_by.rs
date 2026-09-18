@@ -1,7 +1,8 @@
 use crate::dsl::arg::{IntoArg, SingleArgMarker};
 use crate::dsl::function::Function;
-use crate::dsl::{Column, Component, EraseX};
-use crate::types::{ColumnMeta, Database, Extension};
+use crate::dsl::identifier::IdentifierMeta;
+use crate::dsl::{Column, Component, EraseX, IntoIdentifier};
+use crate::types::{Database, Extension};
 use std::marker::PhantomData;
 
 pub struct GroupByClause<'a, DB: Database> {
@@ -50,7 +51,7 @@ impl<'a, DB: Database, X> GroupBy<'a, DB, X> {
 
 // Core difference from Projection: only columns and functions, no Option<ColumnMeta> alias
 pub enum StandardGroupBy<'a, DB: Database> {
-    Column(ColumnMeta),
+    Identifier(IdentifierMeta),
     Function(Function<'a, DB>),
 }
 
@@ -58,7 +59,7 @@ impl<'a, DB: Database, X> SingleArgMarker for GroupBy<'a, DB, X> {}
 
 impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Column<'a, T, DB> {
     fn into_arg(self) -> GroupBy<'a, DB, X> {
-        GroupBy::standard(StandardGroupBy::Column(self.meta))
+        GroupBy::standard(StandardGroupBy::Identifier(self.into_identifier().meta))
     }
 }
 

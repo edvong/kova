@@ -1,6 +1,6 @@
 use kova::Error;
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 
 #[derive(Default, Clone)]
 pub struct User {
@@ -16,8 +16,11 @@ impl FromRow for User {
     }
 }
 
+impl Relation for User { 
+    const RELATION_NAME: &'static str = "user"; 
+}
+
 impl Model for User {
-    const TABLE_NAME: &'static str = "user";
     const COLUMNS_META: &'static [ColumnMeta] = &[];
     fn to_values<'a>(
         &'a self,

@@ -4,8 +4,8 @@ use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
+use kova_core::dsl::statement::DeleteStatement;
 use kova_core::dsl::{Condition, EraseX, IntoArgs, Projection};
-use kova_core::statement::DeleteStatement;
 use kova_core::types::{
     Database, Delete as CoreDelete, ExecutableAsync, FromColumn, FromRow, Model,
 };
@@ -33,7 +33,7 @@ impl<'c, 'a, T, E, X> Delete<'c, 'a, Postgres, T, E, X, NoReturn>
     pub fn returning<P>(mut self, cols: P) -> Delete<'c, 'a, Postgres, T, E, X, Returning>
         where
             P: IntoArgs<Projection<'a, Postgres, X>> {
-        self.statement.returning(cols.into_mapped_args(|p| p.erase_x()));
+        self.statement.returning(cols);
         Delete { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -42,7 +42,7 @@ impl<'c, 'a, T, E, X, R> Delete<'c, 'a, Postgres, T, E, X, R>
     where
         T: Model<DB = Postgres> {
     pub fn filter(mut self, cond: Condition<'a, Postgres, X>) -> Self {
-        self.statement.r#where(cond.erase_x());
+        self.statement.r#where(cond);
         self
     }
 }

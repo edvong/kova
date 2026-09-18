@@ -19,7 +19,7 @@ pub use {
     ext::Extension,
     meta::ColumnMeta,
     mode::{Async, Mode, Sync},
-    model::{FromRow, Model},
+    model::{Cte, FromRow, Model, Relation},
     query::{Delete, Insert, Query, Select, Statement, Update},
     row::{ColumnIndex, FromColumn, Row},
     value::{FromValue, IntoValue, Value},

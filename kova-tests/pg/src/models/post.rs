@@ -1,5 +1,5 @@
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 
 pub struct Post;
 
@@ -9,8 +9,12 @@ impl FromRow for Post {
         unimplemented!()
     }
 }
+
+impl Relation for Post { 
+    const RELATION_NAME: &'static str = "post"; 
+}
+
 impl Model for Post {
-    const TABLE_NAME: &'static str = "post";
     const COLUMNS_META: &'static [ColumnMeta] = &[];
     fn to_values<'a>(
         &'a self,

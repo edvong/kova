@@ -1,5 +1,5 @@
+use crate::dsl::statement::SelectStatement;
 use crate::render::{Render, RenderData};
-use crate::statement::SelectStatement;
 use crate::types::Database;
 
 pub struct SelectContext<'ctx, 'a, DB: Database> {

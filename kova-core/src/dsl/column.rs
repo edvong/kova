@@ -38,6 +38,12 @@ impl<'a, T, DB: Database> IntoIdentifier<T> for Column<'a, T, DB> {
     }
 }
 
+impl<'a, T, DB: Database> IntoIdentifier<T> for &Column<'a, T, DB> {
+    fn into_identifier(self) -> Identifier<T> {
+        Identifier::new(self.meta.table_name, self.meta.column_name)
+    }
+}
+
 impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<'a, T, DB> {
     #[inline(always)]
     fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
@@ -52,20 +58,20 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<'a, T, DB> {
 
 impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, OpAst, X> for Column<'a, T, DB> {
     fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_column(self.meta)
+        Operand::from_identifier(self.into_identifier().meta)
     }
 }
 
 impl<'a, T, DB: Database> AsComparator<'a, T, DB> for Column<'a, T, DB> {
     #[inline(always)]
     fn as_comparator(&self) -> Comparator<'a, T, DB> {
-        Comparator::new(Operand::from_column(self.meta))
+        Comparator::new(Operand::from_identifier(self.into_identifier().meta))
     }
 }
 
 impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<'a, T, DB> {
     fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.meta), None)
+        Projection::new(ProjectionExpr::Identifier(self.into_identifier().meta), None)
     }
 }
 
@@ -74,7 +80,10 @@ impl<'a, T, DB: Database> SingleArgMarker for Column<'a, T, DB> {}
 impl<'a, T, DB: Database> Column<'a, T, DB> {
     /// The type of alias T must be consistent with the current column
     pub fn alias<X>(self, alias: Column<'a, T, DB>) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.meta), Some(alias.into_identifier().meta))
+        Projection::new(
+            ProjectionExpr::Identifier(self.into_identifier().meta),
+            Some(alias.into_identifier().meta),
+        )
     }
 }
 

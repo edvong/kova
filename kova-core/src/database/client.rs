@@ -15,8 +15,8 @@ impl<'a, DB: Database, M: Mode, X> Client<'a, DB, M, X> {
         Self { inner: Operations::new(Executor::new(conn)), _marker: PhantomData }
     }
 
-    pub fn with<Codec>(self) -> Client<'a, DB, M, Codec> {
-        Client { inner: self.inner.with::<Codec>(), _marker: self._marker }
+    pub fn codec<CX>(self) -> Client<'a, DB, M, CX> {
+        Client { inner: self.inner.with::<CX>(), _marker: self._marker }
     }
 }
 

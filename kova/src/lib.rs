@@ -17,7 +17,7 @@ pub mod options {
 
 pub mod types {
     pub use kova_core::types::{
-        ColumnMeta, Database, Decode, DecodeExt, Encode, FromColumn, FromRow, Model, Row,
+        ColumnMeta, Database, Decode, DecodeExt, Encode, FromColumn, FromRow, Model, Relation, Row,
     };
 
     #[cfg(feature = "pg")]
@@ -28,7 +28,7 @@ pub mod types {
 }
 
 pub mod dsl {
-    pub use kova_core::dsl::{Identifier, Column, Condition};
+    pub use kova_core::dsl::{Column, Condition, Identifier};
 
     #[cfg(feature = "pg")]
     pub use kova_pg::dsl::{LockMode, Subselect, WaitPolicy};

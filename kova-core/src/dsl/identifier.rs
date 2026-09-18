@@ -26,5 +26,3 @@ impl<T> Identifier<T> {
         Self { meta: IdentifierMeta { source, name }, _marker: PhantomData }
     }
 }
-
-

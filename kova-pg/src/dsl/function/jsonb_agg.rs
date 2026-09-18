@@ -2,7 +2,7 @@ use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function as CoreFunction;
 use kova_core::dsl::{
-    EraseX, IntoIdentifier, IntoArg, Projection, ProjectionExpr, SingleArgMarker, WithComponent,
+    EraseX, IntoArg, IntoIdentifier, Projection, ProjectionExpr, SingleArgMarker, WithComponent,
 };
 
 // Only accept single projection

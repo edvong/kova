@@ -1,6 +1,6 @@
 use crate::types::{Row, Sqlite};
 use kova_core::database::Executor;
-use kova_core::statement::StatementPayload;
+use kova_core::dsl::statement::StatementPayload;
 use kova_core::types::ExecutableSync;
 use kova_core::{Error, Result};
 

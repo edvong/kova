@@ -5,11 +5,12 @@ mod window;
 pub use aggregate::*;
 pub use scalar::*;
 
-use crate::dsl::{Component, Operand, Ordering};
 use crate::dsl::component::WithComponent;
+use crate::dsl::function::window::Window;
+use crate::dsl::{Component, Operand, Ordering};
 use crate::types::{ColumnMeta, Database, Extension};
 use std::marker::PhantomData;
-use crate::dsl::function::window::Window;
+use crate::dsl::identifier::IdentifierMeta;
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
 
@@ -32,16 +33,16 @@ impl<'a, DB: Database> WithComponent for Function<'a, DB> {
 
 pub enum StandardFunction<'a, DB: Database> {
     CountAll,
-    Count(ColumnMeta, Quantifier),
-    Sum(ColumnMeta, Quantifier),
-    Max(ColumnMeta, Quantifier),
-    Min(ColumnMeta, Quantifier),
-    Avg(ColumnMeta, Quantifier),
+    Count(IdentifierMeta, Quantifier),
+    Sum(IdentifierMeta, Quantifier),
+    Max(IdentifierMeta, Quantifier),
+    Min(IdentifierMeta, Quantifier),
+    Avg(IdentifierMeta, Quantifier),
 
-    Length(ColumnMeta),
-    Lower(ColumnMeta),
-    Upper(ColumnMeta),
-    Abs(ColumnMeta),
+    Length(IdentifierMeta),
+    Lower(IdentifierMeta),
+    Upper(IdentifierMeta),
+    Abs(IdentifierMeta),
 
     Window(Box<Window<'a, DB, ()>>),
 }

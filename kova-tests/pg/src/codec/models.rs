@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use jiff::Timestamp;
 use kova::Result;
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
@@ -24,8 +24,11 @@ impl FromRow for EventLog {
     }
 }
 
+impl Relation for EventLog { 
+    const RELATION_NAME: &'static str = "event_log"; 
+}
+
 impl Model for EventLog {
-    const TABLE_NAME: &'static str = "event_log";
     const COLUMNS_META: &'static [ColumnMeta] = &[];
     fn to_values<'a>(&'a self) -> Result<Vec<(&'static str, <Self::DB as Database>::Value<'a>)>> {
         unimplemented!()

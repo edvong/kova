@@ -19,7 +19,7 @@ pub struct Upper<T>(pub T);
 impl<'a, T, DB: Database> IntoFunction<'a, DB> for Upper<Column<'a, T, DB>> {
     #[inline(always)]
     fn into_func(self) -> Function<'a, DB> {
-        Function::from_std(StandardFunction::Upper(self.0.meta()))
+        Function::from_std(StandardFunction::Upper(self.0.into_identifier().meta))
     }
 }
 
@@ -49,7 +49,7 @@ impl<'a, T, DB: Database> IntoComparator<'a, T, DB> for Upper<Column<'a, T, DB>>
     #[inline(always)]
     fn into_comparator(self) -> Comparator<'a, T, DB> {
         Comparator::new(Operand::from_function(Function::from_std(StandardFunction::Count(
-            self.0.meta,
+            self.0.into_identifier().meta,
             Quantifier::All,
         ))))
     }

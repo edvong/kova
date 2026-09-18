@@ -2,8 +2,9 @@
 
 use crate::dsl::comparator::IntoComparator;
 use crate::dsl::func::Function;
-use crate::dsl::function::StandardFunction;
 use crate::dsl::function::IntoFunction;
+use crate::dsl::function::StandardFunction;
+use crate::dsl::function::window::Window;
 use crate::dsl::{
     BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, IntoArg,
     IntoIdentifier, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
@@ -11,7 +12,6 @@ use crate::dsl::{
 };
 use crate::types::Database;
 use std::marker::PhantomData;
-use crate::dsl::function::window::Window;
 
 pub struct CountAll;
 
@@ -72,7 +72,7 @@ impl CountAll {
             _marker: PhantomData,
         }
     }
-    
+
     pub fn alias<DB: Database, U, X>(self, col: Column<U, DB>) -> Projection<DB, X> {
         self.build_projection(col)
     }
@@ -84,7 +84,7 @@ impl CountAll {
     pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
         self.build_ordering(Some(Direction::Desc))
     }
-    
+
     pub fn eq<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, Target, DB, K, X> {
