@@ -17,7 +17,7 @@ pub use {
     },
     db::Database,
     ext::Extension,
-    meta::ColumnMeta,
+    meta::{ColumnMeta, IdentifierMeta},
     mode::{Async, Mode, Sync},
     model::{Cte, FromRow, Model, Relation},
     query::{Delete, Insert, Query, Select, Statement, Update},

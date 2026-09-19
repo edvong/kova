@@ -4,10 +4,10 @@ mod conflict;
 mod operator;
 mod pagination;
 
-pub use column::Column;
+pub use column::ExtColumn;
 
 pub(crate) use {
-    assignment::Assignment,
+    assignment::ExtAssignment,
     conflict::{ConflictTarget, OnConflict},
     operator::Operator,
     pagination::Pagination,

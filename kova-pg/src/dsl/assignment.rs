@@ -1,5 +1,5 @@
-use kova_core::types::ColumnMeta;
+use kova_core::types::IdentifierMeta;
 
 pub enum ExtAssignment {
-    ExcludedColumn(ColumnMeta),
+    ExcludedColumn(IdentifierMeta),
 }

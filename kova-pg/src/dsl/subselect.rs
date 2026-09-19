@@ -87,7 +87,7 @@ impl<'a, T: Model<DB = Postgres>, X> IntoOperand<'a, T, Postgres, OpAst, X>
     }
 }
 
-impl<'a, T: Model<DB = Postgres>, X> IntoSelectStatement<'a, Postgres>
+impl<'a, T: Model<DB = Postgres>, X> IntoSelectStatement<'a, Postgres, X>
     for Subselect<'a, T, Chain<X>> {
     #[inline(always)]
     fn into_select_statement(self) -> SelectStatement<'a, Postgres> {

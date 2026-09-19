@@ -7,29 +7,29 @@ use kova_core::dsl::{
     Assignment, Column, Condition, Identifier, IntoIdentifier, IntoOperand, Operand, Operator,
     WithComponent,
 };
-use kova_core::types::ColumnMeta;
+use kova_core::types::IdentifierMeta;
 use std::marker::PhantomData;
 
 pub struct ExtColumn<'a, T> {
-    pub meta: ColumnMeta,
+    pub meta: IdentifierMeta,
     pub _marker: PhantomData<&'a T>,
 }
 
 impl<'a, T> IntoIdentifier<T> for ExtColumn<'a, T> {
     fn into_identifier(self) -> Identifier<T> {
-        Identifier::new(self.meta.table_name, self.meta.column_name)
+        Identifier::from(self.meta)
     }
 }
 
 impl<'a, T> IntoIdentifier<T> for &ExtColumn<'a, T> {
     fn into_identifier(self) -> Identifier<T> {
-        Identifier::new(self.meta.table_name, self.meta.column_name)
+        Identifier::from(self.meta)
     }
 }
 
 impl<'a, T> ExtColumn<'a, T> {
     #[doc(hidden)]
-    pub const fn create(meta: ColumnMeta) -> Column<'a, T, Postgres> {
+    pub const fn create(meta: IdentifierMeta) -> Column<'a, T, Postgres> {
         Column::new(meta, ExtColumn { meta, _marker: PhantomData })
     }
 

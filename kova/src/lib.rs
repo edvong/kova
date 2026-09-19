@@ -17,7 +17,8 @@ pub mod options {
 
 pub mod types {
     pub use kova_core::types::{
-        ColumnMeta, Database, Decode, DecodeExt, Encode, FromColumn, FromRow, Model, Relation, Row,
+        ColumnMeta, Cte, Database, Decode, DecodeExt, Encode, FromColumn, FromRow, IdentifierMeta,
+        Model, Relation, Row,
     };
 
     #[cfg(feature = "pg")]
@@ -39,7 +40,7 @@ pub mod dsl {
 
     #[doc(hidden)]
     #[cfg(feature = "sqlite")]
-    pub use kova_sqlite::dsl::Column as ExtColumn;
+    pub use kova_sqlite::dsl::ExtColumn as ExtColumn;
 
     pub mod func {
         pub use kova_core::dsl::func::{

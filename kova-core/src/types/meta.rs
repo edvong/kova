@@ -1,8 +1,23 @@
 #[derive(Debug, Copy, Clone)]
 pub struct ColumnMeta {
-    pub table_name: &'static str,
-    pub column_name: &'static str,
-    pub is_autoincrement: bool,
-    pub is_json: bool,
-    pub is_ignore: bool,
+    pub ident: IdentifierMeta,
+    pub is_auto: bool,
+}
+
+impl ColumnMeta {
+    pub const fn new(source: &'static str, name: &'static str, is_auto: bool) -> Self {
+        Self { ident: IdentifierMeta::new(source, name), is_auto }
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
+pub struct IdentifierMeta {
+    pub source: &'static str,
+    pub name: &'static str,
+}
+
+impl IdentifierMeta {
+    pub const fn new(source: &'static str, name: &'static str) -> Self {
+        Self { source, name }
+    }
 }

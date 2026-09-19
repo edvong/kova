@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use jiff::Timestamp;
 use kova::Result;
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
@@ -24,8 +24,8 @@ impl FromRow for EventLog {
     }
 }
 
-impl Relation for EventLog { 
-    const RELATION_NAME: &'static str = "event_log"; 
+impl Relation for EventLog {
+    const RELATION_NAME: &'static str = "event_log";
 }
 
 impl Model for EventLog {
@@ -35,59 +35,23 @@ impl Model for EventLog {
     }
 }
 
+#[allow(non_upper_case_globals)]
 impl<'a> EventLog {
-    #[allow(non_upper_case_globals)]
-    pub const id: Column<'a, Uuid, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "event_log",
-        column_name: "id",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const id: Column<'a, Uuid, Engine> =
+        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
 
-    #[allow(non_upper_case_globals)]
-    pub const description: Column<'a, String, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "event_log",
-        column_name: "description",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const description: Column<'a, String, Engine> =
+        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
 
-    #[allow(non_upper_case_globals)]
-    pub const created_at: Column<'a, DateTime<Utc>, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "event_log",
-        column_name: "created_at",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const created_at: Column<'a, DateTime<Utc>, Engine> =
+        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
 
-    #[allow(non_upper_case_globals)]
-    pub const updated_at: Column<'a, Timestamp, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "event_log",
-        column_name: "updated_at",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const updated_at: Column<'a, Timestamp, Engine> =
+        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
 
-    #[allow(non_upper_case_globals)]
-    pub const website: Column<'a, Url, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "event_log",
-        column_name: "website",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const website: Column<'a, Url, Engine> =
+        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
 
-    #[allow(non_upper_case_globals)]
     pub const metadata: Column<'a, HashMap<String, String>, Engine> =
-        ExtColumn::create(ColumnMeta {
-            table_name: "event_log",
-            column_name: "metadata",
-            is_autoincrement: false,
-            is_json: true,
-            is_ignore: false,
-        });
+        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
 }

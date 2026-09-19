@@ -88,15 +88,18 @@ impl<'a, T, DB: Database> Min<Column<'a, T, DB>> {
     pub fn over<X>(self) -> Window<'a, DB, X> {
         Window {
             func: self.into_func(),
-            partition_by: vec![],
-            order_by: vec![],
+            partition_by: Vec::new(),
+            order_by: Vec::new(),
             _marker: PhantomData,
         }
     }
 
-    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        self.build_projection(col)
+    pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X> 
+        where 
+            A: IntoIdentifier<U> {
+        self.build_projection(alias)
     }
+    
     pub fn distinct(self) -> Function<'a, DB> {
         self.into_aggregate_distinct()
     }

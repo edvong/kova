@@ -1,5 +1,5 @@
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
 
 pub struct Comment;
 
@@ -10,8 +10,8 @@ impl FromRow for Comment {
     }
 }
 
-impl Relation for Comment { 
-    const RELATION_NAME: &'static str = "comment"; 
+impl Relation for Comment {
+    const RELATION_NAME: &'static str = "comment";
 }
 
 impl Model for Comment {
@@ -25,32 +25,12 @@ impl Model for Comment {
 
 #[allow(non_upper_case_globals)]
 impl<'a> Comment {
-    pub const id: Column<'a, i32, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "comment",
-        column_name: "id",
-        is_autoincrement: true,
-        is_json: false,
-        is_ignore: false,
-    });
-    pub const post_id: Column<'a, i32, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "comment",
-        column_name: "post_id",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
-    pub const user_id: Column<'a, i32, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "comment",
-        column_name: "user_id",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
-    pub const content: Column<'a, String, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "comment",
-        column_name: "content",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const id: Column<'a, i32, Engine> =
+        ExtColumn::create(IdentifierMeta::new("comment", "id"));
+    pub const post_id: Column<'a, i32, Engine> =
+        ExtColumn::create(IdentifierMeta::new("comment", "post_id"));
+    pub const user_id: Column<'a, i32, Engine> =
+        ExtColumn::create(IdentifierMeta::new("comment", "user_id"));
+    pub const content: Column<'a, String, Engine> =
+        ExtColumn::create(IdentifierMeta::new("comment", "content"));
 }

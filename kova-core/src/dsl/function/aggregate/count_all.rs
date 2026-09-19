@@ -6,7 +6,7 @@ use crate::dsl::function::IntoFunction;
 use crate::dsl::function::StandardFunction;
 use crate::dsl::function::window::Window;
 use crate::dsl::{
-    BuildOrdering, BuildProjection, Column, Comparator, Condition, Direction, IntoArg,
+    BuildOrdering, BuildProjection, Comparator, Condition, Direction, IntoArg,
     IntoIdentifier, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
     SingleArgMarker, StandardOperand, WithComponent,
 };
@@ -73,8 +73,10 @@ impl CountAll {
         }
     }
 
-    pub fn alias<DB: Database, U, X>(self, col: Column<U, DB>) -> Projection<DB, X> {
-        self.build_projection(col)
+    pub fn alias<'a, DB: Database, A, U, X>(self, alias: A) -> Projection<'a, DB, X>
+        where
+            A: IntoIdentifier<U> {
+        self.build_projection(alias)
     }
 
     pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {

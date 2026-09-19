@@ -7,11 +7,11 @@ use kova_core::dsl::{
     Column, Comparator, Condition, EraseX, IntoComparator, IntoIdentifier, IntoOperand, Operand,
     Ordering, Projection, ProjectionExpr, WithComponent,
 };
-use kova_core::types::ColumnMeta;
+use kova_core::types::IdentifierMeta;
 use std::marker::PhantomData;
 
 pub struct ArrayAggState<'a, X> {
-    pub(crate) meta: ColumnMeta,
+    pub(crate) meta: IdentifierMeta,
     pub(crate) distinct: bool,
     pub(crate) order_by: Vec<Ordering<'a, Postgres, ()>>,
     pub(crate) filter: Option<Box<Condition<'a, Postgres, ()>>>,

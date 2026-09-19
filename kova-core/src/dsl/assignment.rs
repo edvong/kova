@@ -2,7 +2,7 @@ use crate::dsl::EraseX;
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::component::{Component, WithComponent};
 use crate::dsl::operand::Operand;
-use crate::types::{ColumnMeta, Database, Extension};
+use crate::types::{Database, Extension, IdentifierMeta};
 use std::marker::PhantomData;
 
 pub type ExtAssignment<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Assignment<'a>;
@@ -35,7 +35,7 @@ impl<'a, DB: Database, X> WithComponent for Assignment<'a, DB, X> {
 
 pub enum StandardAssignment<'a, DB: Database> {
     // `col = ?` or `col = other_col`
-    Value(ColumnMeta, Operand<'a, DB>),
+    Value(IdentifierMeta, Operand<'a, DB>),
 }
 
 impl<'a, DB: Database, X> SingleArgMarker for Assignment<'a, DB, X> {}

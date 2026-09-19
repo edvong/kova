@@ -7,10 +7,9 @@ pub use scalar::*;
 
 use crate::dsl::component::WithComponent;
 use crate::dsl::function::window::Window;
-use crate::dsl::{Component, Operand, Ordering};
-use crate::types::{ColumnMeta, Database, Extension};
-use std::marker::PhantomData;
-use crate::dsl::identifier::IdentifierMeta;
+use crate::dsl::Component;
+use crate::types::IdentifierMeta;
+use crate::types::{Database, Extension};
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
 

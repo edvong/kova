@@ -28,8 +28,8 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X> for Select<'c, 'a, Sql
 impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
     where
         T: Model<DB = Sqlite> {
-    pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Sqlite>) -> Self {
-        self.statement.with::<C>(query);
+    pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
+        self.statement.with::<C>(query.into_select_statement());
         self
     }
 

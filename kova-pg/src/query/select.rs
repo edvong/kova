@@ -29,8 +29,8 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Postgres, T, E, X> for Select<'c, 'a, P
 impl<'c, 'a, T, E, X> Select<'c, 'a, Postgres, T, E, X>
     where
         T: Model<DB = Postgres> {
-    pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Postgres>) -> Self {
-        self.statement.with::<C>(query);
+    pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Postgres, X>) -> Self {
+        self.statement.with::<C>(query.into_select_statement());
         self
     }
 

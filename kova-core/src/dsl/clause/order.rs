@@ -2,7 +2,7 @@ use crate::dsl::arg::{IntoArg, SingleArgMarker};
 use crate::dsl::component::WithComponent;
 use crate::dsl::function::Function;
 use crate::dsl::{Column, Component, Condition, EraseX};
-use crate::types::{ColumnMeta, Database, Extension};
+use crate::types::{Database, Extension, IdentifierMeta};
 use std::marker::PhantomData;
 
 pub struct OrderByClause<'a, DB: Database> {
@@ -82,7 +82,7 @@ impl<'a, DB: Database> WithComponent for OrderOperand<'a, DB> {
 }
 
 pub enum StandardOperand<'a, DB: Database> {
-    Column(ColumnMeta),
+    Column(IdentifierMeta),
     Function(Function<'a, DB>),
     Condition(Condition<'a, DB, ()>),
 }

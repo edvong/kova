@@ -6,5 +6,6 @@ mod compile_check_delete;
 mod codec;
 mod view;
 mod compile_check_operator;
+mod compile_check_cte_window;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

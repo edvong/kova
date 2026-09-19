@@ -8,14 +8,14 @@ use crate::dsl::{
     Assignment, Comparator, IntoArg, OpAst, Operand, OrderOperand, StandardAssignment,
 };
 use crate::dsl::{BuildOrdering, Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
-use crate::types::{ColumnMeta, Database, Extension};
+use crate::types::{Database, Extension, IdentifierMeta};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
 pub type ExtColumn<'a, T, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Column<'a, T>;
 
 pub struct Column<'a, T: 'a, DB: Database> {
-    pub(crate) meta: ColumnMeta,
+    pub(crate) meta: IdentifierMeta,
     inner: ExtColumn<'a, T, DB>,
 }
 
@@ -26,21 +26,29 @@ impl<'a, T, DB: Database> Deref for Column<'a, T, DB> {
     }
 }
 
-// impl<'a, T, DB: Database> DerefMut for Column<'a, T, DB> {
-//     fn deref_mut(&mut self) -> &mut Self::Target {
-//         &mut self.inner
+impl<'a, T, DB: Database> IntoArg<Operand<'a, DB>> for Column<'a, T, DB> {
+    #[inline(always)]
+    fn into_arg(self) -> Operand<'a, DB> {
+        Operand::from_identifier(self.meta)
+    }
+}
+
+// impl<'a, T, DB: Database> IntoArg<Operand<'a, DB>> for &Column<'a, T, DB> {
+//     #[inline(always)]
+//     fn into_arg(self) -> Operand<'a, DB> {
+//         Operand::from_identifier(self.meta)
 //     }
 // }
 
 impl<'a, T, DB: Database> IntoIdentifier<T> for Column<'a, T, DB> {
     fn into_identifier(self) -> Identifier<T> {
-        Identifier::new(self.meta.table_name, self.meta.column_name)
+        Identifier::from(self.meta)
     }
 }
 
 impl<'a, T, DB: Database> IntoIdentifier<T> for &Column<'a, T, DB> {
     fn into_identifier(self) -> Identifier<T> {
-        Identifier::new(self.meta.table_name, self.meta.column_name)
+        Identifier::from(self.meta)
     }
 }
 
@@ -71,7 +79,7 @@ impl<'a, T, DB: Database> AsComparator<'a, T, DB> for Column<'a, T, DB> {
 
 impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<'a, T, DB> {
     fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Identifier(self.into_identifier().meta), None)
+        Projection::new(ProjectionExpr::Column(self.into_identifier().meta), None)
     }
 }
 
@@ -81,7 +89,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
     /// The type of alias T must be consistent with the current column
     pub fn alias<X>(self, alias: Column<'a, T, DB>) -> Projection<'a, DB, X> {
         Projection::new(
-            ProjectionExpr::Identifier(self.into_identifier().meta),
+            ProjectionExpr::Column(self.into_identifier().meta),
             Some(alias.into_identifier().meta),
         )
     }
@@ -89,10 +97,10 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
 
 /// Unconstrained impl blocks, specialized for `const fn` constructors
 impl<'a, T, DB: Database> Column<'a, T, DB> {
-    pub const fn new(meta: ColumnMeta, ext: ExtColumn<'a, T, DB>) -> Self {
+    pub const fn new(meta: IdentifierMeta, ext: ExtColumn<'a, T, DB>) -> Self {
         Self { meta, inner: ext }
     }
-    pub fn meta(&self) -> ColumnMeta {
+    pub fn meta(&self) -> IdentifierMeta {
         self.meta
     }
 }

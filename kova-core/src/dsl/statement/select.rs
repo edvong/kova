@@ -21,12 +21,12 @@ pub struct SelectStatement<'a, DB: Database> {
     locking: LockingClause<'a, DB>,
 }
 
-pub trait IntoSelectStatement<'a, DB: Database> {
+pub trait IntoSelectStatement<'a, DB: Database, X> {
     fn into_select_statement(self) -> SelectStatement<'a, DB>;
 }
 
 // It is also implemented for SelectStatement itself to ensure the completeness of polymorphism.
-impl<'a, DB: Database> IntoSelectStatement<'a, DB> for SelectStatement<'a, DB> {
+impl<'a, DB: Database, X> IntoSelectStatement<'a, DB, X> for SelectStatement<'a, DB> {
     #[inline(always)]
     fn into_select_statement(self) -> SelectStatement<'a, DB> {
         self
@@ -59,9 +59,9 @@ impl<'a, DB> SelectStatement<'a, DB>
         data
     }
 
-    pub fn with<C: Cte>(&mut self, query: impl IntoSelectStatement<'a, DB>) {
+    pub fn with<C: Cte>(&mut self, statement: SelectStatement<'a, DB>) {
         self.with
-            .add(CteNode { name: C::CTE_NAME, statement: Box::new(query.into_select_statement()) });
+            .add(CteNode { name: C::CTE_NAME, statement: Box::new(statement) });
     }
 
     pub fn distinct(&mut self) {

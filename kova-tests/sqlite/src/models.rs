@@ -2,13 +2,17 @@
 
 use kova::Error;
 use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, Model};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
 
 #[derive(Default, Clone)]
 pub struct User {
     pub id: i32,
     pub name: String,
     pub is_active: bool,
+}
+
+impl Relation for User {
+    const RELATION_NAME: &'static str = "user";
 }
 
 impl FromRow for User {
@@ -19,7 +23,6 @@ impl FromRow for User {
 }
 
 impl Model for User {
-    const TABLE_NAME: &'static str = "user";
     const COLUMNS_META: &'static [ColumnMeta] = &[];
     fn to_values<'a>(
         &'a self,
@@ -28,35 +31,22 @@ impl Model for User {
     }
 }
 
+#[allow(non_upper_case_globals)]
 impl<'a> User {
-    #[allow(non_upper_case_globals)]
-    pub const id: Column<'a, i32, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "user",
-        column_name: "id",
-        is_autoincrement: true,
-        is_json: false,
-        is_ignore: false,
-    });
-    #[allow(non_upper_case_globals)]
-    pub const name: Column<'a, String, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "user",
-        column_name: "name",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
-    #[allow(non_upper_case_globals)]
-    pub const is_active: Column<'a, bool, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "user",
-        column_name: "is_active",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("order", "id"));
+
+    pub const name: Column<'a, String, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "name"));
+
+    pub const is_active: Column<'a, bool, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "is_active"));
 }
 
-
 pub struct Order;
+
+impl Relation for Order {
+    const RELATION_NAME: &'static str = "order";
+}
 
 impl FromRow for Order {
     type DB = Engine;
@@ -66,7 +56,6 @@ impl FromRow for Order {
 }
 
 impl Model for Order {
-    const TABLE_NAME: &'static str = "order";
     const COLUMNS_META: &'static [ColumnMeta] = &[];
     fn to_values<'a>(
         &'a self,
@@ -75,45 +64,19 @@ impl Model for Order {
     }
 }
 
+#[allow(non_upper_case_globals)]
 impl<'a> Order {
-    #[allow(non_upper_case_globals)]
-    pub const id: Column<'a, i32, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "order",
-        column_name: "id",
-        is_autoincrement: true,
-        is_json: false,
-        is_ignore: false,
-    });
-    #[allow(non_upper_case_globals)]
-    pub const user_id: Column<'a, i32, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "order",
-        column_name: "user_id",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
-    #[allow(non_upper_case_globals)]
-    pub const amount: Column<'a, f64, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "order",
-        column_name: "amount",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
-    #[allow(non_upper_case_globals)]
-    pub const is_active: Column<'a, bool, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "order",
-        column_name: "is_active",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
-    #[allow(non_upper_case_globals)]
-    pub const raw_data: Column<'a, Vec<u8>, Engine> = ExtColumn::create(ColumnMeta {
-        table_name: "order",
-        column_name: "raw_data",
-        is_autoincrement: false,
-        is_json: false,
-        is_ignore: false,
-    });
+    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("order", "id"));
+
+    pub const user_id: Column<'a, i32, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "user_id"));
+
+    pub const amount: Column<'a, f64, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "amount"));
+
+    pub const is_active: Column<'a, bool, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "is_active"));
+
+    pub const raw_data: Column<'a, Vec<u8>, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "raw_data"));
 }

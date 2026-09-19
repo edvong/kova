@@ -1,7 +1,7 @@
 use crate::types::Sqlite;
 use kova_core::dsl::func::{Abs, Function, IntoFunction, Length, Lower, Upper};
-use kova_core::dsl::{Assignment, Column, IntoArg, IntoArgs, SingleArgMarker};
-use kova_core::types::ColumnMeta;
+use kova_core::dsl::{Assignment, Column, IntoArgs, SingleArgMarker};
+use kova_core::types::IdentifierMeta;
 
 pub struct OnConflict<'a> {
     items: Vec<ConflictTarget<'a>>,
@@ -31,7 +31,7 @@ pub struct ConflictTarget<'a> {
 }
 
 pub(crate) enum TargetExpr<'a> {
-    Column(ColumnMeta),
+    Column(IdentifierMeta),
     Function(Function<'a, Sqlite>),
     // Constraint(&'static str) -- > ON CONFLICT ON CONSTRAINT "constraint_name"
 }
@@ -58,9 +58,9 @@ macro_rules! impl_conflict_target_for_func {
                 fn size_hint(&self) -> usize { 1 }
 
                 #[inline(always)]
-                fn for_each_arg<F>(self, f: &mut F)
-                                                        where
-                                                            F: FnMut(ConflictTarget<'a>) {
+                fn for_each_arg<F>(self, f: &mut F) 
+                    where
+                        F: FnMut(ConflictTarget<'a>) {
                     f(ConflictTarget {
                         target: TargetExpr::Function(self.into_func())
                     });

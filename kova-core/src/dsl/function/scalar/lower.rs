@@ -76,8 +76,8 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for Lower<Column<'a, T, DB
 impl<'a, T, DB: Database> SingleArgMarker for Lower<Column<'a, T, DB>> {}
 
 impl<'a, T, DB: Database> Lower<Column<'a, T, DB>> {
-    pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-        self.build_projection(col)
+    pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X> where A: IntoIdentifier<U> {
+        self.build_projection(alias)
     }
 
     pub fn asc<X>(self) -> Ordering<'a, DB, X> {

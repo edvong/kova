@@ -1,7 +1,7 @@
 use crate::types::Postgres;
 use kova_core::dsl::func::{Abs, Function, IntoFunction, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArgs};
-use kova_core::types::ColumnMeta;
+use kova_core::types::IdentifierMeta;
 
 pub struct OnConflict<'a> {
     items: Vec<ConflictTarget<'a>>,
@@ -31,7 +31,7 @@ pub struct ConflictTarget<'a> {
 }
 
 pub(crate) enum TargetExpr<'a> {
-    Column(ColumnMeta),
+    Column(IdentifierMeta),
     Function(Function<'a, Postgres>),
     // Constraint(&'static str) --> ON CONFLICT ON CONSTRAINT "constraint_name"
 }
