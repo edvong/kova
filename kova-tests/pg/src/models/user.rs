@@ -6,6 +6,7 @@ use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, 
 pub struct User {
     pub id: i32,
     pub name: String,
+    pub balance: f64,
     pub is_active: bool,
 }
 
@@ -36,6 +37,8 @@ impl<'a> User {
     pub const name: Column<'a, String, Engine> =
         ExtColumn::create(IdentifierMeta::new("user", "name"));
 
+    pub const balance: Column<'a, f64, Engine> = ExtColumn::create(IdentifierMeta::new("user", "balance"));
+    
     pub const is_active: Column<'a, bool, Engine> =
         ExtColumn::create(IdentifierMeta::new("user", "is_active"));
 }

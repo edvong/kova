@@ -34,8 +34,9 @@ impl<'a, DB: Database, X> WithComponent for Assignment<'a, DB, X> {
 }
 
 pub enum StandardAssignment<'a, DB: Database> {
-    // `col = ?` or `col = other_col`
-    Value(IdentifierMeta, Operand<'a, DB>),
+    Value(IdentifierMeta, Operand<'a, DB>),     // `col = ?` or `col = other_col`
+    Increment(IdentifierMeta, Operand<'a, DB>), // `col = col + val`
+    Decrement(IdentifierMeta, Operand<'a, DB>), // `col = col - val`
 }
 
 impl<'a, DB: Database, X> SingleArgMarker for Assignment<'a, DB, X> {}

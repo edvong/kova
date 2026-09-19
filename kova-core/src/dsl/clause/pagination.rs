@@ -1,24 +1,19 @@
-use crate::dsl::ExtensionClause;
-use crate::types::{Database, Extension};
+pub struct PaginationClause {
+    limit: Option<usize>,
+    offset: Option<usize>,
 
-pub type ExtPagination<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Pagination;
-
-pub struct PaginationClause<'a, DB: Database> {
-    pagination: Option<ExtPagination<'a, DB>>,
 }
 
-impl<'a, DB: Database> PaginationClause<'a, DB> {
+impl PaginationClause {
     pub(crate) fn new() -> Self {
-        Self { pagination: None }
+        Self { limit: None, offset: None }
     }
-}
-
-impl<'a, DB: Database> ExtensionClause<ExtPagination<'a, DB>> for PaginationClause<'a, DB> {
-    fn ext_opt(&self) -> &Option<ExtPagination<'a, DB>> {
-        &self.pagination
+    
+    pub fn limit(&mut self, limit: usize) {
+        self.limit = Some(limit);
     }
-
-    fn ext_opt_mut(&mut self) -> &mut Option<ExtPagination<'a, DB>> {
-        &mut self.pagination
+    
+    pub fn offset(&mut self, offset: usize) {
+        self.offset = Some(offset);
     }
 }

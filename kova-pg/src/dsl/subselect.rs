@@ -1,4 +1,3 @@
-use crate::dsl::Pagination;
 use crate::types::Postgres;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
@@ -58,14 +57,12 @@ impl<'a, T: Model<DB = Postgres>, X> Subselect<'a, T, Chain<X>> {
     }
 
     pub fn limit(mut self, limit: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(Pagination::default);
-        ext.limit = Some(limit);
+        self.statement.limit(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(Pagination::default);
-        ext.offset = Some(offset);
+        self.statement.offset(offset);
         self
     }
 

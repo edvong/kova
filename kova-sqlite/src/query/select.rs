@@ -1,4 +1,3 @@
-use crate::dsl::Pagination;
 use crate::query::exec::fetch_rows;
 use crate::types::Sqlite;
 use kova_core::Result;
@@ -69,14 +68,12 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
     }
 
     pub fn limit(mut self, limit: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
-        ext.limit = Some(limit);
+        self.statement.limit(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
-        ext.offset = Some(offset);
+        self.statement.offset(offset);
         self
     }
 }

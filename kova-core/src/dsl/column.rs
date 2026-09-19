@@ -203,4 +203,16 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
             V: IntoOperand<'a, T, DB, K, X> {
         Assignment::from_std(StandardAssignment::Value(self.meta, v.into_operand()))
     }
+
+    pub fn increment<V, U, K, X>(&self, v: V) -> Assignment<'a, DB, X>
+        where
+            V: IntoOperand<'a, U, DB, K, X> {
+        Assignment::from_std(StandardAssignment::Increment(self.meta, v.into_operand()))
+    }
+
+    pub fn decrement<V, U, K, X>(&self, v: V) -> Assignment<'a, DB, X>
+        where
+            V: IntoOperand<'a, U, DB, K, X> {
+        Assignment::from_std(StandardAssignment::Decrement(self.meta, v.into_operand()))
+    }
 }

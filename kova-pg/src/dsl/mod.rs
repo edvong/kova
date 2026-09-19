@@ -6,7 +6,6 @@ mod jsonb_chain;
 mod jsonb_text;
 mod locking;
 mod operator;
-mod pagination;
 mod subselect;
 
 pub mod func {
@@ -29,5 +28,4 @@ pub(crate) use {
     conflict::{ConflictTarget, OnConflict},
     locking::{LockItem, Locking},
     operator::ExtOperator,
-    pagination::Pagination,
 };

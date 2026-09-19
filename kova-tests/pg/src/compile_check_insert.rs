@@ -4,7 +4,7 @@ use kova::Options;
 use kova::dsl::func::Lower;
 
 /// Stress Test 3: Insert Statements & Conflict Handling
-async fn compile_check_pg_insert() -> Result<()> {
+async fn compile_check_insert() -> Result<()> {
     let client = Options::from("").build()?;
 
     // Mocking data references

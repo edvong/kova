@@ -23,6 +23,5 @@ pub trait Extension<'a>: Sized {
     // Clause Extension
     type GroupBy;
     type Locking;
-    type Pagination;
     type OnConflict<'c>;
 }

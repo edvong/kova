@@ -1,4 +1,4 @@
-use crate::dsl::{LockItem, LockMode, Locking, Pagination, WaitPolicy};
+use crate::dsl::{LockItem, LockMode, Locking, WaitPolicy};
 use crate::query::exec::fetch_rows;
 use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
@@ -70,14 +70,12 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Postgres, T, E, X>
     }
 
     pub fn limit(mut self, limit: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
-        ext.limit = Some(limit);
+        self.statement.limit(limit);
         self
     }
 
     pub fn offset(mut self, offset: usize) -> Self {
-        let ext = self.statement.pagination_ext_mut_or_with(|| Pagination::default());
-        ext.offset = Some(offset);
+        self.statement.offset(offset);
         self
     }
 

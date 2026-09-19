@@ -24,7 +24,7 @@ pub use {
         BuildOrdering, Direction, NullsOrder, OrderByClause, OrderOperand, Ordering,
         StandardOperand,
     },
-    pagination::{ExtPagination, PaginationClause},
+    pagination::{PaginationClause},
     projection::{BuildProjection, Projection, ProjectionExpr},
 };
 

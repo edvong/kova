@@ -1,5 +1,5 @@
 use crate::dsl::{
-    ExtAssignment, ExtColumn, ExtFunction, ExtOperator, Locking, OnConflict, Pagination,
+    ExtAssignment, ExtColumn, ExtFunction, ExtOperator, Locking, OnConflict,
 };
 
 pub struct Extension;
@@ -12,6 +12,5 @@ impl kova_core::types::Extension<'_> for Extension {
     type Assignment<'t> = ExtAssignment;
     type GroupBy = ();
     type Locking = Locking;
-    type Pagination = Pagination;
     type OnConflict<'a> = OnConflict<'a>;
 }

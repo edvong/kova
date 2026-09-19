@@ -3,13 +3,15 @@ use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
 
-async fn compile_check_pg_update() -> Result<()> {
+async fn compile_check_update() -> Result<()> {
     let client = Options::from("").build()?;
 
     // 1. Single Column Update
     client
         .update::<User>()
         .set(User::name.set("new_name"))
+        .set(User::id.increment(1))
+        .set(User::balance.decrement(5.5))
         .filter(User::id.eq(1))
         .execute()
         .await?;

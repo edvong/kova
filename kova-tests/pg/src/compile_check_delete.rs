@@ -4,7 +4,7 @@ use crate::models::user::User;
 use kova::Options;
 
 /// Stress Test 5: Delete Statements
-async fn compile_check_pg_delete() -> Result<()> {
+async fn compile_check_delete() -> Result<()> {
     let client = Options::from("").build()?;
 
     // 1. Standard Delete

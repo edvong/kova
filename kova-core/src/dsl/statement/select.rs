@@ -1,5 +1,5 @@
 use crate::dsl::{
-    Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtPagination, ExtensionClause,
+    Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
     GroupBy, GroupByClause, HavingClause, IntoArgs, Join, JoinClause, JoinType, LockingClause,
     OrderByClause, Ordering, PaginationClause, Projection, ProjectionClause, WhereClause,
     WithClause,
@@ -17,7 +17,7 @@ pub struct SelectStatement<'a, DB: Database> {
     group_by: GroupByClause<'a, DB>,
     having: HavingClause<'a, DB>,
     order_by: OrderByClause<'a, DB>,
-    pagination: PaginationClause<'a, DB>,
+    pagination: PaginationClause,
     locking: LockingClause<'a, DB>,
 }
 
@@ -99,11 +99,19 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.order_by.set(cols.into_mapped_args(|o| o.erase_x()));
     }
 
-    pub fn pagination_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtPagination<'a, DB>
-        where
-            F: FnOnce() -> ExtPagination<'a, DB> {
-        self.pagination.ext_mut_or_with(f)
+    pub fn limit(&mut self, limit: usize) {
+        self.pagination.limit(limit);
     }
+
+    pub fn offset(&mut self, offset: usize) {
+        self.pagination.offset(offset);
+    }
+
+    // pub fn pagination_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtPagination<'a, DB>
+    //     where
+    //         F: FnOnce() -> ExtPagination<'a, DB> {
+    //     self.pagination.ext_mut_or_with(f)
+    // }
 
     pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
         where
