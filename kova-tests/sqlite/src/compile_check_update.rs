@@ -1,5 +1,6 @@
+use crate::models::order::Order;
+use crate::models::user::User;
 use kova::Options;
-use crate::models::{Order, User};
 
 /// Stress Test 4: Update Statements & Cross-Column Boundaries
 fn compile_check_sqlite_update() -> crate::Result<()> {

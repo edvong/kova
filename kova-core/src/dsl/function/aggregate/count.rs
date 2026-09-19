@@ -91,12 +91,12 @@ impl<'a, T, DB: Database> Count<Column<'a, T, DB>> {
         }
     }
 
-    pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X> 
-        where 
+    pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X>
+        where
             A: IntoIdentifier<U> {
         self.build_projection(alias)
     }
-    
+
     pub fn distinct(self) -> Function<'a, DB> {
         self.into_aggregate_distinct()
     }
@@ -174,7 +174,7 @@ impl<'a, T, DB: Database> Count<Column<'a, T, DB>> {
         self.into_comparator().in_list(values)
     }
 
-    pub fn not_in<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
+    pub fn not_in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {

@@ -1,6 +1,6 @@
-use kova::dsl::func::Lower;
+use crate::models::user::User;
 use kova::Options;
-use crate::models::User;
+use kova::dsl::func::Lower;
 
 /// Stress Test 3: Insert Statements & Conflict Handling Boundaries
 fn compile_check_sqlite_insert() -> crate::Result<()> {

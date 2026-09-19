@@ -80,8 +80,8 @@ macro_rules! impl_into_args_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<A, $($T),+> IntoArgs<A> for ($($T,)+)
-                                                where
-                                                    $( $T: IntoArgs<A> ),+ {
+            where
+                $( $T: IntoArgs<A> ),+ {
             fn size_hint(&self) -> usize {
                 #[allow(non_snake_case)]
                 let ( $( $T, )+ ) = self;
@@ -90,8 +90,8 @@ macro_rules! impl_into_args_for_tuple {
             }
 
             fn for_each_arg<F>(self, f: &mut F)
-                                                    where
-                                                        F: FnMut(A) {
+                where
+                    F: FnMut(A) {
                 #[allow(non_snake_case)]
                 let ( $($T,)+ ) = self;
                 $(

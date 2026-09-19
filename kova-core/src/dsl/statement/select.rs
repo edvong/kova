@@ -1,6 +1,6 @@
 use crate::dsl::{
-    Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
-    GroupBy, GroupByClause, HavingClause, IntoArgs, Join, JoinClause, JoinType, LockingClause,
+    Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause, GroupBy,
+    GroupByClause, HavingClause, IntoArgs, Join, JoinClause, JoinType, LockingClause,
     OrderByClause, Ordering, PaginationClause, Projection, ProjectionClause, WhereClause,
     WithClause,
 };
@@ -60,8 +60,7 @@ impl<'a, DB> SelectStatement<'a, DB>
     }
 
     pub fn with<C: Cte>(&mut self, statement: SelectStatement<'a, DB>) {
-        self.with
-            .add(CteNode { name: C::CTE_NAME, statement: Box::new(statement) });
+        self.with.add(CteNode { name: C::CTE_NAME, statement: Box::new(statement) });
     }
 
     pub fn distinct(&mut self) {

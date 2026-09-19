@@ -28,6 +28,15 @@ pub struct Projection<'a, DB: Database, X> {
     _marker: PhantomData<X>,
 }
 
+impl<'a, DB: Database, X> Projection<'a, DB, X> {
+    pub fn transform_expr<F>(mut self, f: F) -> Self
+        where
+            F: FnOnce(ProjectionExpr<'a, DB>) -> ProjectionExpr<'a, DB> {
+        self.expr = f(self.expr);
+        self
+    }
+}
+
 pub trait BuildProjection<'a, DB: Database, X> {
     fn build_projection<A, T>(self, alias: A) -> Projection<'a, DB, X>
         where

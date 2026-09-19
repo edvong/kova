@@ -164,7 +164,7 @@ impl<T> Identifier<T> {
         self.into_comparator().in_list(values)
     }
 
-    pub fn not_in<'a, DB: Database, I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
+    pub fn not_in_list<'a, DB: Database, I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {

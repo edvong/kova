@@ -5,9 +5,9 @@ mod window;
 pub use aggregate::*;
 pub use scalar::*;
 
+use crate::dsl::Component;
 use crate::dsl::component::WithComponent;
 use crate::dsl::function::window::Window;
-use crate::dsl::Component;
 use crate::types::IdentifierMeta;
 use crate::types::{Database, Extension};
 

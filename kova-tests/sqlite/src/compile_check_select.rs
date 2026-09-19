@@ -1,7 +1,8 @@
 #![allow(unreachable_code, dead_code, unused)]
 
 use crate::Result;
-use crate::models::{Order, User};
+use crate::models::order::Order;
+use crate::models::user::User;
 use kova::Options;
 use kova::dsl::func::{Abs, Avg, Count, CountAll, Length, Lower, Max, Min, Sum, Upper};
 
@@ -38,7 +39,7 @@ fn compile_check_sqlite_select() {
                 Order::amount.between(10.5_f64, i64::MAX as f64) // Boundary type casting
                     & Order::amount.not_between(0.0_f64, 1.0_f64)
                     & Order::id.in_list(vec![1, 2, 3])
-                    & Order::id.not_in(vec![4, 5, 6])
+                    & Order::id.not_in_list(vec![4, 5, 6])
             )
                 | (
                 Order::amount.ge(0.0_f64)

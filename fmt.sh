@@ -23,16 +23,38 @@ trap "rm -f $TEMP_CONFIG" EXIT
 
 
 # ==========================================
-# Perl state machine (Dual-track)
-# Track A: Indent 'where' block 4 spaces
+# Perl state machine (Tri-track)
+# Track C: Shield macro_rules! to prevent infinite indents
 # Track B: Hunt down any isolated '{' for long signatures
+# Track A: Indent 'where' block 4 spaces
 # ==========================================
 PERL_SCRIPT='
 my @lines = split(/^/m, $_);
 my $wait_brace = 0;
 my $in_w = 0;
+my $in_macro = 0;
+my $macro_indent = "";
 
 for (my $i = 0; $i < @lines; $i++) {
+
+    # --- Track C: Macro Isolation Shield ---
+    # Trigger: Enter macro block
+    if (!$in_macro && $lines[$i] =~ /^([ \t]*)macro_rules!\s+\w+/) {
+        # Check if it is a single-line macro
+        if ($lines[$i] !~ /\{.*\}/) {
+            $in_macro = 1;
+            $macro_indent = $1;
+        }
+        next; # Skip processing this line
+    }
+    # Execution: Ignore everything inside
+    if ($in_macro) {
+        # Exit state ONLY when matching the exact closing brace indent
+        if ($lines[$i] =~ /^$macro_indent[\}\)\]];?\s*$/) {
+            $in_macro = 0;
+        }
+        next; # Skip processing inner contents
+    }
 
     # --- Track B Trigger: Catch start of any item declaration ---
     if ($lines[$i] =~ /^[ \t]*(?:(?:pub(?:\([^)]+\))?|async|const|unsafe|extern|default)[ \t]+)*(fn|struct|enum|union|trait|impl)\b/) {
@@ -55,24 +77,20 @@ for (my $i = 0; $i < @lines; $i++) {
     }
 
     # --- Execution: Fold the orphan brace ---
-    # If we are waiting for a brace, and this line is exactly just "{"
     if ($wait_brace && $lines[$i] =~ /^[ \t]*\{[ \t]*\r?\n?$/) {
         my $prev = $lines[$i-1];
 
-        # Safely extract newline
         my $nl = ($prev =~ s/(\r?\n)$//) ? $1 : "\n";
         $prev =~ s/[ \t]+$//;
 
-        # Merge logic
         if ($prev =~ s/,[ \t]*(\/\/.*)$/ {$1/) {}
         elsif ($prev =~ s/,$//) { $prev .= " {"; }
         elsif ($prev =~ s/([ \t]*)(\/\/.*)$/ {$1$2/) {}
         else { $prev .= " {"; }
 
         $lines[$i-1] = $prev . $nl;
-        $lines[$i] = ""; # Erase the orphan line
+        $lines[$i] = "";
 
-        # Target destroyed, reset states
         $wait_brace = 0;
         $in_w = 0;
     }

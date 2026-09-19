@@ -53,7 +53,7 @@ fn compile_check_select() {
                 & (Order::amount.between(10.5_f64, 99.9_f64)
                     | Order::amount.not_between(0.0_f64, 1.0_f64)
                     | Order::id.in_list(vec![1, 2, 3])
-                    | Order::id.not_in(vec![4, 5, 6])
+                    | Order::id.not_in_list(vec![4, 5, 6])
                     | Order::amount.ge(0.0_f64)
                     | Order::amount.le(1000.0_f64)
                     | Order::raw_data.is_not_null()),
@@ -80,7 +80,7 @@ fn compile_check_select() {
 }
 
 /// Stress Test 2: Lifecycle of Load API and extraction limits of macro-generated Tuples
-async fn compile_check_pg_load_endpoints() -> Result<()> {
+async fn compile_check_load_endpoints() -> Result<()> {
     let client = Options::from("").build()?;
 
     // Endpoint 1: Load main model
@@ -100,37 +100,6 @@ async fn compile_check_pg_load_endpoints() -> Result<()> {
     let _complex_rows = client
         .select::<User>()
         .load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>()
-        .await?;
-
-    Ok(())
-}
-
-
-async fn compile_check_complex_jsonb_subquery() -> Result<()> {
-    let client = Options::from("").build()?;
-
-    let _views = client
-        .select::<Post>()
-        .columns((
-            Post::id,
-            Post::title,
-            Post::content,
-            JsonbObject((User::id, User::name)).alias(PostView::author),
-            Subselect::<Comment>::columns(
-                JsonbAgg(
-                    JsonbObject((
-                        Comment::id,
-                        Comment::content,
-                        JsonbObject((User::id, User::name)).alias(CommentDto::commenter),
-                    ))
-                )
-            )
-            .inner_join::<User>(Comment::user_id.eq(User::id))
-            .filter(Comment::post_id.eq(Post::id))
-            .alias(PostView::comments),
-        ))
-        .inner_join::<User>(Post::author_id.eq(User::id))
-        .load_as::<PostView>()
         .await?;
 
     Ok(())

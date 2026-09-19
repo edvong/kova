@@ -76,7 +76,9 @@ impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for Upper<Column<'a, T, DB
 impl<'a, T, DB: Database> SingleArgMarker for Upper<Column<'a, T, DB>> {}
 
 impl<'a, T, DB: Database> Upper<Column<'a, T, DB>> {
-    pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X> where A: IntoIdentifier<U> {
+    pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X>
+        where
+            A: IntoIdentifier<U> {
         self.build_projection(alias)
     }
 
@@ -153,7 +155,7 @@ impl<'a, T, DB: Database> Upper<Column<'a, T, DB>> {
         self.into_comparator().in_list(values)
     }
 
-    pub fn not_in<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
+    pub fn not_in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {

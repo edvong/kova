@@ -79,7 +79,8 @@ macro_rules! impl_native_bind {
             impl $crate::dsl::SingleArgMarker for $T {}
 
             impl<'a, DB: $crate::types::Database> $crate::dsl::IntoArg<Bind<'a, DB>> for $T
-                                                    where $T: $crate::types::IntoValue<'a, DB> {
+                where 
+                    $T: $crate::types::IntoValue<'a, DB> {
                 fn into_arg(self) -> Bind<'a, DB> { Bind(self.into_value()) }
             }
         )+

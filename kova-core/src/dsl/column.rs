@@ -171,7 +171,7 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         self.as_comparator().in_list(values)
     }
 
-    pub fn not_in<I, V, K, X>(&self, values: I) -> Condition<'a, DB, X>
+    pub fn not_in_list<I, V, K, X>(&self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {

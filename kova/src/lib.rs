@@ -34,31 +34,30 @@ pub mod dsl {
     #[cfg(feature = "pg")]
     pub use kova_pg::dsl::{LockMode, Subselect, WaitPolicy};
 
+    #[cfg(feature = "sqlite")]
+    pub use kova_sqlite::dsl::Subselect;
+
     #[doc(hidden)]
     #[cfg(feature = "pg")]
     pub use kova_pg::dsl::ExtColumn;
 
     #[doc(hidden)]
     #[cfg(feature = "sqlite")]
-    pub use kova_sqlite::dsl::ExtColumn as ExtColumn;
+    pub use kova_sqlite::dsl::ExtColumn;
 
     pub mod func {
         pub use kova_core::dsl::func::{
-            Abs,
-            Avg,
-            Count,
-            // Function, Quantifier,
-            CountAll,
-            Length,
-            Lower,
-            Max,
-            Min,
-            Sum,
-            Upper,
+            Abs, Avg, Count, CountAll, Length, Lower, Max, Min, Sum, Upper,
         };
 
         #[cfg(feature = "pg")]
         pub use kova_pg::dsl::func::{All, Any, ArrayAgg, JsonbAgg, JsonbObject};
+
+        #[cfg(feature = "sqlite")]
+        pub use kova_sqlite::dsl::func::{
+            GroupConcat, Json, JsonExtract, JsonGroupArray, JsonObject, JsonbExtract, JsonbGroupArray,
+            JsonbObject,
+        };
     }
 }
 

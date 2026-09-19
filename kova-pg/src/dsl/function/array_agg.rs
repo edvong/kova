@@ -188,7 +188,7 @@ impl<'a, T> ArrayAgg<T>
         self.into_comparator().in_list(values)
     }
 
-    pub fn not_in<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
+    pub fn not_in_list<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Target, Postgres, K, T::X> {

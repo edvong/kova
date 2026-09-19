@@ -6,9 +6,9 @@ use crate::dsl::function::IntoFunction;
 use crate::dsl::function::StandardFunction;
 use crate::dsl::function::window::Window;
 use crate::dsl::{
-    BuildOrdering, BuildProjection, Comparator, Condition, Direction, IntoArg,
-    IntoIdentifier, IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
-    SingleArgMarker, StandardOperand, WithComponent,
+    BuildOrdering, BuildProjection, Comparator, Condition, Direction, IntoArg, IntoIdentifier,
+    IntoOperand, Operand, OrderOperand, Ordering, Projection, ProjectionExpr, SingleArgMarker,
+    StandardOperand, WithComponent,
 };
 use crate::types::Database;
 use std::marker::PhantomData;
@@ -67,8 +67,8 @@ impl CountAll {
     pub fn over<'a, DB: Database, X>(self) -> Window<'a, DB, X> {
         Window {
             func: self.into_func(),
-            partition_by: vec![],
-            order_by: vec![],
+            partition_by: Vec::new(),
+            order_by: Vec::new(),
             _marker: PhantomData,
         }
     }
@@ -154,7 +154,7 @@ impl CountAll {
         self.into_comparator().in_list(values)
     }
 
-    pub fn not_in<'a, DB: Database, I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
+    pub fn not_in_list<'a, DB: Database, I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Target, DB, K, X> {

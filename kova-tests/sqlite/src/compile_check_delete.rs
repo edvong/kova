@@ -1,5 +1,6 @@
 use kova::Options;
-use crate::models::{Order, User};
+use crate::models::order::Order;
+use crate::models::user::User;
 
 /// Stress Test 5: Delete Statements
 fn compile_check_sqlite_delete() -> crate::Result<()> {
