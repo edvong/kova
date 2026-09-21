@@ -4,7 +4,7 @@ use crate::dsl::{
 };
 use crate::types::Database;
 use std::marker::PhantomData;
-use std::ops::{BitAnd, BitOr};
+use std::ops::{BitAnd, BitOr, Not};
 
 pub struct Condition<'a, DB: Database, X> {
     node: ConditionNode<'a, DB>,
@@ -15,6 +15,7 @@ enum ConditionNode<'a, DB: Database> {
     Op(Operator<'a, DB>),
     And(Vec<Self>), // N-ary tree, contiguous memory
     Or(Vec<Self>),
+    Not(Box<Self>),
 }
 
 impl<'a, DB: Database, X> Condition<'a, DB, X> {
@@ -55,6 +56,18 @@ impl<'a, DB: Database, X> BitOr for Condition<'a, DB, X> {
                 node: ConditionNode::Or(vec![self.node, rhs.node]),
                 _marker: PhantomData,
             },
+        }
+    }
+}
+
+impl<'a, DB: Database, X> Not for Condition<'a, DB, X> {
+    type Output = Self;
+
+    #[inline(always)]
+    fn not(self) -> Self::Output {
+        Condition {
+            node: ConditionNode::Not(Box::new(self.node)),
+            _marker: PhantomData,
         }
     }
 }

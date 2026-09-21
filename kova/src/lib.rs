@@ -56,7 +56,7 @@ pub mod dsl {
         #[cfg(feature = "sqlite")]
         pub use kova_sqlite::dsl::func::{
             GroupConcat, Json, JsonExtract, JsonGroupArray, JsonObject, JsonbExtract, JsonbGroupArray,
-            JsonbObject,
+            JsonbObject, Bm25, Highlight, Snippet,
         };
     }
 }

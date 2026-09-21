@@ -11,8 +11,9 @@ pub struct JsonObject<T>(pub T);
 impl<T> SingleArgMarker for JsonObject<T> {}
 
 impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for JsonObject<T>
-    where
-        T: IntoArgs<Projection<'a, Sqlite, X>> {
+where
+    T: IntoArgs<Projection<'a, Sqlite, X>>,
+{
     fn into_arg(self) -> Projection<'a, Sqlite, X> {
         let projs = self.0.into_mapped_args(|p| p.erase_x());
         let func = Function::from_ext(ExtFunction::JsonObject(projs));
@@ -22,8 +23,8 @@ impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for JsonObject<T>
 
 impl<'a, T> JsonObject<T> {
     pub fn alias<I: IntoIdentifier<A>, A, X>(self, alias: I) -> Projection<'a, Sqlite, X>
-        where
-            T: IntoArgs<Projection<'a, Sqlite, X>> {
+    where
+        T: IntoArgs<Projection<'a, Sqlite, X>>, {
         let mut proj: Projection<'a, Sqlite, X> = self.into_arg();
         proj.alias(alias.into_identifier());
         proj

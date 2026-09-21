@@ -1,7 +1,7 @@
 use crate::dsl::ExtOperator;
 use crate::dsl::assignment::ExtAssignment;
-use crate::dsl::function::JsonExtract;
 use crate::dsl::function::JsonbExtract;
+use crate::dsl::function::{Bm25, Highlight, JsonExtract, Snippet};
 use crate::types::Sqlite;
 use kova_core::dsl::{
     Assignment, Column, Condition, IntoOperand, Operand, Operator, WithComponent,
@@ -61,5 +61,28 @@ impl<T> ExtColumn<T> {
         where
             V: IntoOperand<'a, String, Sqlite, K, X> {
         Condition::from(Operator::from_ext(ExtOperator::Regexp(self.op(), pattern.into_operand())))
+    }
+
+    pub fn bm25<'a, X>(&self) -> Bm25<'a, X> {
+        Bm25 { table: self.meta.source, _marker: PhantomData }
+    }
+
+    pub fn highlight<'a, L, R, K1, K2, X>(
+        &self, col_index: i32, left: L, right: R,
+    ) -> Highlight<'a, X>
+        where
+            L: IntoOperand<'a, String, Sqlite, K1, X>,
+            R: IntoOperand<'a, String, Sqlite, K2, X> {
+        Highlight::new(self.meta.source, col_index, left, right)
+    }
+
+    pub fn snippet<'a, L, R, E, K1, K2, K3, X>(
+        &self, col_index: i32, left: L, right: R, ellipsis: E, max_tokens: i32,
+    ) -> Snippet<'a, X>
+        where
+            L: IntoOperand<'a, String, Sqlite, K1, X>,
+            R: IntoOperand<'a, String, Sqlite, K2, X>,
+            E: IntoOperand<'a, String, Sqlite, K3, X> {
+        Snippet::new(self.meta.source, col_index, left, right, ellipsis, max_tokens)
     }
 }

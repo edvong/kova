@@ -47,64 +47,64 @@ impl<'a, X> JsonbExtract<'a, X> {
 
 impl<'a, X> JsonbExtract<'a, X> {
     pub fn eq<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().eq(v)
     }
 
     pub fn ne<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().ne(v)
     }
 
     pub fn gt<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().gt(v)
     }
 
     pub fn ge<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().ge(v)
     }
 
     pub fn lt<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().lt(v)
     }
 
     pub fn le<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().le(v)
     }
 
     pub fn like<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().like(v)
     }
 
     pub fn not_like<Target, V, K>(self, v: V) -> Condition<'a, Sqlite, X>
-        where
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().not_like(v)
     }
 
     pub fn in_list<Target, I, V, K>(self, values: I) -> Condition<'a, Sqlite, X>
-        where
-            I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        I: IntoIterator<Item = V>,
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().in_list(values)
     }
 
     pub fn not_in_list<Target, I, V, K>(self, values: I) -> Condition<'a, Sqlite, X>
-        where
-            I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Sqlite, K, X> {
+    where
+        I: IntoIterator<Item = V>,
+        V: IntoOperand<'a, Target, Sqlite, K, X>, {
         self.into_comparator().not_in_list(values)
     }
 

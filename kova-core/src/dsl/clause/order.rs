@@ -24,10 +24,18 @@ impl<'a, DB: Database> OrderByClause<'a, DB> {
 }
 
 pub struct Ordering<'a, DB: Database, X> {
-    pub(crate) operand: OrderOperand<'a, DB>,
-    pub(crate) direction: Option<Direction>,
-    pub(crate) nulls: Option<NullsOrder>,
+    pub operand: OrderOperand<'a, DB>,
+    pub direction: Option<Direction>,
+    pub nulls: Option<NullsOrder>,
     pub(crate) _marker: PhantomData<X>,
+}
+
+impl<'a, DB: Database, X> Ordering<'a, DB, X> {
+    pub fn new(
+        operand: OrderOperand<'a, DB>, direction: Option<Direction>, nulls: Option<NullsOrder>,
+    ) -> Self {
+        Self { operand, direction, nulls, _marker: PhantomData }
+    }
 }
 
 pub trait BuildOrdering<'a, DB: Database, X> {

@@ -13,8 +13,9 @@ pub struct Json<T>(pub T);
 impl<T> SingleArgMarker for Json<T> {}
 
 impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for Json<T>
-    where
-        T: IntoArg<Projection<'a, Sqlite, X>> {
+where
+    T: IntoArg<Projection<'a, Sqlite, X>>,
+{
     // Rule: As long as the wrapped inner item is capable of being projected, Json can wrap it.
     fn into_arg(self) -> Projection<'a, Sqlite, X> {
         let proj = self.0.into_arg();
@@ -36,8 +37,8 @@ impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for Json<T>
 
 impl<T> Json<T> {
     pub fn alias<'a, I: IntoIdentifier<A>, A, X>(self, alias: I) -> Projection<'a, Sqlite, X>
-        where
-            Self: IntoArg<Projection<'a, Sqlite, X>> {
+    where
+        Self: IntoArg<Projection<'a, Sqlite, X>>, {
         let mut proj = self.into_arg();
         proj.alias(alias);
         proj

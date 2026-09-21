@@ -17,6 +17,10 @@ pub mod func {
     pub use crate::dsl::function::JsonbGroupArray;
     pub use crate::dsl::function::JsonObject;
     pub use crate::dsl::function::JsonbObject;
+    
+    pub use crate::dsl::function::Bm25;
+    pub use crate::dsl::function::Highlight;
+    pub use crate::dsl::function::Snippet;
 }
 
 pub(crate) use {

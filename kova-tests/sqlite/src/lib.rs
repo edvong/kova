@@ -6,5 +6,6 @@ mod compile_check_delete;
 mod compile_check_json;
 mod codec;
 mod view;
+mod compile_check_fts5;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
