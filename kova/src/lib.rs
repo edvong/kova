@@ -47,11 +47,14 @@ pub mod dsl {
 
     pub mod func {
         pub use kova_core::dsl::func::{
-            Abs, Avg, Count, CountAll, Length, Lower, Max, Min, Sum, Upper,
+            Abs, Avg, Count, CountAll, FrameBound, FrameType, Length, Lower, Max, Min, Sum, Upper,
         };
 
         #[cfg(feature = "pg")]
-        pub use kova_pg::dsl::func::{All, Any, ArrayAgg, JsonbAgg, JsonbObject};
+        pub use kova_pg::dsl::func::{
+            All, Any, ArrayAgg, CumeDist, DenseRank, JsonbAgg, JsonbObject, Lag, Lead, Ntile,
+            PercentRank, Rank, RowNumber,
+        };
 
         #[cfg(feature = "sqlite")]
         pub use kova_sqlite::dsl::func::{

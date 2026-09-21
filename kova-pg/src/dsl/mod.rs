@@ -9,11 +9,12 @@ mod operator;
 mod subselect;
 
 pub mod func {
-    pub use crate::dsl::function::All;
-    pub use crate::dsl::function::Any;
     pub use crate::dsl::function::ArrayAgg;
-    pub use crate::dsl::function::JsonbAgg;
-    pub use crate::dsl::function::JsonbObject;
+    pub use crate::dsl::function::{All, Any};
+    pub use crate::dsl::function::{
+        CumeDist, DenseRank, Lag, Lead, Ntile, PercentRank, Rank, RowNumber,
+    };
+    pub use crate::dsl::function::{JsonbAgg, JsonbObject};
 }
 
 pub use {

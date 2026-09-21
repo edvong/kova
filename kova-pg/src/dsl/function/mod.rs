@@ -4,6 +4,7 @@ mod jsonb_agg;
 mod jsonb_object;
 mod jsonb_to_recordset;
 mod row_to_json;
+mod window;
 
 use crate::dsl::function::array_agg::ArrayAggState;
 use crate::dsl::operator::JsonOp;
@@ -15,6 +16,10 @@ pub use crate::dsl::function::any_all::{All, Any};
 pub use crate::dsl::function::array_agg::ArrayAgg;
 pub use crate::dsl::function::jsonb_agg::JsonbAgg;
 pub use crate::dsl::function::jsonb_object::JsonbObject;
+pub use crate::dsl::function::window::{
+    lag::Lag, lead::Lead, ntile::Ntile, parameterless::CumeDist, parameterless::DenseRank,
+    parameterless::PercentRank, parameterless::Rank, parameterless::RowNumber,
+};
 
 pub enum ExtFunction<'a> {
     JsonbObject(Vec<Projection<'a, Postgres, ()>>),
@@ -32,6 +37,18 @@ pub enum ExtFunction<'a> {
 
     // Explicit array constructor: mapping to ARRAY[$1, $2, $3]
     Array(Vec<Operand<'a, Postgres>>),
+
+    // Parameterless Window Functions
+    RowNumber,
+    Rank,
+    DenseRank,
+    PercentRank,
+    CumeDist,
+
+    // Parameterized Window Functions
+    Ntile(i32),
+    Lag(Box<Operand<'a, Postgres>>, Option<i32>, Option<Box<Operand<'a, Postgres>>>),
+    Lead(Box<Operand<'a, Postgres>>, Option<i32>, Option<Box<Operand<'a, Postgres>>>),
 }
 
 impl<'a> ExtFunction<'a> {

@@ -4,7 +4,10 @@ use crate::Result;
 use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::func::{Count, CountAll, Sum};
+use kova::dsl::func::{
+    Count, CountAll, CumeDist, DenseRank, FrameBound, Lag, Lead, Ntile, PercentRank, Rank,
+    RowNumber, Sum,
+};
 use kova::dsl::{Identifier, Subselect};
 use kova::types::{Cte, Relation};
 
@@ -90,6 +93,84 @@ async fn compile_check_cte_and_subquery() -> Result<()> {
         // Scenario D: Virtual columns must also support order_by
         .order_by(TopSpender::total_amount.desc())
         .load_in::<(i32, String, f64, i64)>()
+        .await?;
+
+    Ok(())
+}
+
+// ==========================================
+// PG Exclusive Window Functions & Frame Bounds Tests
+// ==========================================
+async fn compile_check_exclusive_window_functions() -> Result<()> {
+    let client = Options::from("").build()?;
+
+    let _ = client
+        .select::<Order>()
+        .columns((
+            Order::id,
+            Order::user_id,
+            Order::amount,
+
+            // Parameterless ranking window functions.
+            // Note: PG natively returns bigint for these, so strictly map them to i64.
+            RowNumber.over().partition_by(Order::user_id).order_by(Order::amount.desc()),
+            Rank.over().partition_by(Order::user_id).order_by(Order::amount.desc()),
+            DenseRank.over().partition_by(Order::user_id).order_by(Order::amount.desc()),
+
+            // Floating-point distribution functions.
+            // Note: PG yields double precision here, must map to f64.
+            PercentRank.over().partition_by(Order::user_id).order_by(Order::amount.asc()),
+            CumeDist.over().partition_by(Order::user_id).order_by(Order::amount.asc()),
+
+            // Bucketing window function.
+            // Note: PG returns standard integer, so i32 is the target.
+            Ntile(4).over().partition_by(Order::user_id).order_by(Order::amount.desc()),
+
+            // Offset window functions (Lag/Lead).
+            // The builder pattern ensures the return type dynamically inherits from the base column (Order::amount is f64).
+            Lag(Order::amount)
+                .offset(1)
+                .default(0.0_f64)
+                .over()
+                .partition_by(Order::user_id)
+                .order_by(Order::id.asc()),
+
+            Lead(Order::amount)
+                .over()
+                .partition_by(Order::user_id)
+                .order_by(Order::id.asc()),
+
+            // Frame Bounds testing.
+            Sum(Order::amount)
+                .over()
+                .partition_by(Order::user_id)
+                .order_by(Order::id.asc())
+                // Rolling sum: accumulating from the absolute start up to the current row.
+                .rows(FrameBound::UnboundedPreceding, Some(FrameBound::CurrentRow)),
+
+            Count(Order::id)
+                .over()
+                .partition_by(Order::user_id)
+                .order_by(Order::amount.asc())
+                // Sliding range window: spanning from 1 preceding to 1 following.
+                .range(FrameBound::Preceding(1), Some(FrameBound::Following(1))),
+        ))
+        // The ultimate check: verify that tuple extraction perfectly aligns with the strict return type contracts of every single window function.
+        .load_in::<(
+            i32, // id
+            i32, // user_id
+            f64, // amount
+            i64, // row_number
+            i64, // rank
+            i64, // dense_rank
+            f64, // percent_rank
+            f64, // cume_dist
+            i32, // ntile
+            f64, // lag
+            f64, // lead
+            f64, // sum over rows
+            i64, // count over range
+        )>()
         .await?;
 
     Ok(())

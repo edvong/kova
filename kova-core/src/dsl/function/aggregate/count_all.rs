@@ -65,12 +65,7 @@ type Target = i64;
 
 impl CountAll {
     pub fn over<'a, DB: Database, X>(self) -> Window<'a, DB, X> {
-        Window {
-            func: self.into_func(),
-            partition_by: Vec::new(),
-            order_by: Vec::new(),
-            _marker: PhantomData,
-        }
+        Window::new(self.into_func())
     }
 
     pub fn alias<'a, DB: Database, A, U, X>(self, alias: A) -> Projection<'a, DB, X>

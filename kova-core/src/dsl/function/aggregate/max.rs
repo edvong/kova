@@ -86,12 +86,7 @@ impl<'a, T, DB: Database> SingleArgMarker for Max<Column<'a, T, DB>> {}
 
 impl<'a, T, DB: Database> Max<Column<'a, T, DB>> {
     pub fn over<X>(self) -> Window<'a, DB, X> {
-        Window {
-            func: self.into_func(),
-            partition_by: Vec::new(),
-            order_by: Vec::new(),
-            _marker: PhantomData,
-        }
+        Window::new(self.into_func())
     }
 
     pub fn alias<A, U, X>(self, alias: A) -> Projection<'a, DB, X>

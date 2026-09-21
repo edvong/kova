@@ -41,7 +41,6 @@ pub(crate) use {
     with::{CteNode, WithClause},
 };
 
-
 pub trait ExtensionClause<E> {
     fn ext(&self) -> &E;
     fn ext_mut(&mut self) -> &mut E;
