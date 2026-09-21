@@ -3,17 +3,17 @@
 use crate::Result;
 use crate::codec::conversion::AppCodec;
 use crate::codec::models::EventLog;
+use crate::models::comment::Comment;
 use crate::models::order::Order;
+use crate::models::post::Post;
 use crate::models::user::User;
+use crate::view::post_view::{CommentDto, PostView};
 use kova::Options;
 use kova::dsl::Subselect;
 use kova::dsl::func::{All, Any, JsonbAgg, JsonbObject};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
-use crate::models::comment::Comment;
-use crate::models::post::Post;
-use crate::view::post_view::{CommentDto, PostView};
 
 async fn compile_check_complex_jsonb_subquery() -> Result<()> {
     let client = Options::from("").build()?;
@@ -25,18 +25,14 @@ async fn compile_check_complex_jsonb_subquery() -> Result<()> {
             Post::title,
             Post::content,
             JsonbObject((User::id, User::name)).alias(PostView::author),
-            Subselect::<Comment>::columns(
-                JsonbAgg(
-                    JsonbObject((
-                        Comment::id,
-                        Comment::content,
-                        JsonbObject((User::id, User::name)).alias(CommentDto::commenter),
-                    ))
-                )
-            )
-                .inner_join::<User>(Comment::user_id.eq(User::id))
-                .filter(Comment::post_id.eq(Post::id))
-                .alias(PostView::comments),
+            Subselect::<Comment>::columns(JsonbAgg(JsonbObject((
+                Comment::id,
+                Comment::content,
+                JsonbObject((User::id, User::name)).alias(CommentDto::commenter),
+            ))))
+            .inner_join::<User>(Comment::user_id.eq(User::id))
+            .filter(Comment::post_id.eq(Post::id))
+            .alias(PostView::comments),
         ))
         .inner_join::<User>(Post::author_id.eq(User::id))
         .load_as::<PostView>()
@@ -44,7 +40,6 @@ async fn compile_check_complex_jsonb_subquery() -> Result<()> {
 
     Ok(())
 }
-
 
 /// Stress Test: JSONB Chain & Advanced JSON Operators
 async fn compile_check_jsonb_operators() -> Result<()> {

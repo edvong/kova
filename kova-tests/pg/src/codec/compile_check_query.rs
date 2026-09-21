@@ -28,18 +28,16 @@ async fn compile_check_custom_types() -> Result<()> {
         website: site.clone(),
         metadata: HashMap::from([
             ("status".into(), "active".into()),
-            ("source".into(), "api".into())
+            ("source".into(), "api".into()),
         ]),
     };
 
     client.insert(&dummy_log).execute().await?;
 
-    let _upsert_id = client.insert(&dummy_log)
+    let _upsert_id = client
+        .insert(&dummy_log)
         .on_conflict(EventLog::id)
-        .update((
-            EventLog::updated_at.set(Timestamp::now()),
-            EventLog::metadata.excluded(),
-        ))
+        .update((EventLog::updated_at.set(Timestamp::now()), EventLog::metadata.excluded()))
         .returning(EventLog::id)
         .execute_in::<Uuid>()
         .await?;
@@ -48,62 +46,59 @@ async fn compile_check_custom_types() -> Result<()> {
     new_meta.insert("archived".into(), "true".into());
 
     // Test for native foreign types in the Filter tree (Eq, NotIn, Gt)
-    let _updated_urls = client.update::<EventLog>()
+    let _updated_urls = client
+        .update::<EventLog>()
         .set((
             EventLog::metadata.set(new_meta),
             EventLog::website.set(Url::parse("https://crates.io").unwrap()),
-            EventLog::updated_at.set(Timestamp::now())
+            EventLog::updated_at.set(Timestamp::now()),
         ))
         .filter(
             EventLog::id.eq(&target_uuid)
                 & EventLog::created_at.gt(&current_time)
-                & EventLog::metadata.is_not_null()
+                & EventLog::metadata.is_not_null(),
         )
         .returning(EventLog::website)
         .execute_in::<Url>()
         .await?;
 
     // 4. Delete + Returning
-    let _deleted_time = client.delete::<EventLog>()
+    let _deleted_time = client
+        .delete::<EventLog>()
         .filter(EventLog::website.eq(&site))
         .returning(EventLog::created_at)
         .execute_in::<DateTime<Utc>>()
         .await?;
 
-    let _logs = client.select::<EventLog>()
+    let _logs = client
+        .select::<EventLog>()
         .filter(EventLog::id.eq(&target_uuid))
         .load_as::<EventLog>()
         .await?;
 
     // Ad-Hoc heterogeneous tuple projection + pessimistic locking
     // (test for bind_type! macros and locking mechanisms)
-    let _tuples = client.select::<EventLog>()
+    let _tuples = client
+        .select::<EventLog>()
         .columns((
             EventLog::id,
             EventLog::website,
             EventLog::created_at,
             EventLog::updated_at,
-            CountAll
+            CountAll,
         ))
         .group_by((EventLog::id, EventLog::website, EventLog::created_at, EventLog::updated_at))
         .order_by(EventLog::created_at.desc())
         .lock_all(LockMode::Update, None)
-        .load_in::<(
-            Uuid,
-            Url,
-            DateTime<Utc>,
-            Timestamp,
-            i64
-        )>()
+        .load_in::<(Uuid, Url, DateTime<Utc>, Timestamp, i64)>()
         .await?;
 
     // Option boundary extraction test
-    let _optional_urls = client.select::<EventLog>()
-        .columns(EventLog::website)
-        .load_in::<Option<Url>>()
-        .await?;
+    let _optional_urls =
+        client.select::<EventLog>().columns(EventLog::website).load_in::<Option<Url>>().await?;
 
-    let _extracted_maps = client.select::<EventLog>()
+    let _extracted_maps = client
+        .select::<EventLog>()
         .columns((EventLog::website, EventLog::metadata))
         .load_in::<(Option<Url>, HashMap<String, String>)>()
         .await?;

@@ -35,9 +35,7 @@ impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
         self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
-    pub fn on_conflict_ext_mut_or<F>(&mut self, f: F) -> &mut ExtOnConflict<'a, DB>
-        where
-            F: FnOnce() -> ExtOnConflict<'a, DB> {
-        self.on_conflict.ext_mut_or_with(f)
+    pub fn conflict_mut(&mut self) -> &mut ExtOnConflict<'a, DB> {
+        self.on_conflict.ext_mut()
     }
 }

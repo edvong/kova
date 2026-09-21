@@ -26,8 +26,7 @@ impl Model for Order {
 
 #[allow(non_upper_case_globals)]
 impl<'a> Order {
-    pub const id: Column<'a, i32, Engine> = 
-        ExtColumn::create(IdentifierMeta::new("order", "id"));
+    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("order", "id"));
 
     pub const user_id: Column<'a, i32, Engine> =
         ExtColumn::create(IdentifierMeta::new("order", "user_id"));

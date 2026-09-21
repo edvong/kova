@@ -25,8 +25,7 @@ impl Model for Comment {
 
 #[allow(non_upper_case_globals)]
 impl<'a> Comment {
-    pub const id: Column<'a, i32, Engine> =
-        ExtColumn::create(IdentifierMeta::new("comment", "id"));
+    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("comment", "id"));
     pub const post_id: Column<'a, i32, Engine> =
         ExtColumn::create(IdentifierMeta::new("comment", "post_id"));
     pub const user_id: Column<'a, i32, Engine> =

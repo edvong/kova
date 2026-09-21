@@ -2,7 +2,6 @@ mod assignment;
 mod bind;
 mod conflict;
 mod distinct;
-mod ext;
 mod group_by;
 mod having;
 mod insert;
@@ -33,7 +32,6 @@ pub(crate) use {
     bind::BindClause,
     conflict::OnConflictClause,
     distinct::DistinctClause,
-    ext::ExtensionClause,
     group_by::GroupByClause,
     having::HavingClause,
     insert::ValuesClause,
@@ -42,3 +40,9 @@ pub(crate) use {
     r#where::WhereClause,
     with::{CteNode, WithClause},
 };
+
+
+pub trait ExtensionClause<E> {
+    fn ext(&self) -> &E;
+    fn ext_mut(&mut self) -> &mut E;
+}

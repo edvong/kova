@@ -14,9 +14,8 @@ pub struct JsonbGroupArray<T>(pub T);
 impl<T> SingleArgMarker for JsonbGroupArray<T> {}
 
 impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for JsonbGroupArray<T>
-where
-    T: IntoArg<Projection<'a, Sqlite, X>>,
-{
+    where
+        T: IntoArg<Projection<'a, Sqlite, X>> {
     fn into_arg(self) -> Projection<'a, Sqlite, X> {
         let proj = self.0.into_arg().erase_x();
         let func = Function::from_ext(ExtFunction::JsonbGroupArray(Box::new(proj)));
@@ -26,8 +25,8 @@ where
 
 impl<'a, T> JsonbGroupArray<T> {
     pub fn alias<I: IntoIdentifier<A>, A, X>(self, alias: I) -> Projection<'a, Sqlite, X>
-    where
-        T: IntoArg<Projection<'a, Sqlite, X>>, {
+        where
+            T: IntoArg<Projection<'a, Sqlite, X>> {
         let mut proj: Projection<'a, Sqlite, X> = self.into_arg();
         proj.alias(alias.into_identifier());
         proj

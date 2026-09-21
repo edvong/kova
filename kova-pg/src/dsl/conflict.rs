@@ -1,18 +1,15 @@
 use crate::types::Postgres;
 use kova_core::dsl::func::{Abs, Function, IntoFunction, Length, Lower, Upper};
-use kova_core::dsl::{Assignment, Column, IntoArgs};
+use kova_core::dsl::{Assignment, Column, IntoArg, SingleArgMarker};
 use kova_core::types::IdentifierMeta;
 
+#[derive(Default)]
 pub struct OnConflict<'a> {
     items: Vec<ConflictTarget<'a>>,
     assignments: Vec<Assignment<'a, Postgres, ()>>,
 }
 
 impl<'a> OnConflict<'a> {
-    pub(crate) fn new() -> Self {
-        Self { items: Vec::new(), assignments: Vec::new() }
-    }
-
     pub fn set_conflict(&mut self, args: Vec<ConflictTarget<'a>>) {
         self.items = args;
     }
@@ -33,35 +30,36 @@ pub struct ConflictTarget<'a> {
 pub(crate) enum TargetExpr<'a> {
     Column(IdentifierMeta),
     Function(Function<'a, Postgres>),
-    // Constraint(&'static str) --> ON CONFLICT ON CONSTRAINT "constraint_name"
+    Constraint(&'static str), // ON CONFLICT ON CONSTRAINT "constraint_name"
 }
 
-impl<'a, T> IntoArgs<ConflictTarget<'a>> for Column<'a, T, Postgres> {
-    #[inline(always)]
-    fn size_hint(&self) -> usize {
-        1
-    }
+pub struct Constraint(pub &'static str);
 
+impl SingleArgMarker for Constraint {}
+
+impl<'a> IntoArg<ConflictTarget<'a>> for Constraint {
     #[inline(always)]
-    fn for_each_arg<F>(self, f: &mut F)
-        where
-            F: FnMut(ConflictTarget<'a>) {
-        f(ConflictTarget { target: TargetExpr::Column(self.meta()) });
+    fn into_arg(self) -> ConflictTarget<'a> {
+        ConflictTarget { target: TargetExpr::Constraint(self.0) }
+    }
+}
+
+impl<'a> SingleArgMarker for ConflictTarget<'a> {}
+
+impl<'a, T> IntoArg<ConflictTarget<'a>> for Column<'a, T, Postgres> {
+    #[inline(always)]
+    fn into_arg(self) -> ConflictTarget<'a> {
+        ConflictTarget { target: TargetExpr::Column(self.meta()) }
     }
 }
 
 macro_rules! impl_conflict_target_args_for_func {
     ($($func:ident),+) => {
         $(
-            impl<'a, T> kova_core::dsl::IntoArgs<ConflictTarget<'a>> for $func<Column<'a, T, Postgres>> {
+            impl<'a, T> IntoArg<ConflictTarget<'a>> for $func<Column<'a, T, Postgres>> {
                 #[inline(always)]
-                fn size_hint(&self) -> usize { 1 }
-
-                #[inline(always)]
-                fn for_each_arg<F>(self, f: &mut F) where F: FnMut(ConflictTarget<'a>) {
-                    f(ConflictTarget {
-                        target: TargetExpr::Function(self.into_func())
-                    });
+                fn into_arg(self) -> ConflictTarget<'a> {
+                    ConflictTarget { target: TargetExpr::Function(self.into_func()) }
                 }
             }
         )+

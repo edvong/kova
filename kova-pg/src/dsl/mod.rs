@@ -19,6 +19,7 @@ pub mod func {
 pub use {
     assignment::ExtAssignment,
     column::ExtColumn,
+    conflict::Constraint,
     function::ExtFunction,
     locking::{LockMode, WaitPolicy},
     subselect::Subselect,

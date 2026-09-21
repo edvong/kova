@@ -37,8 +37,9 @@ impl<'a> User {
     pub const name: Column<'a, String, Engine> =
         ExtColumn::create(IdentifierMeta::new("user", "name"));
 
-    pub const balance: Column<'a, f64, Engine> = ExtColumn::create(IdentifierMeta::new("user", "balance"));
-    
+    pub const balance: Column<'a, f64, Engine> =
+        ExtColumn::create(IdentifierMeta::new("user", "balance"));
+
     pub const is_active: Column<'a, bool, Engine> =
         ExtColumn::create(IdentifierMeta::new("user", "is_active"));
 }

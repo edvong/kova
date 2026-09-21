@@ -65,10 +65,7 @@ impl<'a, DB: Database, X> Not for Condition<'a, DB, X> {
 
     #[inline(always)]
     fn not(self) -> Self::Output {
-        Condition {
-            node: ConditionNode::Not(Box::new(self.node)),
-            _marker: PhantomData,
-        }
+        Condition { node: ConditionNode::Not(Box::new(self.node)), _marker: PhantomData }
     }
 }
 

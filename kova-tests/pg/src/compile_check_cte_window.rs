@@ -40,23 +40,15 @@ async fn compile_check_window_functions() -> Result<()> {
             Order::id,
             Order::user_id,
             // Scenario A: Basic partition agg (COUNT(*) OVER (PARTITION BY user_id))
-            CountAll
-                .over()
-                .partition_by(Order::user_id)
-                .alias(TopSpender::order_count),
-
+            CountAll.over().partition_by(Order::user_id).alias(TopSpender::order_count),
             // Scenario B: Partition + Order for rolling accumulation (SUM(amount) OVER (...))
             Sum(Order::amount)
                 .over()
                 .partition_by(Order::user_id)
                 .order_by(Order::id.asc())
                 .alias(TopSpender::total_amount),
-
             // Scenario C: Multi-field compound partition
-            Count(Order::id)
-                .over()
-                .partition_by((Order::user_id, Order::is_active))
-            // Checking implicit derivation: passing directly without an alias
+            Count(Order::id).over().partition_by((Order::user_id, Order::is_active)), // Checking implicit derivation: passing directly without an alias
         ))
         // Need a massive tuple here to ensure type extraction doesn't break down
         .load_in::<(i32, i32, i64, f64, i64)>()
@@ -81,8 +73,8 @@ async fn compile_check_cte_and_subquery() -> Result<()> {
                 Sum(Order::amount).alias(TopSpender::total_amount),
                 CountAll.alias(TopSpender::order_count),
             ))
-                .group_by(Order::user_id)
-                .having(Sum(Order::amount).gt(100.0_f64))
+            .group_by(Order::user_id)
+            .having(Sum(Order::amount).gt(100.0_f64)),
         )
         .columns((
             User::id,

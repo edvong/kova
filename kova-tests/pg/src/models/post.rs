@@ -1,5 +1,5 @@
 use kova::dsl::{Column, ExtColumn, Identifier};
-use kova::types::{ColumnMeta, IdentifierMeta, Database, Engine, FromRow, Model, Relation};
+use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
 
 pub struct Post;
 
@@ -25,9 +25,8 @@ impl Model for Post {
 
 #[allow(non_upper_case_globals)]
 impl<'a> Post {
-    pub const id: Column<'a, i32, Engine> = 
-        ExtColumn::create(IdentifierMeta::new("pos", "id"));
-       
+    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("pos", "id"));
+
     pub const title: Column<'a, String, Engine> =
         ExtColumn::create(IdentifierMeta::new("pos", "title"));
 

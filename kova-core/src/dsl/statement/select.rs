@@ -106,15 +106,13 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.pagination.offset(offset);
     }
 
-    // pub fn pagination_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtPagination<'a, DB>
-    //     where
-    //         F: FnOnce() -> ExtPagination<'a, DB> {
-    //     self.pagination.ext_mut_or_with(f)
-    // }
-
-    pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
-        where
-            F: FnOnce() -> ExtLocking<'a, DB> {
-        self.locking.ext_mut_or_with(f)
+    pub fn locking_mut(&mut self) -> &mut ExtLocking<'a, DB> {
+        self.locking.ext_mut()
     }
+
+    // pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
+    //     where
+    //         F: FnOnce() -> ExtLocking<'a, DB> {
+    //     self.locking.ext_mut_or_with(f)
+    // }
 }

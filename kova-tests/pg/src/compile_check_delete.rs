@@ -8,11 +8,7 @@ async fn compile_check_delete() -> Result<()> {
     let client = Options::from("").build()?;
 
     // 1. Standard Delete
-    client
-        .delete::<User>()
-        .filter(User::id.eq(1))
-        .execute()
-        .await?;
+    client.delete::<User>().filter(User::id.eq(1)).execute().await?;
 
     // 2. Delete with complex filter tree
     client

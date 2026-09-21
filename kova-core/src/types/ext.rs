@@ -22,6 +22,6 @@ pub trait Extension<'a>: Sized {
 
     // Clause Extension
     type GroupBy;
-    type Locking;
-    type OnConflict<'c>;
+    type Locking: Default;
+    type OnConflict<'c>: Default;
 }

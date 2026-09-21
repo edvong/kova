@@ -1,4 +1,4 @@
-use crate::dsl::{ConflictTarget, OnConflict};
+use crate::dsl::ConflictTarget;
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::query::{NoReturn, Returning};
 use crate::types::Postgres;
@@ -51,10 +51,7 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Postgres, T, E, X, R, NoConflict>
     ) -> Insert<'c, 'a, Postgres, T, E, X, R, Conflicted>
         where
             A: IntoArgs<ConflictTarget<'a>> {
-        self.statement
-            .on_conflict_ext_mut_or(|| OnConflict::new())
-            .set_conflict(targets.into_args());
-
+        self.statement.conflict_mut().set_conflict(targets.into_args());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -63,18 +60,14 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Postgres, T, E, X, R, Conflicted>
     where
         T: Model<DB = Postgres> {
     pub fn do_nothing(mut self) -> Self {
-        self.statement.on_conflict_ext_mut_or(|| OnConflict::new()).set_ignore();
-
+        self.statement.conflict_mut().set_ignore();
         self
     }
 
     pub fn update<A>(mut self, assignments: A) -> Self
         where
             A: IntoArgs<Assignment<'a, Postgres, X>> {
-        self.statement
-            .on_conflict_ext_mut_or(|| OnConflict::new())
-            .set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
-
+        self.statement.conflict_mut().set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
         self
     }
 }

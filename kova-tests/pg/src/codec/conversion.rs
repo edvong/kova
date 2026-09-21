@@ -32,14 +32,11 @@ impl<'a> Decode<'a, Engine, AppCodec> for Uuid {
             Value::Blob(b) => Uuid::from_slice(&b).map_err(|e| Error::ParseError(e.to_string())),
             // Compatibility fallback: in case there is old data in the database that is stored strings
             Value::Text(t) => Uuid::parse_str(&t).map_err(|e| Error::ParseError(e.to_string())),
-            _ => Err(Error::TypeMismatch(
-                "Expected Blob (or Text) for Uuid".into(),
-            )),
+            _ => Err(Error::TypeMismatch("Expected Blob (or Text) for Uuid".into())),
         }
     }
 }
 bind_type!(AppCodec, Uuid);
-
 
 impl<'a> Encode<'a, Engine, AppCodec> for Url {
     fn encode(self) -> Result<Value<'a>> {
@@ -65,7 +62,6 @@ impl<'a> Decode<'a, Engine, AppCodec> for Url {
 }
 bind_type!(AppCodec, Url);
 
-
 impl<'a> Encode<'a, Engine, AppCodec> for DateTime<Utc> {
     fn encode(self) -> Result<Value<'a>> {
         Ok(Value::Int8(self.timestamp_millis()))
@@ -88,7 +84,6 @@ impl<'a> Decode<'a, Engine, AppCodec> for DateTime<Utc> {
 }
 bind_type!(AppCodec, DateTime<Utc>);
 
-
 impl<'a> Encode<'a, Engine, AppCodec> for Timestamp {
     fn encode(self) -> Result<Value<'a>> {
         Ok(Value::Text(Cow::Owned(self.to_string())))
@@ -105,14 +100,11 @@ impl<'a> Decode<'a, Engine, AppCodec> for Timestamp {
     fn decode(value: Value<'a>) -> Result<Self> {
         match value {
             Value::Text(t) => Timestamp::from_str(&t).map_err(|e| Error::ParseError(e.to_string())),
-            _ => Err(Error::TypeMismatch(
-                "Expected Text for Jiff Timestamp".into(),
-            )),
+            _ => Err(Error::TypeMismatch("Expected Text for Jiff Timestamp".into())),
         }
     }
 }
 bind_type!(AppCodec, Timestamp);
-
 
 impl<'a> Encode<'a, Engine, AppCodec> for HashMap<String, String> {
     fn encode(self) -> Result<Value<'a>> {

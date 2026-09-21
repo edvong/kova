@@ -22,11 +22,7 @@ fn compile_check_select() {
         .columns(CountAll)
         .columns(User::name)
         .columns(Sum(Order::amount))
-        .columns((
-            User::id,
-            Sum(Order::amount),
-            Count(User::id).alias(User::id),
-        ))
+        .columns((User::id, Sum(Order::amount), Count(User::id).alias(User::id)))
         .columns((
             User::id,
             Order::amount,
@@ -97,10 +93,8 @@ async fn compile_check_load_endpoints() -> Result<()> {
     let _optional_amounts = client.select::<User>().load_in::<Option<f64>>().await?;
 
     // Endpoint 5: Extract giant strongly-typed Tuple
-    let _complex_rows = client
-        .select::<User>()
-        .load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>()
-        .await?;
+    let _complex_rows =
+        client.select::<User>().load_in::<(i32, String, Option<f64>, bool, Vec<u8>)>().await?;
 
     Ok(())
 }

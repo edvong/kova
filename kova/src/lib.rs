@@ -32,7 +32,7 @@ pub mod dsl {
     pub use kova_core::dsl::{Column, Condition, Identifier};
 
     #[cfg(feature = "pg")]
-    pub use kova_pg::dsl::{LockMode, Subselect, WaitPolicy};
+    pub use kova_pg::dsl::{Constraint, LockMode, Subselect, WaitPolicy};
 
     #[cfg(feature = "sqlite")]
     pub use kova_sqlite::dsl::Subselect;
@@ -55,8 +55,8 @@ pub mod dsl {
 
         #[cfg(feature = "sqlite")]
         pub use kova_sqlite::dsl::func::{
-            GroupConcat, Json, JsonExtract, JsonGroupArray, JsonObject, JsonbExtract, JsonbGroupArray,
-            JsonbObject, Bm25, Highlight, Snippet,
+            Bm25, GroupConcat, Highlight, Json, JsonExtract, JsonGroupArray, JsonObject,
+            JsonbExtract, JsonbGroupArray, JsonbObject, Snippet,
         };
     }
 }

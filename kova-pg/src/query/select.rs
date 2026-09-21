@@ -1,4 +1,4 @@
-use crate::dsl::{LockItem, LockMode, Locking, WaitPolicy};
+use crate::dsl::{LockItem, LockMode, WaitPolicy};
 use crate::query::exec::fetch_rows;
 use crate::types::Postgres;
 use deadpool_postgres::GenericClient;
@@ -82,20 +82,20 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Postgres, T, E, X>
     pub fn lock<M>(mut self, mode: LockMode, wait: Option<WaitPolicy>) -> Self
         where
             M: Model<DB = Postgres> {
-        let ext = self.statement.locking_ext_mut_or_with(|| Locking::default());
-        ext.locks.push(LockItem { mode, tables: vec![M::TABLE_NAME], wait });
-
+        self.statement.locking_mut().locks.push(LockItem {
+            mode,
+            tables: vec![M::TABLE_NAME],
+            wait,
+        });
         self
     }
 
     pub fn lock_all(mut self, mode: LockMode, wait: Option<WaitPolicy>) -> Self {
-        let ext = self.statement.locking_ext_mut_or_with(|| Locking::default());
-        ext.locks.push(LockItem {
-            mode,
-            tables: vec![], // Empty represents lock globally
-            wait,
-        });
-
+        self.statement
+            .locking_mut()
+            // Empty represents lock globally
+            .locks
+            .push(LockItem { mode, tables: vec![], wait });
         self
     }
 }
