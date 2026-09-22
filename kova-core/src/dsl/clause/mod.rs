@@ -12,12 +12,13 @@ mod pagination;
 mod projection;
 mod r#where;
 mod with;
+mod from;
 
 pub use {
     bind::Bind,
     conflict::ExtOnConflict,
     group_by::{GroupBy, StandardGroupBy},
-    join::{Join, JoinClause, JoinType},
+    join::{Join, JoinClause, JoinType, JoinConstraint, IntoJoinConstraint},
     locking::ExtLocking,
     order::{
         BuildOrdering, Direction, NullsOrder, OrderByClause, OrderOperand, Ordering,
@@ -38,6 +39,7 @@ pub(crate) use {
     locking::LockingClause,
     projection::ProjectionClause,
     r#where::WhereClause,
+    from::FromClause,
     with::{CteNode, WithClause},
 };
 

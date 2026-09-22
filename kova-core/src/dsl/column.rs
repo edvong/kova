@@ -52,6 +52,21 @@ impl<'a, T, DB: Database> IntoIdentifier<T> for &Column<'a, T, DB> {
     }
 }
 
+impl<'a, T, DB: Database> IntoArg<IdentifierMeta> for Column<'a, T, DB> {
+    #[inline(always)]
+    fn into_arg(self) -> IdentifierMeta {
+        self.meta
+    }
+}
+
+impl<'a, T, DB: Database> IntoArg<IdentifierMeta> for &Column<'a, T, DB> {
+    #[inline(always)]
+    fn into_arg(self) -> IdentifierMeta {
+        self.meta
+    }
+}
+
+
 impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<'a, T, DB> {
     #[inline(always)]
     fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {

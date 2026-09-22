@@ -1,14 +1,15 @@
 use crate::dsl::{
-    Assignment, AssignmentClause, Condition, EraseX, IntoArgs, Projection, ProjectionClause,
-    WhereClause,
+    Assignment, AssignmentClause, Condition, EraseX, FromClause, IntoArgs, IntoRelationList,
+    Projection, ProjectionClause, WhereClause,
 };
 use crate::render::RenderData;
-use crate::types::{Database, Model};
+use crate::types::{Database, Model, Relation};
 use std::marker::PhantomData;
 
 pub struct UpdateStatement<'a, DB: Database, T> {
     pub(crate) assignments: AssignmentClause<'a, DB>,
     pub(crate) r#where: WhereClause<'a, DB>,
+    pub(crate) from: FromClause,
     pub(crate) returning: ProjectionClause<'a, DB>,
     _marker: PhantomData<T>,
 }
@@ -20,6 +21,7 @@ impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
         Self {
             assignments: AssignmentClause::new(),
             r#where: WhereClause::new(),
+            from: FromClause::new(),
             returning: ProjectionClause::new(),
             _marker: PhantomData,
         }
@@ -33,6 +35,10 @@ impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
         where
             A: IntoArgs<Assignment<'a, DB, X>> {
         self.assignments.set(assignments.into_mapped_args(|a| a.erase_x()));
+    }
+
+    pub fn from<R: IntoRelationList>(&mut self) {
+        self.from.set(R::relation_list());
     }
 
     pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {

@@ -5,7 +5,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{Condition, GroupBy, IntoArgs, JoinType, Ordering, Projection};
+use kova_core::dsl::{Condition, GroupBy, IntoArgs, IntoJoinConstraint, JoinType, Ordering, Projection};
 use kova_core::types::{
     Cte, Database, ExecutableAsync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
@@ -39,13 +39,28 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Postgres, T, E, X>
         self
     }
 
-    pub fn inner_join<R: Relation>(mut self, cond: Condition<'a, Postgres, X>) -> Self {
-        self.statement.join::<R, X>(JoinType::Inner, cond);
+    pub fn inner_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+        self.statement.join::<R, X>(JoinType::Inner, constraint);
         self
     }
 
-    pub fn left_join<R: Relation>(mut self, cond: Condition<'a, Postgres, X>) -> Self {
-        self.statement.join::<R, X>(JoinType::Left, cond);
+    pub fn left_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+        self.statement.join::<R, X>(JoinType::Left, constraint);
+        self
+    }
+
+    pub fn right_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+        self.statement.join::<R, X>(JoinType::Right, constraint);
+        self
+    }
+
+    pub fn full_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+        self.statement.join::<R, X>(JoinType::Full, constraint);
+        self
+    }
+
+    pub fn cross_join<R: Relation>(mut self) -> Self {
+        self.statement.cross_join::<R>();
         self
     }
 

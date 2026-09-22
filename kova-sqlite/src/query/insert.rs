@@ -1,11 +1,11 @@
-use crate::dsl::{ConflictTarget, OnConflict};
+use crate::dsl::ConflictTarget;
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::query::{NoReturn, Returning};
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{Assignment, EraseX, IntoArgs, IntoRows, Projection};
+use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoRows, Projection};
 use kova_core::types::{
     Database, ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
@@ -68,6 +68,12 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
 
         self
     }
+
+    pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
+        self.statement.r#where(cond);
+        self
+    }
+
 }
 
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>

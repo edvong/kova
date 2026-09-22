@@ -1,8 +1,8 @@
 use crate::types::Postgres;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    Condition, GroupBy, IntoArgs, IntoIdentifier, IntoOperand, JoinType, OpAst, Operand, Ordering,
-    Projection, ProjectionExpr, SingleArgMarker,
+    Condition, GroupBy, IntoArgs, IntoIdentifier, IntoJoinConstraint, IntoOperand, JoinType, OpAst,
+    Operand, Ordering, Projection, ProjectionExpr, SingleArgMarker,
 };
 use kova_core::types::{Model, Relation};
 use std::marker::PhantomData;
@@ -26,13 +26,36 @@ impl<'a, T: Model<DB = Postgres>> Subselect<'a, T, Entry> {
 }
 
 impl<'a, T: Model<DB = Postgres>, X> Subselect<'a, T, Chain<X>> {
-    pub fn inner_join<R: Relation>(mut self, cond: Condition<'a, T::DB, X>) -> Self {
-        self.statement.join::<R, X>(JoinType::Inner, cond);
+    pub fn inner_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, T::DB, X>,
+    ) -> Self {
+        self.statement.join::<R, X>(JoinType::Inner, constraint);
         self
     }
 
-    pub fn left_join<R: Relation>(mut self, cond: Condition<'a, T::DB, X>) -> Self {
-        self.statement.join::<R, X>(JoinType::Left, cond);
+    pub fn left_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, T::DB, X>,
+    ) -> Self {
+        self.statement.join::<R, X>(JoinType::Left, constraint);
+        self
+    }
+
+    pub fn right_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, T::DB, X>,
+    ) -> Self {
+        self.statement.join::<R, X>(JoinType::Right, constraint);
+        self
+    }
+
+    pub fn full_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, T::DB, X>,
+    ) -> Self {
+        self.statement.join::<R, X>(JoinType::Full, constraint);
+        self
+    }
+
+    pub fn cross_join<R: Relation>(mut self) -> Self {
+        self.statement.cross_join::<R>();
         self
     }
 

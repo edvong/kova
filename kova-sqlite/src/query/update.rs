@@ -4,7 +4,7 @@ use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::UpdateStatement;
-use kova_core::dsl::{Assignment, Condition, IntoArgs, Projection};
+use kova_core::dsl::{Assignment, Condition, IntoArgs, IntoRelationList, Projection};
 use kova_core::types::{
     Database, ExecutableSync, FromColumn, FromRow, Model, Update as CoreUpdate,
 };
@@ -48,6 +48,11 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Sqlite, T, E, X, NoReturn>
 impl<'c, 'a, T, E, X, R> Update<'c, 'a, Sqlite, T, E, X, R>
     where
         T: Model<DB = Sqlite> {
+    pub fn from<REL: IntoRelationList>(mut self) -> Self {
+        self.statement.from::<REL>();
+        self
+    }
+
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
         self.statement.r#where(cond);
         self

@@ -5,10 +5,8 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::UpdateStatement;
-use kova_core::dsl::{Assignment, Condition, IntoArgs, Projection};
-use kova_core::types::{
-    Database, ExecutableAsync, FromColumn, FromRow, Model, Update as CoreUpdate,
-};
+use kova_core::dsl::{Assignment, Condition, IntoArgs, IntoRelationList, Projection};
+use kova_core::types::{Database, ExecutableAsync, FromColumn, FromRow, Model, Update as CoreUpdate};
 use std::iter::once;
 use std::marker::PhantomData;
 
@@ -49,6 +47,11 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
 impl<'c, 'a, T, E, X, R> Update<'c, 'a, Postgres, T, E, X, R>
     where
         T: Model<DB = Postgres> {
+    pub fn from<REL: IntoRelationList>(mut self) -> Self {
+        self.statement.from::<REL>();
+        self
+    }
+    
     pub fn filter(mut self, cond: Condition<'a, Postgres, X>) -> Self {
         self.statement.r#where(cond);
         self

@@ -6,7 +6,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{Assignment, EraseX, IntoArgs, IntoRows, Projection};
+use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoRows, Projection};
 use kova_core::types::{
     Database, ExecutableAsync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
@@ -68,6 +68,11 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Postgres, T, E, X, R, Conflicted>
         where
             A: IntoArgs<Assignment<'a, Postgres, X>> {
         self.statement.conflict_mut().set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
+        self
+    }
+
+    pub fn filter(mut self, cond: Condition<'a, Postgres, X>) -> Self {
+        self.statement.r#where(cond);
         self
     }
 }

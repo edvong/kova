@@ -7,5 +7,6 @@ mod compile_check_select;
 mod compile_check_update;
 mod models;
 mod view;
+mod compile_check_advanced;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

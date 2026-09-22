@@ -12,6 +12,7 @@ mod operator;
 mod rows;
 
 pub mod statement;
+mod relation;
 
 pub mod func {
     pub use crate::dsl::function::{
@@ -32,6 +33,7 @@ pub use {
     operand::{IntoOperand, OpAst, OpValue, Operand},
     operator::{Operator, StandardOperator},
     rows::{InsertRows, IntoRows},
+    relation::IntoRelationList,
 };
 
 pub trait EraseX {

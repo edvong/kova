@@ -1,8 +1,8 @@
 use crate::dsl::{
     Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause, GroupBy,
-    GroupByClause, HavingClause, IntoArgs, Join, JoinClause, JoinType, LockingClause,
-    OrderByClause, Ordering, PaginationClause, Projection, ProjectionClause, WhereClause,
-    WithClause,
+    GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause, JoinConstraint,
+    JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
+    ProjectionClause, WhereClause, WithClause,
 };
 use crate::render::RenderData;
 use crate::types::{Cte, Database, Relation};
@@ -73,9 +73,21 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.projection.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
-    pub fn join<R: Relation, X>(&mut self, typ: JoinType, cond: Condition<'a, DB, X>) {
-        let join = Join { typ, target_table: R::RELATION_NAME, on: cond.erase_x() };
+    pub fn join<R: Relation, X>(
+        &mut self, typ: JoinType, constraint: impl IntoJoinConstraint<'a, DB, X>,
+    ) {
+        let join =
+            Join { typ, target_table: R::RELATION_NAME, constraint: constraint.into_constraint() };
         self.join.add(join)
+    }
+
+    pub fn cross_join<R: Relation>(&mut self) {
+        let join = Join {
+            typ: JoinType::Cross,
+            target_table: R::RELATION_NAME,
+            constraint: JoinConstraint::None,
+        };
+        self.join.add(join);
     }
 
     pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {
