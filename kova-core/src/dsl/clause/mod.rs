@@ -20,6 +20,7 @@ pub use {
     combine::{SetOperation, SetOperator},
     conflict::ExtOnConflict,
     group_by::{GroupBy, StandardGroupBy},
+    insert::InsertSource,
     join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
     locking::ExtLocking,
     order::{

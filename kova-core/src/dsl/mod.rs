@@ -33,7 +33,7 @@ pub use {
     operand::{IntoOperand, OpAst, OpValue, Operand},
     operator::{Operator, StandardOperator},
     relation::IntoRelationList,
-    rows::{InsertRows, IntoRows},
+    rows::{InsertRows, IntoInsertSource, IntoRows},
 };
 
 pub trait EraseX {

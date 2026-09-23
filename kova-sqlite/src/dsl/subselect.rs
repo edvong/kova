@@ -1,8 +1,9 @@
 use crate::types::Sqlite;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    Condition, GroupBy, IntoArgs, IntoIdentifier, IntoJoinConstraint, IntoOperand, JoinType, OpAst,
-    Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker,
+    Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
+    IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection,
+    ProjectionExpr, SetOperator, SingleArgMarker,
 };
 use kova_core::types::{Model, Relation};
 use std::marker::PhantomData;
@@ -131,5 +132,15 @@ impl<'a, T: Model<DB = Sqlite>, X> IntoSelectStatement<'a, Sqlite, X>
     #[inline(always)]
     fn into_select_statement(self) -> SelectStatement<'a, Sqlite> {
         self.statement
+    }
+}
+
+impl<'a, T, M, X> IntoInsertSource<'a, T::DB, T, X> for Subselect<'a, M, Chain<X>>
+    where
+        T: Model<DB = Sqlite>,
+        M: Model<DB = Sqlite> {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, Sqlite, T> {
+        IntoInsertSource::<'a, T::DB, T, X>::into_source(self.into_select_statement())
     }
 }

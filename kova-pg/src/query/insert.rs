@@ -6,7 +6,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoRows, Projection};
+use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Projection};
 use kova_core::types::{
     Database, ExecutableAsync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
@@ -25,10 +25,10 @@ impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, Postgres, T, E, X>
     for Insert<'c, 'a, Postgres, T, E, X, NoReturn, NoConflict>
     where
         T: Model<DB = Postgres> {
-    fn new<D, M>(executor: &'c Executor<E>, data: D) -> Self
+    fn new<D>(executor: &'c Executor<E>, data: D) -> Self
         where
-            D: IntoRows<'a, T, M> {
-        Self { executor, statement: InsertStatement::new(data.into_rows()), _marker: PhantomData }
+            D: IntoInsertSource<'a, T::DB, T, X> {
+        Self { executor, statement: InsertStatement::new(data), _marker: PhantomData }
     }
 }
 

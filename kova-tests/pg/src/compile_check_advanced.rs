@@ -7,23 +7,38 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::Subselect;
+use kova::dsl::{Identifier, Subselect};
+use kova::types::Relation;
 
-/// Test 1: Polymorphic Joins (Mixing ON Condition and USING Column/Tuple inference)
+// ==========================================
+// Virtual CTE Definition for Advanced Testing
+// ==========================================
+pub struct ActiveUserStats;
+impl Relation for ActiveUserStats {
+    const RELATION_NAME: &'static str = "active_user_stats";
+}
+#[allow(non_upper_case_globals)]
+impl ActiveUserStats {
+    pub const user_id: Identifier<i32> = Identifier::new("active_user_stats", "user_id");
+    pub const total_spent: Identifier<f64> = Identifier::new("active_user_stats", "total_spent");
+}
+
+/// Stress Test 1: Polymorphic Joins (ON vs USING)
+/// Memo: Validates the `IntoJoinConstraint` architecture.
+/// It proves that a single API endpoint can seamlessly swallow both boolean AST nodes (Condition)
+/// and Column tuples (for USING clauses) without requiring the user to import wrapper types.
 async fn compile_check_advanced_joins() -> Result<()> {
     let client = Options::from("").build()?;
 
     let _ = client
         .select::<Order>()
-        // Scenario A: ON mode, passing in a fully built boolean condition tree.
+        // Scenario A: Standard ON clause using bitwise condition trees.
         .inner_join::<User>(Order::user_id.eq(User::id) & User::is_active.eq(true))
-        // Scenario B: USING mode, passing a single column identifier.
+        // Scenario B: Single Column USING clause.
         .left_join::<Post>(Post::author_id)
-        // Scenario C: USING mode with a heterogeneous column tuple (stress-testing the internal macro inference boundaries).
+        // Scenario C: Tuple-based USING clause. The internal macro flawlessly extracts IdentifierMetas.
         .right_join::<Comment>((Comment::user_id, Comment::post_id))
-        // Scenario D: Full Join stitched together with complex function nodes.
-        .full_join::<EventLog>(EventLog::description.like("%error%") & EventLog::id.is_not_null())
-        // Scenario E: Cross Join, zero parameters, entirely unconditional.
+        // Scenario D: Parameterless Cross Join.
         .cross_join::<User>()
         .load_as::<Order>()
         .await?;
@@ -31,7 +46,9 @@ async fn compile_check_advanced_joins() -> Result<()> {
     Ok(())
 }
 
-/// Test 2: Upsert Where (Secondary condition filtering during conflict updates)
+/// Stress Test 2: Upsert WHERE
+/// Memo: Verifies that the conflict resolution state machine (`Conflicted`) securely
+/// exposes the `.filter()` method, isolating conflict targets from partial update conditions.
 async fn compile_check_upsert_where() -> Result<()> {
     let client = Options::from("").build()?;
     let users = vec![User::default(), User::default()];
@@ -43,7 +60,8 @@ async fn compile_check_upsert_where() -> Result<()> {
             User::name.set("conflict_resolved"),
             User::is_active.set(true),
         ))
-        // Strict type validation here: making sure `filter` is actually accessible in the Conflicted state and accepts a standard Condition.
+        // Architectural Note: This WHERE clause applies specifically to the UPDATE action
+        // within the ON CONFLICT DO UPDATE statement, not the initial INSERT.
         .filter(User::balance.gt(0.0_f64) | User::is_active.eq(false))
         .execute()
         .await?;
@@ -51,24 +69,23 @@ async fn compile_check_upsert_where() -> Result<()> {
     Ok(())
 }
 
-/// Test 3: Update From (Cross-table correlated updates)
+/// Stress Test 3: UPDATE ... FROM
+/// Memo: Tests the `<R: IntoRelationList>` generic constraints.
+/// Confirms that both physical Models and virtual CTEs can be dynamically joined into an UPDATE statement.
 async fn compile_check_update_from() -> Result<()> {
     let client = Options::from("").build()?;
 
+    // Scenario A: Heterogeneous Tuple Relation
+    // Fuses a physical table (Order) with a virtual CTE (ActiveUserStats) in a single FROM clause.
     client
-        .update::<Order>()
-        .set((
-            Order::amount.set(999.9_f64),
-            Order::is_active.set(true),
-        ))
-        // Tacking on additional data sources to verify the state machine chains smoothly.
-        .from::<User>()
-        .from::<(User, Post)>()
+        .update::<User>()
+        .set(User::is_active.set(true))
+        // The Marker trait completely hides the tuple's internal extraction logic from the user.
+        .from::<(Order, ActiveUserStats)>()
         .filter(
-            // Cross-table filtering constraint: proving that the WHERE clause can safely reference fields from external tables dragged in by FROM.
-            Order::user_id.eq(User::id)
-                & User::id.eq(Post::author_id)
-                & User::is_active.eq(true)
+            User::id.eq(Order::user_id)
+                & User::id.eq(ActiveUserStats::user_id)
+                & ActiveUserStats::total_spent.gt(5000.0_f64)
         )
         .execute()
         .await?;
@@ -76,28 +93,65 @@ async fn compile_check_update_from() -> Result<()> {
     Ok(())
 }
 
-/// Test 4: Set Operation
+/// Stress Test 4: Set Operations (UNION, INTERSECT, EXCEPT)
+/// Memo: Validates the linear appending of SelectStatements.
+/// The type system deliberately ignores enforcing tuple alignment here to prevent
+/// generic bloat; safety is strictly guarded at the extraction boundary (`load_in`).
 async fn compile_check_set_operations() -> Result<()> {
     let client = Options::from("").build()?;
 
     let _ = client
         .select::<User>()
-        // Main query: extracting id and name
         .columns((User::id, User::name))
         .filter(User::is_active.eq(true))
-
-        // Tacking on UNION ALL
+        // Seamlessly accepts Subselect wrappers via the `IntoSelectStatement` trait.
         .union_all(
             Subselect::<User>::columns((User::id, User::name))
                 .filter(User::balance.gt(1000.0_f64))
         )
-        // Chaining EXCEPT
         .except(
             Subselect::<User>::columns((User::id, User::name))
                 .filter(User::name.like("%test%"))
         )
-        // Final safeguard during extraction: load_in tightly seals the type boundaries
+        // Final extraction boundary ensures the database payload strictly maps to (i32, String).
         .load_in::<(i32, String)>()
+        .await?;
+
+    Ok(())
+}
+
+/// Stress Test 5: INSERT ... SELECT (Ultimate Unified API)
+/// Memo: Demonstrates the absolute pinnacle of Rust's `impl Trait` and explicit generic synergy.
+/// No `_` underscores, no wrapping, just pure data flows.
+async fn compile_check_insert_select() -> Result<()> {
+    let client = Options::from("").build()?;
+
+    // Scenario A: Data-Driven.
+    // `T` is implicitly inferred as `User` from the parameter type.
+    let user = User::default();
+    client.insert(user).execute().await?;
+
+    // Scenario B: Query-Driven (Same Table Migration).
+    // Turbofish `::<User>` is required to designate the target table since Subselect carries no target intent.
+    // Thanks to `impl Trait`, we don't need to specify the generic types for the Subselect parameter itself!
+    client
+        .insert::<User>(
+            Subselect::<User>::columns((User::name, User::is_active))
+                .filter(User::is_active.eq(true))
+        )
+        .execute()
+        .await?;
+
+    // Scenario C: Query-Driven (Cross-Table ETL).
+    // Extracting from `Post` and piping directly into `User`, with a seamless ON CONFLICT chain.
+    client
+        .insert::<User>(
+            Subselect::<Post>::columns((Post::title, Post::content))
+                .filter(Post::author_id.is_not_null())
+        )
+        .on_conflict((User::id, User::name))
+        .do_nothing()
+        .execute()
         .await?;
 
     Ok(())

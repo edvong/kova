@@ -1,13 +1,13 @@
 use crate::dsl::{
-    Condition, EraseX, ExtOnConflict, ExtensionClause, InsertRows, IntoArgs, OnConflictClause,
-    Projection, ProjectionClause, ValuesClause, WhereClause,
+    Condition, EraseX, ExtOnConflict, ExtensionClause, IntoArgs, IntoInsertSource,
+    OnConflictClause, Projection, ProjectionClause, ValuesClause, WhereClause,
 };
 use crate::render::RenderData;
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
 
 pub struct InsertStatement<'a, DB: Database, T> {
-    pub(crate) values: ValuesClause<'a, T>,
+    pub(crate) values: ValuesClause<'a, DB, T>,
     pub(crate) on_conflict: OnConflictClause<'a, DB>,
     pub(crate) returning: ProjectionClause<'a, DB>,
     pub(crate) r#where: WhereClause<'a, DB>,
@@ -17,9 +17,9 @@ pub struct InsertStatement<'a, DB: Database, T> {
 impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
     where
         T: Model<DB = DB> {
-    pub fn new(rows: InsertRows<'a, T>) -> Self {
+    pub fn new<X>(data: impl IntoInsertSource<'a, DB, T, X>) -> Self {
         Self {
-            values: ValuesClause::new(T::COLUMNS_META.to_vec(), rows),
+            values: ValuesClause::new(T::COLUMNS_META.to_vec(), data.into_source()),
             on_conflict: OnConflictClause::new(),
             returning: ProjectionClause::new(),
             r#where: WhereClause::new(),

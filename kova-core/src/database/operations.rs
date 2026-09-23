@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::dsl::IntoRows;
+use crate::dsl::{IntoInsertSource, IntoRows};
 use crate::types::{Database, Delete, Insert, Model, Query, Select, Statement, Update};
 use std::borrow::Cow;
 use std::marker::PhantomData;
@@ -28,12 +28,11 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         <DB::Query<'a> as Query<'a, DB>>::Select::new(&self.executor)
     }
 
-    pub fn insert<'a, T, D, M>(
-        &'c self, data: D,
+    pub fn insert<'a, T>(
+        &'c self, data: impl IntoInsertSource<'a, DB, T, X>,
     ) -> <DB::Query<'a> as Query<'a, DB>>::Insert<'c, T, E, X>
         where
             T: Model<DB = DB>,
-            D: IntoRows<'a, T, M>,
             'a: 'c,
             E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Insert::new(&self.executor, data)

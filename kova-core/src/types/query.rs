@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::dsl::IntoRows;
+use crate::dsl::{IntoInsertSource, IntoRows};
 use crate::types::{Database, Model};
 use std::borrow::Cow;
 
@@ -36,9 +36,9 @@ pub trait Select<'c, 'a, DB: Database, T, E, X> {
 }
 
 pub trait Insert<'c, 'a, DB: Database, T, E, X> {
-    fn new<D, M>(executor: &'c Executor<E>, data: D) -> Self
+    fn new<D>(executor: &'c Executor<E>, data: D) -> Self
         where
-            D: IntoRows<'a, T, M>;
+            D: IntoInsertSource<'a, DB, T, X>;
 }
 
 pub trait Update<'c, 'a, DB: Database, T, E, X> {

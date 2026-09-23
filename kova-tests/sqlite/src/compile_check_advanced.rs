@@ -87,3 +87,21 @@ fn compile_check_set_operations() -> Result<()> {
 
     Ok(())
 }
+
+/// Test 5: INSERT ... SELECT
+fn compile_check_insert_select() -> Result<()> {
+    let client = Options::in_memory().build()?;
+
+    client.insert(User::default()).execute()?;
+
+    client
+        .insert::<User>(
+            Subselect::<Post>::columns((Post::title, Post::content))
+                .filter(Post::author_id.eq(100))
+        )
+        .on_conflict(User::id)
+        .do_nothing()
+        .execute()?;
+
+    Ok(())
+}

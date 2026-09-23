@@ -1,4 +1,4 @@
-use crate::types::Model;
+use crate::types::{Database, Model};
 
 pub trait IntoRows<'a, T, Marker> {
     fn into_rows(self) -> InsertRows<'a, T>;
@@ -54,5 +54,57 @@ impl<'a, T: Model> IntoRows<'a, T, BorrowedManyRows> for &'a [T] {
 impl<'a, T: Model> IntoRows<'a, T, BorrowedManyRows> for &'a Vec<T> {
     fn into_rows(self) -> InsertRows<'a, T> {
         InsertRows::BorrowedMany(self.as_slice())
+    }
+}
+
+// ===========================================================
+
+use crate::dsl::InsertSource;
+use crate::dsl::statement::SelectStatement;
+
+pub trait IntoInsertSource<'a, DB: Database, T, X> {
+    fn into_source(self) -> InsertSource<'a, DB, T>;
+}
+
+impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for T {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, DB, T> {
+        InsertSource::Rows(self.into_rows())
+    }
+}
+
+impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for Vec<T> {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, DB, T> {
+        InsertSource::Rows(self.into_rows())
+    }
+}
+
+impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for &'a T {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, DB, T> {
+        InsertSource::Rows(self.into_rows())
+    }
+}
+
+impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for &'a [T] {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, DB, T> {
+        InsertSource::Rows(self.into_rows())
+    }
+}
+
+impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for &'a Vec<T> {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, DB, T> {
+        InsertSource::Rows(self.into_rows())
+    }
+}
+
+impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X>
+    for SelectStatement<'a, DB> {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, DB, T> {
+        InsertSource::Select(Box::new(self))
     }
 }
