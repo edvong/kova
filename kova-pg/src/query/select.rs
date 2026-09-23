@@ -5,7 +5,9 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{Condition, GroupBy, IntoArgs, IntoJoinConstraint, JoinType, Ordering, Projection};
+use kova_core::dsl::{
+    Condition, GroupBy, IntoArgs, IntoJoinConstraint, JoinType, Ordering, Projection, SetOperator,
+};
 use kova_core::types::{
     Cte, Database, ExecutableAsync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
@@ -39,22 +41,30 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Postgres, T, E, X>
         self
     }
 
-    pub fn inner_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+    pub fn inner_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>,
+    ) -> Self {
         self.statement.join::<R, X>(JoinType::Inner, constraint);
         self
     }
 
-    pub fn left_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+    pub fn left_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>,
+    ) -> Self {
         self.statement.join::<R, X>(JoinType::Left, constraint);
         self
     }
 
-    pub fn right_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+    pub fn right_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>,
+    ) -> Self {
         self.statement.join::<R, X>(JoinType::Right, constraint);
         self
     }
 
-    pub fn full_join<R: Relation>(mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>) -> Self {
+    pub fn full_join<R: Relation>(
+        mut self, constraint: impl IntoJoinConstraint<'a, Postgres, X>,
+    ) -> Self {
         self.statement.join::<R, X>(JoinType::Full, constraint);
         self
     }
@@ -111,6 +121,26 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Postgres, T, E, X>
             // Empty represents lock globally
             .locks
             .push(LockItem { mode, tables: vec![], wait });
+        self
+    }
+
+    pub fn union(mut self, other: impl IntoSelectStatement<'a, Postgres, X>) -> Self {
+        self.statement.combine(SetOperator::Union, other.into_select_statement());
+        self
+    }
+
+    pub fn union_all(mut self, other: impl IntoSelectStatement<'a, Postgres, X>) -> Self {
+        self.statement.combine(SetOperator::UnionAll, other.into_select_statement());
+        self
+    }
+
+    pub fn intersect(mut self, other: impl IntoSelectStatement<'a, Postgres, X>) -> Self {
+        self.statement.combine(SetOperator::Intersect, other.into_select_statement());
+        self
+    }
+
+    pub fn except(mut self, other: impl IntoSelectStatement<'a, Postgres, X>) -> Self {
+        self.statement.combine(SetOperator::Except, other.into_select_statement());
         self
     }
 }

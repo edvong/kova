@@ -18,8 +18,7 @@ impl<'a, DB: Database> JoinClause<'a, DB> {
 pub struct Join<'a, DB: Database> {
     pub typ: JoinType,
     pub target_table: &'static str,
-    pub constraint: JoinConstraint<'a, DB>
-    // pub on: Condition<'a, DB, ()>,
+    pub constraint: JoinConstraint<'a, DB>, // pub on: Condition<'a, DB, ()>,
 }
 
 pub enum JoinConstraint<'a, DB: Database> {
@@ -27,7 +26,6 @@ pub enum JoinConstraint<'a, DB: Database> {
     Using(Vec<IdentifierMeta>),
     None, // For Cross join, no conditions required
 }
-
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum JoinType {
@@ -64,7 +62,6 @@ impl<'a, T, DB: Database, X> IntoJoinConstraint<'a, DB, X> for Column<'a, T, DB>
 //         JoinConstraint::Using(vec![self.meta])
 //     }
 // }
-
 
 macro_rules! impl_into_join_constraint_tuple {
     ( $($T:ident),+ ) => {

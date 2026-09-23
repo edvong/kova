@@ -1,4 +1,7 @@
-use crate::dsl::{Condition, EraseX, ExtOnConflict, ExtensionClause, InsertRows, IntoArgs, OnConflictClause, Projection, ProjectionClause, ValuesClause, WhereClause};
+use crate::dsl::{
+    Condition, EraseX, ExtOnConflict, ExtensionClause, InsertRows, IntoArgs, OnConflictClause,
+    Projection, ProjectionClause, ValuesClause, WhereClause,
+};
 use crate::render::RenderData;
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
@@ -41,5 +44,4 @@ impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
     pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {
         self.r#where.set(cond.erase_x())
     }
-    
 }

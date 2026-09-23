@@ -2,7 +2,7 @@ use crate::types::Postgres;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
     Condition, GroupBy, IntoArgs, IntoIdentifier, IntoJoinConstraint, IntoOperand, JoinType, OpAst,
-    Operand, Ordering, Projection, ProjectionExpr, SingleArgMarker,
+    Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker,
 };
 use kova_core::types::{Model, Relation};
 use std::marker::PhantomData;
@@ -86,6 +86,26 @@ impl<'a, T: Model<DB = Postgres>, X> Subselect<'a, T, Chain<X>> {
 
     pub fn offset(mut self, offset: usize) -> Self {
         self.statement.offset(offset);
+        self
+    }
+
+    pub fn union(mut self, other: impl IntoSelectStatement<'a, T::DB, X>) -> Self {
+        self.statement.combine(SetOperator::Union, other.into_select_statement());
+        self
+    }
+
+    pub fn union_all(mut self, other: impl IntoSelectStatement<'a, T::DB, X>) -> Self {
+        self.statement.combine(SetOperator::UnionAll, other.into_select_statement());
+        self
+    }
+
+    pub fn intersect(mut self, other: impl IntoSelectStatement<'a, T::DB, X>) -> Self {
+        self.statement.combine(SetOperator::Intersect, other.into_select_statement());
+        self
+    }
+
+    pub fn except(mut self, other: impl IntoSelectStatement<'a, T::DB, X>) -> Self {
+        self.statement.combine(SetOperator::Except, other.into_select_statement());
         self
     }
 

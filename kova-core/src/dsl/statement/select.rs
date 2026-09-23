@@ -1,8 +1,8 @@
 use crate::dsl::{
-    Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause, GroupBy,
-    GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause, JoinConstraint,
-    JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
-    ProjectionClause, WhereClause, WithClause,
+    CombineClause, Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
+    GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
+    JoinConstraint, JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
+    ProjectionClause, SetOperator, WhereClause, WithClause,
 };
 use crate::render::RenderData;
 use crate::types::{Cte, Database, Relation};
@@ -19,6 +19,7 @@ pub struct SelectStatement<'a, DB: Database> {
     order_by: OrderByClause<'a, DB>,
     pagination: PaginationClause,
     locking: LockingClause<'a, DB>,
+    combine: CombineClause<'a, DB>,
 }
 
 pub trait IntoSelectStatement<'a, DB: Database, X> {
@@ -49,6 +50,7 @@ impl<'a, DB> SelectStatement<'a, DB>
             order_by: OrderByClause::new(),
             pagination: PaginationClause::new(),
             locking: LockingClause::new(),
+            combine: CombineClause::new(),
         }
     }
 
@@ -122,9 +124,7 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.locking.ext_mut()
     }
 
-    // pub fn locking_ext_mut_or_with<F>(&mut self, f: F) -> &mut ExtLocking<'a, DB>
-    //     where
-    //         F: FnOnce() -> ExtLocking<'a, DB> {
-    //     self.locking.ext_mut_or_with(f)
-    // }
+    pub fn combine(&mut self, operator: SetOperator, statement: SelectStatement<'a, DB>) {
+        self.combine.add(operator, statement);
+    }
 }

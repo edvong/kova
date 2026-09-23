@@ -73,7 +73,6 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
         self.statement.r#where(cond);
         self
     }
-
 }
 
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>

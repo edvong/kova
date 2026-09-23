@@ -1,5 +1,6 @@
 #![allow(unreachable_code, dead_code, unused)]
 
+use kova::dsl::Subselect;
 use crate::Result;
 use crate::codec::models::EventLog;
 use crate::models::comment::Comment;
@@ -57,6 +58,32 @@ fn compile_check_update_from() -> Result<()> {
                 & User::is_active.eq(true)
         )
         .execute()?;
+
+    Ok(())
+}
+
+/// Test 4: Set Operation
+fn compile_check_set_operations() -> Result<()> {
+    let client = Options::from("").build()?;
+
+    let _ = client
+        .select::<User>()
+        // Main query: extracting id and name
+        .columns((User::id, User::name))
+        .filter(User::is_active.eq(true))
+
+        // Tacking on UNION ALL
+        .union_all(
+            Subselect::<User>::columns((User::id, User::name))
+                .filter(User::is_active.eq(false))
+        )
+        // Chaining EXCEPT
+        .except(
+            Subselect::<User>::columns((User::id, User::name))
+                .filter(User::name.like("%test%"))
+        )
+        // Final safeguard during extraction: load_in tightly seals the type boundaries
+        .load_in::<(i32, String)>()?;
 
     Ok(())
 }

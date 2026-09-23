@@ -7,6 +7,7 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
+use kova::dsl::Subselect;
 
 /// Test 1: Polymorphic Joins (Mixing ON Condition and USING Column/Tuple inference)
 async fn compile_check_advanced_joins() -> Result<()> {
@@ -70,6 +71,33 @@ async fn compile_check_update_from() -> Result<()> {
                 & User::is_active.eq(true)
         )
         .execute()
+        .await?;
+
+    Ok(())
+}
+
+/// Test 4: Set Operation
+async fn compile_check_set_operations() -> Result<()> {
+    let client = Options::from("").build()?;
+
+    let _ = client
+        .select::<User>()
+        // Main query: extracting id and name
+        .columns((User::id, User::name))
+        .filter(User::is_active.eq(true))
+
+        // Tacking on UNION ALL
+        .union_all(
+            Subselect::<User>::columns((User::id, User::name))
+                .filter(User::balance.gt(1000.0_f64))
+        )
+        // Chaining EXCEPT
+        .except(
+            Subselect::<User>::columns((User::id, User::name))
+                .filter(User::name.like("%test%"))
+        )
+        // Final safeguard during extraction: load_in tightly seals the type boundaries
+        .load_in::<(i32, String)>()
         .await?;
 
     Ok(())

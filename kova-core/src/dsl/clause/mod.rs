@@ -1,7 +1,9 @@
 mod assignment;
 mod bind;
+mod combine;
 mod conflict;
 mod distinct;
+mod from;
 mod group_by;
 mod having;
 mod insert;
@@ -12,13 +14,13 @@ mod pagination;
 mod projection;
 mod r#where;
 mod with;
-mod from;
 
 pub use {
     bind::Bind,
+    combine::{SetOperation, SetOperator},
     conflict::ExtOnConflict,
     group_by::{GroupBy, StandardGroupBy},
-    join::{Join, JoinClause, JoinType, JoinConstraint, IntoJoinConstraint},
+    join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
     locking::ExtLocking,
     order::{
         BuildOrdering, Direction, NullsOrder, OrderByClause, OrderOperand, Ordering,
@@ -31,15 +33,16 @@ pub use {
 pub(crate) use {
     assignment::AssignmentClause,
     bind::BindClause,
+    combine::CombineClause,
     conflict::OnConflictClause,
     distinct::DistinctClause,
+    from::FromClause,
     group_by::GroupByClause,
     having::HavingClause,
     insert::ValuesClause,
     locking::LockingClause,
     projection::ProjectionClause,
     r#where::WhereClause,
-    from::FromClause,
     with::{CteNode, WithClause},
 };
 
