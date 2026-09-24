@@ -6,6 +6,7 @@ impl kova_core::types::Extension<'_> for Extension {
     type Column<'c, T: 'c> = ExtColumn<'c, T>;
     type Operator<'o> = ExtOperator<'o>;
     type Function<'t> = ExtFunction<'t>;
+    type TableFunction<'t> = ();
     type OrderOperand = ();
     type Assignment<'t> = ExtAssignment;
     type GroupBy = ();

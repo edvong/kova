@@ -17,10 +17,15 @@ pub mod func {
     pub use crate::dsl::function::JsonbExtract;
     pub use crate::dsl::function::JsonbGroupArray;
     pub use crate::dsl::function::JsonbObject;
+    
+    pub use crate::dsl::function::ExtTableFunction;
 
     pub use crate::dsl::function::Bm25;
     pub use crate::dsl::function::Highlight;
     pub use crate::dsl::function::Snippet;
+
+    pub use crate::dsl::function::{JsonEach, JsonEachSchema, JSON_EACH_DEFAULT};
+    pub use crate::dsl::function::{JsonTree, JsonTreeSchema, JSON_TREE_DEFAULT};
 }
 
 pub(crate) use {

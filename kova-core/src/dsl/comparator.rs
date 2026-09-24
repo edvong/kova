@@ -128,14 +128,26 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {
-        self.list_op(values, StandardOperator::In)
+        self.list_op(values, StandardOperator::InList)
     }
 
     pub fn not_in_list<I, V, K, X>(self, values: I) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {
-        self.list_op(values, StandardOperator::NotIn)
+        self.list_op(values, StandardOperator::NotInList)
+    }
+
+    pub fn in_select<V, Target, K, X>(self, v: V) -> Condition<'a, DB, X>
+        where
+            V: IntoOperand<'a, Target, DB, K, X> {
+        self.binary_op(v, StandardOperator::InSelect)
+    }
+
+    pub fn not_in_select<V, Target, K, X>(self, v: V) -> Condition<'a, DB, X>
+        where
+            V: IntoOperand<'a, Target, DB, K, X> {
+        self.binary_op(v, StandardOperator::NotInSelect)
     }
 
     pub fn like<V, K, X>(self, v: V) -> Condition<'a, DB, X>

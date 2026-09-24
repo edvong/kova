@@ -1,17 +1,12 @@
 #![allow(unreachable_code, dead_code, unused)]
 
 use crate::Result;
-use crate::models::comment::Comment;
 use crate::models::order::Order;
-use crate::models::post::Post;
 use crate::models::user::User;
-use crate::view::post_view::{CommentDto, PostView};
 use kova::Options;
-use kova::dsl::func::{
-    Abs, Avg, CountAll, JsonbAgg, JsonbObject, Length, Lower, Max, Min, Sum, Upper,
-};
+use kova::dsl::func::{Abs, Avg, Length, Lower, Max, Min, Star, Sum, Upper};
 use kova::dsl::func::{ArrayAgg, Count};
-use kova::dsl::{LockMode, Subselect, WaitPolicy};
+use kova::dsl::{LockMode, WaitPolicy};
 
 fn compile_check_select() {
     let client = Options::from("").tls(|| unimplemented!()).build().unwrap();
@@ -19,7 +14,7 @@ fn compile_check_select() {
     client
         .select::<User>()
         // Stress test IntoArgs<Projection> polymorphic tuple: standard column + aggregate function + alias extension + constant
-        .columns(CountAll)
+        .columns(Count(Star))
         .columns(User::name)
         .columns(Sum(Order::amount))
         .columns((User::id, Sum(Order::amount), Count(User::id).alias(User::id)))

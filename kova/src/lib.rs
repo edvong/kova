@@ -47,7 +47,7 @@ pub mod dsl {
 
     pub mod func {
         pub use kova_core::dsl::func::{
-            Abs, Avg, Count, CountAll, FrameBound, FrameType, Length, Lower, Max, Min, Sum, Upper,
+            Abs, Avg, Count, Star, FrameBound, FrameType, Length, Lower, Max, Min, Sum, Upper,
         };
 
         #[cfg(feature = "pg")]
@@ -60,6 +60,8 @@ pub mod dsl {
         pub use kova_sqlite::dsl::func::{
             Bm25, GroupConcat, Highlight, Json, JsonExtract, JsonGroupArray, JsonObject,
             JsonbExtract, JsonbGroupArray, JsonbObject, Snippet,
+            JsonEach, JsonEachSchema, JSON_EACH_DEFAULT,
+            JsonTree, JsonTreeSchema, JSON_TREE_DEFAULT,
         };
     }
 }

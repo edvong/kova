@@ -38,8 +38,11 @@ pub enum StandardOperator<'a, DB: Database> {
     Between(Operand<'a, DB>, Operand<'a, DB>, Operand<'a, DB>),
     NotBetween(Operand<'a, DB>, Operand<'a, DB>, Operand<'a, DB>),
 
-    In(Operand<'a, DB>, Vec<Operand<'a, DB>>),
-    NotIn(Operand<'a, DB>, Vec<Operand<'a, DB>>),
+    InList(Operand<'a, DB>, Vec<Operand<'a, DB>>),
+    NotInList(Operand<'a, DB>, Vec<Operand<'a, DB>>),
+
+    InSelect(Operand<'a, DB>, Operand<'a, DB>),
+    NotInSelect(Operand<'a, DB>, Operand<'a, DB>),
 
     Like(Operand<'a, DB>, Operand<'a, DB>),
     NotLike(Operand<'a, DB>, Operand<'a, DB>),

@@ -14,6 +14,10 @@ pub trait Extension<'a>: Sized {
         where
             Self: 't;
 
+    type TableFunction<'t>
+        where
+            Self: 't;
+
     type OrderOperand;
 
     type Assignment<'t>

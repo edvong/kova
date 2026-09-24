@@ -16,7 +16,7 @@ pub mod statement;
 
 pub mod func {
     pub use crate::dsl::function::{
-        Abs, Avg, Count, CountAll, FrameBound, FrameType, Function, IntoFunction, Length, Lower,
+        Abs, Avg, Count, Star, FrameBound, FrameType, Function, IntoFunction, Length, Lower,
         Max, Min, Sum, Upper, Window,
     };
 }

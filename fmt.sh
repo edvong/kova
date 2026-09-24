@@ -16,6 +16,7 @@ struct_lit_width = 100
 fn_params_layout = "Compressed"
 # where_single_line = true
 brace_style = "PreferSameLine"
+ignore = ["build.rs"]
 EOF
 
 # Cleanup the temp config file on exit, error, or interrupt (Ctrl+C)

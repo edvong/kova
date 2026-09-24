@@ -1,10 +1,10 @@
-mod aggregate;
-mod scalar;
 mod window;
 
+#[rustfmt::skip]
+mod standard;
+
 pub use crate::dsl::function::window::{FrameBound, FrameType, Window};
-pub use aggregate::*;
-pub use scalar::*;
+pub use standard::*;
 
 use crate::dsl::Component;
 use crate::dsl::component::WithComponent;
@@ -44,6 +44,12 @@ pub enum StandardFunction<'a, DB: Database> {
     Abs(IdentifierMeta),
 
     Window(Box<Window<'a, DB, ()>>),
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Quantifier {
+    All,
+    Distinct,
 }
 
 pub trait IntoFunction<'a, DB: Database>: Sized {

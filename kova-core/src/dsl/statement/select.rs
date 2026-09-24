@@ -2,14 +2,14 @@ use crate::dsl::{
     CombineClause, Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
     GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
     JoinConstraint, JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
-    ProjectionClause, SetOperator, WhereClause, WithClause,
+    ProjectionClause, SetOperator, TableClause, TableItem, WhereClause, WithClause,
 };
 use crate::render::RenderData;
 use crate::types::{Cte, Database, Relation};
 
 pub struct SelectStatement<'a, DB: Database> {
     with: WithClause<'a, DB>,
-    table: &'static str,
+    from: TableClause<'a, DB>,
     distinct: DistinctClause,
     projection: ProjectionClause<'a, DB>,
     join: JoinClause<'a, DB>,
@@ -40,7 +40,7 @@ impl<'a, DB> SelectStatement<'a, DB>
     pub fn new(table: &'static str) -> Self {
         Self {
             with: WithClause::new(),
-            table,
+            from: TableClause::new_with(table),
             distinct: DistinctClause::new(),
             projection: ProjectionClause::new(),
             join: JoinClause::new(),
@@ -59,6 +59,10 @@ impl<'a, DB> SelectStatement<'a, DB>
         // let mut ctx = SelectContext::new(&mut data);
         // self.render(&mut ctx);
         data
+    }
+
+    pub fn from<A: IntoArgs<TableItem<'a, DB>>>(&mut self, items: A) {
+        self.from.extend(items.into_args());
     }
 
     pub fn with<C: Cte>(&mut self, statement: SelectStatement<'a, DB>) {

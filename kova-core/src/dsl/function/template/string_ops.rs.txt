@@ -1,0 +1,13 @@
+impl<'a, T, DB: Database> {NAME}<Column<'a, T, DB>> {
+    pub fn like<V, K, X>(self, v: V) -> Condition<'a, DB, X>
+        where
+            V: IntoOperand<'a, String, DB, K, X> {
+        self.into_comparator().like(v)
+    }
+
+    pub fn not_like<V, K, X>(self, v: V) -> Condition<'a, DB, X>
+        where
+            V: IntoOperand<'a, String, DB, K, X> {
+        self.into_comparator().not_like(v)
+    }
+}

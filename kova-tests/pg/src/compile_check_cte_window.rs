@@ -4,10 +4,7 @@ use crate::Result;
 use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::func::{
-    Count, CountAll, CumeDist, DenseRank, FrameBound, Lag, Lead, Ntile, PercentRank, Rank,
-    RowNumber, Sum,
-};
+use kova::dsl::func::{Count, CumeDist, DenseRank, FrameBound, Lag, Lead, Ntile, PercentRank, Rank, RowNumber, Star, Sum};
 use kova::dsl::{Identifier, Subselect};
 use kova::types::{Cte, Relation};
 
@@ -43,7 +40,7 @@ async fn compile_check_window_functions() -> Result<()> {
             Order::id,
             Order::user_id,
             // Scenario A: Basic partition agg (COUNT(*) OVER (PARTITION BY user_id))
-            CountAll.over().partition_by(Order::user_id).alias(TopSpender::order_count),
+            Count(Star).over().partition_by(Order::user_id).alias(TopSpender::order_count),
             // Scenario B: Partition + Order for rolling accumulation (SUM(amount) OVER (...))
             Sum(Order::amount)
                 .over()
@@ -74,7 +71,7 @@ async fn compile_check_cte_and_subquery() -> Result<()> {
                 Order::user_id,
                 Sum(Order::amount).alias(Order::amount),
                 Sum(Order::amount).alias(TopSpender::total_amount),
-                CountAll.alias(TopSpender::order_count),
+                Count(Star).alias(TopSpender::order_count),
             ))
             .group_by(Order::user_id)
             .having(Sum(Order::amount).gt(100.0_f64)),

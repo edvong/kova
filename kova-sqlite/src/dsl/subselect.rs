@@ -1,10 +1,6 @@
 use crate::types::Sqlite;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{
-    Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
-    IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection,
-    ProjectionExpr, SetOperator, SingleArgMarker,
-};
+use kova_core::dsl::{Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker, TableItem};
 use kova_core::types::{Model, Relation};
 use std::marker::PhantomData;
 
@@ -27,6 +23,11 @@ impl<'a, T: Model<DB = Sqlite>> Subselect<'a, T, Entry> {
 }
 
 impl<'a, T: Model<DB = Sqlite>, X> Subselect<'a, T, Chain<X>> {
+    pub fn from<A: IntoArgs<TableItem<'a, Sqlite>>>(mut self, item: A) -> Self {
+        self.statement.from(item);
+        self
+    }
+
     pub fn inner_join<R: Relation>(
         mut self, constraint: impl IntoJoinConstraint<'a, T::DB, X>,
     ) -> Self {

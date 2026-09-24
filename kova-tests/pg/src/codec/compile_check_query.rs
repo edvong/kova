@@ -7,7 +7,7 @@ use chrono::{DateTime, Utc};
 use jiff::Timestamp;
 use kova::Options;
 use kova::dsl::LockMode;
-use kova::dsl::func::CountAll;
+use kova::dsl::func::{Count, Star};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
@@ -85,7 +85,7 @@ async fn compile_check_custom_types() -> Result<()> {
             EventLog::website,
             EventLog::created_at,
             EventLog::updated_at,
-            CountAll,
+            Count(Star),
         ))
         .group_by((EventLog::id, EventLog::website, EventLog::created_at, EventLog::updated_at))
         .order_by(EventLog::created_at.desc())

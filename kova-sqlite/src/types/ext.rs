@@ -1,3 +1,4 @@
+use crate::dsl::func::ExtTableFunction;
 use crate::dsl::{ExtAssignment, ExtColumn, ExtFunction, ExtOperator, OnConflict};
 use kova_core::types::Extension;
 
@@ -7,6 +8,7 @@ impl Extension<'_> for SqliteExtension {
     type Column<'a, T: 'a> = ExtColumn<T>;
     type Operator<'a> = ExtOperator<'a>;
     type Function<'a> = ExtFunction<'a>;
+    type TableFunction<'t> = ExtTableFunction<'t>;
     type OrderOperand = ();
     type Assignment<'t> = ExtAssignment;
     type GroupBy = ();

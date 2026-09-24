@@ -3,7 +3,7 @@ mod bind;
 mod combine;
 mod conflict;
 mod distinct;
-mod from;
+mod table;
 mod group_by;
 mod having;
 mod insert;
@@ -29,6 +29,7 @@ pub use {
     },
     pagination::PaginationClause,
     projection::{BuildProjection, Projection, ProjectionExpr},
+    table::{TableItem},
 };
 
 pub(crate) use {
@@ -37,13 +38,13 @@ pub(crate) use {
     combine::CombineClause,
     conflict::OnConflictClause,
     distinct::DistinctClause,
-    from::FromClause,
     group_by::GroupByClause,
     having::HavingClause,
     insert::ValuesClause,
     locking::LockingClause,
     projection::ProjectionClause,
     r#where::WhereClause,
+    table::TableClause,
     with::{CteNode, WithClause},
 };
 

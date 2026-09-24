@@ -5,6 +5,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
     Condition, GroupBy, IntoArgs, IntoJoinConstraint, JoinType, Ordering, Projection, SetOperator,
+    TableItem,
 };
 use kova_core::types::{
     Cte, Database, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
@@ -31,6 +32,11 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
         T: Model<DB = Sqlite> {
     pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
         self.statement.with::<C>(query.into_select_statement());
+        self
+    }
+
+    pub fn from<A: IntoArgs<TableItem<'a, Sqlite>>>(mut self, item: A) -> Self {
+        self.statement.from(item);
         self
     }
 

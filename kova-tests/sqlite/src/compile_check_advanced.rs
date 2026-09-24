@@ -1,5 +1,6 @@
 #![allow(unreachable_code, dead_code, unused)]
 
+use kova::dsl::func::{JsonEach, JsonTree};
 use kova::dsl::Subselect;
 use crate::Result;
 use crate::codec::models::EventLog;
@@ -8,6 +9,7 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
+use crate::codec::conversion::AppCodec;
 
 /// Test 1: Polymorphic Joins (Seamlessly switching between ON and USING)
 fn compile_check_advanced_joins() -> Result<()> {
@@ -102,6 +104,90 @@ fn compile_check_insert_select() -> Result<()> {
         .on_conflict(User::id)
         .do_nothing()
         .execute()?;
+
+    Ok(())
+}
+
+/// Stress Test 6: Table-Valued JSON Functions (json_each & json_tree)
+/// Memo: Validates the zero-abstraction-leak integration of SQLite's virtual tables.
+/// Ensures that single/double arguments, tuple-based FROM clauses, static schema access,
+/// and Deref-based instance access all compile seamlessly without requiring explicit generics (`::<_>`).
+fn compile_check_sqlite_table_functions() -> Result<()> {
+    let client = Options::in_memory().build()?.codec::<AppCodec>();
+
+    // ==========================================
+    // Scenario 1: Standard Single-Arg & Operator Inheritance
+    // Memo: Tests implicit translation of single `Column` argument.
+    // Also proves that the virtual column `JsonEach::value` inherits dialect-specific operators like `.json_extract()`.
+    // ==========================================
+    let _ = client
+        .select::<EventLog>()
+        .from(JsonEach(EventLog::metadata)) // 1 Arg
+        .columns((
+            EventLog::id,
+            JsonEach::key,
+            JsonEach::value,
+            JsonEach::type_,
+        ))
+        .filter(
+            // Standard operator (eq) on String virtual column
+            JsonEach::type_.eq("object")
+                // Dialect operator (json_extract -> eq) on String virtual column
+                | JsonEach::value.json_extract("$.is_active").eq(true)
+        )
+        // Expected tuple perfectly aligns with the static types defined in JsonEachSchema
+        .load_in::<(uuid::Uuid, String, String, String)>()?;
+
+
+    // ==========================================
+    // Scenario 2: Double-Arg & Tuple-based Multiple Append
+    // Memo: Tests the `(Column, &'static str)` translation escaping the E0207/E0119 traps.
+    // Also proves that `.from()` accepts tuples (IntoArgs) to perform implicit LATERAL JOINs.
+    // ==========================================
+    let _ = client
+        .select::<User>()
+        .from((
+            // Tuple parsing: 2 Args
+            JsonEach((User::name, "$.roles")),
+            // Tuple parsing: 2 Args
+            JsonTree((User::name, "$.permissions"))
+        ))
+        .columns((
+            User::id,
+            JsonEach::key,
+            JsonTree::path,
+            JsonTree::parent,
+        ))
+        .filter(
+            // Cross-virtual-table comparisons are fully supported and type-safe
+            JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i32)
+        )
+        .load_in::<(i32, String, String, i32)>()?;
+
+
+    // ==========================================
+    // Scenario 3: Subselect Penetration & Deref Instance Access
+    // Memo: Proves that `Subselect` natively exposes `.from()`.
+    // Also demonstrates the `Deref` magic where we instantiate the wrapper to access schema fields,
+    // which paves the ultimate golden path for the upcoming `.alias("j1")` feature.
+    // ==========================================
+
+    // Instantiating the AST wrapper
+    let virtual_tree = JsonTree((EventLog::metadata, "$.deep_nodes"));
+
+    let _ = client
+        .select::<EventLog>()
+        .filter(
+            EventLog::id.in_select(
+                Subselect::<EventLog>::columns(EventLog::id)
+                    // Injecting into Subselect's FROM clause
+                    .from(JsonTree((EventLog::metadata, "$.deep_nodes")))
+                    // Magic: `virtual_tree.atom` leverages `Deref<Target = JsonTreeSchema>`
+                    // No static namespace used here! Pure instance field access.
+                    .filter(virtual_tree.atom.eq("target_value"))
+            )
+        )
+        .load_as::<EventLog>()?;
 
     Ok(())
 }

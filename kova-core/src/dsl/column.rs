@@ -192,6 +192,18 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         self.as_comparator().not_in_list(values)
     }
 
+    pub fn in_select<V, Target, K, X>(&self, v: V) -> Condition<'a, DB, X>
+        where
+            V: IntoOperand<'a, Target, DB, K, X> {
+        self.as_comparator().in_select(v)
+    }
+
+    pub fn not_in_select<V, Target, K, X>(&self, v: V) -> Condition<'a, DB, X>
+        where
+            V: IntoOperand<'a, Target, DB, K, X> {
+        self.as_comparator().not_in_select(v)
+    }
+
     pub fn like<V, K, X>(&self, v: V) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, T, DB, K, X> {

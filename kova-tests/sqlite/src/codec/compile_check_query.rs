@@ -1,13 +1,13 @@
-use std::collections::HashMap;
-use chrono::{DateTime, Utc};
-use jiff::Timestamp;
-use url::Url;
-use uuid::Uuid;
-use kova::Options;
-use kova::dsl::func::CountAll;
+use crate::Result;
 use crate::codec::conversion::AppCodec;
 use crate::codec::models::EventLog;
-use crate::Result;
+use chrono::{DateTime, Utc};
+use jiff::Timestamp;
+use kova::Options;
+use kova::dsl::func::{Count, Star};
+use std::collections::HashMap;
+use url::Url;
+use uuid::Uuid;
 
 async fn compile_check_custom_types() -> Result<()> {
     let client = Options::from("").build()?.codec::<AppCodec>();
@@ -59,7 +59,7 @@ async fn compile_check_custom_types() -> Result<()> {
             EventLog::website,
             EventLog::created_at,
             EventLog::updated_at,
-            CountAll
+            Count(Star),
         ))
         .group_by((EventLog::id, EventLog::website, EventLog::created_at, EventLog::updated_at))
         .load_in::<(

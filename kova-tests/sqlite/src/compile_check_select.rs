@@ -4,7 +4,7 @@ use crate::Result;
 use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::func::{Abs, Avg, Count, CountAll, Length, Lower, Max, Min, Sum, Upper};
+use kova::dsl::func::{Abs, Avg, Count, Length, Lower, Max, Min, Star, Sum, Upper};
 
 /// Stress Test 1: Select Statements & Deep AST Boundaries
 fn compile_check_sqlite_select() {
@@ -13,7 +13,7 @@ fn compile_check_sqlite_select() {
     client
         .select::<User>()
         // 1. Stress test Tuples up to large sizes, mixed scalar, function, alias, and core functions
-        .columns(CountAll)
+        .columns(Count(Star))
         .columns(User::name)
         .columns((
             User::id,
