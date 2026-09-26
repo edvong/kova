@@ -1,28 +1,18 @@
+use crate::types::meta::SyncIdentifierMeta;
+
 pub trait Extension<'a>: Sized {
-    type Column<'c, T>
-        where
-            T: 'c;
+    type Column<'c, T>: SyncIdentifierMeta where T: 'c; // Self: 'c,
 
-    // Self: 'c,
-
-    type Operator<'o>
-        where
-            Self: 'o;
+    type Operator<'o> where Self: 'o;
 
     // Expression Extension
-    type Function<'t>
-        where
-            Self: 't;
+    type Function<'t> where Self: 't;
 
-    type TableFunction<'t>
-        where
-            Self: 't;
+    type TableFunction<'t> where Self: 't;
 
     type OrderOperand;
 
-    type Assignment<'t>
-        where
-            Self: 't;
+    type Assignment<'t> where Self: 't;
 
     // Clause Extension
     type GroupBy;

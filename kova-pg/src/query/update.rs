@@ -7,19 +7,18 @@ use kova_core::database::Executor;
 use kova_core::dsl::statement::UpdateStatement;
 use kova_core::dsl::{Assignment, Condition, IntoArgs, IntoRelationList, Projection};
 use kova_core::types::{
-    Database, ExecutableAsync, FromColumn, FromRow, Model, Update as CoreUpdate,
+    ExecutableAsync, FromColumn, FromRow, Model, Update as CoreUpdate,
 };
 use std::iter::once;
 use std::marker::PhantomData;
 
-pub struct Update<'c, 'a, DB: Database, T, E, X, R = NoReturn> {
+pub struct Update<'c, 'a, T, E, X, R = NoReturn> {
     executor: &'c Executor<E>,
-    statement: UpdateStatement<'a, DB, T>,
+    statement: UpdateStatement<'a, Postgres, T>,
     _marker: PhantomData<(R, X)>,
 }
 
-impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, Postgres, T, E, X>
-    for Update<'c, 'a, Postgres, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, T, E, X> for Update<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Postgres> {
     fn new(executor: &'c Executor<E>) -> Self {
@@ -27,7 +26,7 @@ impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, Postgres, T, E, X>
     }
 }
 
-impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> Update<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Postgres> {
     pub fn set<A>(mut self, assignments: A) -> Self
@@ -38,7 +37,7 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
         self
     }
 
-    pub fn returning<A>(mut self, cols: A) -> Update<'c, 'a, Postgres, T, E, X, Returning>
+    pub fn returning<A>(mut self, cols: A) -> Update<'c, 'a, T, E, X, Returning>
         where
             A: IntoArgs<Projection<'a, Postgres, X>> {
         self.statement.returning(cols);
@@ -46,7 +45,7 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
     }
 }
 
-impl<'c, 'a, T, E, X, R> Update<'c, 'a, Postgres, T, E, X, R>
+impl<'c, 'a, T, E, X, R> Update<'c, 'a, T, E, X, R>
     where
         T: Model<DB = Postgres> {
     pub fn from<REL: IntoRelationList>(mut self) -> Self {
@@ -60,7 +59,7 @@ impl<'c, 'a, T, E, X, R> Update<'c, 'a, Postgres, T, E, X, R>
     }
 }
 
-impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> Update<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Postgres>,
         E: ExecutableAsync,
@@ -70,7 +69,7 @@ impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, NoReturn>
     }
 }
 
-impl<'c, 'a, T, E, X> Update<'c, 'a, Postgres, T, E, X, Returning>
+impl<'c, 'a, T, E, X> Update<'c, 'a, T, E, X, Returning>
     where
         T: Model<DB = Postgres>,
         E: ExecutableAsync,

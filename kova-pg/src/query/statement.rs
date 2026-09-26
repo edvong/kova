@@ -6,25 +6,25 @@ use kova_core::database::Executor;
 use kova_core::dsl::statement::RawStatement;
 use kova_core::dsl::{Bind, IntoArgs};
 use kova_core::types::{
-    Database, ExecutableAsync, FromColumn, FromRow, Statement as CoreStatement,
+    ExecutableAsync, FromColumn, FromRow, Statement as CoreStatement,
 };
 use std::borrow::Cow;
 use std::iter::once;
 use std::marker::PhantomData;
 
-pub struct Statement<'c, 'a, DB: Database, E, X> {
+pub struct Statement<'c, 'a, E, X> {
     executor: &'c Executor<E>,
-    statement: RawStatement<'a, DB>,
+    statement: RawStatement<'a, Postgres>,
     _marker: PhantomData<X>,
 }
 
-impl<'c, 'a, E, X> CoreStatement<'c, 'a, Postgres, E, X> for Statement<'c, 'a, Postgres, E, X> {
+impl<'c, 'a, E, X> CoreStatement<'c, 'a, E, X> for Statement<'c, 'a, E, X> {
     fn new<S: Into<Cow<'a, str>>>(executor: &'c Executor<E>, sql: S) -> Self {
         Self { executor, statement: RawStatement::new(sql), _marker: PhantomData }
     }
 }
 
-impl<'c, 'a, E, X> Statement<'c, 'a, Postgres, E, X> {
+impl<'c, 'a, E, X> Statement<'c, 'a, E, X> {
     pub fn bind<A>(&mut self, args: A)
         where
             A: IntoArgs<Bind<'a, Postgres>> {
@@ -32,7 +32,7 @@ impl<'c, 'a, E, X> Statement<'c, 'a, Postgres, E, X> {
     }
 }
 
-impl<'c, 'a, E, X> Statement<'c, 'a, Postgres, E, X>
+impl<'c, 'a, E, X> Statement<'c, 'a, E, X>
     where
         E: ExecutableAsync,
         E::Native: GenericClient + Sync {

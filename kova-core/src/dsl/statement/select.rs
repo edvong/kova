@@ -5,6 +5,7 @@ use crate::dsl::{
     ProjectionClause, SetOperator, TableClause, TableItem, WhereClause, WithClause,
 };
 use crate::render::RenderData;
+use crate::type_id;
 use crate::types::{Cte, Database, Relation};
 
 pub struct SelectStatement<'a, DB: Database> {
@@ -61,6 +62,14 @@ impl<'a, DB> SelectStatement<'a, DB>
         data
     }
 
+    pub fn tag_latest_from<Marker: 'static>(&mut self) {
+        self.from.tag_latest(type_id::<Marker>());
+    }
+
+    pub fn tag_latest_join<Marker: 'static>(&mut self) {
+        self.join.tag_latest(type_id::<Marker>());
+    }
+    
     pub fn from<A: IntoArgs<TableItem<'a, DB>>>(&mut self, items: A) {
         self.from.extend(items.into_args());
     }
@@ -79,11 +88,15 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.projection.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
-    pub fn join<R: Relation, X>(
-        &mut self, typ: JoinType, constraint: impl IntoJoinConstraint<'a, DB, X>,
-    ) {
-        let join =
-            Join { typ, target_table: R::RELATION_NAME, constraint: constraint.into_constraint() };
+    pub fn join<R: Relation, C, X>(&mut self, typ: JoinType, constraint: C) 
+        where 
+            C: IntoJoinConstraint<'a, DB, X> {
+        let join = Join { 
+            typ, 
+            target_table: R::RELATION_NAME, 
+            tag: None, 
+            constraint: constraint.into_constraint(), 
+        };
         self.join.add(join)
     }
 
@@ -91,6 +104,7 @@ impl<'a, DB> SelectStatement<'a, DB>
         let join = Join {
             typ: JoinType::Cross,
             target_table: R::RELATION_NAME,
+            tag: None,
             constraint: JoinConstraint::None,
         };
         self.join.add(join);

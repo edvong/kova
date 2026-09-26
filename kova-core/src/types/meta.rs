@@ -14,10 +14,25 @@ impl ColumnMeta {
 pub struct IdentifierMeta {
     pub source: &'static str,
     pub name: &'static str,
+    pub tag: Option<usize>,
 }
 
 impl IdentifierMeta {
     pub const fn new(source: &'static str, name: &'static str) -> Self {
-        Self { source, name }
+        Self { source, name, tag: None }
     }
+
+    #[inline(always)]
+    pub fn with_tag(mut self, tag: usize) -> Self {
+        self.tag = Some(tag);
+        self
+    }
+}
+
+pub trait SyncIdentifierMeta {
+    fn sync(&mut self, meta: IdentifierMeta);
+}
+
+impl SyncIdentifierMeta for () {
+    fn sync(&mut self, _: IdentifierMeta) { unreachable!() }
 }

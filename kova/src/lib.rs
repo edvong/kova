@@ -32,10 +32,7 @@ pub mod dsl {
     pub use kova_core::dsl::{Column, Condition, Identifier};
 
     #[cfg(feature = "pg")]
-    pub use kova_pg::dsl::{Constraint, LockMode, Subselect, WaitPolicy};
-
-    #[cfg(feature = "sqlite")]
-    pub use kova_sqlite::dsl::Subselect;
+    pub use kova_pg::dsl::{Constraint, LockMode, WaitPolicy};
 
     #[doc(hidden)]
     #[cfg(feature = "pg")]

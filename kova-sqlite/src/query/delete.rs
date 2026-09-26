@@ -6,19 +6,18 @@ use kova_core::database::Executor;
 use kova_core::dsl::statement::DeleteStatement;
 use kova_core::dsl::{Condition, IntoArgs, Projection};
 use kova_core::types::{
-    Database, Delete as CoreDelete, ExecutableSync, FromColumn, FromRow, Model,
+    Delete as CoreDelete, ExecutableSync, FromColumn, FromRow, Model,
 };
 use std::iter::once;
 use std::marker::PhantomData;
 
-pub struct Delete<'c, 'a, DB: Database, T, E, X, R = NoReturn> {
+pub struct Delete<'c, 'a, T, E, X, R = NoReturn> {
     executor: &'c Executor<E>,
-    statement: DeleteStatement<'a, DB, T>,
+    statement: DeleteStatement<'a, Sqlite, T>,
     _marker: PhantomData<(X, R)>,
 }
 
-impl<'c, 'a, T, E, X> CoreDelete<'c, 'a, Sqlite, T, E, X>
-    for Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> CoreDelete<'c, 'a, T, E, X> for Delete<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Sqlite> {
     fn new(executor: &'c Executor<E>) -> Self {
@@ -26,10 +25,10 @@ impl<'c, 'a, T, E, X> CoreDelete<'c, 'a, Sqlite, T, E, X>
     }
 }
 
-impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Sqlite> {
-    pub fn returning<A>(mut self, cols: A) -> Delete<'c, 'a, Sqlite, T, E, X, Returning>
+    pub fn returning<A>(mut self, cols: A) -> Delete<'c, 'a, T, E, X, Returning>
         where
             A: IntoArgs<Projection<'a, Sqlite, X>> {
         self.statement.returning(cols);
@@ -37,7 +36,7 @@ impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
     }
 }
 
-impl<'c, 'a, T, E, X, R> Delete<'c, 'a, Sqlite, T, E, X, R>
+impl<'c, 'a, T, E, X, R> Delete<'c, 'a, T, E, X, R>
     where
         T: Model<DB = Sqlite> {
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
@@ -46,7 +45,7 @@ impl<'c, 'a, T, E, X, R> Delete<'c, 'a, Sqlite, T, E, X, R>
     }
 }
 
-impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Sqlite>,
         E: ExecutableSync<Native = rusqlite::Connection> {
@@ -55,7 +54,7 @@ impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, NoReturn>
     }
 }
 
-impl<'c, 'a, T, E, X> Delete<'c, 'a, Sqlite, T, E, X, Returning>
+impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, Returning>
     where
         T: Model<DB = Sqlite>,
         E: ExecutableSync<Native = rusqlite::Connection> {

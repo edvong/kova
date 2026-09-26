@@ -10,14 +10,21 @@ impl<'a, DB: Database> JoinClause<'a, DB> {
         Self { items: Vec::new() }
     }
 
-    pub fn add(&mut self, join: Join<'a, DB>) {
+    pub(crate) fn add(&mut self, join: Join<'a, DB>) {
         self.items.push(join);
+    }
+
+    pub(crate) fn tag_latest(&mut self, tag: usize) {
+        if let Some(item) = self.items.last_mut() {
+            item.tag = Some(tag);
+        }
     }
 }
 
 pub struct Join<'a, DB: Database> {
     pub typ: JoinType,
     pub target_table: &'static str,
+    pub tag: Option<usize>,
     pub constraint: JoinConstraint<'a, DB>, // pub on: Condition<'a, DB, ()>,
 }
 

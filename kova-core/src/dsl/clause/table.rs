@@ -18,13 +18,13 @@ pub struct TableClause<'a, DB: Database> {
 // }
 
 pub enum TableItem<'a, DB: Database> {
-    Table(&'static str),
-    Function(TableFunction<'a, DB>),
+    Table(&'static str, Option<usize>),
+    Function(TableFunction<'a, DB>, Option<usize>),
 }
 
 impl<'a, DB: Database> TableClause<'a, DB> {
     pub(crate) fn new_with(initial: &'static str) -> Self {
-        Self { items: vec![TableItem::Table(initial)] }
+        Self { items: vec![TableItem::Table(initial, None)] }
     }
 
     pub(crate) fn new() -> Self {
@@ -36,11 +36,20 @@ impl<'a, DB: Database> TableClause<'a, DB> {
     }
 
     pub fn add_table(&mut self, table: &'static str) {
-        self.items.push(TableItem::Table(table));
+        self.items.push(TableItem::Table(table, None));
     }
 
     pub fn extend<I: IntoIterator<Item = TableItem<'a, DB>>>(&mut self, iter: I) {
         self.items.extend(iter)
+    }
+
+    pub fn tag_latest(&mut self, tag: usize) {
+        if let Some(item) = self.items.last_mut() {
+            match item {
+                TableItem::Table(_, t) => *t = Some(tag),
+                TableItem::Function(_, t) => *t = Some(tag),
+            }
+        }
     }
 
     // pub fn add_function(&mut self, func: TableFunction<'a, DB>) {

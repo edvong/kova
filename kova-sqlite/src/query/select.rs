@@ -4,132 +4,195 @@ use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    Condition, GroupBy, IntoArgs, IntoJoinConstraint, JoinType, Ordering, Projection, SetOperator,
-    TableItem,
+    Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
+    IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection,
+    ProjectionExpr, SetOperator, SingleArgMarker, TableItem,
 };
 use kova_core::types::{
-    Cte, Database, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
+    Cte, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
 use std::iter::once;
 use std::marker::PhantomData;
 
-pub struct Select<'c, 'a, DB: Database, T, E, X> {
-    pub(crate) executor: &'c Executor<E>,
-    pub(crate) statement: SelectStatement<'a, DB>,
-    _marker: PhantomData<(T, X)>,
+pub struct OuterQuery<'c, E>(PhantomData<&'c E>);
+pub struct InnerQuery;
+
+pub trait Dispatch {
+    type Executor;
+}
+impl<'c, E> Dispatch for OuterQuery<'c, E> {
+    type Executor = &'c Executor<E>;
+}
+impl Dispatch for InnerQuery {
+    type Executor = ();
 }
 
-impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X> for Select<'c, 'a, Sqlite, T, E, X>
+pub struct Normal;
+pub struct JustAddFrom;
+pub struct JustAddJoin;
+
+pub struct Select<'a, T, D: Dispatch, TAG, X> {
+    pub(crate) executor: D::Executor,
+    pub(crate) statement: SelectStatement<'a, Sqlite>,
+    _marker: PhantomData<(T, TAG, X)>,
+}
+
+impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X>
+    for Select<'a, T, OuterQuery<'c, E>, JustAddFrom, X>
     where
         T: Model<DB = Sqlite> {
     fn new(executor: &'c Executor<E>) -> Self {
         Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
+
+    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<TableItem<'a, Sqlite>>) -> Self {
+        let mut s = Self::new(executor);
+        s.statement.from(args);
+        s
+    }
 }
 
-impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
+impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
     where
         T: Model<DB = Sqlite> {
-    pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
+    pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, Normal, X> {
+        self.statement.tag_latest_from::<Marker>();
+        self.into_state()
+    }
+}
+
+impl<'c, 'a, T, E: Dispatch, X> Select<'a, T, E, JustAddJoin, X>
+    where
+        T: Model<DB = Sqlite> {
+    pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, E, Normal, X> {
+        self.statement.tag_latest_join::<Marker>();
+        self.into_state()
+    }
+}
+
+impl<'a, T, D: Dispatch, TAG, X> Select<'a, T, D, TAG, X>
+    where
+        T: Model<DB = Sqlite> {
+    fn into_state<State>(self) -> Select<'a, T, D, State, X> {
+        Select { executor: self.executor, statement: self.statement, _marker: PhantomData }
+    }
+
+    pub fn with<C: Cte>(
+        mut self, query: impl IntoSelectStatement<'a, Sqlite, X>,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.with::<C>(query.into_select_statement());
-        self
+        self.into_state()
     }
 
-    pub fn from<A: IntoArgs<TableItem<'a, Sqlite>>>(mut self, item: A) -> Self {
-        self.statement.from(item);
-        self
-    }
+    // pub fn from<A: IntoArgs<TableItem<'a, Sqlite>>>(mut self, item: A) -> Self {
+    //     self.statement.from(item);
+    //     self
+    // }
 
-    pub fn columns<A: IntoArgs<Projection<'a, Sqlite, X>>>(mut self, cols: A) -> Self {
+    pub fn columns<A: IntoArgs<Projection<'a, Sqlite, X>>>(
+        mut self, cols: A,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.columns(cols);
-        self
+        self.into_state()
     }
 
     pub fn inner_join<R: Relation>(
         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
-    ) -> Self {
-        self.statement.join::<R, X>(JoinType::Inner, constraint);
-        self
+    ) -> Select<'a, T, D, JustAddJoin, X> {
+        self.statement.join::<R, _, X>(JoinType::Inner, constraint);
+        self.into_state()
     }
 
     pub fn left_join<R: Relation>(
         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
-    ) -> Self {
-        self.statement.join::<R, X>(JoinType::Left, constraint);
-        self
+    ) -> Select<'a, T, D, JustAddJoin, X> {
+        self.statement.join::<R, _, X>(JoinType::Left, constraint);
+        self.into_state()
     }
 
     pub fn right_join<R: Relation>(
         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
-    ) -> Self {
-        self.statement.join::<R, X>(JoinType::Right, constraint);
-        self
+    ) -> Select<'a, T, D, JustAddJoin, X> {
+        self.statement.join::<R, _, X>(JoinType::Right, constraint);
+        self.into_state()
     }
 
     pub fn full_join<R: Relation>(
         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
-    ) -> Self {
-        self.statement.join::<R, X>(JoinType::Full, constraint);
-        self
+    ) -> Select<'a, T, D, JustAddJoin, X> {
+        self.statement.join::<R, _, X>(JoinType::Full, constraint);
+        self.into_state()
     }
 
-    pub fn cross_join<R: Relation>(mut self) -> Self {
+    pub fn cross_join<R: Relation>(mut self) -> Select<'a, T, D, JustAddJoin, X> {
         self.statement.cross_join::<R>();
-        self
+        self.into_state()
     }
 
-    pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
+    pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Select<'a, T, D, Normal, X> {
         self.statement.r#where(cond);
-        self
+        self.into_state()
     }
 
-    pub fn group_by<A: IntoArgs<GroupBy<'a, Sqlite, X>>>(mut self, cols: A) -> Self {
+    pub fn group_by<A: IntoArgs<GroupBy<'a, Sqlite, X>>>(
+        mut self, cols: A,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.group_by(cols);
-        self
+        self.into_state()
     }
 
-    pub fn having(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
+    pub fn having(mut self, cond: Condition<'a, Sqlite, X>) -> Select<'a, T, D, Normal, X> {
         self.statement.having(cond);
-        self
+        self.into_state()
     }
 
-    pub fn order_by<A: IntoArgs<Ordering<'a, Sqlite, X>>>(mut self, cols: A) -> Self {
+    pub fn order_by<A: IntoArgs<Ordering<'a, Sqlite, X>>>(
+        mut self, cols: A,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.order_by(cols);
-        self
+        self.into_state()
     }
 
-    pub fn limit(mut self, limit: usize) -> Self {
+    pub fn limit(mut self, limit: usize) -> Select<'a, T, D, Normal, X> {
         self.statement.limit(limit);
-        self
+        self.into_state()
     }
 
-    pub fn offset(mut self, offset: usize) -> Self {
+    pub fn offset(mut self, offset: usize) -> Select<'a, T, D, Normal, X> {
         self.statement.offset(offset);
-        self
+        self.into_state()
     }
 
-    pub fn union(mut self, other: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
+    pub fn union(
+        mut self, other: impl IntoSelectStatement<'a, Sqlite, X>,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.combine(SetOperator::Union, other.into_select_statement());
-        self
+        self.into_state()
     }
 
-    pub fn union_all(mut self, other: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
+    pub fn union_all(
+        mut self, other: impl IntoSelectStatement<'a, Sqlite, X>,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.combine(SetOperator::UnionAll, other.into_select_statement());
-        self
+        self.into_state()
     }
 
-    pub fn intersect(mut self, other: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
+    pub fn intersect(
+        mut self, other: impl IntoSelectStatement<'a, Sqlite, X>,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.combine(SetOperator::Intersect, other.into_select_statement());
-        self
+        self.into_state()
     }
 
-    pub fn except(mut self, other: impl IntoSelectStatement<'a, Sqlite, X>) -> Self {
+    pub fn except(
+        mut self, other: impl IntoSelectStatement<'a, Sqlite, X>,
+    ) -> Select<'a, T, D, Normal, X> {
         self.statement.combine(SetOperator::Except, other.into_select_statement());
-        self
+        self.into_state()
     }
 }
 
-impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
+impl<'c, 'a, T, E, TAG, X> Select<'a, T, OuterQuery<'c, E>, TAG, X>
     where
         T: Model<DB = Sqlite>,
         E: ExecutableSync<Native = rusqlite::Connection> {
@@ -147,5 +210,60 @@ impl<'c, 'a, T, E, X> Select<'c, 'a, Sqlite, T, E, X>
         where
             for<'r> U: FromColumn<'r, Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
+    }
+}
+
+// Inner Query
+
+impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
+    pub fn from<M: Model<DB = Sqlite>>() -> Select<'a, M, InnerQuery, JustAddFrom, X> {
+        Select {
+            executor: (),
+            statement: SelectStatement::new(M::TABLE_NAME),
+            _marker: PhantomData,
+        }
+    }
+
+    pub fn from_mix<M: Model<DB = Sqlite>>(args: impl IntoArgs<TableItem<'a, Sqlite>>)
+        -> Select<'a, M, InnerQuery, JustAddFrom, X> {
+        let mut statement = SelectStatement::new(M::TABLE_NAME);
+        statement.from(args);
+        Select { executor: (), statement, _marker: PhantomData }
+    }
+}
+
+impl<'a, T, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
+    pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, Sqlite, X> {
+        Projection::new(
+            ProjectionExpr::Subselect(Box::new(self.statement)),
+            Some(alias.into_identifier().meta),
+        )
+    }
+}
+
+impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X> {}
+
+impl<'a, T: Model<DB = Sqlite>, TAG, X> IntoOperand<'a, T, Sqlite, OpAst, X>
+    for Select<'a, T, InnerQuery, TAG, X> {
+    fn into_operand(self) -> Operand<'a, Sqlite> {
+        Operand::from_subselect(self.statement)
+    }
+}
+
+impl<'a, T: Model<DB = Sqlite>, TAG, X> IntoSelectStatement<'a, Sqlite, X>
+    for Select<'a, T, InnerQuery, TAG, X> {
+    #[inline(always)]
+    fn into_select_statement(self) -> SelectStatement<'a, Sqlite> {
+        self.statement
+    }
+}
+
+impl<'a, T, M, TAG, X> IntoInsertSource<'a, T::DB, T, X> for Select<'a, M, InnerQuery, TAG, X>
+    where
+        T: Model<DB = Sqlite>,
+        M: Model<DB = Sqlite> {
+    #[inline(always)]
+    fn into_source(self) -> InsertSource<'a, Sqlite, T> {
+        IntoInsertSource::<'a, T::DB, T, X>::into_source(self.into_select_statement())
     }
 }

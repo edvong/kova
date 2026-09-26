@@ -8,5 +8,6 @@ mod compile_check_update;
 mod models;
 mod view;
 mod compile_check_advanced;
+mod compile_check_tag;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

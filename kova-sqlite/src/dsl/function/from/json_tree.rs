@@ -60,6 +60,6 @@ impl<'a, T> IntoArg<TableItem<'a, Sqlite>> for JsonTree<T>
         T: IntoJsonTableArgs<'a> {
     fn into_arg(self) -> TableItem<'a, Sqlite> {
         let args = self.0.into_args();
-        TableItem::Function(ExtTableFunction::JsonTree(args.base, args.path))
+        TableItem::Function(ExtTableFunction::JsonTree(args.base, args.path), None)
     }
 }

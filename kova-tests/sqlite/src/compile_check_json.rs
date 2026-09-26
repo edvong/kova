@@ -9,8 +9,8 @@ use crate::models::user::User;
 use crate::view::post_view::{CommentDto, PostView};
 use crate::Result;
 use kova::Options;
-use kova::dsl::Subselect;
 use kova::dsl::func::{GroupConcat, Json, JsonGroupArray, JsonObject, JsonbGroupArray, JsonbObject};
+use kova::query::Select;
 
 /// Stress Test 1: SQLite-exclusive JSON extractors and extended operators (MATCH, REGEXP)
 fn compile_check_sqlite_json_and_operators() -> Result<()> {
@@ -83,7 +83,8 @@ fn compile_check_sqlite_complex_json_subquery() -> Result<()> {
             // so Rust's serde_json gets standard Text instead of a raw SQLite Blob.
             Json(JsonbObject((User::id, User::name))).alias(PostView::author),
 
-            Subselect::<Comment>::columns(
+            Select::from::<Comment>()
+                .columns(
                 // Memo: Scenario 2 - Deeply nested polymorphic aggregation.
                 // 1. Inner: JsonObject generates Text (purely internal, no Json() wrapper needed here).
                 // 2. Middle: JsonbObject generates Blob, embedding the inner Text seamlessly.

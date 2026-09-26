@@ -8,7 +8,8 @@ use crate::dsl::{
     Assignment, Comparator, IntoArg, OpAst, Operand, OrderOperand, StandardAssignment,
 };
 use crate::dsl::{BuildOrdering, Direction, Ordering, Projection, ProjectionExpr, StandardOperand};
-use crate::types::{Database, Extension, IdentifierMeta};
+use crate::types::{Database, Extension, IdentifierMeta, SyncIdentifierMeta};
+use crate::type_id::type_id;
 use std::marker::PhantomData;
 use std::ops::Deref;
 
@@ -240,5 +241,13 @@ impl<'a, T, DB: Database> Column<'a, T, DB> {
         where
             V: IntoOperand<'a, U, DB, K, X> {
         Assignment::from_std(StandardAssignment::Decrement(self.meta, v.into_operand()))
+    }
+
+    #[inline(always)]
+    pub fn tag<Marker: 'static>(mut self) -> Self {
+        let type_id = type_id::<Marker>();
+        self.meta.with_tag(type_id);
+        self.inner.sync(self.meta);
+        self
     }
 }

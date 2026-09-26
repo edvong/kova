@@ -7,12 +7,18 @@ use kova_core::dsl::{
     Assignment, Column, Condition, Identifier, IntoIdentifier, IntoOperand, Operand, Operator,
     WithComponent,
 };
-use kova_core::types::IdentifierMeta;
+use kova_core::types::{IdentifierMeta, SyncIdentifierMeta};
 use std::marker::PhantomData;
 
 pub struct ExtColumn<'a, T> {
     pub meta: IdentifierMeta,
     pub _marker: PhantomData<&'a T>,
+}
+
+impl<'a, T> SyncIdentifierMeta for ExtColumn<'a, T> {
+    fn sync(&mut self, meta: IdentifierMeta) {
+        self.meta = meta;
+    }
 }
 
 impl<'a, T> IntoIdentifier<T> for ExtColumn<'a, T> {

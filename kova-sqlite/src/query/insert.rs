@@ -7,21 +7,21 @@ use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
 use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Projection};
 use kova_core::types::{
-    Database, ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model,
+    ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
 use std::marker::PhantomData;
 
 pub struct NoConflict;
 pub struct Conflicted;
 
-pub struct Insert<'c, 'a, DB: Database, T, E, X, R = NoReturn, C = NoConflict> {
+pub struct Insert<'c, 'a, T, E, X, R = NoReturn, C = NoConflict> {
     executor: &'c Executor<E>,
-    statement: InsertStatement<'a, DB, T>,
+    statement: InsertStatement<'a, Sqlite, T>,
     _marker: PhantomData<(X, R, C)>,
 }
 
-impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, Sqlite, T, E, X>
-    for Insert<'c, 'a, Sqlite, T, E, X, NoReturn, NoConflict>
+impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, T::DB, T, E, X>
+    for Insert<'c, 'a, T, E, X, NoReturn, NoConflict>
     where
         T: Model<DB = Sqlite> {
     fn new<D>(executor: &'c Executor<E>, data: D) -> Self
@@ -31,10 +31,10 @@ impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, Sqlite, T, E, X>
     }
 }
 
-impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
+impl<'c, 'a, T, E, X, C> Insert<'c, 'a, T, E, X, NoReturn, C>
     where
         T: Model<DB = Sqlite> {
-    pub fn returning<A>(mut self, cols: A) -> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
+    pub fn returning<A>(mut self, cols: A) -> Insert<'c, 'a, T, E, X, Returning, C>
         where
             A: IntoArgs<Projection<'a, Sqlite, X>> {
         self.statement.retuning(cols);
@@ -42,10 +42,10 @@ impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
     }
 }
 
-impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, NoConflict>
+impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, NoConflict>
     where
         T: Model<DB = Sqlite> {
-    pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
+    pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, T, E, X, R, Conflicted>
         where
             A: IntoArgs<ConflictTarget<'a>> {
         self.statement.conflict_mut().set_conflict(targets.into_args());
@@ -53,7 +53,7 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, NoConflict>
     }
 }
 
-impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
+impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, Conflicted>
     where
         T: Model<DB = Sqlite> {
     pub fn do_nothing(mut self) -> Self {
@@ -75,7 +75,7 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, Sqlite, T, E, X, R, Conflicted>
     }
 }
 
-impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
+impl<'c, 'a, T, E, X, C> Insert<'c, 'a, T, E, X, NoReturn, C>
     where
         T: Model<DB = Sqlite>,
         E: ExecutableSync<Native = rusqlite::Connection> {
@@ -84,7 +84,7 @@ impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, NoReturn, C>
     }
 }
 
-impl<'c, 'a, T, E, X, C> Insert<'c, 'a, Sqlite, T, E, X, Returning, C>
+impl<'c, 'a, T, E, X, C> Insert<'c, 'a, T, E, X, Returning, C>
     where
         T: Model<DB = Sqlite>,
         E: ExecutableSync<Native = rusqlite::Connection> {

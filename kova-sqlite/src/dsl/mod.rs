@@ -3,10 +3,8 @@ mod column;
 mod conflict;
 mod function;
 mod operator;
-mod subselect;
 
 pub use column::ExtColumn;
-pub use subselect::Subselect;
 
 pub mod func {
     pub use crate::dsl::function::GroupConcat;

@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::dsl::{IntoInsertSource, IntoRows};
+use crate::dsl::{IntoArgs, IntoInsertSource, TableItem};
 use crate::types::{Database, Model};
 use std::borrow::Cow;
 
@@ -15,17 +15,17 @@ pub trait Query<'a, DB: Database> {
             'a: 'c,
             E: 'c;
 
-    type Update<'c, T: Model<DB = DB>, E, X>: Update<'c, 'a, DB, T, E, X>
+    type Update<'c, T: Model<DB = DB>, E, X>: Update<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;
 
-    type Delete<'c, T: Model<DB = DB>, E, X>: Delete<'c, 'a, DB, T, E, X>
+    type Delete<'c, T: Model<DB = DB>, E, X>: Delete<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;
 
-    type Statement<'c, E, X>: Statement<'c, 'a, DB, E, X>
+    type Statement<'c, E, X>: Statement<'c, 'a, E, X>
         where
             'a: 'c,
             E: 'c;
@@ -33,6 +33,7 @@ pub trait Query<'a, DB: Database> {
 
 pub trait Select<'c, 'a, DB: Database, T, E, X> {
     fn new(executor: &'c Executor<E>) -> Self;
+    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<TableItem<'a, DB>>) -> Self;
 }
 
 pub trait Insert<'c, 'a, DB: Database, T, E, X> {
@@ -41,14 +42,14 @@ pub trait Insert<'c, 'a, DB: Database, T, E, X> {
             D: IntoInsertSource<'a, DB, T, X>;
 }
 
-pub trait Update<'c, 'a, DB: Database, T, E, X> {
+pub trait Update<'c, 'a, T, E, X> {
     fn new(executor: &'c Executor<E>) -> Self;
 }
 
-pub trait Delete<'c, 'a, DB: Database, T, E, X> {
+pub trait Delete<'c, 'a, T, E, X> {
     fn new(executor: &'c Executor<E>) -> Self;
 }
 
-pub trait Statement<'c, 'a, DB: Database, E, X> {
+pub trait Statement<'c, 'a, E, X> {
     fn new<S: Into<Cow<'a, str>>>(executor: &'c Executor<E>, sql: S) -> Self;
 }

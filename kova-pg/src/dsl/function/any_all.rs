@@ -1,5 +1,5 @@
-use crate::dsl::subselect::Chain;
-use crate::dsl::{ExtFunction, Subselect};
+use crate::dsl::ExtFunction;
+use crate::query::{Dispatch, Select};
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{IntoOperand, OpAst, OpValue, Operand, WithComponent};
@@ -37,8 +37,8 @@ impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X> for All<I>
     }
 }
 
-impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X>
-    for Any<Subselect<'a, M, Chain<Target>>>
+impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, OpAst, X>
+    for Any<Select<'a, M, D, TAG, X>>
     where
         M: Model<DB = Postgres> {
     #[inline(always)]
@@ -52,8 +52,8 @@ impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X>
 }
 
 // Same trick applies to All.
-impl<'a, M, Target, X> IntoOperand<'a, Target, Postgres, OpAst, X>
-    for All<Subselect<'a, M, Chain<Target>>>
+impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, OpAst, X>
+    for All<Select<'a, M, D, TAG, X>>
     where
         M: Model<DB = Postgres> {
     #[inline(always)]

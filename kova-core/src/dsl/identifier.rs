@@ -7,6 +7,7 @@ use crate::dsl::{
 };
 use crate::types::{Database, IdentifierMeta};
 use std::marker::PhantomData;
+use crate::type_id::type_id;
 
 pub trait IntoIdentifier<T> {
     fn into_identifier(self) -> Identifier<T>;
@@ -87,16 +88,6 @@ impl<T> Identifier<T> {
 }
 
 impl<T> Identifier<T> {
-    pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Asc))
-    }
-
-    pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Desc))
-    }
-}
-
-impl<T> Identifier<T> {
     pub fn eq<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, T, DB, K, X> {
@@ -169,5 +160,20 @@ impl<T> Identifier<T> {
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, T, DB, K, X> {
         self.into_comparator().not_in_list(values)
+    }
+
+    pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
+        self.build_ordering(Some(Direction::Asc))
+    }
+
+    pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
+        self.build_ordering(Some(Direction::Desc))
+    }
+
+    // For CTE and View
+    #[inline(always)]
+    pub fn tag<Marker: 'static>(mut self) -> Self {
+        self.meta = self.meta.with_tag(type_id::<Marker>());
+        self
     }
 }

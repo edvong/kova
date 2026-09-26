@@ -1,6 +1,7 @@
 mod codec;
 mod conn;
 mod db;
+#[rustfmt::skip]
 mod ext;
 mod meta;
 mod mode;
@@ -17,7 +18,7 @@ pub use {
     },
     db::Database,
     ext::Extension,
-    meta::{ColumnMeta, IdentifierMeta},
+    meta::{ColumnMeta, IdentifierMeta, SyncIdentifierMeta},
     mode::{Async, Mode, Sync},
     model::{Cte, FromRow, Model, Relation},
     query::{Delete, Insert, Query, Select, Statement, Update},

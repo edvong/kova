@@ -6,12 +6,18 @@ use crate::types::Sqlite;
 use kova_core::dsl::{
     Assignment, Column, Condition, IntoOperand, Operand, Operator, WithComponent,
 };
-use kova_core::types::IdentifierMeta;
+use kova_core::types::{IdentifierMeta, SyncIdentifierMeta};
 use std::marker::PhantomData;
 
 pub struct ExtColumn<T> {
     meta: IdentifierMeta,
     _marker: PhantomData<T>,
+}
+
+impl<T> SyncIdentifierMeta for ExtColumn<T> {
+    fn sync(&mut self, meta: IdentifierMeta) {
+        self.meta = meta;
+    }
 }
 
 impl<T> ExtColumn<T> {

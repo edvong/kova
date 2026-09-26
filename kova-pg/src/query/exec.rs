@@ -6,9 +6,7 @@ use kova_core::types::ExecutableAsync;
 use kova_core::{Error, Result};
 use tokio_postgres::types::ToSql;
 
-pub(crate) async fn execute_affected<'a, E, I, D>(
-    executor: &Executor<E>, payload: I,
-) -> Result<u64>
+pub(crate) async fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) -> Result<u64>
     where
         E: ExecutableAsync,
         E::Native: GenericClient + Sync,

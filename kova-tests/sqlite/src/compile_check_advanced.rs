@@ -1,15 +1,15 @@
 #![allow(unreachable_code, dead_code, unused)]
 
-use kova::dsl::func::{JsonEach, JsonTree};
-use kova::dsl::Subselect;
 use crate::Result;
+use crate::codec::conversion::AppCodec;
 use crate::codec::models::EventLog;
 use crate::models::comment::Comment;
 use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
-use crate::codec::conversion::AppCodec;
+use kova::dsl::func::{JsonEach, JsonTree};
+use kova::query::Select;
 
 /// Test 1: Polymorphic Joins (Seamlessly switching between ON and USING)
 fn compile_check_advanced_joins() -> Result<()> {
@@ -35,10 +35,7 @@ fn compile_check_upsert_where() -> Result<()> {
     client
         .insert(&users)
         .on_conflict((User::id, User::name))
-        .update((
-            User::name.set("conflict_resolved"),
-            User::is_active.set(true),
-        ))
+        .update((User::name.set("conflict_resolved"), User::is_active.set(true)))
         .filter(User::is_active.eq(false))
         .execute()?;
 
@@ -55,9 +52,7 @@ fn compile_check_update_from() -> Result<()> {
         .from::<User>()
         .from::<(User, Post)>()
         .filter(
-            Order::user_id.eq(User::id)
-                & User::id.eq(Post::author_id)
-                & User::is_active.eq(true)
+            Order::user_id.eq(User::id) & User::id.eq(Post::author_id) & User::is_active.eq(true),
         )
         .execute()?;
 
@@ -73,16 +68,17 @@ fn compile_check_set_operations() -> Result<()> {
         // Main query: extracting id and name
         .columns((User::id, User::name))
         .filter(User::is_active.eq(true))
-
         // Tacking on UNION ALL
         .union_all(
-            Subselect::<User>::columns((User::id, User::name))
-                .filter(User::is_active.eq(false))
+            Select::from::<User>()
+                .columns((User::id, User::name))
+                .filter(User::is_active.eq(false)),
         )
         // Chaining EXCEPT
         .except(
-            Subselect::<User>::columns((User::id, User::name))
-                .filter(User::name.like("%test%"))
+            Select::from::<User>()
+                .columns((User::id, User::name))
+                .filter(User::name.like("%test%")),
         )
         // Final safeguard during extraction: load_in tightly seals the type boundaries
         .load_in::<(i32, String)>()?;
@@ -98,8 +94,9 @@ fn compile_check_insert_select() -> Result<()> {
 
     client
         .insert::<User>(
-            Subselect::<Post>::columns((Post::title, Post::content))
-                .filter(Post::author_id.eq(100))
+            Select::from::<Post>()
+                .columns((Post::title, Post::content))
+                .filter(Post::author_id.eq(100)),
         )
         .on_conflict(User::id)
         .do_nothing()
@@ -121,23 +118,16 @@ fn compile_check_sqlite_table_functions() -> Result<()> {
     // Also proves that the virtual column `JsonEach::value` inherits dialect-specific operators like `.json_extract()`.
     // ==========================================
     let _ = client
-        .select::<EventLog>()
-        .from(JsonEach(EventLog::metadata)) // 1 Arg
-        .columns((
-            EventLog::id,
-            JsonEach::key,
-            JsonEach::value,
-            JsonEach::type_,
-        ))
+        .select_mix::<EventLog>(JsonEach(EventLog::metadata)) // 1 Arg
+        .columns((EventLog::id, JsonEach::key, JsonEach::value, JsonEach::type_))
         .filter(
             // Standard operator (eq) on String virtual column
             JsonEach::type_.eq("object")
                 // Dialect operator (json_extract -> eq) on String virtual column
-                | JsonEach::value.json_extract("$.is_active").eq(true)
+                | JsonEach::value.json_extract("$.is_active").eq(true),
         )
         // Expected tuple perfectly aligns with the static types defined in JsonEachSchema
         .load_in::<(uuid::Uuid, String, String, String)>()?;
-
 
     // ==========================================
     // Scenario 2: Double-Arg & Tuple-based Multiple Append
@@ -145,25 +135,18 @@ fn compile_check_sqlite_table_functions() -> Result<()> {
     // Also proves that `.from()` accepts tuples (IntoArgs) to perform implicit LATERAL JOINs.
     // ==========================================
     let _ = client
-        .select::<User>()
-        .from((
+        .select_mix::<User>((
             // Tuple parsing: 2 Args
             JsonEach((User::name, "$.roles")),
             // Tuple parsing: 2 Args
-            JsonTree((User::name, "$.permissions"))
+            JsonTree((User::name, "$.permissions")),
         ))
-        .columns((
-            User::id,
-            JsonEach::key,
-            JsonTree::path,
-            JsonTree::parent,
-        ))
+        .columns((User::id, JsonEach::key, JsonTree::path, JsonTree::parent))
         .filter(
             // Cross-virtual-table comparisons are fully supported and type-safe
-            JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i32)
+            JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i32),
         )
         .load_in::<(i32, String, String, i32)>()?;
-
 
     // ==========================================
     // Scenario 3: Subselect Penetration & Deref Instance Access
@@ -179,13 +162,12 @@ fn compile_check_sqlite_table_functions() -> Result<()> {
         .select::<EventLog>()
         .filter(
             EventLog::id.in_select(
-                Subselect::<EventLog>::columns(EventLog::id)
-                    // Injecting into Subselect's FROM clause
-                    .from(JsonTree((EventLog::metadata, "$.deep_nodes")))
+                Select::from_mix::<EventLog>(JsonTree((EventLog::metadata, "$.deep_nodes")))
+                    .columns(EventLog::id)
                     // Magic: `virtual_tree.atom` leverages `Deref<Target = JsonTreeSchema>`
                     // No static namespace used here! Pure instance field access.
-                    .filter(virtual_tree.atom.eq("target_value"))
-            )
+                    .filter(virtual_tree.atom.eq("target_value")),
+            ),
         )
         .load_as::<EventLog>()?;
 

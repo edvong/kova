@@ -1,13 +1,13 @@
 #![allow(unreachable_code, dead_code, unused)]
 
 use crate::Result;
-use crate::codec::models::EventLog;
 use crate::models::comment::Comment;
 use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::{Identifier, Subselect};
+use kova::dsl::Identifier;
+use kova::query::Select;
 use kova::types::Relation;
 
 // ==========================================
@@ -106,11 +106,13 @@ async fn compile_check_set_operations() -> Result<()> {
         .filter(User::is_active.eq(true))
         // Seamlessly accepts Subselect wrappers via the `IntoSelectStatement` trait.
         .union_all(
-            Subselect::<User>::columns((User::id, User::name))
+            Select::from::<User>()
+                .columns((User::id, User::name))
                 .filter(User::balance.gt(1000.0_f64))
         )
         .except(
-            Subselect::<User>::columns((User::id, User::name))
+            Select::from::<User>()
+                .columns((User::id, User::name))
                 .filter(User::name.like("%test%"))
         )
         // Final extraction boundary ensures the database payload strictly maps to (i32, String).
@@ -136,7 +138,8 @@ async fn compile_check_insert_select() -> Result<()> {
     // Thanks to `impl Trait`, we don't need to specify the generic types for the Subselect parameter itself!
     client
         .insert::<User>(
-            Subselect::<User>::columns((User::name, User::is_active))
+            Select::from::<User>()
+                .columns((User::name, User::is_active))
                 .filter(User::is_active.eq(true))
         )
         .execute()
@@ -146,7 +149,8 @@ async fn compile_check_insert_select() -> Result<()> {
     // Extracting from `Post` and piping directly into `User`, with a seamless ON CONFLICT chain.
     client
         .insert::<User>(
-            Subselect::<Post>::columns((Post::title, Post::content))
+            Select::from::<Post>()
+                .columns((Post::title, Post::content))
                 .filter(Post::author_id.is_not_null())
         )
         .on_conflict((User::id, User::name))

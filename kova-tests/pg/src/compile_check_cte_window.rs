@@ -4,8 +4,12 @@ use crate::Result;
 use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::func::{Count, CumeDist, DenseRank, FrameBound, Lag, Lead, Ntile, PercentRank, Rank, RowNumber, Star, Sum};
-use kova::dsl::{Identifier, Subselect};
+use kova::dsl::func::{
+    Count, CumeDist, DenseRank, FrameBound, Lag, Lead, Ntile, PercentRank, Rank, RowNumber, Star,
+    Sum
+};
+use kova::dsl::Identifier;
+use kova::query::Select;
 use kova::types::{Cte, Relation};
 
 // ==========================================
@@ -67,14 +71,15 @@ async fn compile_check_cte_and_subquery() -> Result<()> {
         .select::<User>()
         // Scenario A: Seamless CTE injection. Notice the lack of redundant generics or .as_cte() hacks.
         .with::<TopSpender>(
-            Subselect::<Order>::columns((
-                Order::user_id,
-                Sum(Order::amount).alias(Order::amount),
-                Sum(Order::amount).alias(TopSpender::total_amount),
-                Count(Star).alias(TopSpender::order_count),
-            ))
-            .group_by(Order::user_id)
-            .having(Sum(Order::amount).gt(100.0_f64)),
+            Select::from::<Order>()
+                .columns((
+                    Order::user_id,
+                    Sum(Order::amount).alias(Order::amount),
+                    Sum(Order::amount).alias(TopSpender::total_amount),
+                    Count(Star).alias(TopSpender::order_count),
+                ))
+                .group_by(Order::user_id)
+                .having(Sum(Order::amount).gt(100.0_f64)),
         )
         .columns((
             User::id,

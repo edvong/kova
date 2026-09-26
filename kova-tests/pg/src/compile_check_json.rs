@@ -9,8 +9,8 @@ use crate::models::post::Post;
 use crate::models::user::User;
 use crate::view::post_view::{CommentDto, PostView};
 use kova::Options;
-use kova::dsl::Subselect;
 use kova::dsl::func::{All, Any, JsonbAgg, JsonbObject};
+use kova::query::Select;
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
@@ -25,14 +25,20 @@ async fn compile_check_complex_jsonb_subquery() -> Result<()> {
             Post::title,
             Post::content,
             JsonbObject((User::id, User::name)).alias(PostView::author),
-            Subselect::<Comment>::columns(JsonbAgg(JsonbObject((
-                Comment::id,
-                Comment::content,
-                JsonbObject((User::id, User::name)).alias(CommentDto::commenter),
-            ))))
-            .inner_join::<User>(Comment::user_id.eq(User::id))
-            .filter(Comment::post_id.eq(Post::id))
-            .alias(PostView::comments),
+            Select::from::<Comment>()
+                .columns(
+                    JsonbAgg(
+                        JsonbObject(
+                            (Comment::id,
+                             Comment::content,
+                             JsonbObject((User::id, User::name)).alias(CommentDto::commenter),
+                            )
+                        )
+                    )
+                )
+                .inner_join::<User>(Comment::user_id.eq(User::id))
+                .filter(Comment::post_id.eq(Post::id))
+                .alias(PostView::comments),
         ))
         .inner_join::<User>(Post::author_id.eq(User::id))
         .load_as::<PostView>()
@@ -147,13 +153,13 @@ async fn compile_check_any_all_and_subselect() -> Result<()> {
         .filter(
             // Subquery: SELECT id FROM user WHERE is_active = true
             // Note: The returned Chain<i32> MUST perfectly align with Order::user_id's type (i32)
-            Order::user_id.eq(Any(
-                Subselect::<User>::columns(User::id).filter(User::is_active.eq(true)),
-            ))
+            Order::user_id.eq(
+                Any(Select::from::<User>().columns(User::id).filter(User::is_active.eq(true)))
+            )
                 // Subquery: SELECT amount FROM order WHERE id = 1
                 // Note: The returned Chain<f64> MUST perfectly align with Order::amount's type (f64)
                 | Order::amount.gt(All(
-                Subselect::<Order>::columns(Order::amount).filter(Order::id.eq(1)),
+                Select::from::<Order>().columns(Order::amount).filter(Order::id.eq(1)),
             )),
         )
         .load_as::<Order>()
