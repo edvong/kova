@@ -8,12 +8,16 @@ mod locking;
 mod operator;
 
 pub mod func {
-    pub use crate::dsl::function::ArrayAgg;
-    pub use crate::dsl::function::{All, Any};
     pub use crate::dsl::function::{
+        ExtFunction, ExtTableFunction,
+        All, Any, ArrayAgg, JsonbAgg, JsonbObject,
         CumeDist, DenseRank, Lag, Lead, Ntile, PercentRank, Rank, RowNumber,
+        IntoSeriesOp, GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,       
     };
-    pub use crate::dsl::function::{JsonbAgg, JsonbObject};
+    
+    pub(crate) use crate::dsl::function::{
+        IntoTableFunction,
+    };
 }
 
 pub use {

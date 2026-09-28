@@ -38,7 +38,7 @@ impl<'a, DB: Database> Operand<'a, DB> {
         Operand { inner: OperandNode::Function(f) }
     }
 
-    pub fn from_subselect(s: SelectStatement<'a, DB>) -> Self {
+    pub fn from_select(s: SelectStatement<'a, DB>) -> Self {
         Operand { inner: OperandNode::Subselect(Box::new(s)) }
     }
 

@@ -51,6 +51,7 @@ pub mod dsl {
         pub use kova_pg::dsl::func::{
             All, Any, ArrayAgg, CumeDist, DenseRank, JsonbAgg, JsonbObject, Lag, Lead, Ntile,
             PercentRank, Rank, RowNumber,
+            IntoSeriesOp, GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,
         };
 
         #[cfg(feature = "sqlite")]

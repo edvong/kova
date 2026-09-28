@@ -1,3 +1,4 @@
+use crate::dsl::func::IntoTableFunction;
 use crate::dsl::{LockItem, LockMode, WaitPolicy};
 use crate::query::exec::fetch_rows;
 use crate::types::Postgres;
@@ -5,7 +6,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker, TableItem};
+use kova_core::dsl::{Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker, Table};
 use kova_core::types::{
     Cte, ExecutableAsync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
@@ -43,7 +44,7 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Postgres, T, E, X>
         Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
 
-    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<TableItem<'a, Postgres>>) -> Self {
+    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<Table<'a, Postgres, X>>) -> Self {
         let mut s = Self::new(executor);
         s.statement.from(args);
         s
@@ -235,7 +236,7 @@ impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
         }
     }
 
-    pub fn from_mix<M: Model<DB = Postgres>>(args: impl IntoArgs<TableItem<'a, Postgres>>)
+    pub fn from_mix<M: Model<DB = Postgres>>(args: impl IntoArgs<Table<'a, Postgres, X>>)
         -> Select<'a, M, InnerQuery, JustAddFrom, X> {
         let mut statement = SelectStatement::new(M::TABLE_NAME);
         statement.from(args);
@@ -257,7 +258,7 @@ impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X>
 impl<'a, T: Model<DB = Postgres>, TAG, X> IntoOperand<'a, T, Postgres, OpAst, X>
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Postgres> {
-        Operand::from_subselect(self.statement)
+        Operand::from_select(self.statement)
     }
 }
 
@@ -276,6 +277,18 @@ impl<'a, T, M, TAG, X> IntoInsertSource<'a, T::DB, T, X> for Select<'a, M, Inner
     #[inline(always)]
     fn into_source(self) -> InsertSource<'a, Postgres, T> {
         IntoInsertSource::<'a, T::DB, T, X>::into_source(self.into_select_statement())
+    }
+}
+
+// Others
+
+impl<'a, M, D, TAG, X> IntoTableFunction<'a, X> for Select<'a, M, D, TAG, X>
+    where
+        M: Model<DB = Postgres>,
+        D: Dispatch {
+    #[inline(always)]
+    fn into_table_function(self) -> Operand<'a, Postgres> {
+        Operand::from_select(self.statement)
     }
 }
 

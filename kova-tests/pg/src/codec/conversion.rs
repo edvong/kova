@@ -133,3 +133,16 @@ impl<'a> Decode<'a, Engine, AppCodec> for HashMap<String, String> {
     }
 }
 bind_type!(AppCodec, HashMap<String, String>);
+
+
+impl<'a> Encode<'a, Engine, AppCodec> for Vec<i32> {
+    fn encode(self) -> Result<Value<'a>> {
+        Ok(Value::DynamicWriteOwned(Box::new(self)))
+    }
+}
+
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, Vec<i32>> for &'b Vec<i32> {
+    fn encode(self) -> Result<Value<'a>> {
+        Ok(Value::DynamicWrite(self))
+    }
+}

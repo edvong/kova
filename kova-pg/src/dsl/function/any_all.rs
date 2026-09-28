@@ -44,7 +44,7 @@ impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, OpAst
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, Postgres> {
         // Just extract the underlying SelectStatement directly to build out the subquery Operand.
-        let sub_op = Operand::from_subselect(self.0.statement);
+        let sub_op = Operand::from_select(self.0.statement);
 
         // Then simply wrap it straight into ANY(...)
         Operand::from_function(Function::from_ext(ExtFunction::Any(Box::new(sub_op))))
@@ -58,7 +58,7 @@ impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, OpAst
         M: Model<DB = Postgres> {
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, Postgres> {
-        let sub_op = Operand::from_subselect(self.0.statement);
+        let sub_op = Operand::from_select(self.0.statement);
         Operand::from_function(Function::from_ext(ExtFunction::All(Box::new(sub_op))))
     }
 }

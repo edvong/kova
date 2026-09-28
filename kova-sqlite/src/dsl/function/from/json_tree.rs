@@ -3,9 +3,9 @@
 
 use crate::dsl::ExtColumn;
 use crate::dsl::function::ExtTableFunction;
-use crate::dsl::function::from::IntoJsonTableArgs;
+use crate::dsl::function::from::IntoTableFuncArgs;
 use crate::types::Sqlite;
-use kova_core::dsl::{Column, IntoArg, SingleArgMarker, TableItem};
+use kova_core::dsl::{Column, IntoArg, SingleArgMarker, Table};
 use kova_core::types::IdentifierMeta;
 use std::ops::Deref;
 
@@ -55,11 +55,11 @@ impl<T> Deref for JsonTree<T> {
 
 impl<T> SingleArgMarker for JsonTree<T> {}
 
-impl<'a, T> IntoArg<TableItem<'a, Sqlite>> for JsonTree<T>
+impl<'a, T, X> IntoArg<Table<'a, Sqlite, X>> for JsonTree<T>
     where
-        T: IntoJsonTableArgs<'a> {
-    fn into_arg(self) -> TableItem<'a, Sqlite> {
+        T: IntoTableFuncArgs<'a> {
+    fn into_arg(self) -> Table<'a, Sqlite, X> {
         let args = self.0.into_args();
-        TableItem::Function(ExtTableFunction::JsonTree(args.base, args.path), None)
+        Table::from_function(ExtTableFunction::JsonTree(args.base, args.path), None)
     }
 }

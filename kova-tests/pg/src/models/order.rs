@@ -39,4 +39,7 @@ impl<'a> Order {
 
     pub const raw_data: Column<'a, Vec<u8>, Engine> =
         ExtColumn::create(IdentifierMeta::new("order", "raw_data"));
+
+    pub const created_at: Column<'a, i32, Engine> =
+        ExtColumn::create(IdentifierMeta::new("order", "created_at"));
 }

@@ -13,6 +13,7 @@ mod rows;
 
 mod relation;
 pub mod statement;
+mod virtual_column;
 
 pub mod func {
     pub use crate::dsl::function::{
@@ -26,6 +27,7 @@ pub use {
     assignment::{Assignment, StandardAssignment},
     clause::*,
     column::Column,
+    virtual_column::VirtualColumn,
     comparator::{AsComparator, Comparator, IntoComparator},
     component::{Component, WithComponent},
     condition::Condition,

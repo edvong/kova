@@ -27,7 +27,7 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
     }
 
     #[inline(always)]
-    fn binary_op<V, Target, X, K, F>(self, v: V, op_fn: F) -> Condition<'a, DB, X>
+    pub(crate) fn binary_op<V, Target, X, K, F>(self, v: V, op_fn: F) -> Condition<'a, DB, X>
         where
             V: IntoOperand<'a, Target, DB, K, X>,
             F: FnOnce(Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB> {
@@ -35,14 +35,14 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
     }
 
     #[inline(always)]
-    fn unary_op<F, X>(self, op_fn: F) -> Condition<'a, DB, X>
+    pub(crate) fn unary_op<F, X>(self, op_fn: F) -> Condition<'a, DB, X>
         where
             F: FnOnce(Operand<'a, DB>) -> StandardOperator<'a, DB> {
         Condition::from(Operator::from_std(op_fn(self.operand)))
     }
 
     #[inline(always)]
-    fn ternary_op<L, U, Target, K, X, F>(
+    pub(crate) fn ternary_op<L, U, Target, K, X, F>(
         self, lower: L, upper: U, op_fn: F,
     ) -> Condition<'a, DB, X>
         where
@@ -57,7 +57,7 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
     }
 
     #[inline(always)]
-    fn list_op<I, V, Target, K, X, F>(self, values: I, op_fn: F) -> Condition<'a, DB, X>
+    pub(crate) fn list_op<I, V, Target, K, X, F>(self, values: I, op_fn: F) -> Condition<'a, DB, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Target, DB, K, X>,

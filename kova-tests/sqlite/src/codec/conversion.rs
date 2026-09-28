@@ -141,3 +141,19 @@ impl<'a> Decode<'a, Engine, AppCodec> for HashMap<String, String> {
     }
 }
 bind_type!(AppCodec, HashMap<String, String>);
+
+impl<'a> Encode<'a, Engine, AppCodec> for Vec<i32> {
+    fn encode(self) -> Result<Value<'a>> {
+        let json_str = serde_json::to_string(&self)
+            .map_err(|e| Error::ConversionError(e.to_string()))?;
+        Ok(Value::Text(Cow::Owned(json_str)))
+    }
+}
+
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, Vec<i32>> for &'b Vec<i32> {
+    fn encode(self) -> Result<Value<'a>> {
+        let json_str = serde_json::to_string(self)
+            .map_err(|e| Error::ConversionError(e.to_string()))?;
+        Ok(Value::Text(Cow::Owned(json_str)))
+    }
+}

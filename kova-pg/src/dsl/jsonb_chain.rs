@@ -1,6 +1,6 @@
 #![allow(clippy::wrong_self_convention)]
 
-use crate::dsl::function::ExtFunction;
+use crate::dsl::function::{ExtFunction, IntoTableFunction};
 use crate::dsl::jsonb_text::JsonbText;
 use crate::dsl::operator::{ExtOperator, JsonOp};
 use crate::types::Postgres;
@@ -18,6 +18,13 @@ pub struct JsonbChain<'a, T, X> {
 impl<'a, T, X> IntoOperand<'a, T, Postgres, OpAst, X> for JsonbChain<'a, T, X> {
     fn into_operand(self) -> Operand<'a, Postgres> {
         self.to_operand()
+    }
+}
+
+impl<'a, U, X> IntoTableFunction<'a, X> for JsonbChain<'a, U, X> {
+    #[inline(always)]
+    fn into_table_function(self) -> Operand<'a, Postgres> {
+        IntoOperand::into_operand(self)
     }
 }
 

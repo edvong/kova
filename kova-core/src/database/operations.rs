@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::dsl::{IntoArgs, IntoInsertSource, TableItem};
+use crate::dsl::{IntoArgs, IntoInsertSource, Table};
 use crate::types::{Database, Delete, Insert, Model, Query, Select, Statement, Update};
 use std::borrow::Cow;
 use std::marker::PhantomData;
@@ -28,7 +28,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         <DB::Query<'a> as Query<'a, DB>>::Select::new(&self.executor)
     }
 
-    pub fn select_mix<'a, T>(&'c self, args: impl IntoArgs<TableItem<'a, DB>>)
+    pub fn select_mix<'a, T>(&'c self, args: impl IntoArgs<Table<'a, DB, X>>)
         -> <DB::Query<'a> as Query<'a, DB>>::Select<'c, T, E, X>
         where
             T: Model<DB = DB>,

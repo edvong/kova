@@ -29,7 +29,7 @@ pub use {
     },
     pagination::PaginationClause,
     projection::{BuildProjection, Projection, ProjectionExpr},
-    table::{TableItem},
+    table::{Table},
 };
 
 pub(crate) use {

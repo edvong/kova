@@ -19,18 +19,18 @@ pub struct JsonTableArgs<'a> {
     pub path: Option<Operand<'a, Sqlite>>,
 }
 
-pub trait IntoJsonTableArgs<'a> {
+pub trait IntoTableFuncArgs<'a> {
     fn into_args(self) -> JsonTableArgs<'a>;
 }
 
-impl<'a, T> IntoJsonTableArgs<'a> for Column<'a, T, Sqlite> {
+impl<'a, T> IntoTableFuncArgs<'a> for Column<'a, T, Sqlite> {
     #[inline(always)]
     fn into_args(self) -> JsonTableArgs<'a> {
         JsonTableArgs { base: self.into_arg(), path: None }
     }
 }
 
-impl<'a, T> IntoJsonTableArgs<'a> for (Column<'a, T, Sqlite>, &'static str) {
+impl<'a, T> IntoTableFuncArgs<'a> for (Column<'a, T, Sqlite>, &'static str) {
     #[inline(always)]
     fn into_args(self) -> JsonTableArgs<'a> {
         JsonTableArgs {

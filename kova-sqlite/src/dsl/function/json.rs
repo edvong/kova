@@ -23,7 +23,7 @@ impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for Json<T>
             let operand = match expr {
                 ProjectionExpr::Column(meta) => Operand::from_identifier(meta),
                 ProjectionExpr::Function(func) => Operand::from_function(func),
-                ProjectionExpr::Subselect(stmt) => Operand::from_subselect(*stmt),
+                ProjectionExpr::Subselect(stmt) => Operand::from_select(*stmt),
             };
             // Brute-force wrap it in a native json(...) call.
             let json_func = Function::from_ext(ExtFunction::Json(Box::new(operand)));

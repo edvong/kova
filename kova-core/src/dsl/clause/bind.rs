@@ -37,6 +37,9 @@ impl<'a, 'b, DB: Database, T: ?Sized> IntoArg<Bind<'a, DB>> for &'b T
     }
 }
 
+impl SingleArgMarker for str {}
+// (&str is automatically supported because of the &'a T penetration above)
+
 impl SingleArgMarker for [u8] {}
 // (&[u8] is automatically supported because of the &'a T penetration above)
 

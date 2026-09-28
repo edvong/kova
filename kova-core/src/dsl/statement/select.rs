@@ -2,7 +2,7 @@ use crate::dsl::{
     CombineClause, Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
     GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
     JoinConstraint, JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
-    ProjectionClause, SetOperator, TableClause, TableItem, WhereClause, WithClause,
+    ProjectionClause, SetOperator, Table, TableClause, WhereClause, WithClause,
 };
 use crate::render::RenderData;
 use crate::type_id;
@@ -69,9 +69,9 @@ impl<'a, DB> SelectStatement<'a, DB>
     pub fn tag_latest_join<Marker: 'static>(&mut self) {
         self.join.tag_latest(type_id::<Marker>());
     }
-    
-    pub fn from<A: IntoArgs<TableItem<'a, DB>>>(&mut self, items: A) {
-        self.from.extend(items.into_args());
+
+    pub fn from<A: IntoArgs<Table<'a, DB, X>>, X>(&mut self, items: A) {
+        self.from.extend(items.into_mapped_args(|t| t.erase_x()));
     }
 
     pub fn with<C: Cte>(&mut self, statement: SelectStatement<'a, DB>) {
@@ -88,14 +88,14 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.projection.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
-    pub fn join<R: Relation, C, X>(&mut self, typ: JoinType, constraint: C) 
-        where 
+    pub fn join<R: Relation, C, X>(&mut self, typ: JoinType, constraint: C)
+        where
             C: IntoJoinConstraint<'a, DB, X> {
-        let join = Join { 
-            typ, 
-            target_table: R::RELATION_NAME, 
-            tag: None, 
-            constraint: constraint.into_constraint(), 
+        let join = Join {
+            typ,
+            target_table: R::RELATION_NAME,
+            tag: None,
+            constraint: constraint.into_constraint(),
         };
         self.join.add(join)
     }

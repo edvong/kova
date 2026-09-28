@@ -9,5 +9,6 @@ mod models;
 mod view;
 mod compile_check_advanced;
 mod compile_check_tag;
+mod compile_check_srf;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;

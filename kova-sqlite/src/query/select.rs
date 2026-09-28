@@ -6,7 +6,7 @@ use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
     Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
     IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection,
-    ProjectionExpr, SetOperator, SingleArgMarker, TableItem,
+    ProjectionExpr, SetOperator, SingleArgMarker, Table,
 };
 use kova_core::types::{
     Cte, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
@@ -45,7 +45,7 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X>
         Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
 
-    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<TableItem<'a, Sqlite>>) -> Self {
+    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<Table<'a, Sqlite, X>>) -> Self {
         let mut s = Self::new(executor);
         s.statement.from(args);
         s
@@ -224,7 +224,7 @@ impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
         }
     }
 
-    pub fn from_mix<M: Model<DB = Sqlite>>(args: impl IntoArgs<TableItem<'a, Sqlite>>)
+    pub fn from_mix<M: Model<DB = Sqlite>>(args: impl IntoArgs<Table<'a, Sqlite, X>>)
         -> Select<'a, M, InnerQuery, JustAddFrom, X> {
         let mut statement = SelectStatement::new(M::TABLE_NAME);
         statement.from(args);
@@ -246,7 +246,7 @@ impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X>
 impl<'a, T: Model<DB = Sqlite>, TAG, X> IntoOperand<'a, T, Sqlite, OpAst, X>
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Sqlite> {
-        Operand::from_subselect(self.statement)
+        Operand::from_select(self.statement)
     }
 }
 
