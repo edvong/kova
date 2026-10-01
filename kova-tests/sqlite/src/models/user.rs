@@ -1,8 +1,8 @@
 #![allow(unreachable_code, dead_code, unused)]
 
 use kova::Error;
-use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
+use kova::dsl::Column;
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 
 #[derive(Default, Clone)]
 pub struct User {
@@ -32,12 +32,13 @@ impl Model for User {
 }
 
 #[allow(non_upper_case_globals)]
-impl<'a> User {
-    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("order", "id"));
-
-    pub const name: Column<'a, String, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "name"));
-
-    pub const is_active: Column<'a, bool, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "is_active"));
+impl User {
+    pub const id: Column<i32, Engine> = 
+        kova::private::create_column("order", "id", true);
+    
+    pub const name: Column<String, Engine> = 
+        kova::private::create_column("order", "name", false);
+    
+    pub const is_active: Column<bool, Engine> = 
+        kova::private::create_column("order", "is_active", false);
 }

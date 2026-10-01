@@ -144,7 +144,7 @@ fn compile_check_sqlite_table_functions() -> Result<()> {
         .columns((User::id, JsonEach::key, JsonTree::path, JsonTree::parent))
         .filter(
             // Cross-virtual-table comparisons are fully supported and type-safe
-            JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i32),
+            JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i64),
         )
         .load_in::<(i32, String, String, i32)>()?;
 

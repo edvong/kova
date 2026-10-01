@@ -57,7 +57,7 @@ pub enum StandardGroupBy<'a, DB: Database> {
 
 impl<'a, DB: Database, X> SingleArgMarker for GroupBy<'a, DB, X> {}
 
-impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Column<'a, T, DB> {
+impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Column<T, DB> {
     fn into_arg(self) -> GroupBy<'a, DB, X> {
         GroupBy::standard(StandardGroupBy::Column(self.into_identifier().meta))
     }

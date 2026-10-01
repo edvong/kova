@@ -6,8 +6,8 @@ mod json_each;
 #[rustfmt::skip]
 mod json_tree;
 
-pub use json_each::{JsonEach, JsonEachSchema, JSON_EACH_DEFAULT};
-pub use json_tree::{JsonTree, JsonTreeSchema, JSON_TREE_DEFAULT};
+pub use json_each::JsonEach;
+pub use json_tree::JsonTree;
 
 pub enum ExtTableFunction<'a> {
     JsonEach(Operand<'a, Sqlite>, Option<Operand<'a, Sqlite>>),
@@ -23,14 +23,14 @@ pub trait IntoTableFuncArgs<'a> {
     fn into_args(self) -> JsonTableArgs<'a>;
 }
 
-impl<'a, T> IntoTableFuncArgs<'a> for Column<'a, T, Sqlite> {
+impl<'a, T> IntoTableFuncArgs<'a> for Column<T, Sqlite> {
     #[inline(always)]
     fn into_args(self) -> JsonTableArgs<'a> {
         JsonTableArgs { base: self.into_arg(), path: None }
     }
 }
 
-impl<'a, T> IntoTableFuncArgs<'a> for (Column<'a, T, Sqlite>, &'static str) {
+impl<'a, T> IntoTableFuncArgs<'a> for (Column<T, Sqlite>, &'static str) {
     #[inline(always)]
     fn into_args(self) -> JsonTableArgs<'a> {
         JsonTableArgs {

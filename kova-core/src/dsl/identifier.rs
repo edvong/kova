@@ -1,13 +1,13 @@
 #![allow(clippy::wrong_self_convention)]
 
 use crate::dsl::{
-    AsComparator, BuildOrdering, Comparator, Condition, Direction, IntoArg, IntoComparator,
-    IntoOperand, OpAst, Operand, OrderOperand, Ordering, Projection, ProjectionExpr,
-    SingleArgMarker, StandardOperand, WithComponent,
+    BuildOrdering, Direction, IntoOperand, OpAst,
+    OpNode, Operand, OrderOperand, Ordering, SingleArgMarker,
+    StandardOperand, WithComponent,
 };
+use crate::type_id::type_id;
 use crate::types::{Database, IdentifierMeta};
 use std::marker::PhantomData;
-use crate::type_id::type_id;
 
 pub trait IntoIdentifier<T> {
     fn into_identifier(self) -> Identifier<T>;
@@ -55,24 +55,9 @@ impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, OpAst, X> for Identifier<T> 
     }
 }
 
-impl<'a, T, DB: Database> IntoComparator<'a, T, DB> for Identifier<T> {
-    #[inline(always)]
-    fn into_comparator(self) -> Comparator<'a, T, DB> {
-        Comparator::new(Operand::from_identifier(self.into_identifier().meta))
-    }
-}
-
-impl<'a, T, DB: Database> AsComparator<'a, T, DB> for Identifier<T> {
-    #[inline(always)]
-    fn as_comparator(&self) -> Comparator<'a, T, DB> {
-        Comparator::new(Operand::from_identifier(self.into_identifier().meta))
-    }
-}
-
-impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Identifier<T> {
-    fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.into_identifier().meta), None)
-    }
+impl<T> OpNode for Identifier<T> {
+    type Input = ();
+    type Output = T;
 }
 
 impl<T> SingleArgMarker for Identifier<T> {}
@@ -85,8 +70,16 @@ impl<T> Identifier<T> {
     pub const fn new(source: &'static str, name: &'static str) -> Self {
         Self { meta: IdentifierMeta::new(source, name), _marker: PhantomData }
     }
+    
+    // For CTE and View
+    #[inline(always)]
+    pub fn tag<Marker: 'static>(mut self) -> Self {
+        self.meta = self.meta.with_tag(type_id::<Marker>());
+        self
+    }
 }
 
+/*
 impl<T> Identifier<T> {
     pub fn eq<'a, DB: Database, V, K, X>(self, v: V) -> Condition<'a, DB, X>
         where
@@ -169,11 +162,5 @@ impl<T> Identifier<T> {
     pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
         self.build_ordering(Some(Direction::Desc))
     }
-
-    // For CTE and View
-    #[inline(always)]
-    pub fn tag<Marker: 'static>(mut self) -> Self {
-        self.meta = self.meta.with_tag(type_id::<Marker>());
-        self
-    }
 }
+*/

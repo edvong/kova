@@ -4,6 +4,7 @@ use crate::types::ext::Extension;
 use crate::types::{Row, Value};
 use kova_core::types::Database;
 
+#[derive(Copy, Clone)]
 pub struct Postgres;
 
 impl Database for Postgres {

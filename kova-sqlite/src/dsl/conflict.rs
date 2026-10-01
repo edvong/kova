@@ -1,5 +1,5 @@
 use crate::types::Sqlite;
-use kova_core::dsl::func::{Abs, Function, IntoFunction, Length, Lower, Upper};
+use kova_core::dsl::func::{Abs, Function, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArg, SingleArgMarker};
 use kova_core::types::IdentifierMeta;
 
@@ -34,17 +34,20 @@ pub(crate) enum TargetExpr<'a> {
 
 impl<'a> SingleArgMarker for ConflictTarget<'a> {}
 
-impl<'a, T> IntoArg<ConflictTarget<'a>> for Column<'a, T, Sqlite> {
+impl<'a, T> IntoArg<ConflictTarget<'a>> for Column<T, Sqlite> {
     #[inline(always)]
     fn into_arg(self) -> ConflictTarget<'a> {
-        ConflictTarget { target: TargetExpr::Column(self.meta()) }
+        ConflictTarget { target: TargetExpr::Column(self.identifier()) }
     }
 }
 
-macro_rules! impl_conflict_target_for_func {
+macro_rules! impl_conflict_target_args_for_func {
     ($($func:ident),+) => {
         $(
-            impl<'a, T> IntoArg<ConflictTarget<'a>> for $func<Column<'a, T, Sqlite>> {
+            impl<'a, E> kova_core::dsl::IntoArg<ConflictTarget<'a>> for $func<E>
+                where
+                    $func<E>: kova_core::dsl::OpNode,
+                    E: kova_core::dsl::OpNode + kova_core::dsl::IntoOperand<'a, <$func<E> as kova_core::dsl::OpNode>::Input, Sqlite, kova_core::dsl::OpAst, ()> {
                 #[inline(always)]
                 fn into_arg(self) -> ConflictTarget<'a> {
                     ConflictTarget { target: TargetExpr::Function(self.into_func()) }
@@ -54,4 +57,4 @@ macro_rules! impl_conflict_target_for_func {
     };
 }
 
-impl_conflict_target_for_func!(Lower, Upper, Abs, Length);
+impl_conflict_target_args_for_func!(Lower, Upper, Abs, Length);

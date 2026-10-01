@@ -4,9 +4,7 @@ use crate::dsl::operator::JsonOp;
 use crate::dsl::{ExtFunction, ExtOperator};
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{
-    Comparator, Condition, IntoComparator, IntoOperand, Operand, Operator, WithComponent,
-};
+use kova_core::dsl::{Comparator, Condition, IntoComparator, IntoOperand, Operand, Operator, WithComponent};
 use std::marker::PhantomData;
 
 pub struct JsonbText<'a, X> {

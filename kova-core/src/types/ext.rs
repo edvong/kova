@@ -1,7 +1,10 @@
-use crate::types::meta::SyncIdentifierMeta;
+use crate::types::meta::SyncMeta;
+use crate::types::{ColumnMeta, IdentifierMeta};
 
 pub trait Extension<'a>: Sized {
-    type Column<'c, T>: SyncIdentifierMeta where T: 'c; // Self: 'c,
+    type Column<T>: SyncMeta<ColumnMeta> + Copy + Clone;
+
+    type VirtualColumn<T>: SyncMeta<IdentifierMeta> + Copy + Clone;
 
     type Operator<'o> where Self: 'o;
 

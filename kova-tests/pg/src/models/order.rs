@@ -1,6 +1,6 @@
 use kova::Error;
-use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
+use kova::dsl::Column;
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 
 pub struct Order;
 
@@ -26,20 +26,21 @@ impl Model for Order {
 
 #[allow(non_upper_case_globals)]
 impl<'a> Order {
-    pub const id: Column<'a, i32, Engine> = ExtColumn::create(IdentifierMeta::new("order", "id"));
+    pub const id: Column<i32, Engine> = 
+        kova::private::create_column("order", "id", true);
 
-    pub const user_id: Column<'a, i32, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "user_id"));
+    pub const user_id: Column<i32, Engine> =
+        kova::private::create_column("order", "user_id", false);
 
-    pub const amount: Column<'a, f64, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "amount"));
+    pub const amount: Column<f64, Engine> =
+        kova::private::create_column("order", "amount", false);
 
-    pub const is_active: Column<'a, bool, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "is_active"));
+    pub const is_active: Column<bool, Engine> =
+        kova::private::create_column("order", "is_active", false);
 
-    pub const raw_data: Column<'a, Vec<u8>, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "raw_data"));
+    pub const raw_data: Column<Vec<u8>, Engine> =
+        kova::private::create_column("order", "raw_data", false);
 
-    pub const created_at: Column<'a, i32, Engine> =
-        ExtColumn::create(IdentifierMeta::new("order", "created_at"));
+    pub const created_at: Column<i32, Engine> =
+        kova::private::create_column("order", "created_at", true);
 }

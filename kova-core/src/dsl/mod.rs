@@ -13,12 +13,12 @@ mod rows;
 
 mod relation;
 pub mod statement;
-mod virtual_column;
+mod column_virtual;
 
 pub mod func {
     pub use crate::dsl::function::{
-        Abs, Avg, Count, Star, FrameBound, FrameType, Function, IntoFunction, Length, Lower,
-        Max, Min, Sum, Upper, Window,
+        Abs, Avg, Count, Star, Length, Lower, Max, Min, Sum, Upper,
+        FrameBound, FrameType, Function, Window, IntoFunction,
     };
 }
 
@@ -27,12 +27,12 @@ pub use {
     assignment::{Assignment, StandardAssignment},
     clause::*,
     column::Column,
-    virtual_column::VirtualColumn,
-    comparator::{AsComparator, Comparator, IntoComparator},
+    column_virtual::{VirtualColumn, Strict, Dynamic},
+    comparator::{Comparator, IntoComparator},
     component::{Component, WithComponent},
     condition::Condition,
     identifier::{Identifier, IntoIdentifier},
-    operand::{IntoOperand, OpAst, OpValue, Operand},
+    operand::{IntoOperand, OpNode, OpAst, OpValue, Operand},
     operator::{Operator, StandardOperator},
     relation::IntoRelationList,
     rows::{InsertRows, IntoInsertSource, IntoRows},

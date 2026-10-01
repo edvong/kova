@@ -6,9 +6,9 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::Identifier;
+use kova::dsl::{Identifier, VirtualColumn};
 use kova::query::Select;
-use kova::types::Relation;
+use kova::types::{Engine, Relation};
 
 // ==========================================
 // Virtual CTE Definition for Advanced Testing
@@ -19,8 +19,10 @@ impl Relation for ActiveUserStats {
 }
 #[allow(non_upper_case_globals)]
 impl ActiveUserStats {
-    pub const user_id: Identifier<i32> = Identifier::new("active_user_stats", "user_id");
-    pub const total_spent: Identifier<f64> = Identifier::new("active_user_stats", "total_spent");
+    pub const user_id: VirtualColumn<Engine, i32> = 
+        kova::private::create_virtual_column("active_user_stats", "user_id");
+    pub const total_spent: VirtualColumn<Engine, f64> = 
+        kova::private::create_virtual_column("active_user_stats", "total_spent");
 }
 
 /// Stress Test 1: Polymorphic Joins (ON vs USING)

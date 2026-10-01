@@ -1,5 +1,6 @@
 #![allow(unreachable_code, dead_code, unused)]
 
+use crate::Result;
 use crate::codec::conversion::AppCodec;
 use crate::codec::models::EventLog;
 use crate::models::comment::Comment;
@@ -7,7 +8,6 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use crate::view::post_view::{CommentDto, PostView};
-use crate::Result;
 use kova::Options;
 use kova::dsl::func::{GroupConcat, Json, JsonGroupArray, JsonObject, JsonbGroupArray, JsonbObject};
 use kova::query::Select;
@@ -47,10 +47,8 @@ fn compile_check_sqlite_aggregates() -> Result<()> {
         .columns((
             User::is_active,
             // 1. GroupConcat: The strict typing system demands that expr implements IntoArg<Projection>.
-            GroupConcat {
-                expr: User::name,
-                separator: Some(" | "),
-            }
+            GroupConcat(User::name)
+                .separator(" | ")
                 .alias(User::name),
             // 2. JsonGroupArray: Wrapping up a single column and slapping an alias on it.
             JsonGroupArray(User::id).alias(Order::raw_data),

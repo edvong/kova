@@ -29,10 +29,10 @@ impl IdentifierMeta {
     }
 }
 
-pub trait SyncIdentifierMeta {
-    fn sync(&mut self, meta: IdentifierMeta);
+pub trait SyncMeta<T> {
+    fn sync(&mut self, meta: T);
 }
 
-impl SyncIdentifierMeta for () {
-    fn sync(&mut self, _: IdentifierMeta) { unreachable!() }
+impl<T> SyncMeta<T> for () {
+    fn sync(&mut self, _: T) { unreachable!() }
 }

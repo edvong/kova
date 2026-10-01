@@ -4,7 +4,7 @@ use crate::Result;
 use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::func::{Abs, Avg, Count, Length, Lower, Max, Min, Star, Sum, Upper};
+use kova::dsl::func::{Abs, Avg, Count, GroupConcat, Length, Lower, Max, Min, Star, Sum, Upper};
 
 /// Stress Test 1: Select Statements & Deep AST Boundaries
 fn compile_check_sqlite_select() {
@@ -27,6 +27,11 @@ fn compile_check_sqlite_select() {
             Upper(User::name),
             Abs(Order::amount),
             Length(User::name),
+            Upper(Lower(Upper(User::name))),
+            Sum(Abs(Order::amount)),
+            GroupConcat(Lower(User::name))
+                .separator(",")
+                .alias(User::name),
         ))
         // 2. JOIN boundaries: Model to Model, and Column to Value comparison
         .inner_join::<Order>(Order::user_id.eq(User::id))

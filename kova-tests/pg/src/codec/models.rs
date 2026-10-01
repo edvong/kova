@@ -1,8 +1,8 @@
 use chrono::{DateTime, Utc};
 use jiff::Timestamp;
 use kova::Result;
-use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
+use kova::dsl::Column;
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
@@ -18,18 +18,23 @@ pub struct EventLog {
 }
 
 impl FromRow for EventLog {
+    #[doc(hidden)]
     type DB = Engine;
+    #[doc(hidden)]
     fn from_row(_: &<Self::DB as Database>::Row<'_>) -> Result<Self> {
         unimplemented!()
     }
 }
 
 impl Relation for EventLog {
+    #[doc(hidden)]
     const RELATION_NAME: &'static str = "event_log";
 }
 
 impl Model for EventLog {
+    #[doc(hidden)]
     const COLUMNS_META: &'static [ColumnMeta] = &[];
+    #[doc(hidden)]
     fn to_values<'a>(&'a self) -> Result<Vec<(&'static str, <Self::DB as Database>::Value<'a>)>> {
         unimplemented!()
     }
@@ -37,21 +42,21 @@ impl Model for EventLog {
 
 #[allow(non_upper_case_globals)]
 impl<'a> EventLog {
-    pub const id: Column<'a, Uuid, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const id: Column<Uuid, Engine> =
+        kova::private::create_column("event_log", "id", true);
 
-    pub const description: Column<'a, String, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const description: Column<String, Engine> =
+        kova::private::create_column("event_log", "id", false);
 
-    pub const created_at: Column<'a, DateTime<Utc>, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const created_at: Column<DateTime<Utc>, Engine> =
+        kova::private::create_column("event_log", "id", false);
 
-    pub const updated_at: Column<'a, Timestamp, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const updated_at: Column<Timestamp, Engine> =
+        kova::private::create_column("event_log", "id", false);
 
-    pub const website: Column<'a, Url, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const website: Column<Url, Engine> =
+        kova::private::create_column("event_log", "id", false);
 
-    pub const metadata: Column<'a, HashMap<String, String>, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const metadata: Column<HashMap<String, String>, Engine> =
+        kova::private::create_column("event_log", "id", false);
 }

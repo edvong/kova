@@ -6,9 +6,10 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::Identifier;
+use kova::dsl::{Identifier, VirtualColumn};
 use kova::dsl::func::{Count, JsonEach};
 use kova::query::Select;
+use kova::types::Engine;
 
 // Marker types for compile-time static tagging
 struct T1;
@@ -61,7 +62,7 @@ fn compile_check_tags() -> Result<()> {
     // Validates: Identifier::tag() generic support mapping.
     // ==========================================
     #[allow(non_upper_case_globals)]
-    const virtual_col: Identifier<f64> = Identifier::<f64>::new("virtual_table", "score");
+    const virtual_col: VirtualColumn<Engine, f64> = kova::private::create_virtual_column("virtual_table", "score");
 
     let _ = client
         .select::<User>()

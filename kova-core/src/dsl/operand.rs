@@ -47,6 +47,11 @@ impl<'a, DB: Database> Operand<'a, DB> {
     }
 }
 
+pub trait OpNode {
+    type Input;
+    type Output;
+}
+
 pub struct OpAst;
 pub struct OpValue;
 

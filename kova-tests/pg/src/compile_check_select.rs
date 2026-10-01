@@ -29,6 +29,19 @@ fn compile_check_select() {
             Upper(User::name),
             Abs(Order::amount),
             Length(User::name),
+            // (String -> String)
+            Lower(Upper(User::name)),
+
+            // (f64 -> f64 -> f64)
+            Max(Abs(Order::amount)),
+
+            // Complex State Machine Aggregation Functions Nesting Scalar Functions
+            // and Maintaining Original State Link Penetration
+            ArrayAgg(Lower(User::name))
+                .distinct()
+                .order_by(Order::id.desc().nulls_last())
+                .alias(User::name),
+
             ArrayAgg(Order::amount)
                 .distinct()
                 .order_by(Order::id.desc().nulls_first())

@@ -107,7 +107,7 @@ pub enum NullsOrder {
 
 impl<'a, DB: Database, X> SingleArgMarker for Ordering<'a, DB, X> {}
 
-impl<'a, T, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Column<'a, T, DB> {
+impl<'a, T, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Column<T, DB> {
     fn into_arg(self) -> Ordering<'a, DB, X> {
         self.build_ordering(Some(Direction::Asc))
     }

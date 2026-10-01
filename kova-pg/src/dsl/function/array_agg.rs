@@ -3,15 +3,11 @@
 use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{
-    Column, Comparator, Condition, EraseX, IntoComparator, IntoIdentifier, IntoOperand, Operand,
-    Ordering, Projection, ProjectionExpr, WithComponent,
-};
-use kova_core::types::IdentifierMeta;
+use kova_core::dsl::{Column, Comparator, Condition, EraseX, IntoComparator, IntoIdentifier, IntoOperand, OpAst, Operand, Ordering, Projection, ProjectionExpr, WithComponent};
 use std::marker::PhantomData;
 
 pub struct ArrayAggState<'a, X> {
-    pub(crate) meta: IdentifierMeta,
+    pub(crate) target: Box<Operand<'a, Postgres>>,
     pub(crate) distinct: bool,
     pub(crate) order_by: Vec<Ordering<'a, Postgres, ()>>,
     pub(crate) filter: Option<Box<Condition<'a, Postgres, ()>>>,
@@ -23,7 +19,7 @@ impl<'a, X> EraseX for ArrayAggState<'a, X> {
 
     fn erase_x(self) -> Self::Erased {
         ArrayAggState {
-            meta: self.meta,
+            target: self.target,
             distinct: self.distinct,
             order_by: self.order_by,
             filter: self.filter,
@@ -37,11 +33,18 @@ pub trait IntoArrayAggState<'a> {
     fn into_state(self) -> ArrayAggState<'a, Self::X>;
 }
 
-impl<'a, U> IntoArrayAggState<'a> for Column<'a, U, Postgres> {
+impl<'a, X> IntoArrayAggState<'a> for ArrayAggState<'a, X> {
+    type X = X;
+    fn into_state(self) -> ArrayAggState<'a, X> {
+        self
+    }
+}
+
+impl<'a, U> IntoArrayAggState<'a> for Column<U, Postgres> {
     type X = ();
     fn into_state(self) -> ArrayAggState<'a, ()> {
         ArrayAggState {
-            meta: self.meta(),
+            target: Box::new(IntoOperand::<U, Postgres, OpAst, Self::X>::into_operand(self)),
             distinct: false,
             order_by: vec![],
             filter: None,
@@ -50,12 +53,34 @@ impl<'a, U> IntoArrayAggState<'a> for Column<'a, U, Postgres> {
     }
 }
 
-impl<'a, X> IntoArrayAggState<'a> for ArrayAggState<'a, X> {
-    type X = X;
-    fn into_state(self) -> ArrayAggState<'a, X> {
-        self
-    }
+
+macro_rules! impl_func_array_agg_state {
+    ($($func:ident),+) => {
+        $(
+            impl<'a, C> IntoArrayAggState<'a> for kova_core::dsl::func::$func<C>
+                where
+                    Self: kova_core::dsl::OpNode + IntoOperand<'a, <Self as kova_core::dsl::OpNode>::Output, Postgres, OpAst, C::X>,
+                    C: kova_core::dsl::OpNode + IntoArrayAggState<'a> { // Allow nesting: ArrayAgg(Lower(Upper(col)))
+                type X = C::X; // Upward penetration
+                #[inline(always)]
+                fn into_state(self) -> ArrayAggState<'a, Self::X> {
+                    ArrayAggState {
+                        // use function self IntoOperand
+                        target: Box::new(self.into_operand()),
+                        distinct: false,
+                        order_by: vec![],
+                        filter: None,
+                        _marker: std::marker::PhantomData,
+                    }
+                }
+            }
+        )+
+    };
 }
+
+impl_func_array_agg_state!(Lower, Upper, Abs, Length); // Btrim, Ltrim, Rtrim, Md5
+
+
 
 // ==========================================
 
@@ -80,12 +105,10 @@ impl<'a, T> ArrayAgg<T>
         ArrayAgg(state)
     }
 
-    pub fn filter<NewX>(
-        self, cond: Condition<'a, Postgres, NewX>,
-    ) -> ArrayAgg<ArrayAggState<'a, NewX>> {
+    pub fn filter<X>(self, cond: Condition<'a, Postgres, X>) -> ArrayAgg<ArrayAggState<'a, X>> {
         let state = self.0.into_state();
         ArrayAgg(ArrayAggState {
-            meta: state.meta,
+            target: state.target,
             distinct: state.distinct,
             order_by: state.order_by,
             filter: Some(Box::new(cond.erase_x())),
@@ -95,7 +118,7 @@ impl<'a, T> ArrayAgg<T>
 
     // --- Delivery (Extract T::X) ---
 
-    pub fn alias<U>(self, col: Column<'a, U, Postgres>) -> Projection<'a, Postgres, T::X> {
+    pub fn alias<U>(self, col: Column<U, Postgres>) -> Projection<'a, Postgres, T::X> {
         Projection::new(
             ProjectionExpr::Function(self.build_func()),
             Some(col.into_identifier().meta),

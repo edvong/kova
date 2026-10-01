@@ -1,9 +1,11 @@
 #![allow(non_upper_case_globals)]
 
 use crate::dsl::function::from::ExtTableFunction;
+use crate::dsl::private::create_virtual_column;
 use crate::types::Postgres;
-use kova_core::dsl::{Column, IntoArg, Operand, SingleArgMarker, Table, VirtualColumn};
+use kova_core::dsl::{Column, Dynamic, IntoArg, Operand, SingleArgMarker, Table, VirtualColumn};
 use kova_core::types::Encode;
+use std::ops::Deref;
 
 pub struct GenerateSeries<L = (), R = ()>(pub L, pub R);
 
@@ -13,8 +15,31 @@ pub struct GenerateSeriesStep<Base, S> {
 }
 
 impl GenerateSeries<(), ()> {
-    pub const generate_series: VirtualColumn =
-        VirtualColumn::new("generate_series", "generate_series");
+    pub const generate_series: VirtualColumn<Postgres, (), Dynamic> = GENERATE_SERIES_DEFAULT.generate_series;
+}
+
+pub struct GenerateSeriesSchema {
+    pub generate_series: VirtualColumn<Postgres, (), Dynamic>,
+}
+
+pub const GENERATE_SERIES_DEFAULT: GenerateSeriesSchema = GenerateSeriesSchema {
+    generate_series: create_virtual_column("generate_series", "generate_series"),
+};
+
+impl<L, R> Deref for GenerateSeries<L, R> {
+    type Target = GenerateSeriesSchema;
+    #[inline(always)]
+    fn deref(&self) -> &Self::Target {
+        &GENERATE_SERIES_DEFAULT
+    }
+}
+
+impl<Base, S> Deref for GenerateSeriesStep<Base, S> {
+    type Target = GenerateSeriesSchema;
+    #[inline(always)]
+    fn deref(&self) -> &Self::Target {
+        &GENERATE_SERIES_DEFAULT
+    }
 }
 
 impl<L, R> SingleArgMarker for GenerateSeries<L, R> {}
@@ -31,7 +56,7 @@ pub trait IntoSeriesOp<'a, X> {
     fn into_series_op(self) -> Operand<'a, Postgres>;
 }
 
-impl<'a, T, X> IntoSeriesOp<'a, X> for Column<'a, T, Postgres> {
+impl<'a, T, X> IntoSeriesOp<'a, X> for Column<T, Postgres> {
     #[inline(always)]
     fn into_series_op(self) -> Operand<'a, Postgres> {
         self.into_arg()

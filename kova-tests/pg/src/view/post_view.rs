@@ -1,4 +1,4 @@
-use kova::dsl::Identifier;
+use kova::dsl::VirtualColumn;
 use kova::types::{Database, Decode, Engine, FromRow, Value};
 use kova::{Error, bind_type};
 use serde::Deserialize;
@@ -18,7 +18,8 @@ pub struct CommentDto {
 
 #[allow(non_upper_case_globals)]
 impl CommentDto {
-    pub const commenter: Identifier<Author> = Identifier::new("comment_dto", "commenter");
+    pub const commenter: VirtualColumn<Engine, Author> =
+        kova::private::create_virtual_column("comment_dto", "commenter");
 }
 
 pub struct PostView {
@@ -39,8 +40,10 @@ impl FromRow for PostView {
 
 #[allow(non_upper_case_globals)]
 impl PostView {
-    pub const author: Identifier<Author> = Identifier::new("post_view", "author");
-    pub const comments: Identifier<Vec<CommentDto>> = Identifier::new("post_view", "comments");
+    pub const author: VirtualColumn<Engine, Author> =
+        kova::private::create_virtual_column("post_view", "author");
+    pub const comments: VirtualColumn<Engine, Vec<CommentDto>> =
+        kova::private::create_virtual_column("post_view", "comments");
 }
 
 pub struct ViewCodec;

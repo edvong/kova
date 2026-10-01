@@ -1,7 +1,7 @@
 use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::function::Function;
 use crate::dsl::statement::SelectStatement;
-use crate::dsl::{EraseX, IntoIdentifier};
+use crate::dsl::{EraseX, Identifier, IntoArg, IntoIdentifier};
 use crate::types::Database;
 use crate::types::IdentifierMeta;
 use std::marker::PhantomData;
@@ -70,6 +70,12 @@ pub enum ProjectionExpr<'a, DB: Database> {
 }
 
 impl<'a, DB: Database, X> SingleArgMarker for Projection<'a, DB, X> {}
+
+impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Identifier<T> {
+    fn into_arg(self) -> Projection<'a, DB, X> {
+        Projection::new(ProjectionExpr::Column(self.into_identifier().meta), None)
+    }
+}
 
 // impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<'a, T, DB> {
 //     fn into_arg(self) -> Projection<'a, DB, X> {

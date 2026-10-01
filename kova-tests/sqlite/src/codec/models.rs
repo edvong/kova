@@ -1,8 +1,8 @@
 use chrono::{DateTime, Utc};
 use jiff::Timestamp;
 use kova::Result;
-use kova::dsl::{Column, ExtColumn};
-use kova::types::{ColumnMeta, Database, Engine, FromRow, IdentifierMeta, Model, Relation};
+use kova::dsl::Column;
+use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
@@ -37,21 +37,21 @@ impl Model for EventLog {
 
 #[allow(non_upper_case_globals)]
 impl<'a> EventLog {
-    pub const id: Column<'a, Uuid, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "id"));
+    pub const id: Column<Uuid, Engine> =
+        kova::private::create_column("event_log", "id", true);
 
-    pub const description: Column<'a, String, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "description"));
+    pub const description: Column<String, Engine> =
+        kova::private::create_column("event_log", "description", false);
 
-    pub const created_at: Column<'a, DateTime<Utc>, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "created_at"));
+    pub const created_at: Column<DateTime<Utc>, Engine> =
+        kova::private::create_column("event_log", "created_at", false);
 
-    pub const updated_at: Column<'a, Timestamp, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "updated_at"));
+    pub const updated_at: Column<Timestamp, Engine> =
+        kova::private::create_column("event_log", "updated_at", false);
 
-    pub const website: Column<'a, Url, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "website"));
+    pub const website: Column<Url, Engine> =
+        kova::private::create_column("event_log", "website", false);
 
-    pub const metadata: Column<'a, HashMap<String, String>, Engine> =
-        ExtColumn::create(IdentifierMeta::new("event_log", "metadata"));
+    pub const metadata: Column<HashMap<String, String>, Engine> =
+        kova::private::create_column("event_log", "metadata", false);
 }

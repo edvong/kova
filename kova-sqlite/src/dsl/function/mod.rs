@@ -1,3 +1,4 @@
+mod from;
 mod fts5;
 mod group_concat;
 mod json;
@@ -7,7 +8,6 @@ mod json_object;
 mod jsonb_extract;
 mod jsonb_group_array;
 mod jsonb_object;
-mod from;
 
 use crate::types::Sqlite;
 use kova_core::dsl::{Operand, Projection};
@@ -22,9 +22,8 @@ pub use jsonb_group_array::JsonbGroupArray;
 pub use jsonb_object::JsonbObject;
 
 pub use from::ExtTableFunction;
-pub use from::{JsonEach, JsonEachSchema, JSON_EACH_DEFAULT};
-pub use from::{JsonTree, JsonTreeSchema, JSON_TREE_DEFAULT};
-
+pub use from::JsonEach;
+pub use from::JsonTree;
 
 pub use fts5::bm25::Bm25;
 pub use fts5::highlight::Highlight;

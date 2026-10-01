@@ -1,5 +1,5 @@
 use crate::types::Postgres;
-use kova_core::dsl::func::{Abs, Function, IntoFunction, Length, Lower, Upper};
+use kova_core::dsl::func::{Abs, Function, Length, Lower, Upper};
 use kova_core::dsl::{Assignment, Column, IntoArg, SingleArgMarker};
 use kova_core::types::IdentifierMeta;
 
@@ -46,17 +46,20 @@ impl<'a> IntoArg<ConflictTarget<'a>> for Constraint {
 
 impl<'a> SingleArgMarker for ConflictTarget<'a> {}
 
-impl<'a, T> IntoArg<ConflictTarget<'a>> for Column<'a, T, Postgres> {
+impl<'a, T> IntoArg<ConflictTarget<'a>> for Column<T, Postgres> {
     #[inline(always)]
     fn into_arg(self) -> ConflictTarget<'a> {
-        ConflictTarget { target: TargetExpr::Column(self.meta()) }
+        ConflictTarget { target: TargetExpr::Column(self.identifier()) }
     }
 }
 
 macro_rules! impl_conflict_target_args_for_func {
     ($($func:ident),+) => {
         $(
-            impl<'a, T> IntoArg<ConflictTarget<'a>> for $func<Column<'a, T, Postgres>> {
+            impl<'a, E> kova_core::dsl::IntoArg<ConflictTarget<'a>> for $func<E>
+                where
+                    $func<E>: kova_core::dsl::OpNode,
+                    E: kova_core::dsl::OpNode + kova_core::dsl::IntoOperand<'a, <$func<E> as kova_core::dsl::OpNode>::Input, Postgres, kova_core::dsl::OpAst, ()> {
                 #[inline(always)]
                 fn into_arg(self) -> ConflictTarget<'a> {
                     ConflictTarget { target: TargetExpr::Function(self.into_func()) }

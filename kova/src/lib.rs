@@ -29,7 +29,7 @@ pub mod types {
 }
 
 pub mod dsl {
-    pub use kova_core::dsl::{Column, Condition, Identifier};
+    pub use kova_core::dsl::{Column, VirtualColumn, Condition, Identifier};
 
     #[cfg(feature = "pg")]
     pub use kova_pg::dsl::{Constraint, LockMode, WaitPolicy};
@@ -44,7 +44,8 @@ pub mod dsl {
 
     pub mod func {
         pub use kova_core::dsl::func::{
-            Abs, Avg, Count, Star, FrameBound, FrameType, Length, Lower, Max, Min, Sum, Upper,
+            FrameBound, FrameType,
+            Abs, Avg, Count, Star, Length, Lower, Max, Min, Sum, Upper,
         };
 
         #[cfg(feature = "pg")]
@@ -58,8 +59,7 @@ pub mod dsl {
         pub use kova_sqlite::dsl::func::{
             Bm25, GroupConcat, Highlight, Json, JsonExtract, JsonGroupArray, JsonObject,
             JsonbExtract, JsonbGroupArray, JsonbObject, Snippet,
-            JsonEach, JsonEachSchema, JSON_EACH_DEFAULT,
-            JsonTree, JsonTreeSchema, JSON_TREE_DEFAULT,
+            JsonEach, JsonTree,
         };
     }
 }
@@ -70,6 +70,15 @@ pub mod query {
 
     #[cfg(feature = "sqlite")]
     pub use kova_sqlite::query::{Delete, Insert, Select, Update};
+}
+
+#[doc(hidden)]
+pub mod private {
+    #[cfg(feature = "pg")]
+    pub use kova_pg::dsl::private::{create_column, create_virtual_column};
+
+    #[cfg(feature = "sqlite")]
+    pub use kova_sqlite::dsl::private::{create_column, create_virtual_column};
 }
 
 #[cfg(all(feature = "pg", feature = "sqlite"))]

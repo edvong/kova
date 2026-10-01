@@ -3,7 +3,7 @@
 use crate::dsl::condition::Condition;
 use crate::dsl::operand::IntoOperand;
 use crate::dsl::operator::{Operator, StandardOperator};
-use crate::dsl::{Operand, WithComponent};
+use crate::dsl::{OpAst, OpNode, Operand, WithComponent};
 use crate::types::Database;
 use std::marker::PhantomData;
 
@@ -11,9 +11,18 @@ pub trait IntoComparator<'a, T, DB: Database> {
     fn into_comparator(self) -> Comparator<'a, T, DB>;
 }
 
-pub trait AsComparator<'a, T, DB: Database> {
-    fn as_comparator(&self) -> Comparator<'a, T, DB>;
+// E Usually the framework's OpAst, not OpValue. So the X can be ()
+impl<'a, E, DB: Database> IntoComparator<'a, <E as OpNode>::Output, DB> for E
+    where
+        // E: OpNode<Output=T>,
+        E: OpNode,
+        E: IntoOperand<'a, <E as OpNode>::Output, DB, OpAst, ()> {
+    #[inline(always)]
+    fn into_comparator(self) -> Comparator<'a, <E as OpNode>::Output, DB> {
+        Comparator::new(self.into_operand())
+    }
 }
+
 
 pub struct Comparator<'a, T, DB: Database> {
     pub operand: Operand<'a, DB>,

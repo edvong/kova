@@ -6,7 +6,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker, Table};
+use kova_core::dsl::{Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, JoinType, OpAst, OpNode, Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker, Table};
 use kova_core::types::{
     Cte, ExecutableAsync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
@@ -255,7 +255,7 @@ impl<'a, T, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
 
 impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X> {}
 
-impl<'a, T: Model<DB = Postgres>, TAG, X> IntoOperand<'a, T, Postgres, OpAst, X>
+impl<'a, T: Model<DB = Postgres>, Target, TAG, X> IntoOperand<'a, Target, Postgres, OpAst, X>
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Postgres> {
         Operand::from_select(self.statement)
@@ -278,6 +278,11 @@ impl<'a, T, M, TAG, X> IntoInsertSource<'a, T::DB, T, X> for Select<'a, M, Inner
     fn into_source(self) -> InsertSource<'a, Postgres, T> {
         IntoInsertSource::<'a, T::DB, T, X>::into_source(self.into_select_statement())
     }
+}
+
+impl<'a, T, TAG, X> OpNode for Select<'a, T, InnerQuery, TAG, X> {
+    type Input = ();
+    type Output = T; // Inner Query return type
 }
 
 // Others

@@ -243,7 +243,7 @@ impl<'a, T, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
 
 impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X> {}
 
-impl<'a, T: Model<DB = Sqlite>, TAG, X> IntoOperand<'a, T, Sqlite, OpAst, X>
+impl<'a, T: Model<DB = Sqlite>, Target, TAG, X> IntoOperand<'a, Target, Sqlite, OpAst, X>
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Sqlite> {
         Operand::from_select(self.statement)

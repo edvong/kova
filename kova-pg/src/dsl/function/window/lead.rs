@@ -62,11 +62,11 @@ pub trait IntoLeadState<'a> {
 // Initial state injection:
 // Extracts the AST metadata (Identifier) from the heavy Column trait,
 // securely trapping its target type 'U' inside the state's 'X' generic.
-impl<'a, U> IntoLeadState<'a> for Column<'a, U, Postgres> {
+impl<'a, U> IntoLeadState<'a> for Column<U, Postgres> {
     type X = U;
     fn into_state(self) -> LeadState<'a, Self::X> {
         LeadState {
-            base: Operand::from_identifier(self.meta()),
+            base: Operand::from_identifier(self.identifier()),
             offset: None,
             default: None,
             _marker: PhantomData,
@@ -75,11 +75,11 @@ impl<'a, U> IntoLeadState<'a> for Column<'a, U, Postgres> {
 }
 
 // Accommodates by-reference column passing (e.g., `&Order::amount`).
-impl<'a, U> IntoLeadState<'a> for &Column<'a, U, Postgres> {
+impl<'a, U> IntoLeadState<'a> for &Column<U, Postgres> {
     type X = U;
     fn into_state(self) -> LeadState<'a, Self::X> {
         LeadState {
-            base: Operand::from_identifier(self.meta()),
+            base: Operand::from_identifier(self.identifier()),
             offset: None,
             default: None,
             _marker: PhantomData,

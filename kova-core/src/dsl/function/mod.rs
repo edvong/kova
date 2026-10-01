@@ -1,14 +1,20 @@
 mod window;
-
+mod macros;
 #[rustfmt::skip]
-mod standard;
+mod scalar;
+#[rustfmt::skip]
+mod aggregate;
 
 pub use crate::dsl::function::window::{FrameBound, FrameType, Window};
-pub use standard::*;
+pub use crate::dsl::function::aggregate::{
+    avg::Avg, count::Count, count::Star, max::Max, min::Min, sum::Sum,
+};
+pub use crate::dsl::function::scalar::{
+    abs::Abs, length::Length, lower::Lower, upper::Upper,    
+};
 
-use crate::dsl::Component;
 use crate::dsl::component::WithComponent;
-use crate::types::IdentifierMeta;
+use crate::dsl::{Component, Operand};
 use crate::types::{Database, Extension};
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
@@ -32,16 +38,16 @@ impl<'a, DB: Database> WithComponent for Function<'a, DB> {
 
 pub enum StandardFunction<'a, DB: Database> {
     CountAll,
-    Count(IdentifierMeta, Quantifier),
-    Sum(IdentifierMeta, Quantifier),
-    Max(IdentifierMeta, Quantifier),
-    Min(IdentifierMeta, Quantifier),
-    Avg(IdentifierMeta, Quantifier),
+    Count(Box<Operand<'a, DB>>, Quantifier),
+    Sum(Box<Operand<'a, DB>>, Quantifier),
+    Max(Box<Operand<'a, DB>>, Quantifier),
+    Min(Box<Operand<'a, DB>>, Quantifier),
+    Avg(Box<Operand<'a, DB>>, Quantifier),
 
-    Length(IdentifierMeta),
-    Lower(IdentifierMeta),
-    Upper(IdentifierMeta),
-    Abs(IdentifierMeta),
+    Length(Box<Operand<'a, DB>>),
+    Lower(Box<Operand<'a, DB>>),
+    Upper(Box<Operand<'a, DB>>),
+    Abs(Box<Operand<'a, DB>>),
 
     Window(Box<Window<'a, DB, ()>>),
 }
