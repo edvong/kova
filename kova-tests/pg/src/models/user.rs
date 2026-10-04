@@ -1,5 +1,5 @@
 use kova::Error;
-use kova::dsl::Column;
+use kova::dsl::{Column, Table};
 use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 
 #[derive(Default, Clone)]
@@ -9,6 +9,9 @@ pub struct User {
     pub balance: f64,
     pub is_active: bool,
 }
+
+#[allow(non_upper_case_globals)]
+pub const User: Table<User> = Table::new("user", "user");
 
 impl Relation for User {
     const RELATION_NAME: &'static str = "user";

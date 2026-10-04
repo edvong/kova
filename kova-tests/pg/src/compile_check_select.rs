@@ -18,6 +18,7 @@ fn compile_check_select() {
         .columns(User::name)
         .columns(Sum(Order::amount))
         .columns((User::id, Sum(Order::amount), Count(User::id).alias(User::id)))
+        .columns(ArrayAgg(Order::amount))
         .columns((
             User::id,
             Order::amount,
@@ -34,6 +35,8 @@ fn compile_check_select() {
 
             // (f64 -> f64 -> f64)
             Max(Abs(Order::amount)),
+
+            ArrayAgg(Order::amount),
 
             // Complex State Machine Aggregation Functions Nesting Scalar Functions
             // and Maintaining Original State Link Penetration

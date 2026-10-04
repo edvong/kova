@@ -3,9 +3,7 @@ use crate::dsl::jsonb_text::JsonbText;
 use crate::dsl::operator::JsonOp;
 use crate::dsl::{ExtFunction, ExtOperator};
 use crate::types::Postgres;
-use kova_core::dsl::{
-    Condition, Identifier, IntoIdentifier, IntoOperand, Operand, Operator, WithComponent,
-};
+use kova_core::dsl::{Condition, Identifier, IntoIdentifier, IntoOperand, Operand, Operator};
 use kova_core::types::{IdentifierMeta, SyncMeta};
 use std::marker::PhantomData;
 
@@ -48,7 +46,7 @@ impl<T> ExtVirtualColumn<T> {
 
     #[inline(always)]
     fn op<'a>(self) -> Operand<'a, Postgres> {
-        Operand::from_identifier(self.into_identifier().meta)
+        Operand::from_column(self.into_identifier().meta)
     }
 
     // =====================================================
@@ -140,32 +138,26 @@ impl<T> ExtVirtualColumn<T> {
     pub fn json_contains<'a, V, K, X>(self, val: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, T, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonContains(
-            self.op(),
-            val.into_operand(),
-        )))
+        Condition::from(Operator::from(ExtOperator::JsonContains(self.op(), val.into_operand())))
     }
 
     pub fn json_contained_by<'a, V, K, X>(self, val: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, T, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonContainedBy(
-            self.op(),
-            val.into_operand(),
-        )))
+        Condition::from(Operator::from(ExtOperator::JsonContainedBy(self.op(), val.into_operand())))
     }
 
     pub fn json_has_key<'a, V, K, X>(self, key: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonHasKey(self.op(), key.into_operand())))
+        Condition::from(Operator::from(ExtOperator::JsonHasKey(self.op(), key.into_operand())))
     }
 
     pub fn json_has_any_keys<'a, I, V, K, X>(self, keys: I) -> Condition<'a, Postgres, X>
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Vec<String>, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonHasAnyKeys(
+        Condition::from(Operator::from(ExtOperator::JsonHasAnyKeys(
             self.op(),
             ExtFunction::from_iter(keys),
         )))
@@ -174,25 +166,19 @@ impl<T> ExtVirtualColumn<T> {
     pub fn json_has_all_keys<'a, V, K, X>(self, keys: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, Vec<String>, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonHasAllKeys(
-            self.op(),
-            keys.into_operand(),
-        )))
+        Condition::from(Operator::from(ExtOperator::JsonHasAllKeys(self.op(), keys.into_operand())))
     }
 
     pub fn json_path_exists<'a, V, K, X>(self, path: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonPathExists(
-            self.op(),
-            path.into_operand(),
-        )))
+        Condition::from(Operator::from(ExtOperator::JsonPathExists(self.op(), path.into_operand())))
     }
 
     pub fn json_path_predicate<'a, V, K, X>(self, path: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonPathPredicate(
+        Condition::from(Operator::from(ExtOperator::JsonPathPredicate(
             self.op(),
             path.into_operand(),
         )))

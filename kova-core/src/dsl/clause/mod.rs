@@ -19,17 +19,14 @@ pub use {
     bind::Bind,
     combine::{SetOperation, SetOperator},
     conflict::ExtOnConflict,
-    group_by::{GroupBy, StandardGroupBy},
+    group_by::{GroupBy, IntoGroupBy},
     insert::InsertSource,
     join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
     locking::ExtLocking,
-    order::{
-        BuildOrdering, Direction, NullsOrder, OrderByClause, OrderOperand, Ordering,
-        StandardOperand,
-    },
+    order::{Direction, NullsOrder, OrderByClause, Ordering, IntoOrdering},
     pagination::PaginationClause,
-    projection::{BuildProjection, Projection, ProjectionExpr},
-    table::{Table},
+    projection::{Projection, IntoProjection},
+    table::{FromItem},
 };
 
 pub(crate) use {

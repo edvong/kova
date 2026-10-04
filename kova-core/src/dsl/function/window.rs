@@ -1,9 +1,5 @@
-use crate::dsl::function::{Function, IntoFunction, StandardFunction};
-use crate::dsl::{
-    BuildOrdering, BuildProjection, Direction, EraseX, IntoArg, IntoArgs, IntoIdentifier, Operand,
-    OrderOperand, Ordering, Projection, ProjectionExpr, SingleArgMarker, StandardOperand,
-    WithComponent,
-};
+use crate::dsl::function::{Function, StandardFunction};
+use crate::dsl::{EraseX, IntoArg, IntoArgs, IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, OpAst, Operand, Ordering, Projection, SingleArgMarker};
 use crate::types::Database;
 use std::marker::PhantomData;
 
@@ -79,26 +75,12 @@ impl<'a, DB: Database, X> Window<'a, DB, X> {
     }
 
     pub fn alias<A: IntoIdentifier<T>, T>(self, alias: A) -> Projection<'a, DB, X> {
-        self.build_projection(alias)
+        self.into_projection().alias(alias)
     }
-}
 
-impl<'a, DB: Database, X> BuildProjection<'a, DB, X> for Window<'a, DB, X> {
-    #[inline(always)]
-    fn build_projection<A, U>(self, alias: A) -> Projection<'a, DB, X>
-        where
-            A: IntoIdentifier<U> {
-        Projection::new(
-            ProjectionExpr::Function(self.into_func()),
-            Some(alias.into_identifier().meta),
-        )
-    }
-}
-
-impl<'a, DB: Database, X> IntoFunction<'a, DB> for Window<'a, DB, X> {
     #[inline(always)]
     fn into_func(self) -> Function<'a, DB> {
-        Function::from_std(StandardFunction::Window(Box::new(self.erase_x())))
+        Function::from(StandardFunction::Window(Box::new(self.erase_x())))
     }
 }
 
@@ -118,21 +100,28 @@ impl<'a, DB: Database, X> EraseX for Window<'a, DB, X> {
 
 impl<'a, DB: Database, X> SingleArgMarker for Window<'a, DB, X> {}
 
-impl<'a, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Window<'a, DB, X> {
-    #[inline(always)]
-    fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Function(self.into_func()), None)
+impl<'a, DB: Database, X> IntoOperand<'a, (), DB, OpAst, X> for Window<'a, DB, X> {
+    fn into_operand(self) -> Operand<'a, DB> {
+        Operand::from_function(self.into_func())
     }
 }
 
-impl<'a, DB: Database, X> BuildOrdering<'a, DB, X> for Window<'a, DB, X> {
+impl<'a, DB: Database, X> IntoOrdering<'a, DB, X> for Window<'a, DB, X> {
     #[inline(always)]
-    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(self.into_func())),
-            direction,
-            nulls: None,
-            _marker: PhantomData,
-        }
+    fn into_ordering(self) -> Ordering<'a, DB, X> {
+        Ordering::from_operand(self.into_operand())
+    }
+}
+
+impl<'a, DB: Database, X> IntoProjection<'a, DB, X> for Window<'a, DB, X> {
+    fn into_projection(self) -> Projection<'a, DB, X> {
+        Projection::new(self.into_operand())
+    }
+}
+
+impl<'a, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Window<'a, DB, X> {
+    #[inline(always)]
+    fn into_arg(self) -> Projection<'a, DB, X> {
+        self.into_projection()
     }
 }

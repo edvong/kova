@@ -1,7 +1,7 @@
 use crate::dsl::function::from::{ExtTableFunction, IntoTableFunction};
 use crate::dsl::private::create_virtual_column;
 use crate::types::Postgres;
-use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, Table, VirtualColumn};
+use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, FromItem, VirtualColumn};
 use std::ops::Deref;
 
 pub struct JsonbEachText<T = ()>(pub T);
@@ -32,11 +32,11 @@ impl<T> Deref for JsonbEachText<T> {
 
 impl<T> SingleArgMarker for JsonbEachText<T> {}
 
-impl<'a, T, X> IntoArg<Table<'a, Postgres, X>> for JsonbEachText<T>
+impl<'a, T, X> IntoArg<FromItem<'a, Postgres, X>> for JsonbEachText<T>
     where
         T: IntoTableFunction<'a, X> {
     #[inline(always)]
-    fn into_arg(self) -> Table<'a, Postgres, X> {
-        Table::from_function(ExtTableFunction::JsonbEachText(self.0.into_table_function()), None)
+    fn into_arg(self) -> FromItem<'a, Postgres, X> {
+        FromItem::from_function(ExtTableFunction::JsonbEachText(self.0.into_table_function()), None)
     }
 }

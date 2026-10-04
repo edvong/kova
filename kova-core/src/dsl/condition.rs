@@ -1,7 +1,4 @@
-use crate::dsl::component::WithComponent;
-use crate::dsl::{
-    BuildOrdering, Direction, EraseX, Operator, OrderOperand, Ordering, StandardOperand,
-};
+use crate::dsl::{Direction, EraseX, IntoArg, IntoOrdering, Operator, Ordering};
 use crate::types::Database;
 use std::marker::PhantomData;
 use std::ops::{BitAnd, BitOr, Not};
@@ -12,7 +9,7 @@ pub struct Condition<'a, DB: Database, X> {
 }
 
 enum ConditionNode<'a, DB: Database> {
-    Op(Operator<'a, DB>),
+    Op(Box<Operator<'a, DB>>),
     And(Vec<Self>), // N-ary tree, contiguous memory
     Or(Vec<Self>),
     Not(Box<Self>),
@@ -20,7 +17,7 @@ enum ConditionNode<'a, DB: Database> {
 
 impl<'a, DB: Database, X> Condition<'a, DB, X> {
     pub fn from(operator: Operator<'a, DB>) -> Self {
-        Self { node: ConditionNode::Op(operator), _marker: PhantomData }
+        Self { node: ConditionNode::Op(Box::new(operator)), _marker: PhantomData }
     }
 }
 
@@ -69,15 +66,15 @@ impl<'a, DB: Database, X> Not for Condition<'a, DB, X> {
     }
 }
 
-impl<'a, DB: Database, X> BuildOrdering<'a, DB, X> for Condition<'a, DB, X> {
-    #[inline(always)]
-    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Condition(self.erase_x())),
-            direction,
-            nulls: None,
-            _marker: PhantomData,
-        }
+impl<'a, DB: Database, N, X> IntoOrdering<'a, DB, X> for Condition<'a, DB, N> {
+    fn into_ordering(self) -> Ordering<'a, DB, X> {
+        Ordering::from_condition(self.erase_x())
+    }
+}
+
+impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Condition<'a, DB, X> {
+    fn into_arg(self) -> Ordering<'a, DB, X> {
+        self.into_ordering().direction(Direction::Asc)
     }
 }
 

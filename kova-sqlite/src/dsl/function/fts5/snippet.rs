@@ -2,8 +2,8 @@ use crate::dsl::ExtFunction;
 use crate::types::Sqlite;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{
-    BuildProjection, IntoArg, IntoIdentifier, IntoOperand, Operand, Projection, ProjectionExpr,
-    SingleArgMarker, WithComponent,
+    IntoArg, IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, OpAst, Operand, Ordering,
+    Projection, SingleArgMarker,
 };
 use std::marker::PhantomData;
 
@@ -39,7 +39,7 @@ impl<'a, X> Snippet<'a, X> {
 
     #[inline(always)]
     fn into_func(self) -> Function<'a, Sqlite> {
-        Function::from_ext(ExtFunction::Snippet(
+        Function::from(ExtFunction::Snippet(
             self.table,
             self.col_index,
             Box::new(self.left),
@@ -50,26 +50,32 @@ impl<'a, X> Snippet<'a, X> {
     }
 
     pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, Sqlite, X> {
-        self.build_projection(alias)
-    }
-}
-
-impl<'a, X> BuildProjection<'a, Sqlite, X> for Snippet<'a, X> {
-    #[inline(always)]
-    fn build_projection<A, U>(self, alias: A) -> Projection<'a, Sqlite, X>
-        where
-            A: IntoIdentifier<U> {
-        Projection::new(
-            ProjectionExpr::Function(self.into_func()),
-            Some(alias.into_identifier().meta),
-        )
+        self.into_projection().alias(alias)
     }
 }
 
 impl<'a, X> SingleArgMarker for Snippet<'a, X> {}
 
+impl<'a, X> IntoOperand<'a, (), Sqlite, OpAst, X> for Snippet<'a, X> {
+    fn into_operand(self) -> Operand<'a, Sqlite> {
+        Operand::from_function(self.into_func())
+    }
+}
+
+impl<'a, X> IntoOrdering<'a, Sqlite, X> for Snippet<'a, X> {
+    fn into_ordering(self) -> Ordering<'a, Sqlite, X> {
+        Ordering::from_operand(self.into_operand())
+    }
+}
+
+impl<'a, X> IntoProjection<'a, Sqlite, X> for Snippet<'a, X> {
+    fn into_projection(self) -> Projection<'a, Sqlite, X> {
+        Projection::new(self.into_operand())
+    }
+}
+
 impl<'a, X> IntoArg<Projection<'a, Sqlite, X>> for Snippet<'a, X> {
     fn into_arg(self) -> Projection<'a, Sqlite, X> {
-        Projection::new(ProjectionExpr::Function(self.into_func()), None)
+        self.into_projection()
     }
 }

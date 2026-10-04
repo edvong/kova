@@ -5,10 +5,10 @@ use std::marker::PhantomData;
 type TableFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::TableFunction<'a>;
 
 pub struct TableClause<'a, DB: Database> {
-    items: Vec<Table<'a, DB, ()>>,
+    items: Vec<FromItem<'a, DB, ()>>,
 }
 
-pub struct Table<'a, DB: Database, X> {
+pub struct FromItem<'a, DB: Database, X> {
     inner: TableInner<'a, DB>,
     _marker: PhantomData<X>,
 }
@@ -18,7 +18,7 @@ enum TableInner<'a, DB: Database> {
     Function(TableFunction<'a, DB>, Option<usize>),
 }
 
-impl<'a, DB: Database, X> Table<'a, DB, X> {
+impl<'a, DB: Database, X> FromItem<'a, DB, X> {
     pub fn from_table(name: &'static str, tag: Option<usize>) -> Self {
         Self { inner: TableInner::Table(name, tag), _marker: PhantomData }
     }
@@ -35,35 +35,35 @@ impl<'a, DB: Database, X> Table<'a, DB, X> {
     }
 }
 
-impl<'a, DB: Database, X> EraseX for Table<'a, DB, X> {
-    type Erased = Table<'a, DB, ()>;
+impl<'a, DB: Database, X> EraseX for FromItem<'a, DB, X> {
+    type Erased = FromItem<'a, DB, ()>;
 
     fn erase_x(self) -> Self::Erased {
-        Table { inner: self.inner, _marker: PhantomData }
+        FromItem { inner: self.inner, _marker: PhantomData }
     }
 }
 
-impl<'a, DB: Database, X> SingleArgMarker for Table<'a, DB, X> {}
+impl<'a, DB: Database, X> SingleArgMarker for FromItem<'a, DB, X> {}
 
 
 impl<'a, DB: Database> TableClause<'a, DB> {
     pub(crate) fn new_with(table_name: &'static str) -> Self {
-        Self { items: vec![Table::from_table(table_name, None)] }
+        Self { items: vec![FromItem::from_table(table_name, None)] }
     }
 
     pub(crate) fn new() -> Self {
         Self { items: Vec::new() }
     }
 
-    pub fn add_item(&mut self, table: Table<'a, DB, ()>) {
+    pub fn add_item(&mut self, table: FromItem<'a, DB, ()>) {
         self.items.push(table);
     }
 
     pub fn add_table(&mut self, table: &'static str) {
-        self.items.push(Table::from_table(table, None));
+        self.items.push(FromItem::from_table(table, None));
     }
 
-    pub fn extend<I: IntoIterator<Item = Table<'a, DB, ()>>>(&mut self, iter: I) {
+    pub fn extend<I: IntoIterator<Item = FromItem<'a, DB, ()>>>(&mut self, iter: I) {
         self.items.extend(iter)
     }
 

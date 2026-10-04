@@ -4,9 +4,9 @@ use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
-    IntoJoinConstraint, IntoOperand, JoinType, OpAst, Operand, Ordering, Projection,
-    ProjectionExpr, SetOperator, SingleArgMarker, Table,
+    Condition, FromItem, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
+    IntoJoinConstraint, IntoOperand, IntoProjection, JoinType, OpAst, Operand, Ordering,
+    Projection, SetOperator, SingleArgMarker,
 };
 use kova_core::types::{
     Cte, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
@@ -45,7 +45,7 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X>
         Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
 
-    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<Table<'a, Sqlite, X>>) -> Self {
+    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<FromItem<'a, Sqlite, X>>) -> Self {
         let mut s = Self::new(executor);
         s.statement.from(args);
         s
@@ -224,20 +224,18 @@ impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
         }
     }
 
-    pub fn from_mix<M: Model<DB = Sqlite>>(args: impl IntoArgs<Table<'a, Sqlite, X>>)
-        -> Select<'a, M, InnerQuery, JustAddFrom, X> {
+    pub fn from_mix<M: Model<DB = Sqlite>>(
+        args: impl IntoArgs<FromItem<'a, Sqlite, X>>,
+    ) -> Select<'a, M, InnerQuery, JustAddFrom, X> {
         let mut statement = SelectStatement::new(M::TABLE_NAME);
         statement.from(args);
         Select { executor: (), statement, _marker: PhantomData }
     }
 }
 
-impl<'a, T, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
+impl<'a, T: Model<DB = Sqlite>, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
     pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, Sqlite, X> {
-        Projection::new(
-            ProjectionExpr::Subselect(Box::new(self.statement)),
-            Some(alias.into_identifier().meta),
-        )
+        self.into_projection().alias(alias)
     }
 }
 
@@ -247,6 +245,14 @@ impl<'a, T: Model<DB = Sqlite>, Target, TAG, X> IntoOperand<'a, Target, Sqlite, 
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Sqlite> {
         Operand::from_select(self.statement)
+    }
+}
+
+impl<'a, T, TAG, X> IntoProjection<'a, Sqlite, X> for Select<'a, T, InnerQuery, TAG, X>
+    where
+        T: Model<DB = Sqlite> {
+    fn into_projection(self) -> Projection<'a, Sqlite, X> {
+        Projection::new(Operand::from_select(self.into_select_statement()))
     }
 }
 

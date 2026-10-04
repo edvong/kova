@@ -4,8 +4,8 @@ use crate::dsl::function::ExtFunction;
 use crate::types::Sqlite;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{
-    Comparator, Condition, IntoArg, IntoComparator, IntoIdentifier, IntoOperand, Operand,
-    Projection, ProjectionExpr, SingleArgMarker, WithComponent,
+    Comparator, Condition, IntoArg, IntoComparator, IntoIdentifier, IntoOperand, IntoProjection,
+    OpAst, Operand, Projection, SingleArgMarker,
 };
 use std::marker::PhantomData;
 
@@ -15,30 +15,46 @@ pub struct JsonExtract<'a, X> {
     pub(crate) _marker: PhantomData<X>,
 }
 
+impl<'a, X> SingleArgMarker for JsonExtract<'a, X> {}
+
+impl<'a, T, X> IntoOperand<'a, T, Sqlite, OpAst, X> for JsonExtract<'a, X> {
+    fn into_operand(self) -> Operand<'a, Sqlite> {
+        Operand::from_function(Function::from(ExtFunction::JsonExtract(
+            Box::new(self.base),
+            Box::new(self.path),
+        )))
+    }
+}
+
+impl<'a, X> IntoProjection<'a, Sqlite, X> for JsonExtract<'a, X> {
+    fn into_projection(self) -> Projection<'a, Sqlite, X> {
+        Projection::new(IntoOperand::<(), Sqlite, OpAst, X>::into_operand(self))
+    }
+}
+
 impl<'a, T, X> IntoComparator<'a, T, Sqlite> for JsonExtract<'a, X> {
     #[inline(always)]
     fn into_comparator(self) -> Comparator<'a, T, Sqlite> {
         let func = ExtFunction::JsonExtract(Box::new(self.base), Box::new(self.path));
-        Comparator::new(Operand::from_function(Function::from_ext(func)))
+        Comparator::new(Operand::from_function(Function::from(func)))
     }
 }
-
-impl<'a, X> SingleArgMarker for JsonExtract<'a, X> {}
 
 impl<'a, X> IntoArg<Projection<'a, Sqlite, X>> for JsonExtract<'a, X> {
     #[inline(always)]
     fn into_arg(self) -> Projection<'a, Sqlite, X> {
-        let func = ExtFunction::JsonExtract(Box::new(self.base), Box::new(self.path));
-        Projection::new(ProjectionExpr::Function(Function::from_ext(func)), None)
+        self.into_projection()
     }
 }
 
 // Slapping the alias method onto JsonExtract. Keeping it in its own impl block to keep things clean.
 impl<'a, X> JsonExtract<'a, X> {
+    pub fn new(base: Operand<'a, Sqlite>, path: Operand<'a, Sqlite>) -> JsonExtract<'a, X> {
+        Self { base, path, _marker: PhantomData }
+    }
+
     pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, Sqlite, X> {
-        let mut proj: Projection<'a, Sqlite, X> = self.into_arg();
-        proj.alias(alias);
-        proj
+        self.into_projection().alias(alias)
     }
 }
 

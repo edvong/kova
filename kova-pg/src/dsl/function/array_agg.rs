@@ -3,218 +3,157 @@
 use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{Column, Comparator, Condition, EraseX, IntoComparator, IntoIdentifier, IntoOperand, OpAst, Operand, Ordering, Projection, ProjectionExpr, WithComponent};
-use std::marker::PhantomData;
+use kova_core::dsl::{
+    Condition, EraseX, IntoArg, IntoArgs, IntoComparator, IntoIdentifier, IntoOperand,
+    IntoProjection, OpAst, OpNode, Operand, Ordering, Projection, SingleArgMarker,
+};
 
-pub struct ArrayAggState<'a, X> {
-    pub(crate) target: Box<Operand<'a, Postgres>>,
+pub struct ArrayAgg<'a, T> {
+    pub(crate) target: T,
     pub(crate) distinct: bool,
     pub(crate) order_by: Vec<Ordering<'a, Postgres, ()>>,
-    pub(crate) filter: Option<Box<Condition<'a, Postgres, ()>>>,
-    pub(crate) _marker: PhantomData<X>,
+    pub(crate) filter: Option<Condition<'a, Postgres, ()>>,
 }
 
-impl<'a, X> EraseX for ArrayAggState<'a, X> {
-    type Erased = ArrayAggState<'a, ()>;
+#[allow(non_snake_case)]
+pub const fn ArrayAgg<'a, T>(target: T) -> ArrayAgg<'a, T> {
+    ArrayAgg { target, distinct: false, order_by: Vec::new(), filter: None }
+}
 
-    fn erase_x(self) -> Self::Erased {
-        ArrayAggState {
-            target: self.target,
+impl<'a, T: OpNode> OpNode for ArrayAgg<'a, T> {
+    type Input = T::Output;
+    type Output = Vec<T::Output>;
+}
+
+impl<'a, T> ArrayAgg<'a, T> {
+    pub fn distinct(mut self) -> Self {
+        self.distinct = true;
+        self
+    }
+
+    pub fn order_by<X>(mut self, ordering: impl IntoArgs<Ordering<'a, Postgres, X>>) -> Self {
+        self.order_by = ordering.into_mapped_args(|o| o.erase_x());
+        self
+    }
+
+    pub fn filter<X>(mut self, cond: Condition<'a, Postgres, X>) -> Self {
+        self.filter = Some(cond.erase_x());
+        self
+    }
+
+    pub fn alias<A, U, X>(self, a: A) -> Projection<'a, Postgres, X>
+        where
+            A: IntoIdentifier<U>,
+            Self: IntoProjection<'a, Postgres, X> {
+        self.into_projection().alias(a)
+    }
+}
+
+impl<'a, T> SingleArgMarker for ArrayAgg<'a, T> {}
+
+impl<'a, Target, T, X> IntoOperand<'a, Target, Postgres, OpAst, X> for ArrayAgg<'a, T>
+    where
+        T: OpNode + IntoOperand<'a, <T as OpNode>::Output, Postgres, OpAst, X> {
+    fn into_operand(self) -> Operand<'a, Postgres> {
+        Operand::from_function(Function::from(ExtFunction::ArrayAgg {
+            operand: Box::new(self.target.into_operand()),
             distinct: self.distinct,
             order_by: self.order_by,
             filter: self.filter,
-            _marker: PhantomData,
-        }
+        }))
     }
 }
 
-pub trait IntoArrayAggState<'a> {
-    type X;
-    fn into_state(self) -> ArrayAggState<'a, Self::X>;
-}
-
-impl<'a, X> IntoArrayAggState<'a> for ArrayAggState<'a, X> {
-    type X = X;
-    fn into_state(self) -> ArrayAggState<'a, X> {
-        self
-    }
-}
-
-impl<'a, U> IntoArrayAggState<'a> for Column<U, Postgres> {
-    type X = ();
-    fn into_state(self) -> ArrayAggState<'a, ()> {
-        ArrayAggState {
-            target: Box::new(IntoOperand::<U, Postgres, OpAst, Self::X>::into_operand(self)),
-            distinct: false,
-            order_by: vec![],
-            filter: None,
-            _marker: PhantomData,
-        }
-    }
-}
-
-
-macro_rules! impl_func_array_agg_state {
-    ($($func:ident),+) => {
-        $(
-            impl<'a, C> IntoArrayAggState<'a> for kova_core::dsl::func::$func<C>
-                where
-                    Self: kova_core::dsl::OpNode + IntoOperand<'a, <Self as kova_core::dsl::OpNode>::Output, Postgres, OpAst, C::X>,
-                    C: kova_core::dsl::OpNode + IntoArrayAggState<'a> { // Allow nesting: ArrayAgg(Lower(Upper(col)))
-                type X = C::X; // Upward penetration
-                #[inline(always)]
-                fn into_state(self) -> ArrayAggState<'a, Self::X> {
-                    ArrayAggState {
-                        // use function self IntoOperand
-                        target: Box::new(self.into_operand()),
-                        distinct: false,
-                        order_by: vec![],
-                        filter: None,
-                        _marker: std::marker::PhantomData,
-                    }
-                }
-            }
-        )+
-    };
-}
-
-impl_func_array_agg_state!(Lower, Upper, Abs, Length); // Btrim, Ltrim, Rtrim, Md5
-
-
-
-// ==========================================
-
-pub struct ArrayAgg<T>(pub T);
-
-impl<'a, T> ArrayAgg<T>
+impl<'a, T, X> IntoProjection<'a, Postgres, X> for ArrayAgg<'a, T>
     where
-        T: IntoArrayAggState<'a> {
-    // --- State Transition (Keep the current T::X unchanged) ---
-
-    pub fn distinct(self) -> ArrayAgg<ArrayAggState<'a, T::X>> {
-        let mut state = self.0.into_state();
-        state.distinct = true;
-        ArrayAgg(state)
-    }
-
-    pub fn order_by(
-        self, ordering: Ordering<'a, Postgres, T::X>,
-    ) -> ArrayAgg<ArrayAggState<'a, T::X>> {
-        let mut state = self.0.into_state();
-        state.order_by.push(ordering.erase_x());
-        ArrayAgg(state)
-    }
-
-    pub fn filter<X>(self, cond: Condition<'a, Postgres, X>) -> ArrayAgg<ArrayAggState<'a, X>> {
-        let state = self.0.into_state();
-        ArrayAgg(ArrayAggState {
-            target: state.target,
-            distinct: state.distinct,
-            order_by: state.order_by,
-            filter: Some(Box::new(cond.erase_x())),
-            _marker: PhantomData,
-        })
-    }
-
-    // --- Delivery (Extract T::X) ---
-
-    pub fn alias<U>(self, col: Column<U, Postgres>) -> Projection<'a, Postgres, T::X> {
-        Projection::new(
-            ProjectionExpr::Function(self.build_func()),
-            Some(col.into_identifier().meta),
-        )
-    }
-
-    fn build_func(self) -> Function<'a, Postgres> {
-        Function::from_ext(crate::dsl::ExtFunction::ArrayAgg(self.0.into_state().erase_x()))
+        Self: IntoOperand<'a, T, Postgres, OpAst, X> {
+    fn into_projection(self) -> Projection<'a, Postgres, X> {
+        Projection::new(self.into_operand())
     }
 }
 
-// ====================== Operators ======================
-
-impl<'a, T, Target> IntoComparator<'a, Target, Postgres> for ArrayAgg<T>
+impl<'a, T, X> IntoArg<Projection<'a, Postgres, X>> for ArrayAgg<'a, T>
     where
-        T: IntoArrayAggState<'a> {
-    #[inline(always)]
-    fn into_comparator(self) -> Comparator<'a, Target, Postgres> {
-        Comparator::new(Operand::from_function(Function::from_ext(ExtFunction::ArrayAgg(
-            self.0.into_state().erase_x(),
-        ))))
+        Self: IntoProjection<'a, Postgres, X> {
+    fn into_arg(self) -> Projection<'a, Postgres, X> {
+        self.into_projection()
     }
 }
 
-impl<'a, T> ArrayAgg<T>
+impl<'a, T> ArrayAgg<'a, T>
     where
-        T: IntoArrayAggState<'a> {
-    pub fn eq<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
+        Self: OpNode + IntoOperand<'a, <Self as OpNode>::Output, Postgres, OpAst, ()> {
+    pub fn eq<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().eq(v)
+        // IntoComparator::<'a, <Self as OpNode>::Output, Postgres>::into_comparator(self).eq(v)
     }
 
-    pub fn ne<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn ne<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().ne(v)
     }
 
-    pub fn gt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn gt<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().gt(v)
     }
 
-    pub fn ge<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn ge<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().ge(v)
     }
 
-    pub fn lt<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn lt<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().lt(v)
     }
 
-    pub fn le<V, Target, K>(self, v: V) -> Condition<'a, Postgres, T::X>
+    pub fn le<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
         where
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().le(v)
     }
 
-    pub fn is_null(self) -> Condition<'a, Postgres, T::X> {
-        IntoComparator::<'a, (), Postgres>::into_comparator(self).is_null()
+    pub fn is_null<X>(self) -> Condition<'a, Postgres, X> {
+        IntoComparator::<'a, <Self as OpNode>::Output, Postgres>::into_comparator(self).is_null()
     }
 
-    pub fn is_not_null(self) -> Condition<'a, Postgres, T::X> {
-        IntoComparator::<'a, (), Postgres>::into_comparator(self).is_not_null()
+    pub fn is_not_null<X>(self) -> Condition<'a, Postgres, X> {
+        IntoComparator::<'a, <Self as OpNode>::Output, Postgres>::into_comparator(self)
+            .is_not_null()
     }
 
-    pub fn between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
+    pub fn between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, Postgres, X>
         where
-            L: IntoOperand<'a, Target, Postgres, K, T::X>,
-            U: IntoOperand<'a, Target, Postgres, K, T::X> {
+            L: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X>,
+            U: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().between(lower, upper)
     }
 
-    pub fn not_between<L, U, Target, K>(self, lower: L, upper: U) -> Condition<'a, Postgres, T::X>
+    pub fn not_between<L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, Postgres, X>
         where
-            L: IntoOperand<'a, Target, Postgres, K, T::X>,
-            U: IntoOperand<'a, Target, Postgres, K, T::X> {
+            L: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X>,
+            U: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().not_between(lower, upper)
     }
 
-    pub fn in_list<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
+    pub fn in_list<I, V, K, X>(self, values: I) -> Condition<'a, Postgres, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().in_list(values)
     }
 
-    pub fn not_in_list<I, V, Target, K>(self, values: I) -> Condition<'a, Postgres, T::X>
+    pub fn not_in_list<I, V, Target, K, X>(self, values: I) -> Condition<'a, Postgres, X>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Postgres, K, T::X> {
+            V: IntoOperand<'a, <Self as OpNode>::Output, Postgres, K, X> {
         self.into_comparator().not_in_list(values)
     }
 

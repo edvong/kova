@@ -1,5 +1,5 @@
 use crate::dsl::Operand;
-use crate::dsl::component::{Component, WithComponent};
+use crate::dsl::component::{Component, Ext, Std};
 use crate::types::{Database, Extension};
 
 pub type ExtOperator<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Operator<'a>;
@@ -10,16 +10,25 @@ pub struct Operator<'a, DB: Database> {
     inner: Component<StandardOperator<'a, DB>, ExtOperator<'a, DB>>,
 }
 
-impl<'a, DB: Database> WithComponent for Operator<'a, DB> {
-    type Standard = StandardOperator<'a, DB>;
-    type Extension = ExtOperator<'a, DB>;
-
-    fn from_std(std: Self::Standard) -> Self {
-        Self { inner: Component::standard(std) }
+impl<'a, DB: Database> Operator<'a, DB> {
+    pub fn from<T, M>(op: T) -> Self where T: IntoOperator<'a, DB, M> {
+        op.into_operator()
     }
+}
 
-    fn from_ext(ext: Self::Extension) -> Self {
-        Self { inner: Component::extension(ext) }
+pub trait IntoOperator<'a, DB: Database, Marker> {
+    fn into_operator(self) -> Operator<'a, DB>;
+}
+
+impl<'a, DB: Database> IntoOperator<'a, DB, Std> for StandardOperator<'a, DB> {
+    fn into_operator(self) -> Operator<'a, DB> {
+        Operator { inner: Component::standard(self) }
+    }
+}
+
+impl<'a, DB: Database> IntoOperator<'a, DB, Ext> for ExtOperator<'a, DB> {
+    fn into_operator(self) -> Operator<'a, DB> {
+        Operator { inner: Component::extension(self) }
     }
 }
 

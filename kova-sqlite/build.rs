@@ -32,7 +32,10 @@ fn generate_jsonb_functions() {
             // 1. "Json" -> "Jsonb" (Catches struct names like JsonExtract -> JsonbExtract,
             // and enum variants like ExtFunction::JsonObject -> JsonbObject).
             // 2. "json_" -> "jsonb_" (Catches internal comments, snake_case macro/function names, etc.).
-            let new_content = content.replace("Json", "Jsonb").replace("json_", "jsonb_");
+            let new_content = content
+                .replace("Json", "Jsonb")
+                .replace("json_", "jsonb_")
+                .replace("type Output = String;", "type Output = Vec<u8>;");
 
             let final_content = format!("{}{}", HEADER, new_content);
 

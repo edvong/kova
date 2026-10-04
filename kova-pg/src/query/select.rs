@@ -6,7 +6,11 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{Condition, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, JoinType, OpAst, OpNode, Operand, Ordering, Projection, ProjectionExpr, SetOperator, SingleArgMarker, Table};
+use kova_core::dsl::{
+    Condition, FromItem, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
+    IntoJoinConstraint, IntoOperand, IntoProjection, JoinType, OpAst, OpNode, Operand, Ordering,
+    Projection, SetOperator, SingleArgMarker
+};
 use kova_core::types::{
     Cte, ExecutableAsync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
 };
@@ -44,7 +48,7 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Postgres, T, E, X>
         Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
 
-    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<Table<'a, Postgres, X>>) -> Self {
+    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<FromItem<'a, Postgres, X>>) -> Self {
         let mut s = Self::new(executor);
         s.statement.from(args);
         s
@@ -236,7 +240,7 @@ impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
         }
     }
 
-    pub fn from_mix<M: Model<DB = Postgres>>(args: impl IntoArgs<Table<'a, Postgres, X>>)
+    pub fn from_mix<M: Model<DB = Postgres>>(args: impl IntoArgs<FromItem<'a, Postgres, X>>)
         -> Select<'a, M, InnerQuery, JustAddFrom, X> {
         let mut statement = SelectStatement::new(M::TABLE_NAME);
         statement.from(args);
@@ -244,12 +248,9 @@ impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
     }
 }
 
-impl<'a, T, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
+impl<'a, T: Model<DB = Postgres>, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
     pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, Postgres, X> {
-        Projection::new(
-            ProjectionExpr::Subselect(Box::new(self.statement)),
-            Some(alias.into_identifier().meta),
-        )
+        self.into_projection().alias(alias)
     }
 }
 
@@ -259,6 +260,14 @@ impl<'a, T: Model<DB = Postgres>, Target, TAG, X> IntoOperand<'a, Target, Postgr
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Postgres> {
         Operand::from_select(self.statement)
+    }
+}
+
+impl<'a, T, TAG, X> IntoProjection<'a, Postgres, X> for Select<'a, T, InnerQuery, TAG, X>
+    where
+        T: Model<DB = Postgres> {
+    fn into_projection(self) -> Projection<'a, Postgres, X> {
+        Projection::new(Operand::from_select(self.into_select_statement()))
     }
 }
 

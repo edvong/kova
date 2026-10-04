@@ -1,16 +1,12 @@
-#![allow(clippy::wrong_self_convention)]
-
 use crate::dsl::arg::SingleArgMarker;
-use crate::dsl::component::WithComponent;
 use crate::dsl::identifier::{Identifier, IntoIdentifier};
 use crate::dsl::operand::IntoOperand;
-use crate::dsl::{Assignment, BuildOrdering, Direction, Ordering, Projection, ProjectionExpr, StandardAssignment, StandardOperand};
 use crate::dsl::{
-    IntoArg, OpAst, OpNode, Operand, OrderOperand,
+    Assignment, GroupBy, IntoOrdering, IntoProjection, Ordering, Projection, StandardAssignment,
 };
+use crate::dsl::{IntoArg, OpAst, OpNode, Operand};
 use crate::type_id::type_id;
 use crate::types::{ColumnMeta, Database, Extension, IdentifierMeta, SyncMeta};
-use std::marker::PhantomData;
 use std::ops::Deref;
 
 pub type ExtColumn<T, DB> = <<DB as Database>::Extension<'static> as Extension<'static>>::Column<T>;
@@ -35,10 +31,14 @@ impl<'a, T, DB: Database> Deref for Column<T, DB> {
     }
 }
 
-impl<'a, T, DB: Database> IntoArg<Operand<'a, DB>> for Column<T, DB> {
-    #[inline(always)]
-    fn into_arg(self) -> Operand<'a, DB> {
-        Operand::from_identifier(self.meta.ident)
+impl<'a, T, DB: Database> OpNode for Column<T, DB> {
+    type Input = ();
+    type Output = T;
+}
+
+impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, OpAst, X> for Column<T, DB> {
+    fn into_operand(self) -> Operand<'a, DB> {
+        Operand::from_column(self.into_identifier().meta)
     }
 }
 
@@ -56,6 +56,13 @@ impl<T, DB: Database> IntoIdentifier<T> for &Column<T, DB> {
 
 impl<T, DB: Database> SingleArgMarker for Column<T, DB> {}
 
+impl<'a, T, DB: Database> IntoArg<Operand<'a, DB>> for Column<T, DB> {
+    #[inline(always)]
+    fn into_arg(self) -> Operand<'a, DB> {
+        Operand::from_column(self.meta.ident)
+    }
+}
+
 impl<T, DB: Database> IntoArg<IdentifierMeta> for Column<T, DB> {
     #[inline(always)]
     fn into_arg(self) -> IdentifierMeta {
@@ -70,32 +77,33 @@ impl<T, DB: Database> IntoArg<IdentifierMeta> for &Column<T, DB> {
     }
 }
 
-impl<'a, T, DB: Database, X> BuildOrdering<'a, DB, X> for &Column<T, DB> {
-    #[inline(always)]
-    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Column(self.meta.ident)),
-            direction,
-            nulls: None,
-            _marker: PhantomData,
-        }
+impl<'a, DB: Database, T, X> IntoProjection<'a, DB, X> for Column<T, DB> {
+    fn into_projection(self) -> Projection<'a, DB, X> {
+        Projection::new(IntoOperand::<'a, T, DB, OpAst, X>::into_operand(self))
     }
 }
 
-impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, OpAst, X> for Column<T, DB> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_identifier(self.into_identifier().meta)
+impl<'a, DB: Database, T, X> IntoOrdering<'a, DB, X> for Column<T, DB> {
+    fn into_ordering(self) -> Ordering<'a, DB, X> {
+        Ordering::from_operand(IntoOperand::<'a, T, DB, OpAst, X>::into_operand(self))
     }
-}
-
-impl<'a, T, DB: Database> OpNode for Column<T, DB> {
-    type Input = ();
-    type Output = T;
 }
 
 impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<T, DB> {
     fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.into_identifier().meta), None)
+        self.into_projection()
+    }
+}
+
+impl<'a, DB: Database, T, X> IntoArg<Ordering<'a, DB, X>> for Column<T, DB> {
+    fn into_arg(self) -> Ordering<'a, DB, X> {
+        self.into_ordering()
+    }
+}
+
+impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Column<T, DB> {
+    fn into_arg(self) -> GroupBy<'a, DB, X> {
+        GroupBy::new(IntoOperand::<T, DB, OpAst, X>::into_operand(self))
     }
 }
 
@@ -129,21 +137,20 @@ impl<T, DB: Database> Column<T, DB> {
     }
 
     pub fn set<'a, V, K, X>(self, v: V) -> Assignment<'a, DB, X>
-    where
-        V: IntoOperand<'a, T, DB, K, X> {
-        Assignment::from_std(StandardAssignment::Value(self.meta.ident, v.into_operand()))
+        where
+            V: IntoOperand<'a, T, DB, K, X> {
+        Assignment::from(StandardAssignment::Value(self.meta.ident, v.into_operand()))
     }
 
     pub fn increment<'a, V, U, K, X>(self, v: V) -> Assignment<'a, DB, X>
-    where
-        V: IntoOperand<'a, U, DB, K, X> {
-        Assignment::from_std(StandardAssignment::Increment(self.meta.ident, v.into_operand()))
+        where
+            V: IntoOperand<'a, U, DB, K, X> {
+        Assignment::from(StandardAssignment::Increment(self.meta.ident, v.into_operand()))
     }
 
     pub fn decrement<'a, V, U, K, X>(self, v: V) -> Assignment<'a, DB, X>
-    where
-        V: IntoOperand<'a, U, DB, K, X> {
-        Assignment::from_std(StandardAssignment::Decrement(self.meta.ident, v.into_operand()))
+        where
+            V: IntoOperand<'a, U, DB, K, X> {
+        Assignment::from(StandardAssignment::Decrement(self.meta.ident, v.into_operand()))
     }
-
 }

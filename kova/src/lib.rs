@@ -29,7 +29,7 @@ pub mod types {
 }
 
 pub mod dsl {
-    pub use kova_core::dsl::{Column, VirtualColumn, Condition, Identifier};
+    pub use kova_core::dsl::{Column, VirtualColumn, Condition, Identifier, Table};
 
     #[cfg(feature = "pg")]
     pub use kova_pg::dsl::{Constraint, LockMode, WaitPolicy};
@@ -50,8 +50,8 @@ pub mod dsl {
 
         #[cfg(feature = "pg")]
         pub use kova_pg::dsl::func::{
-            All, Any, ArrayAgg, CumeDist, DenseRank, JsonbAgg, JsonbObject, Lag, Lead, Ntile,
-            PercentRank, Rank, RowNumber,
+            All, Any, ArrayAgg, CumeDist, DenseRank, JsonbAgg, JsonbObject, RowToJson, 
+            Lag, Lead, Ntile, PercentRank, Rank, RowNumber,
             IntoSeriesOp, GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,
         };
 

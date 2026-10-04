@@ -11,7 +11,7 @@ mod column_virtual;
 pub mod func {
     pub use crate::dsl::function::{
         ExtFunction, ExtTableFunction,
-        All, Any, ArrayAgg, JsonbAgg, JsonbObject,
+        All, Any, ArrayAgg, JsonbAgg, JsonbObject, RowToJson,
         CumeDist, DenseRank, Lag, Lead, Ntile, PercentRank, Rank, RowNumber,
         IntoSeriesOp, GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,       
     };

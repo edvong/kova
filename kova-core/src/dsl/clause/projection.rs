@@ -1,7 +1,5 @@
 use crate::dsl::arg::SingleArgMarker;
-use crate::dsl::function::Function;
-use crate::dsl::statement::SelectStatement;
-use crate::dsl::{EraseX, Identifier, IntoArg, IntoIdentifier};
+use crate::dsl::{EraseX, IntoIdentifier, Operand};
 use crate::types::Database;
 use crate::types::IdentifierMeta;
 use std::marker::PhantomData;
@@ -23,59 +21,61 @@ impl<'a, DB: Database> ProjectionClause<'a, DB> {
 }
 
 pub struct Projection<'a, DB: Database, X> {
-    pub(crate) expr: ProjectionExpr<'a, DB>,
+    pub(crate) operand: Operand<'a, DB>,
     pub(crate) alias: Option<IdentifierMeta>,
     _marker: PhantomData<X>,
 }
 
 impl<'a, DB: Database, X> Projection<'a, DB, X> {
-    pub fn transform_expr<F>(mut self, f: F) -> Self
+    pub fn new(operand: Operand<'a, DB>) -> Self {
+        Self { operand, alias: None, _marker: PhantomData }
+    }
+
+    pub fn alias<A, T>(mut self, alias: A) -> Self
         where
-            F: FnOnce(ProjectionExpr<'a, DB>) -> ProjectionExpr<'a, DB> {
-        self.expr = f(self.expr);
+            A: IntoIdentifier<T> {
+        self.alias = Some(alias.into_identifier().meta);
         self
     }
 }
 
-pub trait BuildProjection<'a, DB: Database, X> {
-    fn build_projection<A, T>(self, alias: A) -> Projection<'a, DB, X>
-        where
-            A: IntoIdentifier<T>;
-}
+impl<'a, DB: Database, X> SingleArgMarker for Projection<'a, DB, X> {}
 
 impl<'a, DB: Database, X> EraseX for Projection<'a, DB, X> {
     type Erased = Projection<'a, DB, ()>;
 
     fn erase_x(self) -> Self::Erased {
-        Projection { expr: self.expr, alias: self.alias, _marker: PhantomData }
+        Projection { operand: self.operand, alias: self.alias, _marker: PhantomData }
     }
 }
 
-impl<'a, DB: Database, X> Projection<'a, DB, X> {
-    pub fn new(expr: ProjectionExpr<'a, DB>, alias: Option<IdentifierMeta>) -> Self {
-        Self { expr, alias, _marker: PhantomData }
-    }
-
-    pub fn alias<A, T>(&mut self, alias: A)
-        where
-            A: IntoIdentifier<T> {
-        self.alias = Some(alias.into_identifier().meta);
-    }
+pub trait IntoProjection<'a, DB: Database, X> {
+    fn into_projection(self) -> Projection<'a, DB, X>;
 }
 
-pub enum ProjectionExpr<'a, DB: Database> {
-    Column(IdentifierMeta),
-    Function(Function<'a, DB>),
-    Subselect(Box<SelectStatement<'a, DB>>),
-}
 
-impl<'a, DB: Database, X> SingleArgMarker for Projection<'a, DB, X> {}
+// impl<'a, DB: Database, X> Projection<'a, DB, X> {
+//     pub fn transform_expr<F>(mut self, f: F) -> Self
+//         where
+//             F: FnOnce(ProjectionExpr<'a, DB>) -> ProjectionExpr<'a, DB> {
+//         self.operand = f(self.operand);
+//         self
+//     }
+// }
 
-impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Identifier<T> {
-    fn into_arg(self) -> Projection<'a, DB, X> {
-        Projection::new(ProjectionExpr::Column(self.into_identifier().meta), None)
-    }
-}
+// pub enum ProjectionExpr<'a, DB: Database> {
+//     Column(IdentifierMeta),
+//     Function(Function<'a, DB>),
+//     Subselect(Box<SelectStatement<'a, DB>>),
+// }
+
+
+
+// impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Identifier<T> {
+//     fn into_arg(self) -> Projection<'a, DB, X> {
+//         Projection::new(ProjectionExpr::Column(self.into_identifier().meta), None)
+//     }
+// }
 
 // impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<'a, T, DB> {
 //     fn into_arg(self) -> Projection<'a, DB, X> {

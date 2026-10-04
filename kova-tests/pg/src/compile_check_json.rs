@@ -9,7 +9,7 @@ use crate::models::post::Post;
 use crate::models::user::User;
 use crate::view::post_view::{CommentDto, PostView};
 use kova::Options;
-use kova::dsl::func::{All, Any, JsonbAgg, JsonbObject};
+use kova::dsl::func::{All, Any, JsonbAgg, JsonbObject, RowToJson};
 use kova::query::Select;
 use std::collections::HashMap;
 use url::Url;
@@ -18,8 +18,14 @@ use uuid::Uuid;
 async fn compile_check_complex_jsonb_subquery() -> Result<()> {
     let client = Options::from("").build()?;
 
+    struct T1;
+    
     let _views = client
         .select::<Post>()
+        .columns((
+            RowToJson(User),
+            RowToJson(User.tag::<T1>())
+        ))
         .columns((
             Post::id,
             Post::title,

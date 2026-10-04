@@ -1,10 +1,9 @@
 use crate::dsl::{
-    BuildOrdering, BuildProjection, Condition, Direction,
-    IntoComparator, IntoIdentifier, IntoOperand, OpAst, OpNode, Ordering,
-    Projection,
+    Condition, Direction, IntoComparator, IntoIdentifier, IntoOperand, IntoOrdering,
+    IntoProjection, OpAst, OpNode, Ordering, Projection,
 };
 use crate::types::Database;
-use crate::{impl_base_traits_for_std_func, impl_into_func_for_scalar};
+use crate::{impl_base_traits_for_func, impl_into_func_for_scalar};
 
 pub struct Abs<E>(pub E);
 
@@ -14,8 +13,7 @@ impl<E: OpNode> OpNode for Abs<E> {
 }
 
 impl_into_func_for_scalar!(Abs);
-impl_base_traits_for_std_func!(Abs);
-
+impl_base_traits_for_func!(Abs);
 
 impl<E> Abs<E> {
     // @SOURCE_COMMON_PROJECTION_START
@@ -24,21 +22,21 @@ impl<E> Abs<E> {
             Self: OpNode,
             E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X>,
             A: IntoIdentifier<U> {
-        self.build_projection(alias)
+        self.into_projection().alias(alias)
     }
 
     pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X>
         where
             Self: OpNode,
             E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X> {
-        self.build_ordering(Some(Direction::Asc))
+        self.into_ordering().direction(Direction::Asc)
     }
 
     pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X>
         where
             Self: OpNode,
             E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X> {
-        self.build_ordering(Some(Direction::Desc))
+        self.into_ordering().direction(Direction::Desc)
     }
     // @SOURCE_COMMON_PROJECTION_END
 
@@ -108,7 +106,9 @@ impl<E> Abs<E> {
             .between(lower, upper)
     }
 
-    pub fn not_between<'a, DB: Database, L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
+    pub fn not_between<'a, DB: Database, L, U, K, X>(
+        self, lower: L, upper: U,
+    ) -> Condition<'a, DB, X>
         where
             Self: OpNode + IntoOperand<'a, <Self as OpNode>::Output, DB, OpAst, ()>,
             L: IntoOperand<'a, <Self as OpNode>::Output, DB, K, X>,

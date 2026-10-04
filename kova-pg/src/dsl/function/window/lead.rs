@@ -4,7 +4,7 @@
 use crate::dsl::ExtFunction;
 use crate::types::Postgres;
 use kova_core::dsl::func::{Function, Window};
-use kova_core::dsl::{Column, IntoOperand, Operand, WithComponent};
+use kova_core::dsl::{Column, IntoOperand, Operand};
 use std::marker::PhantomData;
 
 // Unified user-facing wrapper leveraging the Type-State pattern.
@@ -39,7 +39,7 @@ impl<'a, T> Lead<T>
         // Escapes the internal type bounds ('T::X') to project a free generic 'X'.
         // This is critical for polymorphic tuple extraction during AST compilation (IntoArgs),
         // preventing E0277 trait resolution failures when chaining `.columns(...)`.
-        Window::new(Function::from_ext(func))
+        Window::new(Function::from(func))
     }
 }
 
@@ -66,7 +66,7 @@ impl<'a, U> IntoLeadState<'a> for Column<U, Postgres> {
     type X = U;
     fn into_state(self) -> LeadState<'a, Self::X> {
         LeadState {
-            base: Operand::from_identifier(self.identifier()),
+            base: Operand::from_column(self.identifier()),
             offset: None,
             default: None,
             _marker: PhantomData,
@@ -79,7 +79,7 @@ impl<'a, U> IntoLeadState<'a> for &Column<U, Postgres> {
     type X = U;
     fn into_state(self) -> LeadState<'a, Self::X> {
         LeadState {
-            base: Operand::from_identifier(self.identifier()),
+            base: Operand::from_column(self.identifier()),
             offset: None,
             default: None,
             _marker: PhantomData,

@@ -2,7 +2,7 @@ use crate::dsl::{
     CombineClause, Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
     GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
     JoinConstraint, JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
-    ProjectionClause, SetOperator, Table, TableClause, WhereClause, WithClause,
+    ProjectionClause, SetOperator, FromItem, TableClause, WhereClause, WithClause,
 };
 use crate::render::RenderData;
 use crate::type_id;
@@ -70,7 +70,7 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.join.tag_latest(type_id::<Marker>());
     }
 
-    pub fn from<A: IntoArgs<Table<'a, DB, X>>, X>(&mut self, items: A) {
+    pub fn from<A: IntoArgs<FromItem<'a, DB, X>>, X>(&mut self, items: A) {
         self.from.extend(items.into_mapped_args(|t| t.erase_x()));
     }
 

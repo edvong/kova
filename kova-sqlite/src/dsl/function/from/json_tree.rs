@@ -5,7 +5,7 @@ use crate::dsl::function::ExtTableFunction;
 use crate::dsl::function::from::IntoTableFuncArgs;
 use crate::dsl::private::create_virtual_column;
 use crate::types::Sqlite;
-use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, Table, VirtualColumn};
+use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, FromItem, VirtualColumn};
 use std::ops::Deref;
 
 pub struct JsonTree<T = ()>(pub T);
@@ -54,11 +54,11 @@ impl<T> Deref for JsonTree<T> {
 
 impl<T> SingleArgMarker for JsonTree<T> {}
 
-impl<'a, T, X> IntoArg<Table<'a, Sqlite, X>> for JsonTree<T>
+impl<'a, T, X> IntoArg<FromItem<'a, Sqlite, X>> for JsonTree<T>
     where
         T: IntoTableFuncArgs<'a> {
-    fn into_arg(self) -> Table<'a, Sqlite, X> {
+    fn into_arg(self) -> FromItem<'a, Sqlite, X> {
         let args = self.0.into_args();
-        Table::from_function(ExtTableFunction::JsonTree(args.base, args.path), None)
+        FromItem::from_function(ExtTableFunction::JsonTree(args.base, args.path), None)
     }
 }

@@ -1,6 +1,6 @@
 use crate::dsl::assignment::ExtAssignment;
 use crate::types::Sqlite;
-use kova_core::dsl::{Assignment, VirtualColumn, WithComponent};
+use kova_core::dsl::{Assignment, VirtualColumn};
 use kova_core::types::{ColumnMeta, SyncMeta};
 use std::ops::Deref;
 
@@ -39,6 +39,6 @@ impl<T> ExtColumn<T> {
     }
 
     pub fn excluded<'a, X>(&self) -> Assignment<'a, Sqlite, X> {
-        Assignment::from_ext(ExtAssignment::ExcludedColumn(self.meta.ident))
+        Assignment::from(ExtAssignment::ExcludedColumn(self.meta.ident))
     }
 }

@@ -1,6 +1,6 @@
 use crate::dsl::ExtAssignment;
 use crate::types::Postgres;
-use kova_core::dsl::{Assignment, VirtualColumn, WithComponent};
+use kova_core::dsl::{Assignment, VirtualColumn};
 use kova_core::types::{ColumnMeta, SyncMeta};
 use std::ops::Deref;
 
@@ -39,6 +39,6 @@ impl<T> ExtColumn<T> {
     }
 
     pub fn excluded<'a, X>(self) -> Assignment<'a, Postgres, X> {
-        Assignment::from_ext(ExtAssignment::ExcludedColumn(self.meta.ident))
+        Assignment::from(ExtAssignment::ExcludedColumn(self.meta.ident))
     }
 }

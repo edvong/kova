@@ -1,8 +1,10 @@
 use crate::dsl::function::{Function, Quantifier, StandardFunction, Window};
-use crate::dsl::{BuildOrdering, BuildProjection, Condition, Direction, GroupBy, IntoArg, IntoComparator, IntoIdentifier, IntoOperand, OpAst, OpNode, OrderOperand, Ordering, Projection, ProjectionExpr, StandardGroupBy, StandardOperand, WithComponent};
+use crate::dsl::{
+    Condition, Direction, GroupBy, IntoArg, IntoComparator, IntoGroupBy, IntoIdentifier,
+    IntoOperand, IntoOrdering, IntoProjection, OpAst, OpNode, Operand, Ordering, Projection,
+};
 use crate::types::Database;
-use crate::{impl_base_traits_for_std_func, impl_into_func_for_agg};
-use std::marker::PhantomData;
+use crate::{impl_base_traits_for_func, impl_into_func_for_agg};
 
 pub struct Count<E>(pub E);
 pub struct Star;
@@ -18,7 +20,7 @@ impl OpNode for Count<Star> {
 }
 
 impl_into_func_for_agg!(Count);
-impl_base_traits_for_std_func!(Count);
+impl_base_traits_for_func!(Count);
 
 impl<E: OpNode> Count<E> {
     // @GENERATED_AGGREGATE_OPS_START
@@ -43,21 +45,21 @@ impl<E: OpNode> Count<E> {
             Self: OpNode,
             E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X>,
             A: IntoIdentifier<U> {
-        self.build_projection(alias)
+        self.into_projection().alias(alias)
     }
 
     pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X>
         where
             Self: OpNode,
             E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X> {
-        self.build_ordering(Some(Direction::Asc))
+        self.into_ordering().direction(Direction::Asc)
     }
 
     pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X>
         where
             Self: OpNode,
             E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X> {
-        self.build_ordering(Some(Direction::Desc))
+        self.into_ordering().direction(Direction::Desc)
     }
     // @GENERATED_COMMON_PROJECTION_END
 }
@@ -129,7 +131,9 @@ impl<E> Count<E> {
             .between(lower, upper)
     }
 
-    pub fn not_between<'a, DB: Database, L, U, K, X>(self, lower: L, upper: U) -> Condition<'a, DB, X>
+    pub fn not_between<'a, DB: Database, L, U, K, X>(
+        self, lower: L, upper: U,
+    ) -> Condition<'a, DB, X>
         where
             Self: OpNode + IntoOperand<'a, <Self as OpNode>::Output, DB, OpAst, ()>,
             L: IntoOperand<'a, <Self as OpNode>::Output, DB, K, X>,
@@ -173,63 +177,64 @@ impl<E> Count<E> {
 
 // Count<Star> Implement
 
-impl<'a, DB: Database, X> BuildProjection<'a, DB, X> for Count<Star> {
+impl<'a, DB: Database, X> IntoOperand<'a, i64, DB, OpAst, X> for Count<Star> {
+    fn into_operand(self) -> Operand<'a, DB> {
+        Operand::from_function(Function::from(StandardFunction::CountAll))
+    }
+}
+
+impl<'a, DB: Database, X> IntoProjection<'a, DB, X> for Count<Star> {
+    // where
+    //     Self: OpNode,
+    //     E: OpNode + IntoOperand<'a, <Self as OpNode>::Input, DB, OpAst, X> {
     #[inline(always)]
-    fn build_projection<A, U>(self, alias: A) -> Projection<'a, DB, X>
-        where
-            A: IntoIdentifier<U> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Projection::new(ProjectionExpr::Function(func), Some(alias.into_identifier().meta))
+    fn into_projection(self) -> Projection<'a, DB, X> {
+        Projection::new(IntoOperand::<i64, DB, OpAst, X>::into_operand(self))
+    }
+}
+
+impl<'a, DB: Database, X> IntoOrdering<'a, DB, X> for Count<Star> {
+    fn into_ordering(self) -> Ordering<'a, DB, X> {
+        Ordering::from_operand(IntoOperand::<i64, DB, OpAst, X>::into_operand(self))
+    }
+}
+
+impl<'a, DB: Database, X> IntoGroupBy<'a, DB, X> for Count<Star> {
+    fn into_group_by(self) -> GroupBy<'a, DB, X> {
+        GroupBy::new(IntoOperand::<i64, DB, OpAst, X>::into_operand(self))
     }
 }
 
 impl<'a, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Count<Star> {
     #[inline(always)]
     fn into_arg(self) -> Projection<'a, DB, X> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Projection::new(ProjectionExpr::Function(func), None)
-    }
-}
-
-impl<'a, DB: Database, X> BuildOrdering<'a, DB, X> for Count<Star> {
-    #[inline(always)]
-    fn build_ordering(self, direction: Option<Direction>) -> Ordering<'a, DB, X> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Ordering {
-            operand: OrderOperand::from_std(StandardOperand::Function(func)),
-            direction,
-            nulls: None,
-            _marker: PhantomData,
-        }
+        self.into_projection()
     }
 }
 
 impl<'a, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Count<Star> {
     #[inline(always)]
     fn into_arg(self) -> GroupBy<'a, DB, X> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        GroupBy::standard(StandardGroupBy::Function(func))
+        self.into_group_by()
     }
 }
-
 
 impl Count<Star> {
     pub fn alias<'a, DB: Database, A, U, X>(self, alias: A) -> Projection<'a, DB, X>
         where
             A: IntoIdentifier<U> {
-        self.build_projection(alias)
+        self.into_projection().alias(alias)
     }
 
     pub fn asc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Asc))
+        self.into_ordering().direction(Direction::Asc)
     }
 
     pub fn desc<'a, DB: Database, X>(self) -> Ordering<'a, DB, X> {
-        self.build_ordering(Some(Direction::Desc))
+        self.into_ordering().direction(Direction::Desc)
     }
 
     pub fn over<'a, DB: Database, X>(self) -> Window<'a, DB, X> {
-        let func = Function::from_std(StandardFunction::CountAll);
-        Window::new(func)
+        Window::new(Function::from(StandardFunction::CountAll))
     }
 }

@@ -125,6 +125,10 @@ fn compile_check_sqlite_json_combinations() -> Result<()> {
 
     let _raw_tuples = client
         .select::<User>()
+        .columns(EventLog::metadata.json_extract("$.foo"))
+        .columns(JsonObject((User::id, User::name)))
+        .columns(Json(JsonbObject((User::id, User::name))))
+        .columns(JsonGroupArray(User::id))
         .columns((
             // Memo: Raw Extractor bounds
             EventLog::metadata.json_extract("$.foo"),          // -> returns Text (String)

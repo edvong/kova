@@ -1,7 +1,7 @@
 use crate::dsl::function::from::{ExtTableFunction, IntoTableFunction};
 use crate::dsl::private::create_virtual_column;
 use crate::types::Postgres;
-use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, Table, VirtualColumn};
+use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, FromItem, VirtualColumn};
 use std::ops::Deref;
 
 pub struct JsonbArrayElements<T = ()>(pub T);
@@ -29,12 +29,12 @@ impl<T> Deref for JsonbArrayElements<T> {
 
 impl<T> SingleArgMarker for JsonbArrayElements<T> {}
 
-impl<'a, T, X> IntoArg<Table<'a, Postgres, X>> for JsonbArrayElements<T>
+impl<'a, T, X> IntoArg<FromItem<'a, Postgres, X>> for JsonbArrayElements<T>
     where
         T: IntoTableFunction<'a, X> {
     #[inline(always)]
-    fn into_arg(self) -> Table<'a, Postgres, X> {
-        Table::from_function(
+    fn into_arg(self) -> FromItem<'a, Postgres, X> {
+        FromItem::from_function(
             ExtTableFunction::JsonbArrayElements(self.0.into_table_function()),
             None,
         )

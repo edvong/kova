@@ -1,3 +1,6 @@
+pub struct Std;
+pub struct Ext;
+
 pub struct Component<S, E> {
     inner: ComponentKind<S, E>,
 }
@@ -5,14 +8,6 @@ pub struct Component<S, E> {
 enum ComponentKind<S, E> {
     Standard(S),
     Extension(E),
-}
-
-pub trait WithComponent {
-    type Standard;
-    type Extension;
-
-    fn from_std(std: Self::Standard) -> Self;
-    fn from_ext(ext: Self::Extension) -> Self;
 }
 
 impl<S, E> Component<S, E> {

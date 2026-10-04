@@ -2,7 +2,7 @@ use crate::dsl::function::ExtTableFunction;
 use crate::dsl::function::from::IntoTableFuncArgs;
 use crate::dsl::private::create_virtual_column;
 use crate::types::Sqlite;
-use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, Table, VirtualColumn};
+use kova_core::dsl::{Dynamic, IntoArg, SingleArgMarker, FromItem, VirtualColumn};
 use std::ops::Deref;
 
 pub struct JsonEach<T = ()>(pub T);
@@ -51,11 +51,11 @@ impl<T> Deref for JsonEach<T> {
 
 impl<T> SingleArgMarker for JsonEach<T> {}
 
-impl<'a, T, X> IntoArg<Table<'a, Sqlite, X>> for JsonEach<T>
+impl<'a, T, X> IntoArg<FromItem<'a, Sqlite, X>> for JsonEach<T>
     where
         T: IntoTableFuncArgs<'a> {
-    fn into_arg(self) -> Table<'a, Sqlite, X> {
+    fn into_arg(self) -> FromItem<'a, Sqlite, X> {
         let args = self.0.into_args();
-        Table::from_function(ExtTableFunction::JsonEach(args.base, args.path), None)
+        FromItem::from_function(ExtTableFunction::JsonEach(args.base, args.path), None)
     }
 }

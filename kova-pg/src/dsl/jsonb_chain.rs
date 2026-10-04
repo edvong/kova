@@ -5,7 +5,7 @@ use crate::dsl::jsonb_text::JsonbText;
 use crate::dsl::operator::{ExtOperator, JsonOp};
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{Condition, IntoOperand, OpAst, Operand, Operator, WithComponent};
+use kova_core::dsl::{Condition, IntoOperand, OpAst, Operand, Operator};
 use std::marker::PhantomData;
 
 pub struct JsonbChain<'a, T, X> {
@@ -33,7 +33,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
     fn to_operand(self) -> Operand<'a, Postgres> {
         // JsonChain is a function node that produces a value
         let func = ExtFunction::JsonChain { base: Box::new(self.base), ops: self.ops };
-        Operand::from_function(Function::from_ext(func))
+        Operand::from_function(Function::from(func))
     }
 
     // --- Concatenation method: append Vec directly and return Self ---
@@ -94,7 +94,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
     pub fn json_contains<V, K>(self, val: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, T, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonContains(
+        Condition::from(Operator::from(ExtOperator::JsonContains(
             // IntoOperand::<'a, T, Postgres, K, X>::into_operand(self),
             self.to_operand(),
             val.into_operand(),
@@ -104,7 +104,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
     pub fn json_contained_by<V, K>(self, val: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, T, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonContainedBy(
+        Condition::from(Operator::from(ExtOperator::JsonContainedBy(
             self.to_operand(),
             val.into_operand(),
         )))
@@ -113,7 +113,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
     pub fn json_has_key<V, K>(self, key: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonHasKey(
+        Condition::from(Operator::from(ExtOperator::JsonHasKey(
             self.to_operand(),
             key.into_operand(),
         )))
@@ -123,7 +123,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonHasAnyKeys(
+        Condition::from(Operator::from(ExtOperator::JsonHasAnyKeys(
             self.to_operand(),
             ExtFunction::from_iter(keys),
         )))
@@ -133,7 +133,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
         where
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonHasAllKeys(
+        Condition::from(Operator::from(ExtOperator::JsonHasAllKeys(
             self.to_operand(),
             ExtFunction::from_iter(keys),
         )))
@@ -142,7 +142,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
     pub fn json_path_exists<V, K>(self, path: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonPathExists(
+        Condition::from(Operator::from(ExtOperator::JsonPathExists(
             self.to_operand(),
             path.into_operand(),
         )))
@@ -151,7 +151,7 @@ impl<'a, T, X> JsonbChain<'a, T, X> {
     pub fn json_path_predicate<V, K>(self, path: V) -> Condition<'a, Postgres, X>
         where
             V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from_ext(ExtOperator::JsonPathPredicate(
+        Condition::from(Operator::from(ExtOperator::JsonPathPredicate(
             self.to_operand(),
             path.into_operand(),
         )))

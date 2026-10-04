@@ -1,5 +1,6 @@
 use crate::dsl::function::Function;
 use crate::dsl::statement::SelectStatement;
+use crate::dsl::{IntoOrdering, Ordering};
 use crate::types::IdentifierMeta;
 use crate::types::{Database, Encode};
 use crate::{Error, Result};
@@ -30,7 +31,7 @@ impl<'a, DB: Database> Operand<'a, DB> {
         Operand { inner: OperandNode::Value(value) }
     }
 
-    pub fn from_identifier(meta: IdentifierMeta) -> Self {
+    pub fn from_column(meta: IdentifierMeta) -> Self {
         Operand { inner: OperandNode::Column(meta) }
     }
 
@@ -92,5 +93,11 @@ impl<'a, 'b, DB: Database, X> IntoOperand<'a, Vec<u8>, DB, OpValue, X> for &'b [
         &'b [u8]: Encode<'a, DB, X, Vec<u8>> {
     fn into_operand(self) -> Operand<'a, DB> {
         Operand::from_result(self.encode())
+    }
+}
+
+impl<'a, DB: Database, X> IntoOrdering<'a, DB, X> for Operand<'a, DB> {
+    fn into_ordering(self) -> Ordering<'a, DB, X> {
+        Ordering::from_operand(self)
     }
 }

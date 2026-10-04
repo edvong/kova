@@ -35,14 +35,14 @@ pub trait IntoTableFunction<'a, X> {
 impl<'a, U, X> IntoTableFunction<'a, X> for Column<U, Postgres> {
     #[inline(always)]
     fn into_table_function(self) -> Operand<'a, Postgres> {
-        Operand::from_identifier(self.identifier())
+        Operand::from_column(self.identifier())
     }
 }
 
 impl<'a, U, X> IntoTableFunction<'a, X> for &Column<U, Postgres> {
     #[inline(always)]
     fn into_table_function(self) -> Operand<'a, Postgres> {
-        Operand::from_identifier(self.identifier())
+        Operand::from_column(self.identifier())
     }
 }
 

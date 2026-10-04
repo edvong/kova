@@ -4,31 +4,48 @@
 use crate::dsl::ExtFunction;
 use crate::types::Sqlite;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{
-    EraseX, IntoArg, IntoArgs, IntoIdentifier, Projection, ProjectionExpr, SingleArgMarker,
-    WithComponent,
-};
+use kova_core::dsl::{EraseX, IntoArg, IntoArgs, IntoIdentifier, IntoOperand, IntoProjection, OpAst, OpNode, Operand, Projection, SingleArgMarker};
 
 pub struct JsonbObject<T>(pub T);
-
-impl<T> SingleArgMarker for JsonbObject<T> {}
-
-impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for JsonbObject<T>
-    where
-        T: IntoArgs<Projection<'a, Sqlite, X>> {
-    fn into_arg(self) -> Projection<'a, Sqlite, X> {
-        let projs = self.0.into_mapped_args(|p| p.erase_x());
-        let func = Function::from_ext(ExtFunction::JsonbObject(projs));
-        Projection::new(ProjectionExpr::Function(func), None)
-    }
-}
 
 impl<'a, T> JsonbObject<T> {
     pub fn alias<I: IntoIdentifier<A>, A, X>(self, alias: I) -> Projection<'a, Sqlite, X>
         where
-            T: IntoArgs<Projection<'a, Sqlite, X>> {
-        let mut proj: Projection<'a, Sqlite, X> = self.into_arg();
-        proj.alias(alias.into_identifier());
-        proj
+            Self: IntoProjection<'a, Sqlite, X> {
+        self.into_projection().alias(alias)
+    }
+}
+
+impl<T> SingleArgMarker for JsonbObject<T> {}
+
+impl<T> OpNode for JsonbObject<T> {
+    type Input = ();
+    type Output = Vec<u8>;
+}
+
+impl<'a, Target, T, X> IntoOperand<'a, Target, Sqlite, OpAst, X> for JsonbObject<T>
+    where
+        T: IntoArgs<Projection<'a, Sqlite, X>> {
+    fn into_operand(self) -> Operand<'a, Sqlite> {
+        Operand::from_function(Function::from(ExtFunction::JsonbObject(
+            self.0.into_mapped_args(|p| p.erase_x())
+        )))
+    }
+}
+
+impl<'a, T, X> IntoProjection<'a, Sqlite, X> for JsonbObject<T>
+    where
+        Self: IntoOperand<'a, (), Sqlite, OpAst, X> {
+    fn into_projection(self) -> Projection<'a, Sqlite, X> {
+        Projection::new(self.into_operand())
+    }
+}
+
+
+impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for JsonbObject<T>
+    where
+        Self: IntoProjection<'a, Sqlite, X> {
+    fn into_arg(self) -> Projection<'a, Sqlite, X> {
+        self.into_projection()
     }
 }

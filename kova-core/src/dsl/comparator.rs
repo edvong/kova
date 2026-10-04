@@ -3,7 +3,7 @@
 use crate::dsl::condition::Condition;
 use crate::dsl::operand::IntoOperand;
 use crate::dsl::operator::{Operator, StandardOperator};
-use crate::dsl::{OpAst, OpNode, Operand, WithComponent};
+use crate::dsl::{OpAst, OpNode, Operand};
 use crate::types::Database;
 use std::marker::PhantomData;
 
@@ -40,14 +40,14 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
         where
             V: IntoOperand<'a, Target, DB, K, X>,
             F: FnOnce(Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB> {
-        Condition::from(Operator::from_std(op_fn(self.operand, v.into_operand())))
+        Condition::from(Operator::from(op_fn(self.operand, v.into_operand())))
     }
 
     #[inline(always)]
     pub(crate) fn unary_op<F, X>(self, op_fn: F) -> Condition<'a, DB, X>
         where
             F: FnOnce(Operand<'a, DB>) -> StandardOperator<'a, DB> {
-        Condition::from(Operator::from_std(op_fn(self.operand)))
+        Condition::from(Operator::from(op_fn(self.operand)))
     }
 
     #[inline(always)]
@@ -58,7 +58,7 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
             L: IntoOperand<'a, Target, DB, K, X>,
             U: IntoOperand<'a, Target, DB, K, X>,
             F: FnOnce(Operand<'a, DB>, Operand<'a, DB>, Operand<'a, DB>) -> StandardOperator<'a, DB> {
-        Condition::from(Operator::from_std(op_fn(
+        Condition::from(Operator::from(op_fn(
             self.operand,
             lower.into_operand(),
             upper.into_operand(),
@@ -72,7 +72,7 @@ impl<'a, T, DB: Database> Comparator<'a, T, DB> {
             V: IntoOperand<'a, Target, DB, K, X>,
             F: FnOnce(Operand<'a, DB>, Vec<Operand<'a, DB>>) -> StandardOperator<'a, DB> {
         let vec = values.into_iter().map(|val| val.into_operand()).collect();
-        Condition::from(Operator::from_std(op_fn(self.operand, vec)))
+        Condition::from(Operator::from(op_fn(self.operand, vec)))
     }
 
     pub fn eq<V, K, X>(self, v: V) -> Condition<'a, DB, X>

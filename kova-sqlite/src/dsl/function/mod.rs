@@ -31,13 +31,12 @@ pub use fts5::snippet::Snippet;
 
 pub enum ExtFunction<'a> {
     // Aggregated dialects
-    GroupConcat(Box<Projection<'a, Sqlite, ()>>, Option<&'static str>), // (field, separator)
+    GroupConcat(Opnd<'a>, Option<&'static str>), // (field, separator)
+    JsonGroupArray(Opnd<'a>),
+    JsonbGroupArray(Opnd<'a>),
 
     JsonObject(Vec<Projection<'a, Sqlite, ()>>),
     JsonbObject(Vec<Projection<'a, Sqlite, ()>>),
-
-    JsonGroupArray(Box<Projection<'a, Sqlite, ()>>),
-    JsonbGroupArray(Box<Projection<'a, Sqlite, ()>>),
 
     // Scalar dialects
     JsonExtract(Opnd<'a>, Opnd<'a>),
@@ -50,7 +49,7 @@ pub enum ExtFunction<'a> {
     Json(Opnd<'a>),
 
     // table name
-    Bm25(&'static str),
+    Bm25(&'static str, Vec<f64>),
     // table name, column index, left label, right label
     Highlight(&'static str, i32, Opnd<'a>, Opnd<'a>),
     // table name, column index, left label, right label, ellipsis, max tokens
