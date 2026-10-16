@@ -2,6 +2,7 @@
 
 use chrono::{DateTime, Utc};
 use jiff::Timestamp;
+use kova::dsl::{Compatible, Static};
 use kova::types::{Decode, Encode, Engine, Value};
 use kova::{Error, Result, bind_type};
 use std::borrow::Cow;
@@ -12,17 +13,19 @@ use uuid::Uuid;
 
 pub struct AppCodec;
 
+// Memo: Custom cross-type compatibility rule under AppCodec.
+// Allows passing raw `&str` or `String` directly into `Column<Url>` filters/assignments.
+impl<'a> Compatible<Static<Url>, AppCodec> for Static<&'a str> {}
+impl Compatible<Static<Url>, AppCodec> for Static<String> {}
+
 impl<'a> Encode<'a, Engine, AppCodec> for Uuid {
     fn encode(self) -> Result<Value<'a>> {
-        // Ownership: Forced to allocate memory (16 bytes) because self is about to be dropped.
         Ok(Value::Blob(Cow::Owned(self.into_bytes().to_vec())))
     }
 }
-// Explicitly specify `Target = Uuid`
-impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, Uuid> for &'b Uuid {
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b Uuid {
     fn encode(self) -> Result<Value<'a>> {
-        // Zero-Copy: Strip 16-byte array references inside the UUID directly,
-        // 0 memory allocation mapped to SQLite
+        // Zero-copy 16-byte slice borrow directly from Uuid
         Ok(Value::Blob(Cow::Borrowed(self.as_bytes())))
     }
 }
@@ -30,7 +33,6 @@ impl<'a> Decode<'a, Engine, AppCodec> for Uuid {
     fn decode(value: Value<'a>) -> Result<Self> {
         match value {
             Value::Blob(b) => Uuid::from_slice(&b).map_err(|e| Error::ParseError(e.to_string())),
-            // Compatibility fallback: in case there is old data in the database that is stored strings
             Value::Text(t) => Uuid::parse_str(&t).map_err(|e| Error::ParseError(e.to_string())),
             _ => Err(Error::TypeMismatch("Expected Blob (or Text) for Uuid".into())),
         }
@@ -40,15 +42,11 @@ bind_type!(AppCodec, Uuid);
 
 impl<'a> Encode<'a, Engine, AppCodec> for Url {
     fn encode(self) -> Result<Value<'a>> {
-        // After taking ownership, wrap the String inside it by extracting it directly,
-        // avoiding the extra .to_string() copies
         Ok(Value::Text(Cow::Owned(String::from(self))))
     }
 }
-impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, Url> for &'b Url {
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b Url {
     fn encode(self) -> Result<Value<'a>> {
-        // Zero-copy: directly borrow &str,
-        // which is already assembled inside the Url, and allocate 0 memory
         Ok(Value::Text(Cow::Borrowed(self.as_str())))
     }
 }
@@ -67,9 +65,8 @@ impl<'a> Encode<'a, Engine, AppCodec> for DateTime<Utc> {
         Ok(Value::Int8(self.timestamp_millis()))
     }
 }
-impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, DateTime<Utc>> for &'b DateTime<Utc> {
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b DateTime<Utc> {
     fn encode(self) -> Result<Value<'a>> {
-        // The number is copied, there is no heap allocation problem, the value is taken directly
         Ok(Value::Int8(self.timestamp_millis()))
     }
 }
@@ -89,10 +86,8 @@ impl<'a> Encode<'a, Engine, AppCodec> for Timestamp {
         Ok(Value::Text(Cow::Owned(self.to_string())))
     }
 }
-impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, Timestamp> for &'b Timestamp {
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b Timestamp {
     fn encode(self) -> Result<Value<'a>> {
-        // Since Jiff Timestamp's structure is not a contiguous string buffer,
-        // formatting necessarily allocates
         Ok(Value::Text(Cow::Owned(self.to_string())))
     }
 }
@@ -113,9 +108,7 @@ impl<'a> Encode<'a, Engine, AppCodec> for HashMap<String, String> {
         Ok(Value::Text(Cow::Owned(json_str)))
     }
 }
-// 'b: 'a constraint and Target = HashMap
-impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, HashMap<String, String>>
-    for &'b HashMap<String, String> {
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b HashMap<String, String> {
     fn encode(self) -> Result<Value<'a>> {
         let json_str =
             serde_json::to_string(self).map_err(|e| Error::ConversionError(e.to_string()))?;
@@ -134,15 +127,29 @@ impl<'a> Decode<'a, Engine, AppCodec> for HashMap<String, String> {
 }
 bind_type!(AppCodec, HashMap<String, String>);
 
-
 impl<'a> Encode<'a, Engine, AppCodec> for Vec<i32> {
     fn encode(self) -> Result<Value<'a>> {
         Ok(Value::DynamicWriteOwned(Box::new(self)))
     }
 }
-
-impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec, Vec<i32>> for &'b Vec<i32> {
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b Vec<i32> {
     fn encode(self) -> Result<Value<'a>> {
         Ok(Value::DynamicWrite(self))
+    }
+}
+
+impl<'a> Encode<'a, Engine, AppCodec> for Vec<String> {
+    fn encode(self) -> Result<Value<'a>> {
+        Ok(Value::DynamicWriteOwned(Box::new(self)))
+    }
+}
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b Vec<String> {
+    fn encode(self) -> Result<Value<'a>> {
+        Ok(Value::DynamicWrite(self))
+    }
+}
+impl<'a, 'b: 'a> Encode<'a, Engine, AppCodec> for &'b [&'b str] {
+    fn encode(self) -> Result<Value<'a>> {
+        Ok(Value::DynamicWriteOwned(Box::new(self)))
     }
 }

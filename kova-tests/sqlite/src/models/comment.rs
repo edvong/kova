@@ -24,13 +24,9 @@ impl Model for Comment {
 }
 
 #[allow(non_upper_case_globals)]
-impl<'a> Comment {
-    pub const id: Column<i32, Engine> =
-        kova::private::create_column("comment", "id", true);
-    pub const post_id: Column<i32, Engine> =
-        kova::private::create_column("comment", "post_id", false);
-    pub const user_id: Column<i32, Engine> =
-        kova::private::create_column("comment", "user_id", false);
-    pub const content: Column<String, Engine> =
-        kova::private::create_column("comment", "content", false);
+impl Comment {
+    pub const id: Column<i32> = Column::new("comment", "id", true);
+    pub const post_id: Column<i32> = Column::new("comment", "post_id", false);
+    pub const user_id: Column<i32> = Column::new("comment", "user_id", false);
+    pub const content: Column<String> = Column::new("comment", "content", false);
 }

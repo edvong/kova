@@ -11,7 +11,9 @@ pub struct Operator<'a, DB: Database> {
 }
 
 impl<'a, DB: Database> Operator<'a, DB> {
-    pub fn from<T, M>(op: T) -> Self where T: IntoOperator<'a, DB, M> {
+    pub fn from<T, M>(op: T) -> Self
+    where
+        T: IntoOperator<'a, DB, M>, {
         op.into_operator()
     }
 }

@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::dsl::{IntoArgs, IntoInsertSource, FromItem};
+use crate::dsl::IntoInsertSource;
 use crate::types::{Database, Model};
 use std::borrow::Cow;
 
@@ -33,7 +33,6 @@ pub trait Query<'a, DB: Database> {
 
 pub trait Select<'c, 'a, DB: Database, T, E, X> {
     fn new(executor: &'c Executor<E>) -> Self;
-    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<FromItem<'a, DB, X>>) -> Self;
 }
 
 pub trait Insert<'c, 'a, DB: Database, T, E, X> {

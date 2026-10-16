@@ -35,11 +35,21 @@ enum OrderOperand<'a, DB: Database> {
 
 impl<'a, DB: Database, X> Ordering<'a, DB, X> {
     pub fn from_operand(operand: Operand<'a, DB>) -> Self {
-        Self { operand: OrderOperand::Operand(operand), direction: None, nulls: None, _marker: PhantomData }
+        Self {
+            operand: OrderOperand::Operand(operand),
+            direction: None,
+            nulls: None,
+            _marker: PhantomData,
+        }
     }
 
     pub fn from_condition(condition: Condition<'a, DB, ()>) -> Self {
-        Self { operand: OrderOperand::Condition(condition), direction: None, nulls: None, _marker: PhantomData }
+        Self {
+            operand: OrderOperand::Condition(condition),
+            direction: None,
+            nulls: None,
+            _marker: PhantomData,
+        }
     }
 
     pub fn direction(mut self, direction: Direction) -> Self {
@@ -87,7 +97,6 @@ impl<'a, DB: Database, X> Ordering<'a, DB, X> {
         self
     }
 }
-
 
 // pub struct OrderOperand<'a, DB: Database> {
 //     pub(crate) inner: Component<

@@ -11,29 +11,41 @@ mod operand;
 mod operator;
 mod rows;
 
+mod can;
+mod math;
 mod relation;
 pub mod statement;
-mod column_virtual;
 mod table;
+// mod ast;
 
 pub mod func {
     pub use crate::dsl::function::{
-        Abs, Avg, Count, Star, Length, Lower, Max, Min, Sum, Upper,
-        FrameBound, FrameType, Function, StandardFunction, Window,
+        Abs, AbsMarker, Aggregate, AggregateBuild, AggregateMarker, Avg, AvgMarker, Count,
+        CountMarker, FrameBound, FrameType, Function, Length, LengthMarker, Lower, LowerMarker,
+        Max, MaxMarker, Min, MinMarker, Quantifier, Scalar, ScalarBuild, ScalarMarker, SetDistinct,
+        SetFilter, SetOrderBy, SetWindow, StandardFunction, Sum, SumMarker, Upper, UpperMarker,
+        Wildcard, Window,
     };
 }
 
 pub use {
     arg::{IntoArg, IntoArgs, SingleArgMarker},
     assignment::{Assignment, StandardAssignment},
+    can::{
+        CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter, CanGroup, CanMath, CanOrder,
+        CanOrderBy, CanString, CanWindow,
+    },
     clause::*,
     column::Column,
-    column_virtual::{VirtualColumn, Strict, Dynamic},
-    comparator::{Comparator, IntoComparator},
-    component::{Component},
+    comparator::Comparator,
+    component::Component,
     condition::Condition,
     identifier::{Identifier, IntoIdentifier},
-    operand::{IntoOperand, OpNode, OpAst, OpValue, Operand},
+    math::Math,
+    operand::{
+        AstNode, Close, Compatible, Dynamic, IntoArrayOutput, IntoOperand, JsonType, JsonbType,
+        MathOperator, Open, Operand, Static, TypedNode,
+    },
     operator::{Operator, StandardOperator},
     relation::IntoRelationList,
     rows::{InsertRows, IntoInsertSource, IntoRows},

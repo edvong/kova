@@ -3,7 +3,6 @@ mod bind;
 mod combine;
 mod conflict;
 mod distinct;
-mod table;
 mod group_by;
 mod having;
 mod insert;
@@ -12,21 +11,21 @@ mod locking;
 mod order;
 mod pagination;
 mod projection;
+mod table;
 mod r#where;
 mod with;
 
 pub use {
     bind::Bind,
     combine::{SetOperation, SetOperator},
-    conflict::ExtOnConflict,
     group_by::{GroupBy, IntoGroupBy},
     insert::InsertSource,
     join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
     locking::ExtLocking,
-    order::{Direction, NullsOrder, OrderByClause, Ordering, IntoOrdering},
+    order::{Direction, IntoOrdering, NullsOrder, OrderByClause, Ordering},
     pagination::PaginationClause,
-    projection::{Projection, IntoProjection},
-    table::{FromItem},
+    projection::{IntoProjection, Projection},
+    table::FromItem,
 };
 
 pub(crate) use {
@@ -40,8 +39,8 @@ pub(crate) use {
     insert::ValuesClause,
     locking::LockingClause,
     projection::ProjectionClause,
-    r#where::WhereClause,
     table::TableClause,
+    r#where::WhereClause,
     with::{CteNode, WithClause},
 };
 

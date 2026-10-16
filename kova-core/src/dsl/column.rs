@@ -1,156 +1,86 @@
-use crate::dsl::arg::SingleArgMarker;
+use crate::dsl::can::CanGroup;
 use crate::dsl::identifier::{Identifier, IntoIdentifier};
-use crate::dsl::operand::IntoOperand;
+use crate::dsl::operand::{Dynamic, Static};
 use crate::dsl::{
-    Assignment, GroupBy, IntoOrdering, IntoProjection, Ordering, Projection, StandardAssignment,
+    AstNode, CanAlias, CanAssignment, CanCompare, CanMath, CanOrder, CanString, Operand, TypedNode,
 };
-use crate::dsl::{IntoArg, OpAst, OpNode, Operand};
-use crate::type_id::type_id;
-use crate::types::{ColumnMeta, Database, Extension, IdentifierMeta, SyncMeta};
-use std::ops::Deref;
+use crate::types::{ColumnMeta, Database, IdentifierMeta, SetTag};
+use std::marker::PhantomData;
 
-pub type ExtColumn<T, DB> = <<DB as Database>::Extension<'static> as Extension<'static>>::Column<T>;
-
-pub struct Column<T, DB: Database> {
-    pub(crate) meta: ColumnMeta,
-    inner: ExtColumn<T, DB>,
+pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+    meta: M,
+    _marker: PhantomData<(T, Mode)>,
 }
 
-impl<DB: Database, T> Copy for Column<T, DB> {}
-impl<DB: Database, T> Clone for Column<T, DB> {
+impl<T, M: Copy, Mode> Copy for Column<T, M, Mode> {}
+impl<T, M: Copy, Mode> Clone for Column<T, M, Mode> {
     #[inline(always)]
     fn clone(&self) -> Self {
         *self
     }
 }
 
-impl<'a, T, DB: Database> Deref for Column<T, DB> {
-    type Target = ExtColumn<T, DB>;
-    fn deref(&self) -> &Self::Target {
-        &self.inner
+impl<T> Column<T, ColumnMeta, Static<T>> {
+    pub const fn new(source: &'static str, name: &'static str, is_auto: bool) -> Self {
+        Column { meta: ColumnMeta::new(source, name, is_auto), _marker: PhantomData }
     }
 }
 
-impl<'a, T, DB: Database> OpNode for Column<T, DB> {
-    type Input = ();
-    type Output = T;
-}
-
-impl<'a, T, DB: Database, X> IntoOperand<'a, T, DB, OpAst, X> for Column<T, DB> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_column(self.into_identifier().meta)
+impl<T> Column<T, IdentifierMeta, Static<T>> {
+    pub const fn identifier(source: &'static str, name: &'static str) -> Self {
+        Self { meta: IdentifierMeta::new(source, name), _marker: PhantomData }
     }
 }
 
-impl<'a, T, DB: Database> IntoIdentifier<T> for Column<T, DB> {
+impl Column<Dynamic, IdentifierMeta, Dynamic> {
+    pub const fn dynamic(source: &'static str, name: &'static str) -> Self {
+        Self { meta: IdentifierMeta::new(source, name), _marker: PhantomData }
+    }
+}
+
+impl<T, M, Mode> SetTag for Column<T, M, Mode>
+    where
+        M: SetTag {
+    fn set_tag(&mut self, tag: usize) {
+        self.meta.set_tag(tag);
+    }
+}
+
+impl<T, M, Mode> Column<T, M, Mode>
+    where
+        M: IntoIdentifier<T> + Copy {
+    #[inline(always)]
+    pub fn source(&self) -> &'static str {
+        self.meta.into_identifier().meta.source
+    }
+}
+
+impl<T, M, Mode> TypedNode for Column<T, M, Mode> {
+    type Output = Mode;
+}
+
+impl<'a, T, M, Mode> IntoIdentifier<T> for Column<T, M, Mode>
+    where
+        M: IntoIdentifier<T> {
     fn into_identifier(self) -> Identifier<T> {
-        Identifier::from(self.meta.ident)
+        self.meta.into_identifier()
     }
 }
 
-impl<T, DB: Database> IntoIdentifier<T> for &Column<T, DB> {
-    fn into_identifier(self) -> Identifier<T> {
-        Identifier::from(self.meta.ident)
-    }
-}
-
-impl<T, DB: Database> SingleArgMarker for Column<T, DB> {}
-
-impl<'a, T, DB: Database> IntoArg<Operand<'a, DB>> for Column<T, DB> {
+impl<'a, DB: Database, T, M, Mode, X> AstNode<'a, DB, X> for Column<T, M, Mode>
+    where
+        M: IntoIdentifier<T> {
     #[inline(always)]
-    fn into_arg(self) -> Operand<'a, DB> {
-        Operand::from_column(self.meta.ident)
+    fn into_ast_operand(self) -> Operand<'a, DB> {
+        Operand::from_column(self.meta.into_identifier().meta)
     }
 }
 
-impl<T, DB: Database> IntoArg<IdentifierMeta> for Column<T, DB> {
-    #[inline(always)]
-    fn into_arg(self) -> IdentifierMeta {
-        self.meta.ident
-    }
-}
-
-impl<T, DB: Database> IntoArg<IdentifierMeta> for &Column<T, DB> {
-    #[inline(always)]
-    fn into_arg(self) -> IdentifierMeta {
-        self.meta.ident
-    }
-}
-
-impl<'a, DB: Database, T, X> IntoProjection<'a, DB, X> for Column<T, DB> {
-    fn into_projection(self) -> Projection<'a, DB, X> {
-        Projection::new(IntoOperand::<'a, T, DB, OpAst, X>::into_operand(self))
-    }
-}
-
-impl<'a, DB: Database, T, X> IntoOrdering<'a, DB, X> for Column<T, DB> {
-    fn into_ordering(self) -> Ordering<'a, DB, X> {
-        Ordering::from_operand(IntoOperand::<'a, T, DB, OpAst, X>::into_operand(self))
-    }
-}
-
-impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Column<T, DB> {
-    fn into_arg(self) -> Projection<'a, DB, X> {
-        self.into_projection()
-    }
-}
-
-impl<'a, DB: Database, T, X> IntoArg<Ordering<'a, DB, X>> for Column<T, DB> {
-    fn into_arg(self) -> Ordering<'a, DB, X> {
-        self.into_ordering()
-    }
-}
-
-impl<'a, T, DB: Database, X> IntoArg<GroupBy<'a, DB, X>> for Column<T, DB> {
-    fn into_arg(self) -> GroupBy<'a, DB, X> {
-        GroupBy::new(IntoOperand::<T, DB, OpAst, X>::into_operand(self))
-    }
-}
-
-impl<'a, T, DB: Database> SyncMeta<ColumnMeta> for Column<T, DB> {
-    fn sync(&mut self, meta: ColumnMeta) {
-        self.meta = meta;
-        self.inner.sync(meta);
-    }
-}
-
-/// Unconstrained impl blocks, specialized for `const fn` constructors
-impl<T, DB: Database> Column<T, DB> {
-    pub const fn new(meta: ColumnMeta, ext: ExtColumn<T, DB>) -> Self {
-        Self { meta, inner: ext }
-    }
-
-    pub fn meta(self) -> ColumnMeta {
-        self.meta
-    }
-
-    pub fn identifier(self) -> IdentifierMeta {
-        self.meta().ident
-    }
-
-    // Defined at the outermost level
-    #[inline(always)]
-    pub fn tag<Marker: 'static>(mut self) -> Self {
-        self.meta.ident.with_tag(type_id::<Marker>());
-        self.inner.sync(self.meta);
-        self
-    }
-
-    pub fn set<'a, V, K, X>(self, v: V) -> Assignment<'a, DB, X>
-        where
-            V: IntoOperand<'a, T, DB, K, X> {
-        Assignment::from(StandardAssignment::Value(self.meta.ident, v.into_operand()))
-    }
-
-    pub fn increment<'a, V, U, K, X>(self, v: V) -> Assignment<'a, DB, X>
-        where
-            V: IntoOperand<'a, U, DB, K, X> {
-        Assignment::from(StandardAssignment::Increment(self.meta.ident, v.into_operand()))
-    }
-
-    pub fn decrement<'a, V, U, K, X>(self, v: V) -> Assignment<'a, DB, X>
-        where
-            V: IntoOperand<'a, U, DB, K, X> {
-        Assignment::from(StandardAssignment::Decrement(self.meta.ident, v.into_operand()))
-    }
-}
+impl<T, M, Mode> CanCompare for Column<T, M, Mode> {}
+impl<T, M, Mode> CanOrder for Column<T, M, Mode> {}
+impl<T, M, Mode> CanGroup for Column<T, M, Mode> {}
+impl<T, M, Mode> CanAlias for Column<T, M, Mode> {}
+impl<T, M, Mode> CanMath for Column<T, M, Mode> {}
+impl<T, M, Mode> CanString for Column<T, M, Mode> {}
+// Only the physical column (ColumnMeta) has the ability to be assigned values.
+impl<T> CanAssignment for Column<T, ColumnMeta, Static<T>> {}

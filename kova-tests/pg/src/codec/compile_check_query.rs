@@ -7,12 +7,12 @@ use chrono::{DateTime, Utc};
 use jiff::Timestamp;
 use kova::Options;
 use kova::dsl::LockMode;
-use kova::dsl::func::{Count, Star};
+use kova::dsl::func::{Count, Wildcard};
 use std::collections::HashMap;
 use url::Url;
 use uuid::Uuid;
 
-/// Stress Test: Custom Types with PostgreSQL-specific boundaries
+/// Stress Test: Custom Types, Reference Penetration, and Custom Compatible Rules
 async fn compile_check_custom_types() -> Result<()> {
     let client = Options::from("").build()?.codec::<AppCodec>();
 
@@ -21,9 +21,9 @@ async fn compile_check_custom_types() -> Result<()> {
     let site = Url::parse("https://rust-lang.org")?;
 
     let dummy_log = EventLog {
-        id: target_uuid.clone(),
+        id: target_uuid,
         description: "event log".into(),
-        created_at: current_time.clone(),
+        created_at: current_time,
         updated_at: Timestamp::now(),
         website: site.clone(),
         metadata: HashMap::from([
@@ -34,6 +34,7 @@ async fn compile_check_custom_types() -> Result<()> {
 
     client.insert(&dummy_log).execute().await?;
 
+    // 1. Upsert + Single custom scalar extraction (requires bind_type! for bare Uuid)
     let _upsert_id = client
         .insert(&dummy_log)
         .on_conflict(EventLog::id)
@@ -45,39 +46,43 @@ async fn compile_check_custom_types() -> Result<()> {
     let mut new_meta = HashMap::new();
     new_meta.insert("archived".into(), "true".into());
 
-    // Test for native foreign types in the Filter tree (Eq, NotIn, Gt)
+    // 2. Update with owned values, references (&target_uuid), and custom Compatible (&str -> Url)
     let _updated_urls = client
         .update::<EventLog>()
         .set((
-            EventLog::metadata.set(new_meta),
-            EventLog::website.set(Url::parse("https://crates.io").unwrap()),
+            EventLog::metadata.set(&new_meta),
+            EventLog::website.set("https://crates.io"), // Custom Compatible<Static<Url>, AppCodec> for Static<&str>
             EventLog::updated_at.set(Timestamp::now()),
         ))
         .filter(
             EventLog::id.eq(&target_uuid)
                 & EventLog::created_at.gt(&current_time)
+                & EventLog::website.in_list(["https://rust-lang.org", "https://docs.rs"])
                 & EventLog::metadata.is_not_null(),
         )
         .returning(EventLog::website)
         .execute_in::<Url>()
         .await?;
 
-    // 4. Delete + Returning
+    // 3. Delete + Returning bare DateTime<Utc>
     let _deleted_time = client
         .delete::<EventLog>()
-        .filter(EventLog::website.eq(&site))
+        .filter(EventLog::website.eq(&site) | EventLog::website.eq("https://old.site"))
         .returning(EventLog::created_at)
         .execute_in::<DateTime<Utc>>()
         .await?;
 
+    // 4. Select with value vs reference and between/in_list on custom types
     let _logs = client
         .select::<EventLog>()
-        .filter(EventLog::id.eq(&target_uuid))
+        .filter(
+            EventLog::id.in_list([&target_uuid, &Uuid::nil()])
+                & EventLog::created_at.between(&current_time, Utc::now()),
+        )
         .load_as::<EventLog>()
         .await?;
 
-    // Ad-Hoc heterogeneous tuple projection + pessimistic locking
-    // (test for bind_type! macros and locking mechanisms)
+    // 5. Heterogeneous tuple extraction + CountAll() + pessimistic locking
     let _tuples = client
         .select::<EventLog>()
         .columns((
@@ -85,7 +90,7 @@ async fn compile_check_custom_types() -> Result<()> {
             EventLog::website,
             EventLog::created_at,
             EventLog::updated_at,
-            Count(Star),
+            Count(Wildcard),
         ))
         .group_by((EventLog::id, EventLog::website, EventLog::created_at, EventLog::updated_at))
         .order_by(EventLog::created_at.desc())
@@ -93,9 +98,12 @@ async fn compile_check_custom_types() -> Result<()> {
         .load_in::<(Uuid, Url, DateTime<Utc>, Timestamp, i64)>()
         .await?;
 
-    // Option boundary extraction test
+    // 6. Option<CustomType> and Box<CustomType> extraction (handled generically by kova-core)
     let _optional_urls =
         client.select::<EventLog>().columns(EventLog::website).load_in::<Option<Url>>().await?;
+
+    let _boxed_uuids =
+        client.select::<EventLog>().columns(EventLog::id).load_in::<Box<Uuid>>().await?;
 
     let _extracted_maps = client
         .select::<EventLog>()

@@ -1,5 +1,5 @@
-use kova::dsl::Identifier;
-use kova::types::{Database, Decode, Engine, FromRow, Value};
+use kova::dsl::Column;
+use kova::types::{Database, Decode, Engine, FromRow, IdentifierMeta, Value};
 use kova::{Error, bind_type};
 use serde::Deserialize;
 
@@ -18,7 +18,8 @@ pub struct CommentDto {
 
 #[allow(non_upper_case_globals)]
 impl CommentDto {
-    pub const commenter: Identifier<Author> = Identifier::new("comment_dto", "commenter");
+    pub const commenter: Column<Author, IdentifierMeta> =
+        Column::identifier("comment_dto", "commenter");
 }
 
 pub struct PostView {
@@ -39,8 +40,10 @@ impl FromRow for PostView {
 
 #[allow(non_upper_case_globals)]
 impl PostView {
-    pub const author: Identifier<Author> = Identifier::new("post_view", "author");
-    pub const comments: Identifier<Vec<CommentDto>> = Identifier::new("post_view", "comments");
+    pub const author: Column<Author, IdentifierMeta> =
+        Column::identifier("post_view", "author");
+    pub const comments: Column<Vec<CommentDto>, IdentifierMeta> =
+        Column::identifier("post_view", "comments");
 }
 
 pub struct ViewCodec;
@@ -63,7 +66,7 @@ impl<'a> Decode<'a, Engine, ViewCodec> for Vec<CommentDto> {
             Value::Text(t) => {
                 serde_json::from_str(&t).map_err(|e| Error::ParseError(e.to_string()))
             }
-            Value::Null => Ok(Vec::new()), // autowrap COALESCE(..., '[]'::jsonb)
+            Value::Null => Ok(Vec::new()),
             _ => Err(Error::TypeMismatch("Expected Text(JSON) for Vec<CommentDto>".into())),
         }
     }

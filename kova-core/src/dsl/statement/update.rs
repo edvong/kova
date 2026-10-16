@@ -1,6 +1,6 @@
 use crate::dsl::{
-    Assignment, AssignmentClause, Condition, EraseX, IntoArgs, IntoRelationList,
-    Projection, ProjectionClause, TableClause, WhereClause,
+    Assignment, AssignmentClause, Condition, EraseX, IntoArgs, IntoRelationList, Projection,
+    ProjectionClause, TableClause, WhereClause,
 };
 use crate::render::RenderData;
 use crate::types::{Database, Model};
@@ -16,8 +16,9 @@ pub struct UpdateStatement<'a, DB: Database, T> {
 }
 
 impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
-    where
-        T: Model<DB = DB> {
+where
+    T: Model<DB = DB>,
+{
     pub fn new() -> Self {
         Self {
             target: T::TABLE_NAME,
@@ -34,8 +35,8 @@ impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
     }
 
     pub fn set<A, X>(&mut self, assignments: A)
-        where
-            A: IntoArgs<Assignment<'a, DB, X>> {
+    where
+        A: IntoArgs<Assignment<'a, DB, X>>, {
         self.assignments.set(assignments.into_mapped_args(|a| a.erase_x()));
     }
 
@@ -50,8 +51,8 @@ impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
     }
 
     pub fn returning<A, X>(&mut self, cols: A)
-        where
-            A: IntoArgs<Projection<'a, DB, X>> {
+    where
+        A: IntoArgs<Projection<'a, DB, X>>, {
         self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 }

@@ -42,7 +42,7 @@ pub enum Value<'a> {
     /// Escape hatch for serialization with owned data.
     /// Functions identically to `DynamicWrite`, but takes ownership of the boxed trait object,
     /// which is crucial for dynamically constructed values requiring heap allocation.
-    DynamicWriteOwned(Box<dyn ToSql + Sync + Send>),
+    DynamicWriteOwned(Box<dyn ToSql + Sync + Send + 'a>),
 
     /// Escape hatch for deserialization (Database -> Rust).
     /// Captures the unparsed raw byte stream and PostgreSQL type metadata.

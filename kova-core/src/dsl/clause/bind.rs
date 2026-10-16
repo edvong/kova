@@ -29,9 +29,10 @@ impl<'a, DB: Database> BindClause<'a, DB> {
 impl<'a, T: ?Sized> SingleArgMarker for &'a T where T: SingleArgMarker {}
 
 impl<'a, 'b, DB: Database, T: ?Sized> IntoArg<Bind<'a, DB>> for &'b T
-    where
-        &'b T: IntoValue<'a, DB>,
-        T: SingleArgMarker {
+where
+    &'b T: IntoValue<'a, DB>,
+    T: SingleArgMarker,
+{
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
     }
@@ -46,8 +47,8 @@ impl SingleArgMarker for [u8] {}
 impl<const N: usize> SingleArgMarker for [u8; N] {}
 
 impl<'a, const N: usize, DB: Database> IntoArg<Bind<'a, DB>> for [u8; N]
-    where
-        [u8; N]: IntoValue<'a, DB>,
+where
+    [u8; N]: IntoValue<'a, DB>,
 {
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
@@ -57,9 +58,10 @@ impl<'a, const N: usize, DB: Database> IntoArg<Bind<'a, DB>> for [u8; N]
 impl<T> SingleArgMarker for Option<T> where T: SingleArgMarker {}
 
 impl<'a, DB: Database, T> IntoArg<Bind<'a, DB>> for Option<T>
-    where
-        Option<T>: IntoValue<'a, DB>,
-        T: SingleArgMarker {
+where
+    Option<T>: IntoValue<'a, DB>,
+    T: SingleArgMarker,
+{
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
     }
@@ -68,9 +70,10 @@ impl<'a, DB: Database, T> IntoArg<Bind<'a, DB>> for Option<T>
 impl<T> SingleArgMarker for Box<T> where T: SingleArgMarker {}
 
 impl<'a, DB: Database, T> IntoArg<Bind<'a, DB>> for Box<T>
-    where
-        Box<T>: IntoValue<'a, DB>,
-        T: SingleArgMarker {
+where
+    Box<T>: IntoValue<'a, DB>,
+    T: SingleArgMarker,
+{
     fn into_arg(self) -> Bind<'a, DB> {
         Bind(self.into_value())
     }

@@ -9,8 +9,9 @@ pub trait SingleRelationMarker {}
 impl<T: Relation> SingleRelationMarker for T {}
 
 impl<T> IntoRelationList for T
-    where
-        T: Relation + SingleRelationMarker {
+where
+    T: Relation + SingleRelationMarker,
+{
     #[inline(always)]
     fn relation_list() -> Vec<&'static str> {
         vec![T::RELATION_NAME]

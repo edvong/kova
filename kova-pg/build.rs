@@ -3,8 +3,8 @@ use std::fs;
 use std::path::{Path, PathBuf};
 
 fn main() {
-    gen_window();
-    gen_json();
+    // gen_window();
+    // gen_json();
 }
 
 fn gen_window() {

@@ -1,24 +1,30 @@
-use crate::dsl::ExtensionClause;
-use crate::types::{Database, Extension};
-
-pub type ExtOnConflict<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::OnConflict<'a>;
+use crate::dsl::{Assignment, Operand};
+use crate::types::Database;
 
 pub struct OnConflictClause<'a, DB: Database> {
-    inner: ExtOnConflict<'a, DB>,
+    pub(crate) targets: Vec<Operand<'a, DB>>,
+    pub(crate) action: Option<ConflictAction<'a, DB>>,
+}
+
+pub enum ConflictAction<'a, DB: Database> {
+    DoNothing,
+    DoUpdate(Vec<Assignment<'a, DB, ()>>),
 }
 
 impl<'a, DB: Database> OnConflictClause<'a, DB> {
     pub(crate) fn new() -> Self {
-        Self { inner: Default::default() }
-    }
-}
-
-impl<'a, DB: Database> ExtensionClause<ExtOnConflict<'a, DB>> for OnConflictClause<'a, DB> {
-    fn ext(&self) -> &ExtOnConflict<'a, DB> {
-        &self.inner
+        Self { targets: Vec::new(), action: None }
     }
 
-    fn ext_mut(&mut self) -> &mut ExtOnConflict<'a, DB> {
-        &mut self.inner
+    pub fn set_targets(&mut self, targets: Vec<Operand<'a, DB>>) {
+        self.targets = targets;
+    }
+
+    pub fn set_do_nothing(&mut self) {
+        self.action = Some(ConflictAction::DoNothing);
+    }
+
+    pub fn set_do_update(&mut self, assignments: Vec<Assignment<'a, DB, ()>>) {
+        self.action = Some(ConflictAction::DoUpdate(assignments));
     }
 }

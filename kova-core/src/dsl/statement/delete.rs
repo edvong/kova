@@ -10,8 +10,9 @@ pub struct DeleteStatement<'a, DB: Database, T> {
 }
 
 impl<'a, DB: Database, T> DeleteStatement<'a, DB, T>
-    where
-        T: Model<DB = DB> {
+where
+    T: Model<DB = DB>,
+{
     pub fn new() -> Self {
         Self {
             r#where: WhereClause::new(),
@@ -29,8 +30,8 @@ impl<'a, DB: Database, T> DeleteStatement<'a, DB, T>
     }
 
     pub fn returning<A, X>(&mut self, cols: A)
-        where
-            A: IntoArgs<Projection<'a, DB, X>> {
+    where
+        A: IntoArgs<Projection<'a, DB, X>>, {
         self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 }

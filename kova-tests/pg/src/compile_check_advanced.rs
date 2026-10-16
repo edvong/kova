@@ -6,41 +6,32 @@ use crate::models::order::Order;
 use crate::models::post::Post;
 use crate::models::user::User;
 use kova::Options;
-use kova::dsl::{Identifier, VirtualColumn};
+use kova::dsl::Column;
 use kova::query::Select;
-use kova::types::{Engine, Relation};
+use kova::types::{IdentifierMeta, Relation};
 
-// ==========================================
-// Virtual CTE Definition for Advanced Testing
-// ==========================================
 pub struct ActiveUserStats;
 impl Relation for ActiveUserStats {
     const RELATION_NAME: &'static str = "active_user_stats";
 }
 #[allow(non_upper_case_globals)]
 impl ActiveUserStats {
-    pub const user_id: VirtualColumn<Engine, i32> = 
-        kova::private::create_virtual_column("active_user_stats", "user_id");
-    pub const total_spent: VirtualColumn<Engine, f64> = 
-        kova::private::create_virtual_column("active_user_stats", "total_spent");
+    pub const user_id: Column<i32, IdentifierMeta> =
+        Column::identifier("active_user_stats", "user_id");
+    pub const total_spent: Column<f64, IdentifierMeta> =
+        Column::identifier("active_user_stats", "total_spent");
 }
 
 /// Stress Test 1: Polymorphic Joins (ON vs USING)
-/// Memo: Validates the `IntoJoinConstraint` architecture.
-/// It proves that a single API endpoint can seamlessly swallow both boolean AST nodes (Condition)
-/// and Column tuples (for USING clauses) without requiring the user to import wrapper types.
 async fn compile_check_advanced_joins() -> Result<()> {
     let client = Options::from("").build()?;
 
     let _ = client
         .select::<Order>()
-        // Scenario A: Standard ON clause using bitwise condition trees.
         .inner_join::<User>(Order::user_id.eq(User::id) & User::is_active.eq(true))
-        // Scenario B: Single Column USING clause.
         .left_join::<Post>(Post::author_id)
-        // Scenario C: Tuple-based USING clause. The internal macro flawlessly extracts IdentifierMetas.
         .right_join::<Comment>((Comment::user_id, Comment::post_id))
-        // Scenario D: Parameterless Cross Join.
+        .full_join::<User>(Order::user_id)
         .cross_join::<User>()
         .load_as::<Order>()
         .await?;
@@ -49,8 +40,6 @@ async fn compile_check_advanced_joins() -> Result<()> {
 }
 
 /// Stress Test 2: Upsert WHERE
-/// Memo: Verifies that the conflict resolution state machine (`Conflicted`) securely
-/// exposes the `.filter()` method, isolating conflict targets from partial update conditions.
 async fn compile_check_upsert_where() -> Result<()> {
     let client = Options::from("").build()?;
     let users = vec![User::default(), User::default()];
@@ -58,12 +47,7 @@ async fn compile_check_upsert_where() -> Result<()> {
     client
         .insert(&users)
         .on_conflict((User::id, User::name))
-        .update((
-            User::name.set("conflict_resolved"),
-            User::is_active.set(true),
-        ))
-        // Architectural Note: This WHERE clause applies specifically to the UPDATE action
-        // within the ON CONFLICT DO UPDATE statement, not the initial INSERT.
+        .update((User::name.set("conflict_resolved"), User::is_active.set(true)))
         .filter(User::balance.gt(0.0_f64) | User::is_active.eq(false))
         .execute()
         .await?;
@@ -72,22 +56,17 @@ async fn compile_check_upsert_where() -> Result<()> {
 }
 
 /// Stress Test 3: UPDATE ... FROM
-/// Memo: Tests the `<R: IntoRelationList>` generic constraints.
-/// Confirms that both physical Models and virtual CTEs can be dynamically joined into an UPDATE statement.
 async fn compile_check_update_from() -> Result<()> {
     let client = Options::from("").build()?;
 
-    // Scenario A: Heterogeneous Tuple Relation
-    // Fuses a physical table (Order) with a virtual CTE (ActiveUserStats) in a single FROM clause.
     client
         .update::<User>()
         .set(User::is_active.set(true))
-        // The Marker trait completely hides the tuple's internal extraction logic from the user.
         .from::<(Order, ActiveUserStats)>()
         .filter(
             User::id.eq(Order::user_id)
                 & User::id.eq(ActiveUserStats::user_id)
-                & ActiveUserStats::total_spent.gt(5000.0_f64)
+                & ActiveUserStats::total_spent.gt(5000.0_f64),
         )
         .execute()
         .await?;
@@ -95,10 +74,7 @@ async fn compile_check_update_from() -> Result<()> {
     Ok(())
 }
 
-/// Stress Test 4: Set Operations (UNION, INTERSECT, EXCEPT)
-/// Memo: Validates the linear appending of SelectStatements.
-/// The type system deliberately ignores enforcing tuple alignment here to prevent
-/// generic bloat; safety is strictly guarded at the extraction boundary (`load_in`).
+/// Stress Test 4: Set Operations (UNION, UNION ALL, INTERSECT, EXCEPT)
 async fn compile_check_set_operations() -> Result<()> {
     let client = Options::from("").build()?;
 
@@ -106,58 +82,58 @@ async fn compile_check_set_operations() -> Result<()> {
         .select::<User>()
         .columns((User::id, User::name))
         .filter(User::is_active.eq(true))
-        // Seamlessly accepts Subselect wrappers via the `IntoSelectStatement` trait.
+        .union(Select::from::<User>().columns((User::id, User::name)))
         .union_all(
             Select::from::<User>()
                 .columns((User::id, User::name))
-                .filter(User::balance.gt(1000.0_f64))
+                .filter(User::balance.gt(1000.0_f64)),
         )
+        .intersect(Select::from::<User>().columns((User::id, User::name)))
         .except(
             Select::from::<User>()
                 .columns((User::id, User::name))
-                .filter(User::name.like("%test%"))
+                .filter(User::name.like("%test%")),
         )
-        // Final extraction boundary ensures the database payload strictly maps to (i32, String).
         .load_in::<(i32, String)>()
         .await?;
 
     Ok(())
 }
 
-/// Stress Test 5: INSERT ... SELECT (Ultimate Unified API)
-/// Memo: Demonstrates the absolute pinnacle of Rust's `impl Trait` and explicit generic synergy.
-/// No `_` underscores, no wrapping, just pure data flows.
-async fn compile_check_insert_select() -> Result<()> {
+/// Stress Test 5: INSERT ... SELECT & Raw SQL Statement Binding
+async fn compile_check_insert_select_and_raw_statement() -> Result<()> {
     let client = Options::from("").build()?;
 
-    // Scenario A: Data-Driven.
-    // `T` is implicitly inferred as `User` from the parameter type.
     let user = User::default();
     client.insert(user).execute().await?;
 
-    // Scenario B: Query-Driven (Same Table Migration).
-    // Turbofish `::<User>` is required to designate the target table since Subselect carries no target intent.
-    // Thanks to `impl Trait`, we don't need to specify the generic types for the Subselect parameter itself!
     client
         .insert::<User>(
             Select::from::<User>()
                 .columns((User::name, User::is_active))
-                .filter(User::is_active.eq(true))
+                .filter(User::is_active.eq(true)),
         )
         .execute()
         .await?;
 
-    // Scenario C: Query-Driven (Cross-Table ETL).
-    // Extracting from `Post` and piping directly into `User`, with a seamless ON CONFLICT chain.
     client
         .insert::<User>(
             Select::from::<Post>()
                 .columns((Post::title, Post::content))
-                .filter(Post::author_id.is_not_null())
+                .filter(Post::author_id.is_not_null()),
         )
         .on_conflict((User::id, User::name))
         .do_nothing()
         .execute()
+        .await?;
+
+    // Memo: Validates RawStatement polymorphic .bind() with primitives, slices, Options, and fixed arrays
+    let bytes: &[u8] = b"raw";
+    let fixed: [u8; 4] = [1, 2, 3, 4];
+    let _rows = client
+        .statement("SELECT id, name FROM \"user\" WHERE id = $1 AND name = $2 AND raw = $3 AND hash = $4 AND opt = $5")
+        .bind((100_i32, "alice", bytes, fixed, Some(true)))
+        .load_in::<(i32, String)>()
         .await?;
 
     Ok(())

@@ -1,8 +1,8 @@
 use crate::dsl::{
     CombineClause, Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
-    GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
+    FromItem, GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
     JoinConstraint, JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
-    ProjectionClause, SetOperator, FromItem, TableClause, WhereClause, WithClause,
+    ProjectionClause, SetOperator, TableClause, WhereClause, WithClause,
 };
 use crate::render::RenderData;
 use crate::type_id;
@@ -36,8 +36,9 @@ impl<'a, DB: Database, X> IntoSelectStatement<'a, DB, X> for SelectStatement<'a,
 }
 
 impl<'a, DB> SelectStatement<'a, DB>
-    where
-        DB: Database {
+where
+    DB: Database,
+{
     pub fn new(table: &'static str) -> Self {
         Self {
             with: WithClause::new(),
@@ -83,14 +84,14 @@ impl<'a, DB> SelectStatement<'a, DB>
     }
 
     pub fn columns<A, X>(&mut self, cols: A)
-        where
-            A: IntoArgs<Projection<'a, DB, X>> {
+    where
+        A: IntoArgs<Projection<'a, DB, X>>, {
         self.projection.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
     pub fn join<R: Relation, C, X>(&mut self, typ: JoinType, constraint: C)
-        where
-            C: IntoJoinConstraint<'a, DB, X> {
+    where
+        C: IntoJoinConstraint<'a, DB, X>, {
         let join = Join {
             typ,
             target_table: R::RELATION_NAME,
@@ -115,8 +116,8 @@ impl<'a, DB> SelectStatement<'a, DB>
     }
 
     pub fn group_by<A, X>(&mut self, cols: A)
-        where
-            A: IntoArgs<GroupBy<'a, DB, X>> {
+    where
+        A: IntoArgs<GroupBy<'a, DB, X>>, {
         self.group_by.set(cols.into_mapped_args(|g| g.erase_x()))
     }
 
@@ -125,8 +126,8 @@ impl<'a, DB> SelectStatement<'a, DB>
     }
 
     pub fn order_by<A, X>(&mut self, cols: A)
-        where
-            A: IntoArgs<Ordering<'a, DB, X>> {
+    where
+        A: IntoArgs<Ordering<'a, DB, X>>, {
         self.order_by.set(cols.into_mapped_args(|o| o.erase_x()));
     }
 

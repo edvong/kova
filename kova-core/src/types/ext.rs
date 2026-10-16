@@ -1,11 +1,4 @@
-use crate::types::meta::SyncMeta;
-use crate::types::{ColumnMeta, IdentifierMeta};
-
 pub trait Extension<'a>: Sized {
-    type Column<T>: SyncMeta<ColumnMeta> + Copy + Clone;
-
-    type VirtualColumn<T>: SyncMeta<IdentifierMeta> + Copy + Clone;
-
     type Operator<'o> where Self: 'o;
 
     // Expression Extension
@@ -20,5 +13,4 @@ pub trait Extension<'a>: Sized {
     // Clause Extension
     type GroupBy;
     type Locking: Default;
-    type OnConflict<'c>: Default;
 }

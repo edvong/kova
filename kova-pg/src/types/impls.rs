@@ -4,26 +4,12 @@ use kova_core::{Error, Result, impl_native_extract_column};
 use std::borrow::Cow;
 use std::convert::TryFrom;
 
+#[rustfmt::skip]
 impl_native_extract_column!(
     Postgres,
-    i8,
-    i16,
-    i32,
-    i64,
-    u8,
-    u16,
-    u32,
-    u64,
-    isize,
-    usize,
-    f32,
-    f64,
-    bool,
-    String,
-    // str,
-    Vec<u8> // [u8]
+    i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, f32, f64, bool, String, Vec<u8>
 );
-// impl<const N: usize, X> ScalarMarker<Postgres, X> for [u8; N] {}
+// str, [u8]
 
 // ==========================================
 // Native Aligned Types (PG Native Numeric & Bool)

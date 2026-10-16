@@ -7,6 +7,8 @@ use kova_core::types::Database;
 #[derive(Copy, Clone)]
 pub struct Postgres;
 
+pub type Pg = Postgres;
+
 impl Database for Postgres {
     const MAX_PARAMS: usize = 65535;
     type Value<'a> = Value<'a>;

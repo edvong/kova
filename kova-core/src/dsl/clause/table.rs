@@ -45,7 +45,6 @@ impl<'a, DB: Database, X> EraseX for FromItem<'a, DB, X> {
 
 impl<'a, DB: Database, X> SingleArgMarker for FromItem<'a, DB, X> {}
 
-
 impl<'a, DB: Database> TableClause<'a, DB> {
     pub(crate) fn new_with(table_name: &'static str) -> Self {
         Self { items: vec![FromItem::from_table(table_name, None)] }

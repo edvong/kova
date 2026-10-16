@@ -32,8 +32,8 @@ impl<'a, DB: Database, X> Projection<'a, DB, X> {
     }
 
     pub fn alias<A, T>(mut self, alias: A) -> Self
-        where
-            A: IntoIdentifier<T> {
+    where
+        A: IntoIdentifier<T>, {
         self.alias = Some(alias.into_identifier().meta);
         self
     }
@@ -53,7 +53,6 @@ pub trait IntoProjection<'a, DB: Database, X> {
     fn into_projection(self) -> Projection<'a, DB, X>;
 }
 
-
 // impl<'a, DB: Database, X> Projection<'a, DB, X> {
 //     pub fn transform_expr<F>(mut self, f: F) -> Self
 //         where
@@ -68,8 +67,6 @@ pub trait IntoProjection<'a, DB: Database, X> {
 //     Function(Function<'a, DB>),
 //     Subselect(Box<SelectStatement<'a, DB>>),
 // }
-
-
 
 // impl<'a, T, DB: Database, X> IntoArg<Projection<'a, DB, X>> for Identifier<T> {
 //     fn into_arg(self) -> Projection<'a, DB, X> {

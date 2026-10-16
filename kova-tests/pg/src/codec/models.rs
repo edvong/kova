@@ -41,22 +41,11 @@ impl Model for EventLog {
 }
 
 #[allow(non_upper_case_globals)]
-impl<'a> EventLog {
-    pub const id: Column<Uuid, Engine> =
-        kova::private::create_column("event_log", "id", true);
-
-    pub const description: Column<String, Engine> =
-        kova::private::create_column("event_log", "id", false);
-
-    pub const created_at: Column<DateTime<Utc>, Engine> =
-        kova::private::create_column("event_log", "id", false);
-
-    pub const updated_at: Column<Timestamp, Engine> =
-        kova::private::create_column("event_log", "id", false);
-
-    pub const website: Column<Url, Engine> =
-        kova::private::create_column("event_log", "id", false);
-
-    pub const metadata: Column<HashMap<String, String>, Engine> =
-        kova::private::create_column("event_log", "id", false);
+impl EventLog {
+    pub const id: Column<Uuid> = Column::new("event_log", "id", true);
+    pub const description: Column<String> = Column::new("event_log", "description", false);
+    pub const created_at: Column<DateTime<Utc>> = Column::new("event_log", "created_at", false);
+    pub const updated_at: Column<Timestamp> = Column::new("event_log", "updated_at", false);
+    pub const website: Column<Url> = Column::new("event_log", "website", false);
+    pub const metadata: Column<HashMap<String, String>> = Column::new("event_log", "metadata", false);
 }

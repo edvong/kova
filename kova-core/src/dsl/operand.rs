@@ -1,12 +1,20 @@
 use crate::dsl::function::Function;
 use crate::dsl::statement::SelectStatement;
-use crate::dsl::{IntoOrdering, Ordering};
 use crate::types::IdentifierMeta;
 use crate::types::{Database, Encode};
 use crate::{Error, Result};
+use std::marker::PhantomData;
 
 pub struct Operand<'a, DB: Database> {
     inner: OperandNode<'a, DB>,
+}
+
+#[derive(Copy, Clone)]
+pub enum MathOperator {
+    Add,
+    Sub,
+    Mul,
+    Div,
 }
 
 enum OperandNode<'a, DB: Database> {
@@ -14,8 +22,8 @@ enum OperandNode<'a, DB: Database> {
     Column(IdentifierMeta),
     Function(Function<'a, DB>),
     Subselect(Box<SelectStatement<'a, DB>>),
-    /// Captures conversion or building errors inline to avoid interrupting
-    /// the fluent builder API chain, deferring error handling to execution time.
+    Wildcard,
+    Math(MathOperator, Box<Operand<'a, DB>>, Box<Operand<'a, DB>>),
     Error(Box<Error>),
 }
 
@@ -43,61 +51,137 @@ impl<'a, DB: Database> Operand<'a, DB> {
         Operand { inner: OperandNode::Subselect(Box::new(s)) }
     }
 
+    pub fn from_wildcard() -> Self {
+        Operand { inner: OperandNode::Wildcard }
+    }
+
+    pub fn from_math(op: MathOperator, left: Self, right: Self) -> Self {
+        Operand { inner: OperandNode::Math(op, Box::new(left), Box::new(right)) }
+    }
+
     pub fn from_error(err: Error) -> Self {
         Operand { inner: OperandNode::Error(Box::new(err)) }
     }
 }
 
-pub trait OpNode {
-    type Input;
+pub struct JsonType;
+pub struct JsonbType;
+
+// Concrete type marker (handles any Rust type like primitives, Uuid, Url, etc.)
+pub struct Static<T: ?Sized>(PhantomData<T>);
+
+// Marker for dynamic/untyped stuff: SRF columns, JSON chains, subqueries
+pub struct Dynamic;
+
+// Helper to wrap Static<T> into Static<Vec<T>> (needed by ArrayAgg, etc.)
+pub trait IntoArrayOutput {
     type Output;
 }
 
-pub struct OpAst;
-pub struct OpValue;
+impl<T> IntoArrayOutput for Static<T> {
+    type Output = Static<Vec<T>>;
+}
 
+impl IntoArrayOutput for Dynamic {
+    type Output = Dynamic;
+}
+
+pub trait TypedNode {
+    type Output;
+}
+
+impl<T: TypedNode> TypedNode for Option<T> {
+    type Output = T::Output;
+}
+
+// High-level: turns AST nodes into Operands directly (keeps raw literals out)
+pub trait AstNode<'a, DB: Database, X>: TypedNode {
+    fn into_ast_operand(self) -> Operand<'a, DB>;
+}
+
+// Marker: for internal AST wrappers only (Node<T>, Select, Any, All, etc.)
+pub struct Close;
+
+// Marker: blanket impl for arbitrary Rust values that implement Encode
+pub struct Open;
+
+// Low-level: converts to Operand while checking target type compatibility
 pub trait IntoOperand<'a, Target, DB: Database, K, X> {
     fn into_operand(self) -> Operand<'a, DB>;
 }
 
-impl<'a, T, DB, X> IntoOperand<'a, T, DB, OpValue, X> for T
+impl<'a, T, Target, DB, X> IntoOperand<'a, Target, DB, Open, X> for T
     where
         DB: Database,
-        T: Encode<'a, DB, X, T> {
+        Static<T>: Compatible<Target, X>,
+        T: Encode<'a, DB, X> {
+    #[inline(always)]
     fn into_operand(self) -> Operand<'a, DB> {
         Operand::from_result(self.encode())
     }
 }
 
-impl<'a, 'b, T, DB, X> IntoOperand<'a, T, DB, OpValue, X> for &'b T
-    where
-        DB: Database,
-        &'b T: Encode<'a, DB, X, T> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_result(self.encode())
-    }
+// ------------------------------------------
+// Type compatibility matrix
+// ------------------------------------------
+pub trait Compatible<Target, X> {}
+
+// 1. Static -> Static
+impl<T, X> Compatible<Static<T>, X> for Static<T> {}
+impl<'a, T, X> Compatible<Static<T>, X> for Static<&'a T> {}
+impl<T, X> Compatible<Static<Option<T>>, X> for Static<T> {}
+impl<'a, T, X> Compatible<Static<Option<T>>, X> for Static<&'a T> {}
+
+impl<'a, X> Compatible<Static<String>, X> for Static<&'a str> {}
+impl<'a, X> Compatible<Static<Option<String>>, X> for Static<&'a str> {}
+impl<X> Compatible<Static<String>, X> for Static<char> {}
+impl<X> Compatible<Static<Option<String>>, X> for Static<char> {}
+
+impl<'a, T, X> Compatible<Static<Vec<T>>, X> for Static<&'a [T]> {}
+impl<'a, T, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'a [T]> {}
+impl<T, const N: usize, X> Compatible<Static<Vec<T>>, X> for Static<[T; N]> {}
+impl<'a, T, const N: usize, X> Compatible<Static<Vec<T>>, X> for Static<&'a [T; N]> {}
+impl<T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<[T; N]> {}
+impl<'a, T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'a [T; N]> {}
+
+impl<'a, X> Compatible<Static<JsonbType>, X> for Static<&'a str> {}
+impl<X> Compatible<Static<JsonbType>, X> for Static<String> {}
+impl<'a, X> Compatible<Static<JsonbType>, X> for Static<&'a String> {}
+impl<X> Compatible<Static<JsonbType>, X> for Static<i32> {}
+impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
+
+impl<'a, X> Compatible<Static<JsonType>, X> for Static<&'a str> {}
+impl<X> Compatible<Static<JsonType>, X> for Static<String> {}
+impl<'a, X> Compatible<Static<JsonType>, X> for Static<&'a String> {}
+impl<X> Compatible<Static<JsonType>, X> for Static<i32> {}
+impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
+
+macro_rules! impl_compatible_cast {
+    ($from:ty => $($to:ty),+) => {
+        $(
+            impl<X> Compatible<Static<$to>, X> for Static<$from> {}
+            impl<'a, X> Compatible<Static<$to>, X> for Static<&'a $from> {}
+            impl<X> Compatible<Static<Option<$to>>, X> for Static<$from> {}
+            impl<'a, X> Compatible<Static<Option<$to>>, X> for Static<&'a $from> {}
+        )+
+    };
 }
 
-// Allow String Column accept &str
-impl<'a, 'b, DB: Database, X> IntoOperand<'a, String, DB, OpValue, X> for &'b str
-    where
-        &'b str: Encode<'a, DB, X, String> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_result(self.encode())
-    }
-}
+impl_compatible_cast!(i8  => i16, i32, i64, i128, isize, f32, f64);
+impl_compatible_cast!(i16 => i32, i64, i128, isize, f32, f64);
+impl_compatible_cast!(i32 => i64, i128, f64);
+impl_compatible_cast!(i64 => i128);
+impl_compatible_cast!(u8  => u16, u32, u64, u128, usize, i16, i32, i64, i128, isize, f32, f64);
+impl_compatible_cast!(u16 => u32, u64, u128, usize, i32, i64, i128, f32, f64);
+impl_compatible_cast!(u32 => u64, u128, usize, i64, i128, f64);
+impl_compatible_cast!(u64 => u128);
+impl_compatible_cast!(f32 => f64);
 
-// Allow Vec<u8> Column accept &[u8]
-impl<'a, 'b, DB: Database, X> IntoOperand<'a, Vec<u8>, DB, OpValue, X> for &'b [u8]
-    where
-        &'b [u8]: Encode<'a, DB, X, Vec<u8>> {
-    fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_result(self.encode())
-    }
-}
+// 2. Static -> Dynamic
+impl<T, X> Compatible<Dynamic, X> for Static<T> {}
 
-impl<'a, DB: Database, X> IntoOrdering<'a, DB, X> for Operand<'a, DB> {
-    fn into_ordering(self) -> Ordering<'a, DB, X> {
-        Ordering::from_operand(self)
-    }
-}
+// 3. Dynamic -> Static
+impl<T, X> Compatible<Static<T>, X> for Dynamic {}
+
+// 4. Dynamic -> Dynamic
+impl<X> Compatible<Dynamic, X> for Dynamic {}

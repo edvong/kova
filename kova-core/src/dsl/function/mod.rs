@@ -1,108 +1,144 @@
-mod window;
-mod macros;
-#[rustfmt::skip]
-mod scalar;
-#[rustfmt::skip]
 mod aggregate;
+mod scalar;
+mod window;
+// mod can;
+// mod macros;
 
-pub use crate::dsl::function::window::{FrameBound, FrameType, Window};
-pub use crate::dsl::function::aggregate::{
-    avg::Avg, count::Count, count::Star, max::Max, min::Min, sum::Sum,
+pub use self::aggregate::{
+    Aggregate, AggregateBuild, AggregateMarker, Avg, AvgMarker, Count, CountArg, CountMarker, Max,
+    MaxMarker, Min, MinMarker, Sum, SumMarker, Wildcard,
 };
-pub use crate::dsl::function::scalar::{
-    abs::Abs, length::Length, lower::Lower, upper::Upper,    
+pub use self::scalar::{
+    Abs, AbsMarker, Length, LengthMarker, Lower, LowerMarker, Scalar, ScalarBuild, ScalarMarker,
+    Upper, UpperMarker,
 };
-
 use crate::dsl::component::{Ext, Std};
-use crate::dsl::{Component, Operand};
+pub use crate::dsl::function::window::{FrameBound, FrameType, Window};
+use crate::dsl::{Component, Condition, Operand, Ordering};
 use crate::types::{Database, Extension};
 
 pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
 
 pub struct Function<'a, DB: Database> {
     inner: Component<StandardFunction<'a, DB>, ExtFunction<'a, DB>>,
+    quantifier: Option<Quantifier>,
+    order_by: Vec<Ordering<'a, DB, ()>>,
+    window: Option<Box<Window<'a, DB, ()>>>,
+    filter: Option<Box<Condition<'a, DB, ()>>>,
 }
 
 impl<'a, DB: Database> Function<'a, DB> {
-    pub fn from<T, M>(func: T) -> Self where T: IntoFunction<'a, DB, M> {
+    pub fn from<T, M>(func: T) -> Self
+    where
+        T: IntoFunctionInner<'a, DB, M>, {
         func.into_function()
     }
-}
 
-pub trait IntoFunction<'a, DB: Database, Marker> {
-    fn into_function(self) -> Function<'a, DB>;
-}
+    pub fn quantifier(mut self, quantifier: Quantifier) -> Self {
+        self.quantifier = Some(quantifier);
+        self
+    }
 
-impl<'a, DB: Database> IntoFunction<'a, DB, Std> for StandardFunction<'a, DB> {
-    fn into_function(self) -> Function<'a, DB> {
-        Function { inner: Component::standard(self) }
+    pub fn order_by(mut self, order_by: Vec<Ordering<'a, DB, ()>>) -> Self {
+        self.order_by = order_by;
+        self
+    }
+
+    pub fn window(mut self, window: Window<'a, DB, ()>) -> Self {
+        self.window = Some(Box::new(window));
+        self
+    }
+
+    pub fn filter(mut self, cond: Condition<'a, DB, ()>) -> Self {
+        self.filter = Some(Box::new(cond));
+        self
     }
 }
 
-impl<'a, DB: Database> IntoFunction<'a, DB, Ext> for ExtFunction<'a, DB> {
-    fn into_function(self) -> Function<'a, DB> {
-        Function { inner: Component::extension(self) }
-    }
+pub trait SetDistinct {
+    fn set_distinct(self, quantifier: Quantifier) -> Self;
 }
+
+pub trait SetWindow<'a, DB: Database, X> {
+    fn set_window(self, window: Window<'a, DB, ()>) -> Self;
+}
+
+pub trait SetFilter<'a, DB: Database, X> {
+    fn set_filter(self, cond: Condition<'a, DB, ()>) -> Self;
+}
+
+pub trait SetOrderBy<'a, DB: Database, X> {
+    fn set_order_by(self, ordering: Vec<Ordering<'a, DB, ()>>) -> Self;
+}
+
+// impl<'a, DB: Database> SetDistinct for Function<'a, DB> {
+//     fn set_distinct(mut self, quantifier: Quantifier) -> Self {
+//         self.quantifier = Some(quantifier);
+//         self
+//     }
+// }
+//
+// impl<'a, DB: Database, X> SetWindow<'a, DB, X> for Function<'a, DB> {
+//     fn set_window(mut self, window: Window<'a, DB, ()>) -> Self {
+//         self.window = Some(Box::new(window));
+//         self
+//     }
+// }
+//
+// impl<'a, DB: Database, X> SetFilter<'a, DB, X> for Function<'a, DB> {
+//     fn set_filter(mut self, cond: Condition<'a, DB, ()>) -> Self {
+//         self.filter = Some(Box::new(cond));
+//         self
+//     }
+// }
 
 pub enum StandardFunction<'a, DB: Database> {
-    CountAll,
-    Count(Box<Operand<'a, DB>>, Quantifier),
-    Sum(Box<Operand<'a, DB>>, Quantifier),
-    Max(Box<Operand<'a, DB>>, Quantifier),
-    Min(Box<Operand<'a, DB>>, Quantifier),
-    Avg(Box<Operand<'a, DB>>, Quantifier),
+    Count(Box<Operand<'a, DB>>),
+    Sum(Box<Operand<'a, DB>>),
+    Max(Box<Operand<'a, DB>>),
+    Min(Box<Operand<'a, DB>>),
+    Avg(Box<Operand<'a, DB>>),
 
     Length(Box<Operand<'a, DB>>),
     Lower(Box<Operand<'a, DB>>),
     Upper(Box<Operand<'a, DB>>),
     Abs(Box<Operand<'a, DB>>),
-
-    Window(Box<Window<'a, DB, ()>>),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy)]
 pub enum Quantifier {
     All,
     Distinct,
 }
 
-// pub trait IntoFunction<'a, DB: Database>: Sized {
-//     fn into_func(self) -> Function<'a, DB>;
+// pub trait IntoFunction<'a, DB: Database, X> {
+//     fn into_function(self) -> Function<'a, DB>;
 // }
 
-// pub(crate) trait IntoAggregate<'a, DB: Database>: IntoFunction<'a, DB> {
-//     fn into_aggregate_with(self, quantifier: Quantifier) -> Function<'a, DB>;
-// 
-//     #[inline(always)]
-//     fn into_aggregate_distinct(self) -> Function<'a, DB> {
-//         self.into_aggregate_with(Quantifier::Distinct)
-//     }
-// }
+pub trait IntoFunctionInner<'a, DB: Database, Marker> {
+    fn into_function(self) -> Function<'a, DB>;
+}
 
-// impl<'a, DB: Database> Function<'a, DB> {
-//     pub fn alias<U, X>(self, col: Column<'a, U, DB>) -> Projection<'a, DB, X> {
-//         Projection::new(
-//             ProjectionExpr::Function(self),
-//             Some(col.identifier())
-//         )
-//     }
-//
-//     pub fn asc<X>(self) -> Ordering<'a, DB, X> {
-//         Ordering {
-//             operand: OrderOperand::from_std(StandardOperand::Function(self)),
-//             direction: Some(Direction::Asc),
-//             nulls: None,
-//             _marker:PhantomData,
-//         }
-//     }
-//
-//     pub fn desc<X>(self) -> Ordering<'a, DB, X> {
-//         Ordering {
-//             operand: OrderOperand::from_std(StandardOperand::Function(self)),
-//             direction: Some(Direction::Desc),
-//             nulls: None,
-//             _marker:PhantomData,
-//         }
-//     }
-// }
+impl<'a, DB: Database> IntoFunctionInner<'a, DB, Std> for StandardFunction<'a, DB> {
+    fn into_function(self) -> Function<'a, DB> {
+        Function {
+            inner: Component::standard(self),
+            quantifier: None,
+            order_by: Vec::new(),
+            window: None,
+            filter: None,
+        }
+    }
+}
+
+impl<'a, DB: Database> IntoFunctionInner<'a, DB, Ext> for ExtFunction<'a, DB> {
+    fn into_function(self) -> Function<'a, DB> {
+        Function {
+            inner: Component::extension(self),
+            quantifier: None,
+            order_by: Vec::new(),
+            window: None,
+            filter: None,
+        }
+    }
+}

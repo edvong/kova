@@ -1,4 +1,3 @@
-use crate::dsl::ConflictTarget;
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::query::{NoReturn, Returning};
 use crate::types::Postgres;
@@ -6,7 +5,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Projection};
+use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Operand, Projection};
 use kova_core::types::{
     ExecutableAsync, FromColumn, FromRow, Insert as CoreInsert, Model,
 };
@@ -48,8 +47,8 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, NoConflict>
         T: Model<DB = Postgres> {
     pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, T, E, X, R, Conflicted>
         where
-            A: IntoArgs<ConflictTarget<'a>> {
-        self.statement.conflict_mut().set_conflict(targets.into_args());
+            A: IntoArgs<Operand<'a, Postgres>> {
+        self.statement.conflict_mut().set_targets(targets.into_args());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -58,14 +57,14 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, Conflicted>
     where
         T: Model<DB = Postgres> {
     pub fn do_nothing(mut self) -> Self {
-        self.statement.conflict_mut().set_ignore();
+        self.statement.conflict_mut().set_do_nothing();
         self
     }
 
     pub fn update<A>(mut self, assignments: A) -> Self
         where
             A: IntoArgs<Assignment<'a, Postgres, X>> {
-        self.statement.conflict_mut().set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
+        self.statement.conflict_mut().set_do_update(assignments.into_mapped_args(|a| a.erase_x()));
         self
     }
 

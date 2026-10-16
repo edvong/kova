@@ -25,10 +25,11 @@ impl<'c, 'a, E, X> CoreStatement<'c, 'a, E, X> for Statement<'c, 'a, E, X> {
 }
 
 impl<'c, 'a, E, X> Statement<'c, 'a, E, X> {
-    pub fn bind<A>(&mut self, args: A)
+    pub fn bind<A>(mut self, args: A) -> Self
         where
             A: IntoArgs<Bind<'a, Postgres>> {
         self.statement.bind(args.into_args());
+        self
     }
 }
 

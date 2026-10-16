@@ -24,16 +24,10 @@ impl Model for Post {
 }
 
 #[allow(non_upper_case_globals)]
-impl<'a> Post {
-    pub const id: Column<i32, Engine> = 
-        kova::private::create_column("pos", "id", false);
-
-    pub const title: Column<String, Engine> =
-        kova::private::create_column("pos", "title", false);
-
-    pub const content: Column<String, Engine> =
-        kova::private::create_column("pos", "content", false);
-
-    pub const author_id: Column<i32, Engine> =
-        kova::private::create_column("pos", "author_id", false);
+impl Post {
+    pub const id: Column<i32> = Column::new("post", "id", false);
+    pub const title: Column<String> = Column::new("post", "title", false);
+    pub const content: Column<String> = Column::new("post", "content", false);
+    pub const author_id: Column<i32> = Column::new("post", "author_id", false);
+    pub const tags: Column<Vec<String>> = Column::new("post", "tags", false);
 }

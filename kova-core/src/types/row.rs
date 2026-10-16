@@ -61,3 +61,89 @@ pub trait FromColumn<'a, DB: Database, X>: Sized {
         Self::extract_by(row, idx, Self::decode)
     }
 }
+
+impl<'a, DB: Database, X, T> FromColumn<'a, DB, X> for Option<T>
+    where
+        Option<T>: Decode<'a, DB, X> {
+    #[inline(always)]
+    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
+        Self::extract_value(row, idx)
+    }
+}
+
+impl<'a, DB: Database, X, T> FromColumn<'a, DB, X> for Box<T>
+    where
+        Box<T>: Decode<'a, DB, X> {
+    #[inline(always)]
+    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
+        Self::extract_value(row, idx)
+    }
+}
+
+impl<'a, DB: Database, X, const N: usize> FromColumn<'a, DB, X> for [u8; N]
+    where
+        [u8; N]: Decode<'a, DB, X> {
+    #[inline(always)]
+    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
+        Self::extract_value(row, idx)
+    }
+}
+
+macro_rules! impl_from_column_for_tuple {
+    ( $($T:ident),+ ) => {
+        #[diagnostic::do_not_recommend]
+        impl<'a, DB: Database, X, $($T),+> FromColumn<'a, DB, X> for ($($T,)+)
+            where
+                $( $T: Decode<'a, DB, X> ),+ {
+            #[inline(always)]
+            fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
+                Ok((
+                    $(
+                        {
+                            let val = Row::get_value(row, *idx)?;
+                            *idx += 1;
+                            <$T as Decode<'a, DB, X>>::decode(val)?
+                        },
+                    )+
+                ))
+            }
+        }
+    };
+}
+
+#[rustfmt::skip]
+pub mod macros {
+    use super::*;
+impl_from_column_for_tuple!(T1);
+impl_from_column_for_tuple!(T1, T2);
+impl_from_column_for_tuple!(T1, T2, T3);
+impl_from_column_for_tuple!(T1, T2, T3, T4);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31);
+impl_from_column_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32);
+}

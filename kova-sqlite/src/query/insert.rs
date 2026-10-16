@@ -1,14 +1,13 @@
-use crate::dsl::ConflictTarget;
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::query::{NoReturn, Returning};
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Projection};
-use kova_core::types::{
-    ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model,
+use kova_core::dsl::{
+    Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Operand, Projection,
 };
+use kova_core::types::{ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model};
 use std::marker::PhantomData;
 
 pub struct NoConflict;
@@ -47,8 +46,8 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, NoConflict>
         T: Model<DB = Sqlite> {
     pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, T, E, X, R, Conflicted>
         where
-            A: IntoArgs<ConflictTarget<'a>> {
-        self.statement.conflict_mut().set_conflict(targets.into_args());
+            A: IntoArgs<Operand<'a, Sqlite>> {
+        self.statement.conflict_mut().set_targets(targets.into_args());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -57,15 +56,14 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, Conflicted>
     where
         T: Model<DB = Sqlite> {
     pub fn do_nothing(mut self) -> Self {
-        self.statement.conflict_mut().set_ignore();
+        self.statement.conflict_mut().set_do_nothing();
         self
     }
 
     pub fn update<A>(mut self, assignments: A) -> Self
         where
             A: IntoArgs<Assignment<'a, Sqlite, X>> {
-        self.statement.conflict_mut().set_assignment(assignments.into_mapped_args(|a| a.erase_x()));
-
+        self.statement.conflict_mut().set_do_update(assignments.into_mapped_args(|a| a.erase_x()));
         self
     }
 

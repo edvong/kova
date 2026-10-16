@@ -1,3 +1,13 @@
+use crate::dsl::{Identifier, IntoIdentifier};
+
+pub trait IntoMeta {
+    fn into_meta(self) -> Self;
+}
+
+pub trait SetTag {
+    fn set_tag(&mut self, tag: usize);
+}
+
 #[derive(Debug, Copy, Clone)]
 pub struct ColumnMeta {
     pub ident: IdentifierMeta,
@@ -29,10 +39,49 @@ impl IdentifierMeta {
     }
 }
 
-pub trait SyncMeta<T> {
-    fn sync(&mut self, meta: T);
+impl IntoMeta for ColumnMeta {
+    fn into_meta(self) -> Self {
+        self
+    }
 }
 
-impl<T> SyncMeta<T> for () {
-    fn sync(&mut self, _: T) { unreachable!() }
+impl IntoMeta for IdentifierMeta {
+    fn into_meta(self) -> Self {
+        self
+    }
 }
+
+impl SetTag for ColumnMeta {
+    fn set_tag(&mut self, tag: usize) {
+        self.ident.tag = Some(tag);
+    }
+}
+
+impl SetTag for IdentifierMeta {
+    fn set_tag(&mut self, tag: usize) {
+        self.tag = Some(tag);
+    }
+}
+
+impl<T> IntoIdentifier<T> for ColumnMeta {
+    fn into_identifier(self) -> Identifier<T> {
+        Identifier::from(self.ident)
+    }
+}
+
+impl<T> IntoIdentifier<T> for IdentifierMeta {
+    fn into_identifier(self) -> Identifier<T> {
+        Identifier::from(self)
+    }
+}
+
+
+// pub trait SyncMeta<T> {
+//     fn sync(&mut self, meta: T);
+// }
+// 
+// 
+// 
+// impl<T> SyncMeta<T> for () {
+//     fn sync(&mut self, _: T) { unreachable!() }
+// }

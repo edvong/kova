@@ -1,4 +1,4 @@
-use crate::dsl::{Column, Condition, EraseX, SingleArgMarker};
+use crate::dsl::{Condition, EraseX, SingleArgMarker};
 use crate::types::{Database, IdentifierMeta};
 
 pub struct JoinClause<'a, DB: Database> {
@@ -55,13 +55,6 @@ impl<'a, DB: Database, X> IntoJoinConstraint<'a, DB, X> for Condition<'a, DB, X>
 }
 
 impl<'a, DB: Database, X> SingleArgMarker for Condition<'a, DB, X> {}
-
-impl<'a, T, DB: Database, X> IntoJoinConstraint<'a, DB, X> for Column<T, DB> {
-    #[inline(always)]
-    fn into_constraint(self) -> JoinConstraint<'a, DB> {
-        JoinConstraint::Using(vec![self.meta.ident])
-    }
-}
 
 macro_rules! impl_into_join_constraint_tuple {
     ( $($T:ident),+ ) => {

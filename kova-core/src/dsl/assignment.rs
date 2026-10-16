@@ -19,9 +19,9 @@ pub enum StandardAssignment<'a, DB: Database> {
 }
 
 impl<'a, DB: Database, X> Assignment<'a, DB, X> {
-    pub fn from<T, M>(a: T) -> Self 
-        where 
-            T: IntoAssignment<'a, DB, M, X> {
+    pub fn from<T, M>(a: T) -> Self
+    where
+        T: IntoAssignment<'a, DB, M, X>, {
         a.into_assignment()
     }
 }

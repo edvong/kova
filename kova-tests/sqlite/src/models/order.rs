@@ -25,19 +25,11 @@ impl Model for Order {
 }
 
 #[allow(non_upper_case_globals)]
-impl<'a> Order {
-    pub const id: Column<i32, Engine> = 
-        kova::private::create_column("order", "id", true);
-
-    pub const user_id: Column<i32, Engine> = 
-        kova::private::create_column("order", "user_id", false);
-
-    pub const amount: Column<f64, Engine> = 
-        kova::private::create_column("order", "amount", false);
-
-    pub const is_active: Column<bool, Engine> = 
-        kova::private::create_column("order", "is_active", false);
-
-    pub const raw_data: Column<Vec<u8>, Engine> = 
-        kova::private::create_column("order", "raw_data", false);
+impl Order {
+    pub const id: Column<i32> = Column::new("order", "id", true);
+    pub const user_id: Column<i32> = Column::new("order", "user_id", false);
+    pub const amount: Column<f64> = Column::new("order", "amount", false);
+    pub const discount: Column<Option<f64>> = Column::new("order", "discount", false);
+    pub const is_active: Column<bool> = Column::new("order", "is_active", false);
+    pub const raw_data: Column<Vec<u8>> = Column::new("order", "raw_data", false);
 }

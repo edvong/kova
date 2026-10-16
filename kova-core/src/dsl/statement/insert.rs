@@ -1,6 +1,6 @@
 use crate::dsl::{
-    Condition, EraseX, ExtOnConflict, ExtensionClause, IntoArgs, IntoInsertSource,
-    OnConflictClause, Projection, ProjectionClause, ValuesClause, WhereClause,
+    Condition, EraseX, IntoArgs, IntoInsertSource, OnConflictClause, Projection, ProjectionClause,
+    ValuesClause, WhereClause,
 };
 use crate::render::RenderData;
 use crate::types::{Database, Model};
@@ -15,8 +15,9 @@ pub struct InsertStatement<'a, DB: Database, T> {
 }
 
 impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
-    where
-        T: Model<DB = DB> {
+where
+    T: Model<DB = DB>,
+{
     pub fn new<X>(data: impl IntoInsertSource<'a, DB, T, X>) -> Self {
         Self {
             values: ValuesClause::new(T::COLUMNS_META.to_vec(), data.into_source()),
@@ -32,13 +33,13 @@ impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
     }
 
     pub fn retuning<A, X>(&mut self, cols: A)
-        where
-            A: IntoArgs<Projection<'a, DB, X>> {
+    where
+        A: IntoArgs<Projection<'a, DB, X>>, {
         self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
     }
 
-    pub fn conflict_mut(&mut self) -> &mut ExtOnConflict<'a, DB> {
-        self.on_conflict.ext_mut()
+    pub fn conflict_mut(&mut self) -> &mut OnConflictClause<'a, DB> {
+        &mut self.on_conflict
     }
 
     pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {

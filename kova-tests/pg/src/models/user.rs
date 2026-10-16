@@ -6,6 +6,7 @@ use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
 pub struct User {
     pub id: i32,
     pub name: String,
+    pub bio: Option<String>,
     pub balance: f64,
     pub is_active: bool,
 }
@@ -34,16 +35,10 @@ impl Model for User {
 }
 
 #[allow(non_upper_case_globals)]
-impl<'a> User {
-    pub const id: Column<i32, Engine> = 
-        kova::private::create_column("user", "id", true);
-
-    pub const name: Column<String, Engine> =
-        kova::private::create_column("user", "name", false);
-
-    pub const balance: Column<f64, Engine> =
-        kova::private::create_column("user", "balance", false);
-
-    pub const is_active: Column<bool, Engine> =
-        kova::private::create_column("user", "is_active", false);
+impl User {
+    pub const id: Column<i32> = Column::new("user", "id", true);
+    pub const name: Column<String> = Column::new("user", "name", false);
+    pub const bio: Column<Option<String>> = Column::new("user", "bio", false);
+    pub const balance: Column<f64> = Column::new("user", "balance", false);
+    pub const is_active: Column<bool> = Column::new("user", "is_active", false);
 }

@@ -1,155 +1,42 @@
-#![allow(clippy::wrong_self_convention)]
+#![allow(non_snake_case)]
 
+use crate::dsl::ExtFunction;
+use crate::dsl::node::{CanPgString, Node};
 use crate::dsl::operator::JsonOp;
-use crate::dsl::{ExtFunction, ExtOperator};
-use crate::types::Postgres;
+use crate::types::Pg;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{Comparator, Condition, IntoComparator, IntoOperand, Operand, Operator};
+use kova_core::dsl::{
+    AstNode, CanAlias, CanCompare, CanGroup, CanOrder, CanString, Operand, Static, TypedNode,
+};
 use std::marker::PhantomData;
 
-pub struct JsonbText<'a, X> {
-    pub(crate) base: Operand<'a, Postgres>,
+pub type JsonbText<'a, X> = Node<InnerJsonbText<'a, X>>;
+
+pub(crate) fn JsonbText<'a, X>(base: Operand<'a, Pg>, ops: Vec<JsonOp<'a>>) -> JsonbText<'a, X> {
+    Node(InnerJsonbText { base, ops, _marker: PhantomData })
+}
+
+pub struct InnerJsonbText<'a, X> {
+    pub(crate) base: Operand<'a, Pg>,
     pub(crate) ops: Vec<JsonOp<'a>>,
     pub(crate) _marker: PhantomData<X>,
 }
-
-impl<'a, T, X> IntoComparator<'a, T, Postgres> for JsonbText<'a, X> {
-    #[inline(always)]
-    fn into_comparator(self) -> Comparator<'a, T, Postgres> {
-        Comparator::new(self.into_core_operand())
-    }
+impl<'a, X> TypedNode for InnerJsonbText<'a, X> {
+    type Output = Static<String>;
 }
 
-impl<'a, X> JsonbText<'a, X> {
-    #[inline(always)]
-    fn into_core_operand(self) -> Operand<'a, Postgres> {
-        let pg_func = ExtFunction::JsonChain { base: Box::new(self.base), ops: self.ops };
-        Operand::from_function(Function::from(pg_func))
-    }
+impl<'a, X> CanAlias for InnerJsonbText<'a, X> {}
+impl<'a, X> CanCompare for InnerJsonbText<'a, X> {}
+impl<'a, X> CanOrder for InnerJsonbText<'a, X> {}
+impl<'a, X> CanGroup for InnerJsonbText<'a, X> {}
+impl<'a, X> CanString for InnerJsonbText<'a, X> {}
+impl<'a, X> CanPgString for InnerJsonbText<'a, X> {}
 
-    // --- Standard Operator Proxy ---
-    pub fn eq<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().eq(v)
-    }
-
-    pub fn ne<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().ne(v)
-    }
-
-    pub fn gt<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().gt(v)
-    }
-
-    pub fn ge<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().ge(v)
-    }
-
-    pub fn lt<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().lt(v)
-    }
-
-    pub fn le<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().le(v)
-    }
-
-    pub fn is_null(self) -> Condition<'a, Postgres, X> {
-        IntoComparator::<'a, (), Postgres>::into_comparator(self).is_null()
-    }
-
-    pub fn is_not_null(self) -> Condition<'a, Postgres, X> {
-        IntoComparator::<'a, (), Postgres>::into_comparator(self).is_not_null()
-    }
-
-    pub fn like<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().like(v)
-    }
-
-    pub fn not_like<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().not_like(v)
-    }
-
-    pub fn in_list<I, V, K>(self, values: I) -> Condition<'a, Postgres, X>
-        where
-            I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().in_list(values)
-    }
-
-    pub fn not_in_list<I, V, K>(self, values: I) -> Condition<'a, Postgres, X>
-        where
-            I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        self.into_comparator().not_in_list(values)
-    }
-
-    // --- PG Proprietary Text Expansion Operators ---
-    pub fn ilike<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from(ExtOperator::ILike(
-            self.into_core_operand(),
-            v.into_operand(),
-        )))
-    }
-
-    pub fn not_ilike<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from(ExtOperator::NotILike(
-            self.into_core_operand(),
-            v.into_operand(),
-        )))
-    }
-
-    pub fn matches<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from(ExtOperator::Matches(
-            self.into_core_operand(),
-            v.into_operand(),
-        )))
-    }
-
-    pub fn not_matches<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from(ExtOperator::NotMatches(
-            self.into_core_operand(),
-            v.into_operand(),
-        )))
-    }
-
-    pub fn imatches<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from(ExtOperator::IMatches(
-            self.into_core_operand(),
-            v.into_operand(),
-        )))
-    }
-
-    pub fn not_imatches<V, K>(self, v: V) -> Condition<'a, Postgres, X>
-        where
-            V: IntoOperand<'a, String, Postgres, K, X> {
-        Condition::from(Operator::from(ExtOperator::NotIMatches(
-            self.into_core_operand(),
-            v.into_operand(),
-        )))
+impl<'a, X> AstNode<'a, Pg, X> for InnerJsonbText<'a, X> {
+    fn into_ast_operand(self) -> Operand<'a, Pg> {
+        Operand::from_function(Function::from(ExtFunction::JsonChain {
+            base: Box::new(self.base),
+            ops: self.ops,
+        }))
     }
 }

@@ -2,14 +2,16 @@ use crate::models::order::Order;
 use crate::models::user::User;
 use kova::Options;
 
-/// Stress Test 4: Update Statements & Cross-Column Boundaries
+/// Stress Test 4: Update Statements, Increment/Decrement & Cross-Column Assignments
 fn compile_check_sqlite_update() -> crate::Result<()> {
     let client = Options::in_memory().build()?;
 
-    // 1. Single Column Update
+    // 1. Single Column Update + Increment / Decrement
     client
         .update::<User>()
         .set(User::name.set("new_name"))
+        .set(User::id.increment(1))
+        .set(User::balance.decrement(5.5))
         .filter(User::id.eq(1))
         .execute()?;
 
@@ -19,8 +21,7 @@ fn compile_check_sqlite_update() -> crate::Result<()> {
         .set((
             Order::amount.set(99.9_f64),
             Order::is_active.set(true),
-            // Boundary: Set a column's value to another column's value (Column vs Column Operand)
-            Order::user_id.set(Order::id)
+            Order::user_id.set(Order::id),
         ))
         .filter(Order::user_id.in_list(vec![1, 2, 3]))
         .execute()?;

@@ -23,6 +23,7 @@ pub enum ExtOperator<'a> {
 
     // Array Contains and Overlap
     ArrayContains(Operand<'a, Postgres>, Operand<'a, Postgres>), // @>
+    ArrayContainedBy(Operand<'a, Postgres>, Operand<'a, Postgres>), // <@
     ArrayOverlap(Operand<'a, Postgres>, Operand<'a, Postgres>),  // &&
 }
 

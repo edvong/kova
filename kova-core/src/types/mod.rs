@@ -12,13 +12,13 @@ mod row_macros;
 mod value;
 
 pub use {
-    codec::{Decode, DecodeExt, Encode},
+    codec::{Decode, Encode},
     conn::{
         Connection, ConnectionAsync, ConnectionSync, Executable, ExecutableAsync, ExecutableSync,
     },
     db::Database,
     ext::Extension,
-    meta::{ColumnMeta, IdentifierMeta, SyncMeta},
+    meta::{ColumnMeta, IdentifierMeta, IntoMeta, SetTag},
     mode::{Async, Mode, Sync},
     model::{Cte, FromRow, Model, Relation},
     query::{Delete, Insert, Query, Select, Statement, Update},

@@ -11,7 +11,7 @@ use kova::Options;
 use kova::dsl::func::{JsonEach, JsonTree};
 use kova::query::Select;
 
-/// Test 1: Polymorphic Joins (Seamlessly switching between ON and USING)
+/// Test 1: Polymorphic Joins (ON vs USING)
 fn compile_check_advanced_joins() -> Result<()> {
     let client = Options::in_memory().build()?;
 
@@ -27,7 +27,7 @@ fn compile_check_advanced_joins() -> Result<()> {
     Ok(())
 }
 
-/// Test 2: Upsert Where (Boundary validation for secondary filtering on conflict)
+/// Test 2: Upsert Where
 fn compile_check_upsert_where() -> Result<()> {
     let client = Options::in_memory().build()?;
     let users = vec![User::default(), User::default()];
@@ -42,7 +42,7 @@ fn compile_check_upsert_where() -> Result<()> {
     Ok(())
 }
 
-/// Test 3: Update From (Cross-table update support)
+/// Test 3: Update From
 fn compile_check_update_from() -> Result<()> {
     let client = Options::in_memory().build()?;
 
@@ -59,35 +59,33 @@ fn compile_check_update_from() -> Result<()> {
     Ok(())
 }
 
-/// Test 4: Set Operation
+/// Test 4: Set Operations (UNION, UNION ALL, INTERSECT, EXCEPT)
 fn compile_check_set_operations() -> Result<()> {
-    let client = Options::from("").build()?;
+    let client = Options::in_memory().build()?;
 
     let _ = client
         .select::<User>()
-        // Main query: extracting id and name
         .columns((User::id, User::name))
         .filter(User::is_active.eq(true))
-        // Tacking on UNION ALL
+        .union(Select::from::<User>().columns((User::id, User::name)))
         .union_all(
             Select::from::<User>()
                 .columns((User::id, User::name))
                 .filter(User::is_active.eq(false)),
         )
-        // Chaining EXCEPT
+        .intersect(Select::from::<User>().columns((User::id, User::name)))
         .except(
             Select::from::<User>()
                 .columns((User::id, User::name))
                 .filter(User::name.like("%test%")),
         )
-        // Final safeguard during extraction: load_in tightly seals the type boundaries
         .load_in::<(i32, String)>()?;
 
     Ok(())
 }
 
-/// Test 5: INSERT ... SELECT
-fn compile_check_insert_select() -> Result<()> {
+/// Test 5: INSERT ... SELECT & Raw Statement Binding
+fn compile_check_insert_select_and_raw_statement() -> Result<()> {
     let client = Options::in_memory().build()?;
 
     client.insert(User::default()).execute()?;
@@ -102,74 +100,72 @@ fn compile_check_insert_select() -> Result<()> {
         .do_nothing()
         .execute()?;
 
+    let bytes: &[u8] = b"raw";
+    let fixed: [u8; 4] = [1, 2, 3, 4];
+    let _rows = client
+        .statement("SELECT id, name FROM user WHERE id = ? AND name = ? AND raw = ? AND hash = ? AND opt = ?")
+        .bind((100_i32, "alice", bytes, fixed, Some(true)))
+        .load_in::<(i32, String)>()?;
+
     Ok(())
 }
 
 /// Stress Test 6: Table-Valued JSON Functions (json_each & json_tree)
-/// Memo: Validates the zero-abstraction-leak integration of SQLite's virtual tables.
-/// Ensures that single/double arguments, tuple-based FROM clauses, static schema access,
-/// and Deref-based instance access all compile seamlessly without requiring explicit generics (`::<_>`).
 fn compile_check_sqlite_table_functions() -> Result<()> {
     let client = Options::in_memory().build()?.codec::<AppCodec>();
 
-    // ==========================================
-    // Scenario 1: Standard Single-Arg & Operator Inheritance
-    // Memo: Tests implicit translation of single `Column` argument.
-    // Also proves that the virtual column `JsonEach::value` inherits dialect-specific operators like `.json_extract()`.
-    // ==========================================
+    // Scenario 1: Single-Arg & Operator Inheritance on Dynamic Virtual Column
     let _ = client
-        .select_mix::<EventLog>(JsonEach(EventLog::metadata)) // 1 Arg
+        .select::<EventLog>()
+        .srf(JsonEach(EventLog::metadata))
         .columns((EventLog::id, JsonEach::key, JsonEach::value, JsonEach::type_))
         .filter(
-            // Standard operator (eq) on String virtual column
             JsonEach::type_.eq("object")
-                // Dialect operator (json_extract -> eq) on String virtual column
                 | JsonEach::value.json_extract("$.is_active").eq(true),
         )
-        // Expected tuple perfectly aligns with the static types defined in JsonEachSchema
         .load_in::<(uuid::Uuid, String, String, String)>()?;
 
-    // ==========================================
-    // Scenario 2: Double-Arg & Tuple-based Multiple Append
-    // Memo: Tests the `(Column, &'static str)` translation escaping the E0207/E0119 traps.
-    // Also proves that `.from()` accepts tuples (IntoArgs) to perform implicit LATERAL JOINs.
-    // ==========================================
+    // Scenario 2: Double-Arg (Node, Path) & Tuple-based Multiple Append
     let _ = client
-        .select_mix::<User>((
-            // Tuple parsing: 2 Args
+        .select::<User>()
+        .srf((
             JsonEach((User::name, "$.roles")),
-            // Tuple parsing: 2 Args
             JsonTree((User::name, "$.permissions")),
         ))
         .columns((User::id, JsonEach::key, JsonTree::path, JsonTree::parent))
-        .filter(
-            // Cross-virtual-table comparisons are fully supported and type-safe
-            JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i64),
-        )
+        .filter(JsonEach::atom.is_not_null() & JsonTree::parent.gt(0_i64))
         .load_in::<(i32, String, String, i32)>()?;
 
-    // ==========================================
-    // Scenario 3: Subselect Penetration & Deref Instance Access
-    // Memo: Proves that `Subselect` natively exposes `.from()`.
-    // Also demonstrates the `Deref` magic where we instantiate the wrapper to access schema fields,
-    // which paves the ultimate golden path for the upcoming `.alias("j1")` feature.
-    // ==========================================
-
-    // Instantiating the AST wrapper
+    // Scenario 3: Subselect Penetration & Copyable Deref Instance Access
     let virtual_tree = JsonTree((EventLog::metadata, "$.deep_nodes"));
 
     let _ = client
         .select::<EventLog>()
         .filter(
             EventLog::id.in_select(
-                Select::from_mix::<EventLog>(JsonTree((EventLog::metadata, "$.deep_nodes")))
+                Select::from::<EventLog>()
+                    .srf(virtual_tree)
                     .columns(EventLog::id)
-                    // Magic: `virtual_tree.atom` leverages `Deref<Target = JsonTreeSchema>`
-                    // No static namespace used here! Pure instance field access.
                     .filter(virtual_tree.atom.eq("target_value")),
             ),
         )
         .load_as::<EventLog>()?;
+
+    // Scenario 4: Feeding an entire Subquery into JsonEach
+    let _ = client
+        .select::<User>()
+        .filter(
+            User::id.in_select(
+                Select::from::<Order>()
+                    .srf(JsonEach(
+                        Select::from::<EventLog>()
+                            .columns(EventLog::metadata)
+                            .filter(EventLog::id.is_not_null()),
+                ))
+                    .columns(JsonEach::value),
+            ),
+        )
+        .load_as::<User>()?;
 
     Ok(())
 }

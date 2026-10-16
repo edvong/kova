@@ -1,12 +1,13 @@
+use crate::dsl::func::{IntoSrfFunction, JsonSrfArgs};
 use crate::query::exec::fetch_rows;
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    Condition, FromItem, GroupBy, InsertSource, IntoArgs, IntoIdentifier, IntoInsertSource,
-    IntoJoinConstraint, IntoOperand, IntoProjection, JoinType, OpAst, Operand, Ordering,
-    Projection, SetOperator, SingleArgMarker,
+    Close, Condition, Dynamic, FromItem, GroupBy, InsertSource, IntoArg, IntoArgs, IntoIdentifier,
+    IntoInsertSource, IntoJoinConstraint, IntoOperand, IntoProjection, JoinType, Operand, Ordering,
+    Projection, SetOperator, SingleArgMarker, TypedNode,
 };
 use kova_core::types::{
     Cte, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
@@ -29,6 +30,8 @@ impl Dispatch for InnerQuery {
 
 pub struct Normal;
 pub struct JustAddFrom;
+pub struct TaggedFrom;
+pub struct JustAddSrf;
 pub struct JustAddJoin;
 
 pub struct Select<'a, T, D: Dispatch, TAG, X> {
@@ -44,15 +47,39 @@ impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X>
     fn new(executor: &'c Executor<E>) -> Self {
         Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
     }
+}
 
-    fn new_mix(executor: &'c Executor<E>, args: impl IntoArgs<FromItem<'a, Sqlite, X>>) -> Self {
-        let mut s = Self::new(executor);
-        s.statement.from(args);
-        s
+// Initial state: either .tag() or append .srf() to the main table.
+impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
+    where
+        T: Model<DB = Sqlite> {
+    pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, TaggedFrom, X> {
+        self.statement.tag_latest_from::<Marker>();
+        self.into_state()
+    }
+
+    pub fn srf<A: IntoArgs<FromItem<'a, Sqlite, X>>>(
+        mut self, args: A,
+    ) -> Select<'a, T, D, JustAddSrf, X> {
+        self.statement.from(args);
+        self.into_state()
     }
 }
 
-impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
+// Main table tagged status: still allows appending once .srf()
+impl<'a, T, D: Dispatch, X> Select<'a, T, D, TaggedFrom, X>
+    where
+        T: Model<DB = Sqlite> {
+    pub fn srf<A: IntoArgs<FromItem<'a, Sqlite, X>>>(
+        mut self, args: A,
+    ) -> Select<'a, T, D, JustAddSrf, X> {
+        self.statement.from(args);
+        self.into_state()
+    }
+}
+
+// Just appended SRF status: .tag() is allowed for this SRF, but the .srf() method no longer exists.
+impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddSrf, X>
     where
         T: Model<DB = Sqlite> {
     pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, Normal, X> {
@@ -61,10 +88,10 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
     }
 }
 
-impl<'c, 'a, T, E: Dispatch, X> Select<'a, T, E, JustAddJoin, X>
+impl<'c, 'a, T, D: Dispatch, X> Select<'a, T, D, JustAddJoin, X>
     where
         T: Model<DB = Sqlite> {
-    pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, E, Normal, X> {
+    pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, Normal, X> {
         self.statement.tag_latest_join::<Marker>();
         self.into_state()
     }
@@ -89,9 +116,14 @@ impl<'a, T, D: Dispatch, TAG, X> Select<'a, T, D, TAG, X>
     //     self
     // }
 
-    pub fn columns<A: IntoArgs<Projection<'a, Sqlite, X>>>(
-        mut self, cols: A,
-    ) -> Select<'a, T, D, Normal, X> {
+    pub fn distinct(mut self) -> Select<'a, T, D, Normal, X> {
+        self.statement.distinct();
+        self.into_state()
+    }
+
+    pub fn columns<A>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+        where
+            A: IntoArgs<Projection<'a, Sqlite, X>> {
         self.statement.columns(cols);
         self.into_state()
     }
@@ -223,14 +255,6 @@ impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
             _marker: PhantomData,
         }
     }
-
-    pub fn from_mix<M: Model<DB = Sqlite>>(
-        args: impl IntoArgs<FromItem<'a, Sqlite, X>>,
-    ) -> Select<'a, M, InnerQuery, JustAddFrom, X> {
-        let mut statement = SelectStatement::new(M::TABLE_NAME);
-        statement.from(args);
-        Select { executor: (), statement, _marker: PhantomData }
-    }
 }
 
 impl<'a, T: Model<DB = Sqlite>, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
@@ -241,7 +265,11 @@ impl<'a, T: Model<DB = Sqlite>, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
 
 impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X> {}
 
-impl<'a, T: Model<DB = Sqlite>, Target, TAG, X> IntoOperand<'a, Target, Sqlite, OpAst, X>
+impl<'a, T, TAG, X> TypedNode for Select<'a, T, InnerQuery, TAG, X> {
+    type Output = Dynamic;
+}
+
+impl<'a, T: Model<DB = Sqlite>, Target, TAG, X> IntoOperand<'a, Target, Sqlite, Close, X>
     for Select<'a, T, InnerQuery, TAG, X> {
     fn into_operand(self) -> Operand<'a, Sqlite> {
         Operand::from_select(self.statement)
@@ -253,6 +281,25 @@ impl<'a, T, TAG, X> IntoProjection<'a, Sqlite, X> for Select<'a, T, InnerQuery, 
         T: Model<DB = Sqlite> {
     fn into_projection(self) -> Projection<'a, Sqlite, X> {
         Projection::new(Operand::from_select(self.into_select_statement()))
+    }
+}
+
+impl<'a, T, TAG, X> IntoArg<Projection<'a, Sqlite, X>> for Select<'a, T, InnerQuery, TAG, X>
+    where
+        T: Model<DB = Sqlite> {
+    #[inline(always)]
+    fn into_arg(self) -> Projection<'a, Sqlite, X> {
+        self.into_projection()
+    }
+}
+
+impl<'a, M, D, TAG, X> IntoSrfFunction<'a, X> for Select<'a, M, D, TAG, X>
+    where
+        M: Model<DB = Sqlite>,
+        D: Dispatch {
+    #[inline(always)]
+    fn into_srf_function(self) -> JsonSrfArgs<'a> {
+        JsonSrfArgs { base: Operand::from_select(self.statement), path: None }
     }
 }
 

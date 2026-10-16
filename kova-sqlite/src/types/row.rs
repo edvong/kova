@@ -1,7 +1,7 @@
 use crate::types::Sqlite;
 use crate::types::value::Value;
 use kova_core::types::{ColumnIndex, Row as CoreRow};
-use kova_core::{Error, bind_extract_columns_tuple};
+use kova_core::Error;
 
 /// A lightweight, zero-copy wrapper around `rusqlite::Row`.
 ///
@@ -38,19 +38,3 @@ impl<'a> CoreRow<'a, Sqlite> for Row<'a> {
     }
 }
 
-// /// Provides strongly-typed column extraction capabilities by index.
-// ///
-// /// The target type `T` must implement `FromValue<Sqlite>`, acting as the boundary
-// /// to safely deserialize raw SQLite memory into native Rust data structures.
-// impl<'a, T: FromValue<Sqlite>> GetColumn<'a, T> for Row<'a> {
-//     fn get_column(&self, idx: usize) -> kova_core::Result<T> {
-//         let value = self
-//             .get_value(idx)
-//             .map_err(|e| Error::Database(Box::new(e)))?;
-//         T::from_value(value)
-//     }
-// }
-
-// Macro invocation that automatically generates tuple-based extraction implementations
-// (allowing `load_in::<String>()`, `load_in::<(i32, String)>()`).
-bind_extract_columns_tuple!(Sqlite);

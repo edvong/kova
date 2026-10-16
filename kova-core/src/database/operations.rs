@@ -1,5 +1,5 @@
 use crate::database::Executor;
-use crate::dsl::{IntoArgs, IntoInsertSource, FromItem};
+use crate::dsl::IntoInsertSource;
 use crate::types::{Database, Delete, Insert, Model, Query, Select, Statement, Update};
 use std::borrow::Cow;
 use std::marker::PhantomData;
@@ -28,15 +28,6 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         <DB::Query<'a> as Query<'a, DB>>::Select::new(&self.executor)
     }
 
-    pub fn select_mix<'a, T>(&'c self, args: impl IntoArgs<FromItem<'a, DB, X>>)
-        -> <DB::Query<'a> as Query<'a, DB>>::Select<'c, T, E, X>
-        where
-            T: Model<DB = DB>,
-            'a: 'c,
-            E: 'c {
-        <DB::Query<'a> as Query<'a, DB>>::Select::new_mix(&self.executor, args)
-    }
-
     pub fn insert<'a, T>(
         &'c self, data: impl IntoInsertSource<'a, DB, T, X>,
     ) -> <DB::Query<'a> as Query<'a, DB>>::Insert<'c, T, E, X>
@@ -63,9 +54,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
         <DB::Query<'a> as Query<'a, DB>>::Delete::new(&self.executor)
     }
 
-    pub fn statement<'a, S>(
-        &'c self, sql: S,
-    ) -> <DB::Query<'a> as Query<'a, DB>>::Statement<'c, E, X>
+    pub fn statement<'a, S>(&'c self, sql: S) -> <DB::Query<'a> as Query<'a, DB>>::Statement<'c, E, X>
         where
             S: Into<Cow<'a, str>>,
             'a: 'c,

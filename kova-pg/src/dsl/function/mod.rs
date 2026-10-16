@@ -1,44 +1,50 @@
 mod any_all;
-mod array_agg;
-mod jsonb_agg;
-mod jsonb_object;
-mod jsonb_to_recordset;
-mod row_to_json;
 mod window;
-mod from;
+mod standard;
+mod can;
+mod aggregate;
+mod json;
+mod srf;
 
 pub use crate::dsl::function::{
+    standard::*,
     any_all::{All, Any},
-    array_agg::ArrayAgg,
-    jsonb_agg::JsonbAgg,
-    jsonb_object::JsonbObject,
-    row_to_json::RowToJson,
+};
+
+pub use crate::dsl::function::aggregate::{ArrayAgg, JsonbAgg};
+
+pub use crate::dsl::function::json::{
+    jsonb_build_object::JsonbBuildObject, row_to_json::RowToJson,
+    jsonb_object::JsonbObject, jsonb_object::JsonbObjectSingle,
+};
+
+pub use crate::dsl::function::srf::{
+    ExtSrfFunction,
+    GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,
 };
 
 pub use crate::dsl::function::window::{
-    lag::Lag, lead::Lead, ntile::Ntile,
+    lag_lead::{Lag, Lead}, ntile::Ntile,
     parameterless::{CumeDist, DenseRank, PercentRank, Rank, RowNumber},
 };
-pub use crate::dsl::function::from::{
-    ExtTableFunction,
-    IntoSeriesOp, GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,
-};
 
-pub(crate) use crate::dsl::function::from::IntoTableFunction;
+pub(crate) use crate::dsl::function::srf::IntoSrfFunction;
 
 use crate::dsl::operator::JsonOp;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
-use kova_core::dsl::{Condition, IntoOperand, Operand, Ordering, Projection};
+use kova_core::dsl::{IntoOperand, Operand, Projection, Static};
 
 pub enum ExtFunction<'a> {
-    JsonbObject(Vec<Projection<'a, Postgres, ()>>),
+    OnConstraint(&'static str),
+
     JsonbAgg(Box<Operand<'a, Postgres>>),
-    ArrayAgg {
-        operand: Box<Operand<'a, Postgres>>,
-        distinct: bool,
-        order_by: Vec<Ordering<'a, Postgres, ()>>,
-        filter: Option<Condition<'a, Postgres, ()>>,
+    ArrayAgg(Box<Operand<'a, Postgres>>),
+    
+    JsonbBuildObject(Vec<Projection<'a, Postgres, ()>>),
+    JsonbObject{
+        keys: Box<Operand<'a, Postgres>>,
+        values: Option<Box<Operand<'a, Postgres>>>,
     },
     RowToJson(Box<Operand<'a, Postgres>>),
 
@@ -62,18 +68,26 @@ pub enum ExtFunction<'a> {
     CumeDist,
 
     // Parameterized Window Functions
-    Ntile(i32),
-    Lag(Box<Operand<'a, Postgres>>, Option<i32>, Option<Box<Operand<'a, Postgres>>>),
-    Lead(Box<Operand<'a, Postgres>>, Option<i32>, Option<Box<Operand<'a, Postgres>>>),
+    Ntile(Box<Operand<'a, Postgres>>),
+    Lag {
+        expr: Box<Operand<'a, Postgres>>,
+        offset: Option<Box<Operand<'a, Postgres>>>,
+        default: Option<Box<Operand<'a, Postgres>>>,
+    },
+    Lead {
+        expr: Box<Operand<'a, Postgres>>,
+        offset: Option<Box<Operand<'a, Postgres>>>,
+        default: Option<Box<Operand<'a, Postgres>>>,
+    },
 }
 
 impl<'a> ExtFunction<'a> {
     /// Turn any valid iterator straight into a PostgreSQL ARRAY[...] AST node.
     #[inline(always)]
-    pub(crate) fn from_iter<I, V, Target, K, X>(iter: I) -> Operand<'a, Postgres>
+    pub(crate) fn from_iter<I, V, K, X>(iter: I) -> Operand<'a, Postgres>
         where
             I: IntoIterator<Item = V>,
-            V: IntoOperand<'a, Target, Postgres, K, X> {
+            V: IntoOperand<'a, Static<String>, Postgres, K, X> {
         let ops = iter.into_iter().map(|v| v.into_operand()).collect();
         Operand::from_function(Function::from(ExtFunction::Array(ops)))
     }

@@ -102,7 +102,8 @@ impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for 
 }
 
 impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X>
-    for SelectStatement<'a, DB> {
+    for SelectStatement<'a, DB>
+{
     #[inline(always)]
     fn into_source(self) -> InsertSource<'a, DB, T> {
         InsertSource::Select(Box::new(self))

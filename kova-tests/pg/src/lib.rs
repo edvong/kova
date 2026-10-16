@@ -10,5 +10,6 @@ mod view;
 mod compile_check_advanced;
 mod compile_check_tag;
 mod compile_check_srf;
+mod compile_check_transaction;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
