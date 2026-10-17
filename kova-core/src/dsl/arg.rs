@@ -1,180 +1,119 @@
-/// Marker trait: Declares that a type represents a "single argument".
-/// This acts as a type-system firewall to prevent overlapping implementations
-/// between individual primitive values and collections (like Tuples or Vecs).
-pub trait SingleArgMarker {}
+use crate::dsl::EraseX;
+use std::marker::PhantomData;
 
-/// Conversion protocol for a single argument.
-pub trait IntoArg<A> {
+// 1. Direct passthrough (e.g. A -> A)
+pub struct ArgDirect;
+
+// 2. AST node conversion (Node<T>, Select, Condition, Table -> A)
+pub struct ArgAst;
+
+// 3. Blanket conversion for encodables (T: Encode<'a, DB, X> -> Bind<'a, DB, X>)
+pub struct ArgEncode;
+
+// Tuple flattening marker (handles 1..=32 elements)
+pub struct ArgTuple<M>(PhantomData<M>);
+
+
+// Guard: ensures only single-arg markers can go inside tuples to forbid nested tuples like ((a, b), c).
+// Only implemented for the 3 ZST markers above, never for concrete AST or business types.
+pub trait SingleArg {}
+impl SingleArg for ArgDirect {}
+impl SingleArg for ArgAst {}
+impl SingleArg for ArgEncode {}
+
+#[diagnostic::on_unimplemented(
+    message = "cannot convert `{Self}` into SQL argument(s) of type `{A}`",
+    label = "invalid SQL argument(s)",
+    note = "expected a valid SQL construct or encodable value.\nif passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed)."
+)]
+pub trait IntoArg<A, M>: Sized {
+    const LEN: usize = 1;
+
     fn into_arg(self) -> A;
+
+    #[inline(always)]
+    fn into_args(self) -> Vec<A> {
+        vec![self.into_arg()]
+    }
+
+    #[inline(always)]
+    fn into_args_erased(self) -> Vec<A::Erased> where A: EraseX {
+        vec![self.into_arg().erase_x()]
+    }
 }
 
-// Reflexive implementation: The target parameter inherently satisfies its own conversion.
-// This allows a value of type A to be directly used where an IntoArg<A> is expected.
-impl<A> IntoArg<A> for A {
+// Identity passthrough: input is already target A
+// (e.g. Projection with .alias() or Ordering with .asc())
+impl<A> IntoArg<A, ArgDirect> for A {
+    #[inline(always)]
     fn into_arg(self) -> A {
         self
     }
 }
 
-#[diagnostic::on_unimplemented(
-    message = "cannot convert `{Self}` into SQL arguments of type `{A}`",
-    label = "invalid SQL argument(s)",
-    note = "expected a valid SQL construct (e.g., Column, Function, Condition, or Assignment).\nif passing a tuple, ensure every element implements `IntoArg<{A}>`."
-)]
-pub trait IntoArgs<A>: Sized {
-    fn size_hint(&self) -> usize;
-
-    fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(A);
-
-    #[inline(always)]
-    fn into_args(self) -> Vec<A> {
-        let mut vec = Vec::with_capacity(self.size_hint());
-        self.for_each_arg(&mut |item| vec.push(item));
-        vec
-    }
-
-    #[inline(always)]
-    fn into_mapped_args<B, M>(self, mut map_fn: M) -> Vec<B>
-    where
-        M: FnMut(A) -> B, {
-        let mut vec = Vec::with_capacity(self.size_hint());
-        self.for_each_arg(&mut |item| vec.push(map_fn(item)));
-        vec
-    }
-}
-
-impl<T, A> IntoArgs<A> for T
-where
-    T: IntoArg<A> + SingleArgMarker,
-{
-    fn size_hint(&self) -> usize {
-        1
-    }
-
-    #[inline(always)]
-    fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(A), {
-        f(self.into_arg());
-    }
-}
-
-impl<A> IntoArgs<A> for Vec<A> {
-    #[inline(always)]
-    fn size_hint(&self) -> usize {
-        self.len()
-    }
-
-    #[inline(always)]
-    fn for_each_arg<F>(self, f: &mut F)
-    where
-        F: FnMut(A), {
-        for item in self {
-            f(item);
-        }
-    }
-}
-
-macro_rules! impl_into_args_for_tuple {
-    ( $($T:ident),+ ) => {
+macro_rules! impl_into_arg_for_tuple {
+    ( $( ($T:ident,$M:ident) ),+ ) => {
         #[diagnostic::do_not_recommend]
-        impl<A, $($T),+> IntoArgs<A> for ($($T,)+)
+        impl<A, $($T,$M),+> IntoArg<A, ArgTuple<($($M,)+)>> for ($($T,)+)
             where
-                $( $T: IntoArgs<A> ),+ {
-            fn size_hint(&self) -> usize {
-                #[allow(non_snake_case)]
-                let ( $( $T, )+ ) = self;
-                // Sums up the size hints of all elements within the tuple.
-                0 $( + $T.size_hint() )+
+                $($M: SingleArg, $T: IntoArg<A,$M> ),+ {
+            const LEN: usize = 0 $( + <$T as IntoArg<A,$M>>::LEN )+;
+
+            #[inline(always)]
+            fn into_arg(self) -> A {
+                unreachable!("tuple cannot be converted into a single arg")
             }
 
-            fn for_each_arg<F>(self, f: &mut F)
-                where
-                    F: FnMut(A) {
+            #[inline(always)]
+            fn into_args(self) -> Vec<A> {
                 #[allow(non_snake_case)]
                 let ( $($T,)+ ) = self;
-                $(
-                    $T.for_each_arg(f);
-                )+
+                vec![ $($T.into_arg() ),+ ]
+            }
+
+            #[inline(always)]
+            fn into_args_erased(self) -> Vec<A::Erased> where A: EraseX {
+                #[allow(non_snake_case)]
+                let ( $($T,)+ ) = self;
+                vec![ $($T.into_arg().erase_x() ),+ ]
             }
         }
     };
 }
 
-impl_into_args_for_tuple!(T1);
-impl_into_args_for_tuple!(T1, T2);
-impl_into_args_for_tuple!(T1, T2, T3);
-impl_into_args_for_tuple!(T1, T2, T3, T4);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15);
-impl_into_args_for_tuple!(T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26, T27
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26, T27, T28
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26, T27, T28, T29
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26, T27, T28, T29, T30
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26, T27, T28, T29, T30, T31
-);
-impl_into_args_for_tuple!(
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21,
-    T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32
-);
+#[rustfmt::skip]
+mod macros {
+    use super::*;
+    impl_into_arg_for_tuple!((T1, M1));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26), (T27, M27));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26), (T27, M27), (T28, M28));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26), (T27, M27), (T28, M28), (T29, M29));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26), (T27, M27), (T28, M28), (T29, M29), (T30, M30));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26), (T27, M27), (T28, M28), (T29, M29), (T30, M30), (T31, M31));
+    impl_into_arg_for_tuple!((T1, M1), (T2, M2), (T3, M3), (T4, M4), (T5, M5), (T6, M6), (T7, M7), (T8, M8), (T9, M9), (T10, M10), (T11, M11), (T12, M12), (T13, M13), (T14, M14), (T15, M15), (T16, M16), (T17, M17), (T18, M18), (T19, M19), (T20, M20), (T21, M21), (T22, M22), (T23, M23), (T24, M24), (T25, M25), (T26, M26), (T27, M27), (T28, M28), (T29, M29), (T30, M30), (T31, M31), (T32, M32));
+}

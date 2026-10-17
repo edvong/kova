@@ -1,4 +1,4 @@
-use crate::dsl::{EraseX, SingleArgMarker};
+use crate::dsl::EraseX;
 use crate::types::{Database, Extension};
 use std::marker::PhantomData;
 
@@ -43,8 +43,6 @@ impl<'a, DB: Database, X> EraseX for FromItem<'a, DB, X> {
     }
 }
 
-impl<'a, DB: Database, X> SingleArgMarker for FromItem<'a, DB, X> {}
-
 impl<'a, DB: Database> TableClause<'a, DB> {
     pub(crate) fn new_with(table_name: &'static str) -> Self {
         Self { items: vec![FromItem::from_table(table_name, None)] }
@@ -62,8 +60,8 @@ impl<'a, DB: Database> TableClause<'a, DB> {
         self.items.push(FromItem::from_table(table, None));
     }
 
-    pub fn extend<I: IntoIterator<Item = FromItem<'a, DB, ()>>>(&mut self, iter: I) {
-        self.items.extend(iter)
+    pub fn extend(&mut self, items: Vec<FromItem<'a, DB, ()>>) {
+        self.items.extend(items)
     }
 
     pub fn tag_latest(&mut self, tag: usize) {

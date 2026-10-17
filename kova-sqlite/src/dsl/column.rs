@@ -1,12 +1,9 @@
 use crate::dsl::node::{CanSqliteFts, CanSqliteJson, CanSqliteString, Node};
-use crate::types::Sqlite;
-use kova_core::dsl::{
-    Dynamic, IntoArg, IntoIdentifier, IntoJoinConstraint, JoinConstraint, Static,
-};
+use kova_core::dsl::{ArgAst, Dynamic, IntoArg, IntoIdentifier, Static};
 use kova_core::types::{ColumnMeta, IdentifierMeta};
 
 pub type Column<T = Dynamic, M = ColumnMeta, Mode = Static<T>> =
-    Node<kova_core::dsl::Column<T, M, Mode>>;
+Node<kova_core::dsl::Column<T, M, Mode>>;
 
 impl<T> Column<T, ColumnMeta, Static<T>> {
     pub const fn new(source: &'static str, name: &'static str, is_auto: bool) -> Self {
@@ -38,18 +35,8 @@ impl<T, M, Mode> CanSqliteFts for kova_core::dsl::Column<T, M, Mode>
     }
 }
 
-// USING (col) Single Column Join Constraint
-impl<'a, T, M, Mode, X> IntoJoinConstraint<'a, Sqlite, X> for Column<T, M, Mode>
-    where
-        M: IntoIdentifier<T> {
-    #[inline(always)]
-    fn into_constraint(self) -> JoinConstraint<'a, Sqlite> {
-        JoinConstraint::Using(vec![self.0.into_identifier().meta])
-    }
-}
-
 // USING ((col1, col2)) Tuple Join Constraint
-impl<T, M, Mode> IntoArg<IdentifierMeta> for Column<T, M, Mode>
+impl<T, M, Mode> IntoArg<IdentifierMeta, ArgAst> for Column<T, M, Mode>
     where
         M: IntoIdentifier<T> {
     #[inline(always)]

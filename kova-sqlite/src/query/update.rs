@@ -4,7 +4,7 @@ use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::UpdateStatement;
-use kova_core::dsl::{Assignment, Condition, IntoArgs, IntoRelationList, Projection};
+use kova_core::dsl::{Assignment, Condition, EraseX, IntoArg, IntoRelationList, Projection};
 use kova_core::types::{
     ExecutableSync, FromColumn, FromRow, Model, Update as CoreUpdate,
 };
@@ -29,17 +29,17 @@ impl<'c, 'a, T, E, X> CoreUpdate<'c, 'a, T, E, X>
 impl<'c, 'a, T, E, X> Update<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Sqlite> {
-    pub fn set<A>(mut self, assignments: A) -> Self
+    pub fn set<A, M>(mut self, assignments: A) -> Self
         where
-            A: IntoArgs<Assignment<'a, Sqlite, X>> {
-        self.statement.set(assignments);
+            A: IntoArg<Assignment<'a, Sqlite, X>, M> {
+        self.statement.set(assignments.into_args_erased());
         self
     }
 
-    pub fn returning<A>(mut self, cols: A) -> Update<'c, 'a, T, E, X, Returning>
+    pub fn returning<A, M>(mut self, cols: A) -> Update<'c, 'a, T, E, X, Returning>
         where
-            A: IntoArgs<Projection<'a, Sqlite, X>> {
-        self.statement.returning(cols);
+            A: IntoArg<Projection<'a, Sqlite, X>, M> {
+        self.statement.returning(cols.into_args_erased());
 
         Update { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
@@ -54,7 +54,7 @@ impl<'c, 'a, T, E, X, R> Update<'c, 'a, T, E, X, R>
     }
 
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
-        self.statement.r#where(cond);
+        self.statement.r#where(cond.erase_x());
         self
     }
 }

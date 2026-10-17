@@ -1,5 +1,4 @@
 use crate::dsl::EraseX;
-use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::component::{Component, Ext, Std};
 use crate::dsl::operand::Operand;
 use crate::types::{Database, Extension, IdentifierMeta};
@@ -25,8 +24,6 @@ impl<'a, DB: Database, X> Assignment<'a, DB, X> {
         a.into_assignment()
     }
 }
-
-impl<'a, DB: Database, X> SingleArgMarker for Assignment<'a, DB, X> {}
 
 impl<'a, DB: Database, X> EraseX for Assignment<'a, DB, X> {
     type Erased = Assignment<'a, DB, ()>;

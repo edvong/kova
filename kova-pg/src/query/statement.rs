@@ -4,7 +4,7 @@ use deadpool_postgres::GenericClient;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::RawStatement;
-use kova_core::dsl::{Bind, IntoArgs};
+use kova_core::dsl::{Bind, IntoArg};
 use kova_core::types::{
     ExecutableAsync, FromColumn, FromRow, Statement as CoreStatement,
 };
@@ -25,10 +25,10 @@ impl<'c, 'a, E, X> CoreStatement<'c, 'a, E, X> for Statement<'c, 'a, E, X> {
 }
 
 impl<'c, 'a, E, X> Statement<'c, 'a, E, X> {
-    pub fn bind<A>(mut self, args: A) -> Self
+    pub fn bind<A, M>(mut self, args: A) -> Self
         where
-            A: IntoArgs<Bind<'a, Postgres>> {
-        self.statement.bind(args.into_args());
+            A: IntoArg<Bind<'a, Postgres, X>, M> {
+        self.statement.bind(args.into_args_erased());
         self
     }
 }

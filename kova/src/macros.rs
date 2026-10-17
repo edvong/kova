@@ -1,15 +1,20 @@
 #[macro_export]
-macro_rules! bind_type {
-    // bind_type!(AppCodec, HashMap<String, String>)
-    ($codec:ty, $type:ty) => {
-        impl<'a> kova::types::FromColumn<'a, kova::types::Engine, $codec> for $type
-            where
-                $type: kova::types::Decode<'a, kova::types::Engine, $codec> {
-            #[inline(always)]
-            fn extract_next(row: &<kova::types::Engine as kova::types::Database>::Row<'a>, idx: &mut usize)
-                -> kova::Result<Self> {
-                Self::extract_value(row, idx)
+macro_rules! decode_column {
+    // decode_column!(AppCodec, Uuid, Url, DateTime<Utc>, Timestamp);
+    ($codec:ty, $($type:ty),+ $(,)?) => {
+        $(
+            impl<'a> $crate::types::FromColumn<'a, $crate::types::Engine, $codec> for $type
+                where
+                    $type: $crate::types::Decode<'a, $codec> {
+                #[inline(always)]
+                fn extract_next(
+                    row: &<$crate::types::Engine as $crate::types::Database>::Row<'a>,
+                    idx: &mut usize,
+                ) -> $crate::Result<Self> {
+                    Self::extract_value(row, idx)
+                }
             }
-        }
+        )+
     };
 }
+

@@ -1,6 +1,6 @@
 use kova::dsl::Column;
 use kova::types::{Database, Decode, Engine, FromRow, IdentifierMeta, Value};
-use kova::{Error, bind_type};
+use kova::{Error, decode_column};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -48,7 +48,7 @@ impl PostView {
 
 pub struct ViewCodec;
 
-impl<'a> Decode<'a, Engine, ViewCodec> for Author {
+impl<'a> Decode<'a, ViewCodec> for Author {
     fn decode(value: Value<'a>) -> kova::Result<Self> {
         match value {
             Value::Text(t) => {
@@ -58,9 +58,9 @@ impl<'a> Decode<'a, Engine, ViewCodec> for Author {
         }
     }
 }
-bind_type!(ViewCodec, Author);
+decode_column!(ViewCodec, Author);
 
-impl<'a> Decode<'a, Engine, ViewCodec> for Vec<CommentDto> {
+impl<'a> Decode<'a, ViewCodec> for Vec<CommentDto> {
     fn decode(value: Value<'a>) -> kova::Result<Self> {
         match value {
             Value::Text(t) => {
@@ -71,4 +71,4 @@ impl<'a> Decode<'a, Engine, ViewCodec> for Vec<CommentDto> {
         }
     }
 }
-bind_type!(ViewCodec, Vec<CommentDto>);
+decode_column!(ViewCodec, Vec<CommentDto>);

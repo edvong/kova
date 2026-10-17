@@ -5,9 +5,9 @@ use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    Close, Condition, Dynamic, FromItem, GroupBy, InsertSource, IntoArg, IntoArgs, IntoIdentifier,
-    IntoInsertSource, IntoJoinConstraint, IntoOperand, IntoProjection, JoinType, Operand, Ordering,
-    Projection, SetOperator, SingleArgMarker, TypedNode,
+    ArgAst, Close, Condition, Dynamic, EraseX, FromItem, GroupBy, ValueSource, IntoArg,
+    IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, IntoProjection, JoinType,
+    Operand, Ordering, Projection, SetOperator, TypedNode,
 };
 use kova_core::types::{
     Cte, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
@@ -58,10 +58,10 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
         self.into_state()
     }
 
-    pub fn srf<A: IntoArgs<FromItem<'a, Sqlite, X>>>(
+    pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
         mut self, args: A,
     ) -> Select<'a, T, D, JustAddSrf, X> {
-        self.statement.from(args);
+        self.statement.srf(args.into_args_erased());
         self.into_state()
     }
 }
@@ -70,10 +70,10 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
 impl<'a, T, D: Dispatch, X> Select<'a, T, D, TaggedFrom, X>
     where
         T: Model<DB = Sqlite> {
-    pub fn srf<A: IntoArgs<FromItem<'a, Sqlite, X>>>(
+    pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
         mut self, args: A,
     ) -> Select<'a, T, D, JustAddSrf, X> {
-        self.statement.from(args);
+        self.statement.srf(args.into_args_erased());
         self.into_state()
     }
 }
@@ -111,20 +111,15 @@ impl<'a, T, D: Dispatch, TAG, X> Select<'a, T, D, TAG, X>
         self.into_state()
     }
 
-    // pub fn from<A: IntoArgs<TableItem<'a, Sqlite>>>(mut self, item: A) -> Self {
-    //     self.statement.from(item);
-    //     self
-    // }
-
     pub fn distinct(mut self) -> Select<'a, T, D, Normal, X> {
         self.statement.distinct();
         self.into_state()
     }
 
-    pub fn columns<A>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
         where
-            A: IntoArgs<Projection<'a, Sqlite, X>> {
-        self.statement.columns(cols);
+            A: IntoArg<Projection<'a, Sqlite, X>, M> {
+        self.statement.columns(cols.into_args_erased());
         self.into_state()
     }
 
@@ -162,26 +157,26 @@ impl<'a, T, D: Dispatch, TAG, X> Select<'a, T, D, TAG, X>
     }
 
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Select<'a, T, D, Normal, X> {
-        self.statement.r#where(cond);
+        self.statement.r#where(cond.erase_x());
         self.into_state()
     }
 
-    pub fn group_by<A: IntoArgs<GroupBy<'a, Sqlite, X>>>(
-        mut self, cols: A,
-    ) -> Select<'a, T, D, Normal, X> {
-        self.statement.group_by(cols);
+    pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+        where
+            A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+        self.statement.group_by(cols.into_args_erased());
         self.into_state()
     }
 
     pub fn having(mut self, cond: Condition<'a, Sqlite, X>) -> Select<'a, T, D, Normal, X> {
-        self.statement.having(cond);
+        self.statement.having(cond.erase_x());
         self.into_state()
     }
 
-    pub fn order_by<A: IntoArgs<Ordering<'a, Sqlite, X>>>(
-        mut self, cols: A,
-    ) -> Select<'a, T, D, Normal, X> {
-        self.statement.order_by(cols);
+    pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+        where
+            A: IntoArg<Ordering<'a, Sqlite, X>, M> {
+        self.statement.order_by(cols.into_args_erased());
         self.into_state()
     }
 
@@ -263,8 +258,6 @@ impl<'a, T: Model<DB = Sqlite>, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
     }
 }
 
-impl<'a, T: Model, TAG, X> SingleArgMarker for Select<'a, T, InnerQuery, TAG, X> {}
-
 impl<'a, T, TAG, X> TypedNode for Select<'a, T, InnerQuery, TAG, X> {
     type Output = Dynamic;
 }
@@ -284,7 +277,8 @@ impl<'a, T, TAG, X> IntoProjection<'a, Sqlite, X> for Select<'a, T, InnerQuery, 
     }
 }
 
-impl<'a, T, TAG, X> IntoArg<Projection<'a, Sqlite, X>> for Select<'a, T, InnerQuery, TAG, X>
+impl<'a, T, TAG, X> IntoArg<Projection<'a, Sqlite, X>, ArgAst>
+    for Select<'a, T, InnerQuery, TAG, X>
     where
         T: Model<DB = Sqlite> {
     #[inline(always)]
@@ -316,7 +310,7 @@ impl<'a, T, M, TAG, X> IntoInsertSource<'a, T::DB, T, X> for Select<'a, M, Inner
         T: Model<DB = Sqlite>,
         M: Model<DB = Sqlite> {
     #[inline(always)]
-    fn into_source(self) -> InsertSource<'a, Sqlite, T> {
+    fn into_source(self) -> ValueSource<'a, Sqlite, T> {
         IntoInsertSource::<'a, T::DB, T, X>::into_source(self.into_select_statement())
     }
 }

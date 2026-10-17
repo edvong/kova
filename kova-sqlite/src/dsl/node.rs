@@ -8,12 +8,11 @@ use crate::dsl::{ExtAssignment, ExtOperator};
 use crate::types::Sqlite;
 use kova_core::dsl::func::{Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window};
 use kova_core::dsl::{
-    Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter, CanGroup,
-    CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator, Compatible, Condition,
-    Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg, IntoArgs, IntoGroupBy,
+    ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter,
+    CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator, Compatible,
+    Condition, Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg, IntoGroupBy,
     IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, Math, MathOperator, Operand,
-    Operator, Ordering, Projection, SingleArgMarker, StandardAssignment, StandardOperator, Static,
-    TypedNode,
+    Operator, Ordering, Projection, StandardAssignment, StandardOperator, Static, TypedNode,
 };
 use kova_core::type_id;
 use kova_core::types::SetTag;
@@ -34,8 +33,6 @@ impl<'a, T, X> AstNode<'a, Sqlite, X> for Node<T>
         self.0.into_ast_operand()
     }
 }
-
-impl<T> SingleArgMarker for Node<T> {}
 
 impl<'a, T, Target, X> IntoOperand<'a, Target, Sqlite, Close, X> for Node<T>
     where
@@ -336,11 +333,11 @@ impl<'a, T> Node<T> {
     }
 
     #[inline(always)]
-    pub fn order_by<A, X>(self, ordering: A) -> Self
+    pub fn order_by<A, M, X>(self, ordering: A) -> Self
         where
             T: CanOrderBy + SetOrderBy<'a, Sqlite, X>,
-            A: IntoArgs<Ordering<'a, Sqlite, X>> {
-        Node(self.0.set_order_by(ordering.into_mapped_args(|o| o.erase_x())))
+            A: IntoArg<Ordering<'a, Sqlite, X>, M> {
+        Node(self.0.set_order_by(ordering.into_args_erased()))
     }
 }
 
@@ -483,7 +480,7 @@ impl<'a, T, X> IntoGroupBy<'a, Sqlite, X> for Node<T>
     }
 }
 
-impl<'a, T> IntoArg<Operand<'a, Sqlite>> for Node<T>
+impl<'a, T> IntoArg<Operand<'a, Sqlite>, ArgAst> for Node<T>
     where
         T: AstNode<'a, Sqlite, ()> {
     #[inline(always)]
@@ -492,7 +489,7 @@ impl<'a, T> IntoArg<Operand<'a, Sqlite>> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for Node<T>
+impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>, ArgAst> for Node<T>
     where
         Self: IntoProjection<'a, Sqlite, X> {
     #[inline(always)]
@@ -501,7 +498,7 @@ impl<'a, T, X> IntoArg<Projection<'a, Sqlite, X>> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoArg<Ordering<'a, Sqlite, X>> for Node<T>
+impl<'a, T, X> IntoArg<Ordering<'a, Sqlite, X>, ArgAst> for Node<T>
     where
         Self: IntoOrdering<'a, Sqlite, X> {
     #[inline(always)]
@@ -510,7 +507,7 @@ impl<'a, T, X> IntoArg<Ordering<'a, Sqlite, X>> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoArg<GroupBy<'a, Sqlite, X>> for Node<T>
+impl<'a, T, X> IntoArg<GroupBy<'a, Sqlite, X>, ArgAst> for Node<T>
     where
         Self: IntoGroupBy<'a, Sqlite, X> {
     #[inline(always)]

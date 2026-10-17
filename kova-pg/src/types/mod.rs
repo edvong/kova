@@ -1,10 +1,11 @@
 mod conn;
 mod db;
 mod ext;
-mod impls;
 mod row;
 mod value;
+mod codec;
 
+pub use codec::{Decode, Encode};
 pub use conn::PgPool;
 pub use db::{Postgres, Pg};
 pub use row::Row;

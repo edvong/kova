@@ -1,4 +1,4 @@
-use crate::dsl::{Direction, EraseX, IntoArg, IntoOrdering, Operator, Ordering};
+use crate::dsl::{ArgAst, Direction, EraseX, IntoArg, IntoOrdering, Operator, Ordering};
 use crate::types::Database;
 use std::marker::PhantomData;
 use std::ops::{BitAnd, BitOr, Not};
@@ -72,7 +72,7 @@ impl<'a, DB: Database, N, X> IntoOrdering<'a, DB, X> for Condition<'a, DB, N> {
     }
 }
 
-impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>> for Condition<'a, DB, X> {
+impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>, ArgAst> for Condition<'a, DB, X> {
     fn into_arg(self) -> Ordering<'a, DB, X> {
         self.into_ordering().direction(Direction::Asc)
     }

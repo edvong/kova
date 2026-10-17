@@ -7,12 +7,11 @@ use crate::dsl::{ExtAssignment, ExtFunction, ExtOperator};
 use crate::types::Pg;
 use kova_core::dsl::func::{Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window};
 use kova_core::dsl::{
-    Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter, CanGroup,
-    CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator, Compatible, Condition,
-    Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg, IntoArgs, IntoGroupBy,
-    IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, Math, MathOperator, Operand,
-    Operator, Ordering, Projection, SingleArgMarker, StandardAssignment, StandardOperator, Static,
-    TypedNode,
+    ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter,
+    CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator, Compatible,
+    Condition, Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg, IntoIdentifier,
+    IntoOperand, IntoOrdering, IntoProjection, Math, MathOperator, Operand, Operator, Ordering,
+    Projection, StandardAssignment, StandardOperator, Static, TypedNode,
 };
 use kova_core::type_id;
 use kova_core::types::SetTag;
@@ -32,8 +31,6 @@ impl<'a, T, X> AstNode<'a, Pg, X> for Node<T>
         self.0.into_ast_operand()
     }
 }
-
-impl<T> SingleArgMarker for Node<T> {}
 
 impl<'a, T, Target, X> IntoOperand<'a, Target, Pg, Close, X> for Node<T>
     where
@@ -238,7 +235,6 @@ impl<'a, T> Node<T>
     }
 }
 
-
 impl<'a, T> Node<T>
     where
         T: CanAlias {
@@ -335,11 +331,11 @@ impl<'a, T> Node<T> {
     }
 
     #[inline(always)]
-    pub fn order_by<A, X>(self, ordering: A) -> Self
+    pub fn order_by<A, M, X>(self, ordering: A) -> Self
         where
             T: CanOrderBy + SetOrderBy<'a, Pg, X>,
-            A: IntoArgs<Ordering<'a, Pg, X>> {
-        Node(self.0.set_order_by(ordering.into_mapped_args(|o| o.erase_x())))
+            A: IntoArg<Ordering<'a, Pg, X>, M> {
+        Node(self.0.set_order_by(ordering.into_args_erased()))
     }
 }
 
@@ -602,7 +598,6 @@ impl<'a, T> Node<T>
     }
 }
 
-
 impl<T, U> IntoIdentifier<U> for Node<T>
     where
         T: IntoIdentifier<U> {
@@ -630,16 +625,7 @@ impl<'a, T, X> IntoOrdering<'a, Pg, X> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoGroupBy<'a, Pg, X> for Node<T>
-    where
-        T: CanGroup + AstNode<'a, Pg, X> {
-    #[inline(always)]
-    fn into_group_by(self) -> GroupBy<'a, Pg, X> {
-        GroupBy::new(self.0.into_ast_operand())
-    }
-}
-
-impl<'a, T> IntoArg<Operand<'a, Pg>> for Node<T>
+impl<'a, T> IntoArg<Operand<'a, Pg>, ArgAst> for Node<T>
     where
         T: AstNode<'a, Pg, ()> {
     #[inline(always)]
@@ -648,7 +634,7 @@ impl<'a, T> IntoArg<Operand<'a, Pg>> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoArg<Projection<'a, Pg, X>> for Node<T>
+impl<'a, T, X> IntoArg<Projection<'a, Pg, X>, ArgAst> for Node<T>
     where
         Self: IntoProjection<'a, Pg, X> {
     #[inline(always)]
@@ -657,7 +643,7 @@ impl<'a, T, X> IntoArg<Projection<'a, Pg, X>> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoArg<Ordering<'a, Pg, X>> for Node<T>
+impl<'a, T, X> IntoArg<Ordering<'a, Pg, X>, ArgAst> for Node<T>
     where
         Self: IntoOrdering<'a, Pg, X> {
     #[inline(always)]
@@ -666,11 +652,11 @@ impl<'a, T, X> IntoArg<Ordering<'a, Pg, X>> for Node<T>
     }
 }
 
-impl<'a, T, X> IntoArg<GroupBy<'a, Pg, X>> for Node<T>
+impl<'a, T, X> IntoArg<GroupBy<'a, Pg, X>, ArgAst> for Node<T>
     where
-        Self: IntoGroupBy<'a, Pg, X> {
+        T: CanGroup + AstNode<'a, Pg, X> {
     #[inline(always)]
     fn into_arg(self) -> GroupBy<'a, Pg, X> {
-        self.into_group_by()
+        GroupBy::new(self.0.into_ast_operand())
     }
 }

@@ -1,6 +1,6 @@
 use crate::dsl::function::srf::ExtSrfFunction;
 use crate::types::Pg;
-use kova_core::dsl::{FromItem, IntoArg, SingleArgMarker};
+use kova_core::dsl::{ArgAst, FromItem, IntoArg};
 use std::marker::PhantomData;
 use std::ops::Deref;
 
@@ -23,8 +23,6 @@ impl<A, M> SrfNode<A, M> {
     }
 }
 
-impl<A, M> SingleArgMarker for SrfNode<A, M> {}
-
 pub trait SrfSchemaMarker {
     type Schema: 'static;
     fn schema() -> &'static Self::Schema;
@@ -43,7 +41,7 @@ pub trait SrfBuildMarker<'a, A, X> {
     fn build_srf(args: A) -> ExtSrfFunction<'a>;
 }
 
-impl<'a, A, M, X> IntoArg<FromItem<'a, Pg, X>> for SrfNode<A, M>
+impl<'a, A, M, X> IntoArg<FromItem<'a, Pg, X>, ArgAst> for SrfNode<A, M>
     where
         M: SrfBuildMarker<'a, A, X> {
     #[inline(always)]
@@ -52,7 +50,7 @@ impl<'a, A, M, X> IntoArg<FromItem<'a, Pg, X>> for SrfNode<A, M>
     }
 }
 
-impl<'a, 'b, A, M, X> IntoArg<FromItem<'a, Pg, X>> for &'b SrfNode<A, M>
+impl<'a, 'b, A, M, X> IntoArg<FromItem<'a, Pg, X>, ArgAst> for &'b SrfNode<A, M>
     where
         A: Copy,
         M: SrfBuildMarker<'a, A, X> {

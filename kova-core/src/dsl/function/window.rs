@@ -1,4 +1,4 @@
-use crate::dsl::{EraseX, IntoArgs, IntoIdentifier, IntoProjection, Operand, Ordering, Projection};
+use crate::dsl::{EraseX, IntoArg, IntoIdentifier, IntoProjection, Operand, Ordering, Projection};
 use crate::types::Database;
 use std::marker::PhantomData;
 
@@ -51,9 +51,9 @@ pub enum FrameBound {
 }
 
 impl<'a, DB: Database, X> Window<'a, DB, X> {
-    pub fn partition_by<C>(mut self, cols: C) -> Self
-        where
-            C: IntoArgs<Operand<'a, DB>> {
+    pub fn partition_by<C, M>(mut self, cols: C) -> Self
+    where
+        C: IntoArg<Operand<'a, DB>, M>, {
         self.partition_by = cols.into_args();
         self
     }
@@ -74,17 +74,17 @@ impl<'a, DB: Database, X> Window<'a, DB, X> {
     }
 
     // Not in Node, Native curing method
-    pub fn order_by<C>(mut self, cols: C) -> Self
-        where
-            C: IntoArgs<Ordering<'a, DB, X>> {
-        self.order_by = cols.into_mapped_args(|o| o.erase_x());
+    pub fn order_by<C, M>(mut self, cols: C) -> Self
+    where
+        C: IntoArg<Ordering<'a, DB, X>, M>, {
+        self.order_by = cols.into_args_erased();
         self
     }
 
     pub fn alias<A, T>(self, alias: A) -> Projection<'a, DB, X>
-        where
-            A: IntoIdentifier<T>,
-            Self: IntoProjection<'a, DB, X> {
+    where
+        A: IntoIdentifier<T>,
+        Self: IntoProjection<'a, DB, X>, {
         self.into_projection().alias(alias)
     }
 }

@@ -1,7 +1,6 @@
 use crate::dsl::{
-    AstNode, FromItem, Identifier, IntoArg, IntoIdentifier,
-    IntoOrdering, Operand, Ordering, SingleArgMarker, Static,
-    TypedNode,
+    ArgAst, AstNode, FromItem, Identifier, IntoArg, IntoIdentifier, IntoOrdering, Operand,
+    Ordering, Static, TypedNode,
 };
 use crate::type_id;
 use crate::types::{Database, IdentifierMeta};
@@ -32,8 +31,6 @@ impl<T> Table<T> {
     }
 }
 
-impl<T> SingleArgMarker for Table<T> {}
-
 impl<T> TypedNode for Table<T> {
     type Output = Static<T>;
 }
@@ -51,7 +48,7 @@ impl<T> IntoIdentifier<T> for Table<T> {
     }
 }
 
-impl<T> IntoArg<IdentifierMeta> for Table<T> {
+impl<T> IntoArg<IdentifierMeta, ArgAst> for Table<T> {
     #[inline(always)]
     fn into_arg(self) -> IdentifierMeta {
         self.meta
@@ -64,7 +61,7 @@ impl<'a, DB: Database, T, X> IntoOrdering<'a, DB, X> for Table<T> {
     }
 }
 
-impl<'a, T, DB: Database, X> IntoArg<FromItem<'a, DB, X>> for Table<T> {
+impl<'a, T, DB: Database, X> IntoArg<FromItem<'a, DB, X>, ArgAst> for Table<T> {
     #[inline(always)]
     fn into_arg(self) -> FromItem<'a, DB, X> {
         FromItem::from_table(self.meta.source, self.meta.tag)

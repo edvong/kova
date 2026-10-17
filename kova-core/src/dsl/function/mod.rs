@@ -1,12 +1,10 @@
 mod aggregate;
 mod scalar;
 mod window;
-// mod can;
-// mod macros;
 
 pub use self::aggregate::{
-    Aggregate, AggregateBuild, AggregateMarker, Avg, AvgMarker, Count, CountArg, CountMarker, Max,
-    MaxMarker, Min, MinMarker, Sum, SumMarker, Wildcard,
+    Aggregate, AggregateBuild, AggregateMarker, Avg, AvgMarker, Count, CountMarker, Max, MaxMarker,
+    Min, MinMarker, Sum, SumMarker, Wildcard,
 };
 pub use self::scalar::{
     Abs, AbsMarker, Length, LengthMarker, Lower, LowerMarker, Scalar, ScalarBuild, ScalarMarker,
@@ -29,8 +27,8 @@ pub struct Function<'a, DB: Database> {
 
 impl<'a, DB: Database> Function<'a, DB> {
     pub fn from<T, M>(func: T) -> Self
-    where
-        T: IntoFunctionInner<'a, DB, M>, {
+        where
+            T: IntoFunctionInner<'a, DB, M> {
         func.into_function()
     }
 

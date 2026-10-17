@@ -8,7 +8,6 @@ mod mode;
 mod model;
 mod query;
 mod row;
-mod row_macros;
 mod value;
 
 pub use {

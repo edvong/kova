@@ -12,9 +12,8 @@ pub use crate::dsl::function::srf::{
 };
 
 use crate::dsl::node::Node;
-use crate::types::Postgres;
+use crate::types::{Encode, Postgres};
 use kova_core::dsl::{AstNode, Operand};
-use kova_core::types::Encode;
 
 pub enum ExtSrfFunction<'a> {
     Unnest(Operand<'a, Postgres>),
@@ -43,7 +42,7 @@ impl<'a, T, X> IntoSrfFunction<'a, X> for Node<T>
 
 impl<'a, T, X> IntoSrfFunction<'a, X> for Vec<T>
     where
-        Vec<T>: Encode<'a, Postgres, X> {
+        Vec<T>: Encode<'a, X> {
     fn into_srf_function(self) -> Operand<'a, Postgres> {
         Operand::from_result(self.encode())
     }
@@ -51,7 +50,7 @@ impl<'a, T, X> IntoSrfFunction<'a, X> for Vec<T>
 
 impl<'a, 'b, T, X> IntoSrfFunction<'a, X> for &'b Vec<T>
     where
-        &'b Vec<T>: Encode<'a, Postgres, X> {
+        &'b Vec<T>: Encode<'a, X> {
     #[inline(always)]
     fn into_srf_function(self) -> Operand<'a, Postgres> {
         Operand::from_result(self.encode())
@@ -60,7 +59,7 @@ impl<'a, 'b, T, X> IntoSrfFunction<'a, X> for &'b Vec<T>
 
 impl<'a, 'b, T, X> IntoSrfFunction<'a, X> for &'b [T]
     where
-        &'b [T]: Encode<'a, Postgres, X> {
+        &'b [T]: Encode<'a, X> {
     #[inline(always)]
     fn into_srf_function(self) -> Operand<'a, Postgres> {
         Operand::from_result(self.encode())

@@ -46,14 +46,16 @@ pub trait AggregateBuild<'a, DB: Database, E, X>: AggregateMarker<E> {
 }
 
 impl<'a, DB: Database, M, E, X> TypedNode for Aggregate<'a, DB, M, E, X>
-    where
-        M: AggregateMarker<E> {
+where
+    M: AggregateMarker<E>,
+{
     type Output = M::Output;
 }
 
 impl<'a, DB: Database, M, E, X> AstNode<'a, DB, X> for Aggregate<'a, DB, M, E, X>
-    where
-        M: AggregateBuild<'a, DB, E, X> {
+where
+    M: AggregateBuild<'a, DB, E, X>,
+{
     #[inline(always)]
     fn into_ast_operand(self) -> Operand<'a, DB> {
         let mut f = M::build_function(self.expr);
@@ -134,8 +136,9 @@ impl<'a, DB: Database, X> CountArg<'a, DB, X> for Wildcard {
 }
 
 impl<'a, DB: Database, T, X> CountArg<'a, DB, X> for T
-    where
-        T: AstNode<'a, DB, X> {
+where
+    T: AstNode<'a, DB, X>,
+{
     #[inline(always)]
     fn into_count_operand(self) -> Operand<'a, DB> {
         self.into_ast_operand()
@@ -149,8 +152,9 @@ impl<E> AggregateMarker<E> for CountMarker {
 }
 
 impl<'a, DB: Database, E, X> AggregateBuild<'a, DB, E, X> for CountMarker
-    where
-        E: CountArg<'a, DB, X> {
+where
+    E: CountArg<'a, DB, X>,
+{
     #[inline(always)]
     fn build_function(expr: E) -> Function<'a, DB> {
         Function::from(StandardFunction::Count(Box::new(expr.into_count_operand())))
@@ -167,8 +171,9 @@ macro_rules! impl_std_aggregate {
         }
 
         impl<'a, DB: Database, E, X> AggregateBuild<'a, DB, E, X> for $marker
-            where
-                E: AstNode<'a, DB, X> {
+        where
+            E: AstNode<'a, DB, X>,
+        {
             #[inline(always)]
             fn build_function(expr: E) -> Function<'a, DB> {
                 Function::from(StandardFunction::$variant(Box::new(expr.into_ast_operand())))

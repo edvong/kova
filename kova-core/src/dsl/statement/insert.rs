@@ -1,5 +1,5 @@
 use crate::dsl::{
-    Condition, EraseX, IntoArgs, IntoInsertSource, OnConflictClause, Projection, ProjectionClause,
+    Condition, EraseX, IntoInsertSource, OnConflictClause, Projection, ProjectionClause,
     ValuesClause, WhereClause,
 };
 use crate::render::RenderData;
@@ -15,9 +15,8 @@ pub struct InsertStatement<'a, DB: Database, T> {
 }
 
 impl<'a, DB: Database, T> InsertStatement<'a, DB, T>
-where
-    T: Model<DB = DB>,
-{
+    where
+        T: Model<DB = DB> {
     pub fn new<X>(data: impl IntoInsertSource<'a, DB, T, X>) -> Self {
         Self {
             values: ValuesClause::new(T::COLUMNS_META.to_vec(), data.into_source()),
@@ -32,10 +31,8 @@ where
         unimplemented!()
     }
 
-    pub fn retuning<A, X>(&mut self, cols: A)
-    where
-        A: IntoArgs<Projection<'a, DB, X>>, {
-        self.returning.set(cols.into_mapped_args(|p| p.erase_x()));
+    pub fn retuning(&mut self, cols: Vec<Projection<'a, DB, ()>>) {
+        self.returning.set(cols);
     }
 
     pub fn conflict_mut(&mut self) -> &mut OnConflictClause<'a, DB> {

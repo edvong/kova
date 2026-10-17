@@ -1,11 +1,18 @@
 use crate::types::{Postgres, Value};
 use kova_core::types::{FromValue, IntoValue};
-use kova_core::{Error, Result, impl_native_extract_column};
+use kova_core::{Error, Result, impl_platform_codec};
 use std::borrow::Cow;
 use std::convert::TryFrom;
 
+pub trait Encode<'a, X = ()> {
+    fn encode(self) -> Result<Value<'a>>;
+}
+
+pub trait Decode<'a, X = ()>: Sized {
+    fn decode(value: Value<'a>) -> Result<Self>;
+}
 #[rustfmt::skip]
-impl_native_extract_column!(
+impl_platform_codec!(
     Postgres,
     i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, f32, f64, bool, String, Vec<u8>
 );

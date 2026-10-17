@@ -1,8 +1,5 @@
 use crate::dsl::node::{CanPgArray, CanPgJsonb, CanPgString, Node};
-use crate::types::Pg;
-use kova_core::dsl::{
-    Dynamic, IntoArg, IntoIdentifier, IntoJoinConstraint, JoinConstraint, Static,
-};
+use kova_core::dsl::{ArgAst, Dynamic, IntoArg, IntoIdentifier, Static};
 use kova_core::types::{ColumnMeta, IdentifierMeta};
 
 pub type Column<T = Dynamic, M = ColumnMeta, Mode = Static<T>> =
@@ -30,16 +27,7 @@ impl<T, M, Mode> CanPgString for kova_core::dsl::Column<T, M, Mode> {}
 impl<T, M, Mode> CanPgArray for kova_core::dsl::Column<T, M, Mode> {}
 impl<T, M, Mode> CanPgJsonb for kova_core::dsl::Column<T, M, Mode> {}
 
-impl<'a, T, M, Mode, X> IntoJoinConstraint<'a, Pg, X> for Column<T, M, Mode>
-    where
-        M: IntoIdentifier<T> {
-    #[inline(always)]
-    fn into_constraint(self) -> JoinConstraint<'a, Pg> {
-        JoinConstraint::Using(vec![self.0.into_identifier().meta])
-    }
-}
-
-impl<T, M, Mode> IntoArg<IdentifierMeta> for Column<T, M, Mode>
+impl<T, M, Mode> IntoArg<IdentifierMeta, ArgAst> for Column<T, M, Mode>
     where
         M: IntoIdentifier<T> {
     #[inline(always)]

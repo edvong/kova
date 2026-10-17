@@ -9,14 +9,12 @@ mod function;
 mod identifier;
 mod operand;
 mod operator;
-mod rows;
 
 mod can;
 mod math;
 mod relation;
 pub mod statement;
 mod table;
-// mod ast;
 
 pub mod func {
     pub use crate::dsl::function::{
@@ -29,7 +27,7 @@ pub mod func {
 }
 
 pub use {
-    arg::{IntoArg, IntoArgs, SingleArgMarker},
+    arg::{IntoArg, ArgDirect, ArgAst, ArgEncode},
     assignment::{Assignment, StandardAssignment},
     can::{
         CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter, CanGroup, CanMath, CanOrder,
@@ -48,7 +46,6 @@ pub use {
     },
     operator::{Operator, StandardOperator},
     relation::IntoRelationList,
-    rows::{InsertRows, IntoInsertSource, IntoRows},
     table::Table,
 };
 

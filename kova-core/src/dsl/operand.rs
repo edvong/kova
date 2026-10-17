@@ -112,12 +112,13 @@ pub trait IntoOperand<'a, Target, DB: Database, K, X> {
 
 impl<'a, T, Target, DB, X> IntoOperand<'a, Target, DB, Open, X> for T
     where
-        DB: Database,
-        Static<T>: Compatible<Target, X>,
-        T: Encode<'a, DB, X> {
+        // DB: Database,
+        // T: Encode<'a, DB, X>
+        DB: Encode<'a, T, X>,
+        Static<T>: Compatible<Target, X> {
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, DB> {
-        Operand::from_result(self.encode())
+        Operand::from_result(DB::encode(self))
     }
 }
 

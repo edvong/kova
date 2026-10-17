@@ -2,8 +2,8 @@ mod json_each;
 mod json_tree;
 mod srf_node;
 
-pub use self::json_each::{JsonEach, JsonEachMarker, JsonEachSchema};
-pub use self::json_tree::{JsonTree, JsonTreeMarker, JsonTreeSchema};
+pub use self::json_each::JsonEach;
+pub use self::json_tree::JsonTree;
 
 use crate::dsl::node::Node;
 use crate::types::Sqlite;

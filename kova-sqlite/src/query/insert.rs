@@ -5,7 +5,7 @@ use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
 use kova_core::dsl::{
-    Assignment, Condition, EraseX, IntoArgs, IntoInsertSource, Operand, Projection,
+    Assignment, Condition, IntoArg, IntoInsertSource, Operand, Projection,
 };
 use kova_core::types::{ExecutableSync, FromColumn, FromRow, Insert as CoreInsert, Model};
 use std::marker::PhantomData;
@@ -33,10 +33,10 @@ impl<'c, 'a, T, E, X> CoreInsert<'c, 'a, T::DB, T, E, X>
 impl<'c, 'a, T, E, X, C> Insert<'c, 'a, T, E, X, NoReturn, C>
     where
         T: Model<DB = Sqlite> {
-    pub fn returning<A>(mut self, cols: A) -> Insert<'c, 'a, T, E, X, Returning, C>
+    pub fn returning<A, M>(mut self, cols: A) -> Insert<'c, 'a, T, E, X, Returning, C>
         where
-            A: IntoArgs<Projection<'a, Sqlite, X>> {
-        self.statement.retuning(cols);
+            A: IntoArg<Projection<'a, Sqlite, X>, M> {
+        self.statement.retuning(cols.into_args_erased());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -44,9 +44,9 @@ impl<'c, 'a, T, E, X, C> Insert<'c, 'a, T, E, X, NoReturn, C>
 impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, NoConflict>
     where
         T: Model<DB = Sqlite> {
-    pub fn on_conflict<A>(mut self, targets: A) -> Insert<'c, 'a, T, E, X, R, Conflicted>
+    pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, X, R, Conflicted>
         where
-            A: IntoArgs<Operand<'a, Sqlite>> {
+            A: IntoArg<Operand<'a, Sqlite>, M> {
         self.statement.conflict_mut().set_targets(targets.into_args());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
@@ -60,10 +60,10 @@ impl<'c, 'a, T, E, X, R> Insert<'c, 'a, T, E, X, R, Conflicted>
         self
     }
 
-    pub fn update<A>(mut self, assignments: A) -> Self
+    pub fn update<A, M>(mut self, assignments: A) -> Self
         where
-            A: IntoArgs<Assignment<'a, Sqlite, X>> {
-        self.statement.conflict_mut().set_do_update(assignments.into_mapped_args(|a| a.erase_x()));
+            A: IntoArg<Assignment<'a, Sqlite, X>, M> {
+        self.statement.conflict_mut().set_do_update(assignments.into_args_erased());
         self
     }
 

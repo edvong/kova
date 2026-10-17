@@ -14,7 +14,7 @@ impl<'a, DB: Database> RawStatement<'a, DB> {
         Self { sql: sql.into(), binds: BindClause::new() }
     }
 
-    pub fn bind(&mut self, args: Vec<Bind<'a, DB>>) {
+    pub fn bind(&mut self, args: Vec<Bind<'a, DB, ()>>) {
         self.binds.set(args);
     }
 

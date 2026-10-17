@@ -5,8 +5,8 @@ use crate::dsl::node::{CanSqliteJson, CanSqliteString, Node};
 use crate::types::Sqlite;
 use kova_core::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
 use kova_core::dsl::{
-    AstNode, CanAlias, CanCompare, CanGroup, CanMath, CanOrder, CanString, Dynamic, EraseX,
-    IntoArgs, Operand, Projection, Static, TypedNode,
+    AstNode, CanAlias, CanCompare, CanGroup, CanMath, CanOrder, CanString, Dynamic, IntoArg,
+    Operand, Projection, Static, TypedNode,
 };
 use std::marker::PhantomData;
 
@@ -43,26 +43,26 @@ impl CanSqliteString for JsonMarker {}
 pub struct JsonObjectMarker;
 pub struct JsonbObjectMarker;
 
-pub type JsonObject<A, X> = Node<InnerJsonObject<JsonObjectMarker, A, X>>;
-pub type JsonbObject<A, X> = Node<InnerJsonObject<JsonbObjectMarker, A, X>>;
+pub type JsonObject<A, K, X> = Node<InnerJsonObject<JsonObjectMarker, A, K, X>>;
+pub type JsonbObject<A, K, X> = Node<InnerJsonObject<JsonbObjectMarker, A, K, X>>;
 
-pub const fn JsonObject<A, X>(args: A) -> JsonObject<A, X> {
+pub const fn JsonObject<A, K, X>(args: A) -> JsonObject<A, K, X> {
     Node(InnerJsonObject { args, _marker: PhantomData })
 }
 
-pub const fn JsonbObject<A, X>(args: A) -> JsonbObject<A, X> {
+pub const fn JsonbObject<A, K, X>(args: A) -> JsonbObject<A, K, X> {
     Node(InnerJsonObject { args, _marker: PhantomData })
 }
 
 pub trait ObjectBuildMarker {
     type Output;
-    fn build_ext<'a>(items: Vec<Projection<'a, Sqlite, ()>>) -> ExtFunction<'a>;
+    fn build_ext(items: Vec<Projection<Sqlite, ()>>) -> ExtFunction;
 }
 
 impl ObjectBuildMarker for JsonObjectMarker {
     type Output = Static<String>;
     #[inline(always)]
-    fn build_ext<'a>(items: Vec<Projection<'a, Sqlite, ()>>) -> ExtFunction<'a> {
+    fn build_ext(items: Vec<Projection<Sqlite, ()>>) -> ExtFunction {
         ExtFunction::JsonObject(items)
     }
 }
@@ -70,38 +70,36 @@ impl ObjectBuildMarker for JsonObjectMarker {
 impl ObjectBuildMarker for JsonbObjectMarker {
     type Output = Static<Vec<u8>>;
     #[inline(always)]
-    fn build_ext<'a>(items: Vec<Projection<'a, Sqlite, ()>>) -> ExtFunction<'a> {
+    fn build_ext(items: Vec<Projection<Sqlite, ()>>) -> ExtFunction {
         ExtFunction::JsonbObject(items)
     }
 }
 
-pub struct InnerJsonObject<M, A, X> {
+pub struct InnerJsonObject<M, A, K, X> {
     args: A,
-    _marker: PhantomData<(M, X)>,
+    _marker: PhantomData<(M, K, X)>,
 }
 
-impl<M: ObjectBuildMarker, A, X> TypedNode for InnerJsonObject<M, A, X> {
+impl<M: ObjectBuildMarker, A, K, X> TypedNode for InnerJsonObject<M, A, K, X> {
     type Output = M::Output;
 }
 
-impl<'a, M, A, X> AstNode<'a, Sqlite, X> for InnerJsonObject<M, A, X>
+impl<'a, M, A, K, X> AstNode<'a, Sqlite, X> for InnerJsonObject<M, A, K, X>
     where
         M: ObjectBuildMarker,
-        A: IntoArgs<Projection<'a, Sqlite, X>> {
+        A: IntoArg<Projection<'a, Sqlite, X>, K> {
     #[inline(always)]
     fn into_ast_operand(self) -> Operand<'a, Sqlite> {
-        Operand::from_function(Function::from(M::build_ext(
-            self.args.into_mapped_args(|p| p.erase_x()),
-        )))
+        Operand::from_function(Function::from(M::build_ext(self.args.into_args_erased())))
     }
 }
 
-impl<M, A, X> CanAlias for InnerJsonObject<M, A, X> {}
-impl<M, A, X> CanCompare for InnerJsonObject<M, A, X> {}
-impl<M, A, X> CanSqliteJson for InnerJsonObject<M, A, X> {}
+impl<M, A, K, X> CanAlias for InnerJsonObject<M, A, K, X> {}
+impl<M, A, K, X> CanCompare for InnerJsonObject<M, A, K, X> {}
+impl<M, A, K, X> CanSqliteJson for InnerJsonObject<M, A, K, X> {}
 
-impl<A, X> CanString for InnerJsonObject<JsonObjectMarker, A, X> {}
-impl<A, X> CanSqliteString for InnerJsonObject<JsonObjectMarker, A, X> {}
+impl<A, K, X> CanString for InnerJsonObject<JsonObjectMarker, A, K, X> {}
+impl<A, K, X> CanSqliteString for InnerJsonObject<JsonObjectMarker, A, K, X> {}
 
 // JsonExtract & JsonbExtract (Isomorphic Dynamic Extraction of Nodes)
 pub struct JsonExtractMarker;

@@ -17,15 +17,15 @@ pub mod options {
 
 pub mod types {
     pub use kova_core::types::{
-        ColumnMeta, IdentifierMeta, Cte, Database, Decode, Encode, FromColumn, FromRow,
+        ColumnMeta, IdentifierMeta, Cte, Database, FromColumn, FromRow,
         Model, Relation, Row,
     };
 
     #[cfg(feature = "pg")]
-    pub use kova_pg::types::{Postgres as Engine, Value};
+    pub use kova_pg::types::{Postgres as Engine, Value, Decode, Encode};
 
     #[cfg(feature = "sqlite")]
-    pub use kova_sqlite::types::{Sqlite as Engine, Value};
+    pub use kova_sqlite::types::{Sqlite as Engine, Value, Decode, Encode};
 }
 
 pub mod dsl {

@@ -1,7 +1,7 @@
 use crate::dsl::{
-    CombineClause, Condition, CteNode, DistinctClause, EraseX, ExtLocking, ExtensionClause,
-    FromItem, GroupBy, GroupByClause, HavingClause, IntoArgs, IntoJoinConstraint, Join, JoinClause,
-    JoinConstraint, JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
+    CombineClause, Condition, CteNode, DistinctClause, ExtLocking, ExtensionClause, FromItem,
+    GroupBy, GroupByClause, HavingClause, IntoJoinConstraint, Join, JoinClause, JoinConstraint,
+    JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
     ProjectionClause, SetOperator, TableClause, WhereClause, WithClause,
 };
 use crate::render::RenderData;
@@ -36,9 +36,8 @@ impl<'a, DB: Database, X> IntoSelectStatement<'a, DB, X> for SelectStatement<'a,
 }
 
 impl<'a, DB> SelectStatement<'a, DB>
-where
-    DB: Database,
-{
+    where
+        DB: Database {
     pub fn new(table: &'static str) -> Self {
         Self {
             with: WithClause::new(),
@@ -71,8 +70,8 @@ where
         self.join.tag_latest(type_id::<Marker>());
     }
 
-    pub fn from<A: IntoArgs<FromItem<'a, DB, X>>, X>(&mut self, items: A) {
-        self.from.extend(items.into_mapped_args(|t| t.erase_x()));
+    pub fn srf(&mut self, items: Vec<FromItem<'a, DB, ()>>) {
+        self.from.extend(items);
     }
 
     pub fn with<C: Cte>(&mut self, statement: SelectStatement<'a, DB>) {
@@ -83,15 +82,13 @@ where
         self.distinct.set(true);
     }
 
-    pub fn columns<A, X>(&mut self, cols: A)
-    where
-        A: IntoArgs<Projection<'a, DB, X>>, {
-        self.projection.set(cols.into_mapped_args(|p| p.erase_x()));
+    pub fn columns(&mut self, args: Vec<Projection<'a, DB, ()>>) {
+        self.projection.set(args);
     }
 
     pub fn join<R: Relation, C, X>(&mut self, typ: JoinType, constraint: C)
-    where
-        C: IntoJoinConstraint<'a, DB, X>, {
+        where
+            C: IntoJoinConstraint<'a, DB, X> {
         let join = Join {
             typ,
             target_table: R::RELATION_NAME,
@@ -106,29 +103,25 @@ where
             typ: JoinType::Cross,
             target_table: R::RELATION_NAME,
             tag: None,
-            constraint: JoinConstraint::None,
+            constraint: JoinConstraint::none(),
         };
         self.join.add(join);
     }
 
-    pub fn r#where<X>(&mut self, cond: Condition<'a, DB, X>) {
-        self.r#where.set(cond.erase_x())
+    pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {
+        self.r#where.set(cond)
     }
 
-    pub fn group_by<A, X>(&mut self, cols: A)
-    where
-        A: IntoArgs<GroupBy<'a, DB, X>>, {
-        self.group_by.set(cols.into_mapped_args(|g| g.erase_x()))
+    pub fn group_by(&mut self, args: Vec<GroupBy<'a, DB, ()>>) {
+        self.group_by.set(args)
     }
 
-    pub fn having<X>(&mut self, cond: Condition<'a, DB, X>) {
-        self.having.set(cond.erase_x());
+    pub fn having(&mut self, cond: Condition<'a, DB, ()>) {
+        self.having.set(cond);
     }
 
-    pub fn order_by<A, X>(&mut self, cols: A)
-    where
-        A: IntoArgs<Ordering<'a, DB, X>>, {
-        self.order_by.set(cols.into_mapped_args(|o| o.erase_x()));
+    pub fn order_by(&mut self, args: Vec<Ordering<'a, DB, ()>>) {
+        self.order_by.set(args);
     }
 
     pub fn limit(&mut self, limit: usize) {

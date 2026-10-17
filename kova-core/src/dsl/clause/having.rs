@@ -10,10 +10,6 @@ impl<'a, DB: Database> HavingClause<'a, DB> {
         Self { cond: None }
     }
 
-    pub fn from(cond: Condition<'a, DB, ()>) -> Self {
-        Self { cond: Some(cond) }
-    }
-
     pub fn set(&mut self, cond: Condition<'a, DB, ()>) {
         self.cond = Some(cond);
     }

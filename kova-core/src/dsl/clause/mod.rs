@@ -19,7 +19,7 @@ pub use {
     bind::Bind,
     combine::{SetOperation, SetOperator},
     group_by::{GroupBy, IntoGroupBy},
-    insert::InsertSource,
+    insert::{ValueSource, IntoInsertSource},
     join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
     locking::ExtLocking,
     order::{Direction, IntoOrdering, NullsOrder, OrderByClause, Ordering},

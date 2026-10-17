@@ -4,7 +4,7 @@ use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::DeleteStatement;
-use kova_core::dsl::{Condition, IntoArgs, Projection};
+use kova_core::dsl::{Condition, EraseX, IntoArg, Projection};
 use kova_core::types::{
     Delete as CoreDelete, ExecutableSync, FromColumn, FromRow, Model,
 };
@@ -28,10 +28,10 @@ impl<'c, 'a, T, E, X> CoreDelete<'c, 'a, T, E, X> for Delete<'c, 'a, T, E, X, No
 impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, NoReturn>
     where
         T: Model<DB = Sqlite> {
-    pub fn returning<A>(mut self, cols: A) -> Delete<'c, 'a, T, E, X, Returning>
+    pub fn returning<A, M>(mut self, cols: A) -> Delete<'c, 'a, T, E, X, Returning>
         where
-            A: IntoArgs<Projection<'a, Sqlite, X>> {
-        self.statement.returning(cols);
+            A: IntoArg<Projection<'a, Sqlite, X>, M> {
+        self.statement.returning(cols.into_args_erased());
         Delete { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -40,7 +40,7 @@ impl<'c, 'a, T, E, X, R> Delete<'c, 'a, T, E, X, R>
     where
         T: Model<DB = Sqlite> {
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
-        self.statement.r#where(cond);
+        self.statement.r#where(cond.erase_x());
         self
     }
 }

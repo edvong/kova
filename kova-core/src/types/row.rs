@@ -57,35 +57,35 @@ pub trait FromColumn<'a, DB: Database, X>: Sized {
     #[inline(always)]
     fn extract_value(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self>
         where
-            Self: Decode<'a, DB, X> {
-        Self::extract_by(row, idx, Self::decode)
+            DB: Decode<'a, Self, X> {
+        Self::extract_by(row, idx, DB::decode)
     }
 }
 
-impl<'a, DB: Database, X, T> FromColumn<'a, DB, X> for Option<T>
+impl<'a, DB, X, T> FromColumn<'a, DB, X> for Option<T>
     where
-        Option<T>: Decode<'a, DB, X> {
+        DB: Decode<'a, Option<T>, X> {
     #[inline(always)]
     fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
-        Self::extract_value(row, idx)
+        <Self as FromColumn::<DB, X>>::extract_value(row, idx)
     }
 }
 
-impl<'a, DB: Database, X, T> FromColumn<'a, DB, X> for Box<T>
+impl<'a, DB, X, T> FromColumn<'a, DB, X> for Box<T>
     where
-        Box<T>: Decode<'a, DB, X> {
+        DB: Decode<'a, Box<T>, X> {
     #[inline(always)]
     fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
-        Self::extract_value(row, idx)
+        <Self as FromColumn::<DB, X>>::extract_value(row, idx)
     }
 }
 
-impl<'a, DB: Database, X, const N: usize> FromColumn<'a, DB, X> for [u8; N]
+impl<'a, DB, X, const N: usize> FromColumn<'a, DB, X> for [u8; N]
     where
-        [u8; N]: Decode<'a, DB, X> {
+        DB: Decode<'a, [u8; N], X> {
     #[inline(always)]
     fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
-        Self::extract_value(row, idx)
+        <Self as FromColumn::<DB, X>>::extract_value(row, idx)
     }
 }
 
@@ -93,8 +93,9 @@ macro_rules! impl_from_column_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<'a, DB: Database, X, $($T),+> FromColumn<'a, DB, X> for ($($T,)+)
-            where
-                $( $T: Decode<'a, DB, X> ),+ {
+        where
+            $( DB: Decode<'a, $T, X> ),+
+        {
             #[inline(always)]
             fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
                 Ok((
@@ -102,7 +103,7 @@ macro_rules! impl_from_column_for_tuple {
                         {
                             let val = Row::get_value(row, *idx)?;
                             *idx += 1;
-                            <$T as Decode<'a, DB, X>>::decode(val)?
+                            <DB as Decode<'a, $T, X>>::decode(val)?
                         },
                     )+
                 ))

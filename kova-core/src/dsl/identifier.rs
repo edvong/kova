@@ -28,8 +28,6 @@ impl<T> Copy for Identifier<T> {}
 impl<T> Clone for Identifier<T> { fn clone(&self) -> Self { *self } }
 
 
-// impl<T> SingleArgMarker for Identifier<T> {}
-
 impl<T> Identifier<T> {
     pub const fn from(meta: IdentifierMeta) -> Self {
         Self { meta, _marker: PhantomData }

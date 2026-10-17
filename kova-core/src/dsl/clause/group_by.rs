@@ -1,4 +1,3 @@
-use crate::dsl::arg::SingleArgMarker;
 use crate::dsl::{EraseX, Operand};
 use crate::types::Database;
 use std::marker::PhantomData;
@@ -10,10 +9,6 @@ pub struct GroupByClause<'a, DB: Database> {
 impl<'a, DB: Database> GroupByClause<'a, DB> {
     pub(crate) fn new() -> Self {
         Self { items: Vec::new() }
-    }
-
-    pub(crate) fn from(items: Vec<GroupBy<'a, DB, ()>>) -> Self {
-        Self { items }
     }
 
     pub fn set(&mut self, args: Vec<GroupBy<'a, DB, ()>>) {
@@ -43,5 +38,3 @@ impl<'a, DB: Database, X> EraseX for GroupBy<'a, DB, X> {
         GroupBy { operand: self.operand, _marker: PhantomData }
     }
 }
-
-impl<'a, DB: Database, X> SingleArgMarker for GroupBy<'a, DB, X> {}
