@@ -1,10 +1,6 @@
 use crate::Result;
 use crate::types::{Database, Decode};
 
-/// A unified column index enumeration.
-///
-/// Decouples the core library's row indexing logic from specific underlying database driver
-/// implementations, allowing seamless data retrieval by either numeric index or string-based column name.
 pub enum ColumnIndex<'i> {
     Index(usize),
     Name(&'i str),
@@ -24,6 +20,16 @@ impl<'i> From<&'i str> for ColumnIndex<'i> {
 
 /// Core protocol for extracting raw values from a database row.
 pub trait Row<'a, DB: Database> {
+    /// Extracts and decodes a column by trying `strict_name` (e.g., `"user.id"`) first,
+    /// falling back to `col_name` (e.g., `"id"`).
+    #[inline(always)]
+    fn get_column<T, X>(&self, strict_name: &'static str, col_name: &'static str) -> Result<T>
+        where
+            DB: Decode<T, X> {
+        let val = self.get_value(strict_name).or_else(|_| self.get_value(col_name))?;
+        <DB as Decode<T, X>>::decode(val)
+    }
+
     /// Retrieves a dynamically typed database value using either a zero-based index
     /// (`0_usize`) or a string-based column name (`"column_name"`).
     fn get_value<'i, I>(&self, idx: I) -> Result<DB::Value<'a>>
@@ -34,19 +40,19 @@ pub trait Row<'a, DB: Database> {
 #[diagnostic::on_unimplemented(
     message = "cannot extract `{Self}` from the database column(s)",
     label = "invalid column extraction target",
-    note = "expected a type that implements `FromColumn` or `Decode`.\nif passing a tuple, ensure every element can be decoded from the database."
+    note = "expected a type that implements `DecodeColumn` or `Decode`.\nif passing a tuple, ensure every element can be decoded from the database."
 )]
-pub trait FromColumn<'a, DB: Database, X>: Sized {
+pub trait DecodeColumn<DB: Database, X>: Sized {
     #[inline(always)]
-    fn extract(row: &DB::Row<'a>) -> Result<Self> {
+    fn extract(row: &DB::Row<'_>) -> Result<Self> {
         let mut idx = 0;
         Self::extract_next(row, &mut idx)
     }
 
-    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self>;
+    fn extract_next(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self>;
 
     #[inline(always)]
-    fn extract_by<F>(row: &DB::Row<'a>, idx: &mut usize, f: F) -> Result<Self>
+    fn extract_by<'a, F>(row: &DB::Row<'a>, idx: &mut usize, f: F) -> Result<Self>
         where
             F: FnOnce(DB::Value<'a>) -> Result<Self> {
         let val = Row::get_value(row, *idx)?;
@@ -55,55 +61,54 @@ pub trait FromColumn<'a, DB: Database, X>: Sized {
     }
 
     #[inline(always)]
-    fn extract_value(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self>
+    fn extract_value(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self>
         where
-            DB: Decode<'a, Self, X> {
+            DB: Decode<Self, X> {
         Self::extract_by(row, idx, DB::decode)
     }
 }
 
-impl<'a, DB, X, T> FromColumn<'a, DB, X> for Option<T>
+impl<DB, X, T> DecodeColumn<DB, X> for Option<T>
     where
-        DB: Decode<'a, Option<T>, X> {
+        DB: Decode<Option<T>, X> {
     #[inline(always)]
-    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
-        <Self as FromColumn::<DB, X>>::extract_value(row, idx)
+    fn extract_next(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self> {
+        <Self as DecodeColumn<DB, X>>::extract_value(row, idx)
     }
 }
 
-impl<'a, DB, X, T> FromColumn<'a, DB, X> for Box<T>
+impl<DB, X, T> DecodeColumn<DB, X> for Box<T>
     where
-        DB: Decode<'a, Box<T>, X> {
+        DB: Decode<Box<T>, X> {
     #[inline(always)]
-    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
-        <Self as FromColumn::<DB, X>>::extract_value(row, idx)
+    fn extract_next(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self> {
+        <Self as DecodeColumn<DB, X>>::extract_value(row, idx)
     }
 }
 
-impl<'a, DB, X, const N: usize> FromColumn<'a, DB, X> for [u8; N]
+impl<DB, X, const N: usize> DecodeColumn<DB, X> for [u8; N]
     where
-        DB: Decode<'a, [u8; N], X> {
+        DB: Decode<[u8; N], X> {
     #[inline(always)]
-    fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
-        <Self as FromColumn::<DB, X>>::extract_value(row, idx)
+    fn extract_next(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self> {
+        <Self as DecodeColumn<DB, X>>::extract_value(row, idx)
     }
 }
 
 macro_rules! impl_from_column_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
-        impl<'a, DB: Database, X, $($T),+> FromColumn<'a, DB, X> for ($($T,)+)
-        where
-            $( DB: Decode<'a, $T, X> ),+
-        {
+        impl<DB: Database, X, $($T),+> DecodeColumn<DB, X> for ($($T,)+)
+            where
+                $( DB: Decode<$T, X> ),+ {
             #[inline(always)]
-            fn extract_next(row: &DB::Row<'a>, idx: &mut usize) -> Result<Self> {
+            fn extract_next(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self> {
                 Ok((
                     $(
                         {
                             let val = Row::get_value(row, *idx)?;
                             *idx += 1;
-                            <DB as Decode<'a, $T, X>>::decode(val)?
+                            <DB as Decode<$T, X>>::decode(val)?
                         },
                     )+
                 ))

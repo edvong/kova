@@ -3,12 +3,12 @@ macro_rules! decode_column {
     // decode_column!(AppCodec, Uuid, Url, DateTime<Utc>, Timestamp);
     ($codec:ty, $($type:ty),+ $(,)?) => {
         $(
-            impl<'a> $crate::types::FromColumn<'a, $crate::types::Engine, $codec> for $type
+            impl $crate::codec::DecodeColumn<$crate::types::Engine, $codec> for $type
                 where
-                    $type: $crate::types::Decode<'a, $codec> {
+                    $type: $crate::codec::Decode<$codec> {
                 #[inline(always)]
                 fn extract_next(
-                    row: &<$crate::types::Engine as $crate::types::Database>::Row<'a>,
+                    row: &<$crate::types::Engine as $crate::types::Database>::Row<'_>,
                     idx: &mut usize,
                 ) -> $crate::Result<Self> {
                     Self::extract_value(row, idx)
@@ -17,4 +17,3 @@ macro_rules! decode_column {
         )+
     };
 }
-

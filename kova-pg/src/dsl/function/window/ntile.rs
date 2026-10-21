@@ -1,11 +1,12 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
+use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Pg;
 use kova_core::dsl::func::{Function, SetWindow, Window};
 use kova_core::dsl::{
-    AstNode, CanAlias, CanMath, CanOrder, CanWindow, IntoOperand, Operand, Static, TypedNode,
+    AstNode, CanAlias, CanCompare, CanMath, CanOrder, CanWindow, IntoOperand, Operand, Static,
+    TypedNode,
 };
 use std::marker::PhantomData;
 
@@ -25,9 +26,10 @@ impl<'a, E, K, X> TypedNode for InnerNtile<'a, E, K, X> {
     type Output = Static<i32>;
 }
 
+impl<'a, E, K, X> CanCompare for InnerNtile<'a, E, K, X> {}
 impl<'a, E, K, X> CanAlias for InnerNtile<'a, E, K, X> {}
 impl<'a, E, K, X> CanOrder for InnerNtile<'a, E, K, X> {}
-impl<'a, E, K, X> CanMath for InnerNtile<'a, E, K, X> {}
+impl<'a, E, K, X> CanMath<X> for InnerNtile<'a, E, K, X> {}
 impl<'a, E, K, X> CanWindow for InnerNtile<'a, E, K, X> {}
 
 impl<'a, E, K, X> SetWindow<'a, Pg, X> for InnerNtile<'a, E, K, X> {

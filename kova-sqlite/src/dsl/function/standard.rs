@@ -52,4 +52,3 @@ pub const fn Lower<T>(t: T) -> Lower<T> {
 pub const fn Upper<T>(t: T) -> Upper<T> {
     Node(Scalar::new(t))
 }
-

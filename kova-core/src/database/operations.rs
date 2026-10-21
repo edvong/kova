@@ -14,7 +14,7 @@ impl<'a, DB, E, X> Operations<'a, DB, E, X> {
         Self { executor: e, _marker: PhantomData }
     }
 
-    pub(crate) fn with<Codec>(self) -> Operations<'a, DB, E, Codec> {
+    pub(crate) fn codec<Codec>(self) -> Operations<'a, DB, E, Codec> {
         Operations { executor: self.executor, _marker: PhantomData }
     }
 }
@@ -22,17 +22,16 @@ impl<'a, DB, E, X> Operations<'a, DB, E, X> {
 impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
     pub fn select<'a, T>(&'c self) -> <DB::Query<'a> as Query<'a, DB>>::Select<'c, T, E, X>
         where
-            T: Model<DB = DB>,
+            T: Model<DB, X>,
             'a: 'c,
             E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Select::new(&self.executor)
     }
 
-    pub fn insert<'a, T>(
-        &'c self, data: impl IntoInsertSource<'a, DB, T, X>,
-    ) -> <DB::Query<'a> as Query<'a, DB>>::Insert<'c, T, E, X>
+    pub fn insert<'a, T>(&'c self, data: impl IntoInsertSource<'a, DB, T, X>) 
+        -> <DB::Query<'a> as Query<'a, DB>>::Insert<'c, T, E, X>
         where
-            T: Model<DB = DB>,
+            T: Model<DB, X>,
             'a: 'c,
             E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Insert::new(&self.executor, data)
@@ -40,7 +39,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
 
     pub fn update<'a, T>(&'c self) -> <DB::Query<'a> as Query<'a, DB>>::Update<'c, T, E, X>
         where
-            T: Model<DB = DB>,
+            T: Model<DB, X>,
             'a: 'c,
             E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Update::new(&self.executor)
@@ -48,7 +47,7 @@ impl<'c, DB: Database, E, X> Operations<'c, DB, E, X> {
 
     pub fn delete<'a, T>(&'c self) -> <DB::Query<'a> as Query<'a, DB>>::Delete<'c, T, E, X>
         where
-            T: Model<DB = DB>,
+            T: Model<DB, X>,
             'a: 'c,
             E: 'c {
         <DB::Query<'a> as Query<'a, DB>>::Delete::new(&self.executor)

@@ -75,7 +75,7 @@ impl<'a, DB> SelectStatement<'a, DB>
     }
 
     pub fn with<C: Cte>(&mut self, statement: SelectStatement<'a, DB>) {
-        self.with.add(CteNode { name: C::CTE_NAME, statement: Box::new(statement) });
+        self.with.add(CteNode { name: C::NAME, statement: Box::new(statement) });
     }
 
     pub fn distinct(&mut self) {
@@ -91,7 +91,7 @@ impl<'a, DB> SelectStatement<'a, DB>
             C: IntoJoinConstraint<'a, DB, X> {
         let join = Join {
             typ,
-            target_table: R::RELATION_NAME,
+            target_table: R::NAME,
             tag: None,
             constraint: constraint.into_constraint(),
         };
@@ -101,7 +101,7 @@ impl<'a, DB> SelectStatement<'a, DB>
     pub fn cross_join<R: Relation>(&mut self) {
         let join = Join {
             typ: JoinType::Cross,
-            target_table: R::RELATION_NAME,
+            target_table: R::NAME,
             tag: None,
             constraint: JoinConstraint::none(),
         };

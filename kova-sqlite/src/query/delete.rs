@@ -1,34 +1,36 @@
 use crate::query::exec::{execute_affected, fetch_rows};
-use crate::query::{NoReturn, Returning};
 use crate::types::Sqlite;
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::DeleteStatement;
 use kova_core::dsl::{Condition, EraseX, IntoArg, Projection};
-use kova_core::types::{
-    Delete as CoreDelete, ExecutableSync, FromColumn, FromRow, Model,
-};
+use kova_core::types::{Delete as CreateDelete, ExecutableSync, DecodeColumn, FromRow, Model};
 use std::iter::once;
 use std::marker::PhantomData;
 
-pub struct Delete<'c, 'a, T, E, X, R = NoReturn> {
+pub struct Delete<'c, 'a, T, E, R, X> {
     executor: &'c Executor<E>,
     statement: DeleteStatement<'a, Sqlite, T>,
-    _marker: PhantomData<(X, R)>,
+    _marker: PhantomData<(R, X)>,
 }
 
-impl<'c, 'a, T, E, X> CoreDelete<'c, 'a, T, E, X> for Delete<'c, 'a, T, E, X, NoReturn>
+pub struct NoReturn;
+pub struct Returning;
+
+pub(crate) type InitDelete<'c, 'a, T, E, X> = Delete<'c, 'a, T, E, NoReturn, X>;
+
+impl<'c, 'a, T, E, X> CreateDelete<'c, 'a, T, E, X> for InitDelete<'c, 'a, T, E, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     fn new(executor: &'c Executor<E>) -> Self {
         Self { executor, statement: DeleteStatement::new(), _marker: PhantomData }
     }
 }
 
-impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, NoReturn, X>
     where
-        T: Model<DB = Sqlite> {
-    pub fn returning<A, M>(mut self, cols: A) -> Delete<'c, 'a, T, E, X, Returning>
+        T: Model<Sqlite, X> {
+    pub fn returning<A, M>(mut self, cols: A) -> Delete<'c, 'a, T, E, Returning, X>
         where
             A: IntoArg<Projection<'a, Sqlite, X>, M> {
         self.statement.returning(cols.into_args_erased());
@@ -36,37 +38,37 @@ impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, NoReturn>
     }
 }
 
-impl<'c, 'a, T, E, X, R> Delete<'c, 'a, T, E, X, R>
+impl<'c, 'a, T, E, R, X> Delete<'c, 'a, T, E, R, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     pub fn filter(mut self, cond: Condition<'a, Sqlite, X>) -> Self {
         self.statement.r#where(cond.erase_x());
         self
     }
 }
 
-impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, NoReturn>
+impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, NoReturn, X>
     where
-        T: Model<DB = Sqlite>,
+        T: Model<Sqlite, X>,
         E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute(self) -> Result<u64> {
         execute_affected(self.executor, once(self.statement.build()))
     }
 }
 
-impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, X, Returning>
+impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, Returning, X>
     where
-        T: Model<DB = Sqlite>,
+        T: Model<Sqlite, X>,
         E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn execute_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Sqlite> {
+            U: FromRow<Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
     }
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Sqlite, X> {
+            U: DecodeColumn<Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
     }
 }

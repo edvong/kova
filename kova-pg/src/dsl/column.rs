@@ -1,4 +1,4 @@
-use crate::dsl::node::{CanPgArray, CanPgJsonb, CanPgString, Node};
+use crate::dsl::node::Node;
 use kova_core::dsl::{ArgAst, Dynamic, IntoArg, IntoIdentifier, Static};
 use kova_core::types::{ColumnMeta, IdentifierMeta};
 
@@ -22,10 +22,6 @@ impl Column<Dynamic, IdentifierMeta, Dynamic> {
         Node(kova_core::dsl::Column::dynamic(source, name))
     }
 }
-
-impl<T, M, Mode> CanPgString for kova_core::dsl::Column<T, M, Mode> {}
-impl<T, M, Mode> CanPgArray for kova_core::dsl::Column<T, M, Mode> {}
-impl<T, M, Mode> CanPgJsonb for kova_core::dsl::Column<T, M, Mode> {}
 
 impl<T, M, Mode> IntoArg<IdentifierMeta, ArgAst> for Column<T, M, Mode>
     where

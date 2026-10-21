@@ -30,7 +30,6 @@ pub enum JoinType {
     Cross,
 }
 
-
 pub struct Join<'a, DB: Database> {
     pub typ: JoinType,
     pub target_table: &'static str,
@@ -65,6 +64,11 @@ impl<'a, DB: Database> JoinConstraint<'a, DB> {
     }
 }
 
+#[diagnostic::on_unimplemented(
+    message = "`{Self}` is not a valid JOIN constraint",
+    label = "invalid JOIN constraint",
+    note = "for `ON` conditions, combine boolean conditions with `&` or `|` (not a tuple).\nfor `USING (...)` joins, pass a column or a tuple of columns `(col1, col2)`."
+)]
 pub trait IntoJoinConstraint<'a, DB: Database, X> {
     fn into_constraint(self) -> JoinConstraint<'a, DB>;
 }
@@ -78,7 +82,6 @@ impl<'a, DB: Database, X> IntoJoinConstraint<'a, DB, X> for Condition<'a, DB, X>
 }
 
 // 2. USING single branch: Implementing `IntoArg<IdentifierMeta, ArgAst>` is sufficient
-// (automatically overrides PG/SQLite's Column and Table).
 impl<'a, DB: Database, X, T> IntoJoinConstraint<'a, DB, X> for T
     where
         T: IntoArg<IdentifierMeta, ArgAst> {
@@ -88,13 +91,13 @@ impl<'a, DB: Database, X, T> IntoJoinConstraint<'a, DB, X> for T
     }
 }
 
-// 3. USING Multiple columns tuple branch: Directly call IntoArg::into_args(self)
+// 3. USING Multiple columns tuple branch
 macro_rules! impl_into_join_constraint_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
         impl<'a, DB: Database, X, $($T),+> IntoJoinConstraint<'a, DB, X> for ($($T,)+)
             where
-                $( $T: IntoArg<IdentifierMeta, ArgAst> ),+ {
+                $($T: IntoArg<IdentifierMeta, ArgAst> ),+ {
             #[inline(always)]
             fn into_constraint(self) -> JoinConstraint<'a, DB> {
                 JoinConstraint::using(self.into_args())

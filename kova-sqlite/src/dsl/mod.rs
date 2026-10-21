@@ -1,24 +1,30 @@
 mod assignment;
+mod can;
 mod column;
 mod function;
 mod node;
 mod operator;
 
 pub use {
-    assignment::ExtAssignment,
+    can::CanSqliteJson,
     column::Column,
-    function::ExtFunction,
     node::Node,
 };
 
-pub(crate) use operator::ExtOperator;
+pub(crate) use {
+    assignment::ExtAssignment,
+    can::{CanSqliteString, CanSqliteFts},
+    function::ExtFunction,
+    operator::ExtOperator,
+};
+
 
 pub mod func {
     pub use crate::dsl::function::{
-        Abs, Avg, Count, Length, Lower, Max, Min, Sum, Upper,
-        Bm25, ExtFunction, ExtSrfFunction, GroupConcat, Highlight, Json, JsonEach, JsonExtract,
-        JsonGroupArray, JsonObject, JsonTree, JsonbExtract, JsonbGroupArray, JsonbObject, Snippet,
+        Abs, Avg, Bm25, Count, GroupConcat, Highlight, Json, JsonEach, JsonExtract,
+        JsonGroupArray, JsonObject, JsonTree, JsonbExtract, JsonbGroupArray, JsonbObject, Length,
+        Lower, Max, Min, Snippet, Sum, Upper,
     };
 
-    pub(crate) use crate::dsl::function::{IntoSrfFunction, JsonSrfArgs};
+    pub(crate) use crate::dsl::function::{IntoSrfFunction, ExtFunction, JsonSrfArgs, ExtSrfFunction};
 }

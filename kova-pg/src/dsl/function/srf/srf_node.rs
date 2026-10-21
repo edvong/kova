@@ -42,8 +42,9 @@ pub trait SrfBuildMarker<'a, A, X> {
 }
 
 impl<'a, A, M, X> IntoArg<FromItem<'a, Pg, X>, ArgAst> for SrfNode<A, M>
-    where
-        M: SrfBuildMarker<'a, A, X> {
+where
+    M: SrfBuildMarker<'a, A, X>,
+{
     #[inline(always)]
     fn into_arg(self) -> FromItem<'a, Pg, X> {
         FromItem::from_function(M::build_srf(self.args), None)
@@ -51,9 +52,10 @@ impl<'a, A, M, X> IntoArg<FromItem<'a, Pg, X>, ArgAst> for SrfNode<A, M>
 }
 
 impl<'a, 'b, A, M, X> IntoArg<FromItem<'a, Pg, X>, ArgAst> for &'b SrfNode<A, M>
-    where
-        A: Copy,
-        M: SrfBuildMarker<'a, A, X> {
+where
+    A: Copy,
+    M: SrfBuildMarker<'a, A, X>,
+{
     #[inline(always)]
     fn into_arg(self) -> FromItem<'a, Pg, X> {
         FromItem::from_function(M::build_srf(self.args), None)

@@ -17,6 +17,7 @@ kova-sqlite = { workspace = true, optional = true }
 
 [features]
 default = ["pg"]
+narrow-cast = ["kova-pg?/narrow-cast", "kova-sqlite?/narrow-cast"]
 
 # PostgreSQL-specific features
 pg = ["dep:kova-pg"]

@@ -106,14 +106,17 @@ pub struct Close;
 pub struct Open;
 
 // Low-level: converts to Operand while checking target type compatibility
+#[diagnostic::on_unimplemented(
+    message = "cannot use `{Self}` as an operand where `{Target}` is expected (under codec `{X}`)",
+    label = "invalid or incompatible SQL operand",
+    note = "ensure the operand type is compatible with `{Target}` and implements `Encode` under codec `{X}`."
+)]
 pub trait IntoOperand<'a, Target, DB: Database, K, X> {
     fn into_operand(self) -> Operand<'a, DB>;
 }
 
 impl<'a, T, Target, DB, X> IntoOperand<'a, Target, DB, Open, X> for T
     where
-        // DB: Database,
-        // T: Encode<'a, DB, X>
         DB: Encode<'a, T, X>,
         Static<T>: Compatible<Target, X> {
     #[inline(always)]
@@ -125,26 +128,58 @@ impl<'a, T, Target, DB, X> IntoOperand<'a, Target, DB, Open, X> for T
 // ------------------------------------------
 // Type compatibility matrix
 // ------------------------------------------
+#[diagnostic::on_unimplemented(
+    message = "SQL type mismatch: `{Self}` is not compatible with `{Target}` (under codec `{X}`)",
+    label = "incompatible SQL type",
+    note = "if this is a custom cross-type comparison, implement `Compatible<{Target}, {X}> for {Self}`."
+)]
 pub trait Compatible<Target, X> {}
 
-// 1. Static -> Static
+// 1. Static -> Static (Identity, References, Box, and Option Reference Penetration)
 impl<T, X> Compatible<Static<T>, X> for Static<T> {}
 impl<'a, T, X> Compatible<Static<T>, X> for Static<&'a T> {}
+impl<'a, 'b, T, X> Compatible<Static<T>, X> for Static<&'b &'a T> {}
+impl<T, X> Compatible<Static<T>, X> for Static<Box<T>> {}
+impl<'a, T, X> Compatible<Static<T>, X> for Static<&'a Box<T>> {}
+
 impl<T, X> Compatible<Static<Option<T>>, X> for Static<T> {}
 impl<'a, T, X> Compatible<Static<Option<T>>, X> for Static<&'a T> {}
+impl<'a, 'b, T, X> Compatible<Static<Option<T>>, X> for Static<&'b &'a T> {}
+impl<T, X> Compatible<Static<Option<T>>, X> for Static<Box<T>> {}
+impl<'a, T, X> Compatible<Static<Option<T>>, X> for Static<&'a Box<T>> {}
+impl<'a, T, X> Compatible<Static<Option<T>>, X> for Static<Option<&'a T>> {}
+impl<'a, 'b, T, X> Compatible<Static<Option<T>>, X> for Static<&'b Option<&'a T>> {}
 
+// String & str / char compatibility
 impl<'a, X> Compatible<Static<String>, X> for Static<&'a str> {}
+impl<'a, 'b, X> Compatible<Static<String>, X> for Static<&'b &'a str> {}
 impl<'a, X> Compatible<Static<Option<String>>, X> for Static<&'a str> {}
+impl<'a, 'b, X> Compatible<Static<Option<String>>, X> for Static<&'b &'a str> {}
+impl<'a, X> Compatible<Static<Option<String>>, X> for Static<Option<&'a str>> {}
+impl<'a, 'b, X> Compatible<Static<Option<String>>, X> for Static<&'b Option<&'a str>> {}
 impl<X> Compatible<Static<String>, X> for Static<char> {}
+impl<'a, X> Compatible<Static<String>, X> for Static<&'a char> {}
 impl<X> Compatible<Static<Option<String>>, X> for Static<char> {}
+impl<'a, X> Compatible<Static<Option<String>>, X> for Static<&'a char> {}
+impl<X> Compatible<Static<Option<String>>, X> for Static<Option<char>> {}
 
+// Slice & Fixed-Array -> Vec<T> compatibility
 impl<'a, T, X> Compatible<Static<Vec<T>>, X> for Static<&'a [T]> {}
+impl<'a, 'b, T, X> Compatible<Static<Vec<T>>, X> for Static<&'b &'a [T]> {}
 impl<'a, T, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'a [T]> {}
+impl<'a, 'b, T, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'b &'a [T]> {}
+impl<'a, T, X> Compatible<Static<Option<Vec<T>>>, X> for Static<Option<&'a [T]>> {}
+impl<'a, 'b, T, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'b Option<&'a [T]>> {}
+
 impl<T, const N: usize, X> Compatible<Static<Vec<T>>, X> for Static<[T; N]> {}
 impl<'a, T, const N: usize, X> Compatible<Static<Vec<T>>, X> for Static<&'a [T; N]> {}
 impl<T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<[T; N]> {}
 impl<'a, T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'a [T; N]> {}
+impl<T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<Option<[T; N]>> {}
+impl<'a, T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X>
+    for Static<Option<&'a [T; N]>> {}
 
+// JSON / JSONB compatibility
 impl<'a, X> Compatible<Static<JsonbType>, X> for Static<&'a str> {}
 impl<X> Compatible<Static<JsonbType>, X> for Static<String> {}
 impl<'a, X> Compatible<Static<JsonbType>, X> for Static<&'a String> {}
@@ -158,14 +193,15 @@ impl<X> Compatible<Static<JsonType>, X> for Static<i32> {}
 impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
 
 macro_rules! impl_compatible_cast {
-    ($from:ty => $($to:ty),+) => {
-        $(
-            impl<X> Compatible<Static<$to>, X> for Static<$from> {}
-            impl<'a, X> Compatible<Static<$to>, X> for Static<&'a $from> {}
-            impl<X> Compatible<Static<Option<$to>>, X> for Static<$from> {}
-            impl<'a, X> Compatible<Static<Option<$to>>, X> for Static<&'a $from> {}
-        )+
-    };
+    ($from:ty =>$($to:ty),+) => {$(
+        impl<X> Compatible<Static<$to>, X> for Static<$from> {}
+        impl<'a, X> Compatible<Static<$to>, X> for Static<&'a$from> {}
+        impl<X> Compatible<Static<Option<$to>>, X> for Static<$from> {}
+        impl<'a, X> Compatible<Static<Option<$to>>, X> for Static<&'a$from> {}
+        impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
+        impl<'a, X> Compatible<Static<Option<$to>>, X> for Static<Option<&'a$from>> {}
+        impl<'a, X> Compatible<Static<Option<$to>>, X> for Static<&'a Option<$from>> {}
+    )+};
 }
 
 impl_compatible_cast!(i8  => i16, i32, i64, i128, isize, f32, f64);

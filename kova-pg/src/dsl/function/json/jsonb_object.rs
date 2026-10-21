@@ -1,7 +1,9 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanPgJsonb, Node};
+use crate::dsl::can::CanPgArray;
+use crate::dsl::node::Node;
+use crate::dsl::CanPgJsonb;
+use crate::dsl::func::ExtFunction;
 use crate::types::Pg;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{AstNode, CanAlias, CanCompare, JsonbType, Operand, Static, TypedNode};
@@ -27,12 +29,14 @@ impl<K: TypedNode, V: TypedNode> TypedNode for InnerJsonbObject<K, V> {
 
 impl<K, V> CanAlias for InnerJsonbObject<K, V> {}
 impl<K, V> CanCompare for InnerJsonbObject<K, V> {}
-impl<K, V> CanPgJsonb for InnerJsonbObject<K, V> {}
+impl<K, V, X> CanPgJsonb<X> for InnerJsonbObject<K, V> {}
 
 impl<'a, K, V, X> AstNode<'a, Pg, X> for InnerJsonbObject<K, V>
     where
         K: TypedNode + AstNode<'a, Pg, X>,
-        V: TypedNode + AstNode<'a, Pg, X> {
+        V: TypedNode + AstNode<'a, Pg, X>,
+        K::Output: CanPgArray<X>,
+        V::Output: CanPgArray<X> {
     fn into_ast_operand(self) -> Operand<'a, Pg> {
         Operand::from_function(Function::from(ExtFunction::JsonbObject {
             keys: Box::new(self.keys.into_ast_operand()),

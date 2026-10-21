@@ -4,6 +4,8 @@ mod ext;
 mod row;
 mod value;
 mod codec;
+#[cfg(feature = "narrow-cast")]
+mod narrow;
 
 pub use codec::{Decode, Encode};
 pub use conn::PgPool;

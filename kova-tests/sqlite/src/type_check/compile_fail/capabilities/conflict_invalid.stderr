@@ -1,0 +1,241 @@
+error[E0277]: `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:15:46
+   |
+15 |     let _ = client.insert(&user).on_conflict(Count(Wildcard));
+   |                                  ----------- ^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::math::Math<'a, DB, Output, X>
+             kova_sqlite::dsl::function::json::InnerJsonExtract<'a, M, X>
+   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:16:46
+   |
+16 |     let _ = client.insert(&user).on_conflict(GroupConcat(User::name));
+   |                                  ----------- ^^^^^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::math::Math<'a, DB, Output, X>
+             kova_sqlite::dsl::function::json::InnerJsonExtract<'a, M, X>
+   = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<String, IdentifierMeta>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:19:46
+   |
+19 |     let _ = client.insert(&user).on_conflict(VIRTUAL_NAME);
+   |                                  ----------- ^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<String, IdentifierMeta>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:90:1
+   |
+90 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<String, IdentifierMeta>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:20:46
+   |
+20 |     let _ = client.insert(&user).on_conflict(JsonEach::key);
+   |                                  ----------- ^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<String, IdentifierMeta>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:90:1
+   |
+90 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:21:46
+   |
+21 |     let _ = client.insert(&user).on_conflict(JsonEach::value);
+   |                                  ----------- ^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:90:1
+   |
+90 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<String, IdentifierMeta>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:24:46
+   |
+24 |     let _ = client.insert(&user).on_conflict(Lower(VIRTUAL_NAME));
+   |                                  ----------- ^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<String, IdentifierMeta>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:90:1
+   |
+90 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::can::CanConflict`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>` to implement `kova_core::dsl::can::CanConflict`
+   = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: cannot convert `Table<User>` into SQL argument(s) of type `kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>`
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:27:46
+   |
+27 |     let _ = client.insert(&user).on_conflict(User);
+   |                                  ----------- ^^^^ invalid SQL argument(s)
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, _>` is not implemented for `Table<User>`
+   = note: expected a valid SQL construct or encodable value.
+           if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
+   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+           and $N others
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:30:22
+   |
+30 |         .on_conflict(JsonObject((User::id, User::name)));
+   |          ----------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |          |
+   |          required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::math::Math<'a, DB, Output, X>
+             kova_sqlite::dsl::function::json::InnerJsonExtract<'a, M, X>
+   = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_sqlite::dsl::function::fts5::InnerBm25<'_, ()>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:33:22
+   |
+33 |         .on_conflict(EventLog::description.bm25());
+   |          ----------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |          |
+   |          required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, ()>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::math::Math<'a, DB, Output, X>
+             kova_sqlite::dsl::function::json::InnerJsonExtract<'a, M, X>
+   = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, ()>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, ()>`
+   = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:57:16
+   |
+55 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+56 |         where
+57 |             A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<String>>` and `Node<kova_core::dsl::column::Column<String>>: kova_core::dsl::can::CanConflict` trivially holds
+   |
+33 -         .on_conflict(EventLog::description.bm25());
+33 +         .on_conflict(EventLog::description);
+   |

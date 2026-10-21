@@ -1,18 +1,23 @@
 #![allow(clippy::wrong_self_convention)]
 
+use crate::dsl::can::{CanSqliteFts, CanSqliteJson, CanSqliteString};
 use crate::dsl::function::{
     Bm25, Highlight, InnerBm25, InnerHighlight, InnerJsonExtract, InnerSnippet, JsonExtract,
     JsonExtractMarker, JsonbExtract, JsonbExtractMarker, Snippet,
 };
 use crate::dsl::{ExtAssignment, ExtOperator};
 use crate::types::Sqlite;
-use kova_core::dsl::func::{Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window};
+use kova_core::dsl::func::{
+    IntoPartitionBy, PartitionBy, Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window,
+};
+use kova_core::dsl::statement::IntoSelectStatement;
 use kova_core::dsl::{
-    ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter,
-    CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator, Compatible,
-    Condition, Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg, IntoGroupBy,
-    IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, Math, MathOperator, Operand,
-    Operator, Ordering, Projection, StandardAssignment, StandardOperator, Static, TypedNode,
+    ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanConflict, CanDistinct,
+    CanFilter, CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator,
+    Compatible, Condition, Conflict, Direction, EraseX, GroupBy, Identifier, IntoArg, IntoConflict,
+    IntoGroupBy, IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, Math, MathOperator,
+    Operand, Operator, Ordering, Projection, StandardAssignment, StandardOperator, Static,
+    TypedNode,
 };
 use kova_core::type_id;
 use kova_core::types::SetTag;
@@ -20,6 +25,18 @@ use std::marker::PhantomData;
 
 #[derive(Copy, Clone)]
 pub struct Node<T>(pub T);
+
+impl<T: CanGroup> CanGroup for Node<T> {}
+impl<T: CanConflict> CanConflict for Node<T> {}
+impl<T: CanMath<X>, X> CanMath<X> for Node<T> {}
+impl<T: CanString<X>, X> CanString<X> for Node<T> {}
+impl<T: CanSqliteJson<X>, X> CanSqliteJson<X> for Node<T> {}
+impl<T: CanSqliteFts<X>, X> CanSqliteFts<X> for Node<T> {
+    #[inline(always)]
+    fn fts_table(&self) -> &'static str {
+        self.0.fts_table()
+    }
+}
 
 impl<T: TypedNode> TypedNode for Node<T> {
     type Output = T::Output;
@@ -34,6 +51,7 @@ impl<'a, T, X> AstNode<'a, Sqlite, X> for Node<T>
     }
 }
 
+#[diagnostic::do_not_recommend]
 impl<'a, T, Target, X> IntoOperand<'a, Target, Sqlite, Close, X> for Node<T>
     where
         T: AstNode<'a, Sqlite, X>,
@@ -163,51 +181,47 @@ impl<'a, T> Node<T>
     }
 
     #[inline(always)]
-    pub fn in_select<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
+    pub fn in_select<V, X>(self, v: V) -> Condition<'a, Sqlite, X>
         where
             T: AstNode<'a, Sqlite, X>,
-            V: IntoOperand<'a, Dynamic, Sqlite, K, X> {
-        Comparator::<'a, Dynamic, Sqlite>::new(self.0.into_ast_operand())
-            .binary_op(v, StandardOperator::InSelect)
+            V: IntoSelectStatement<'a, Sqlite, X> {
+        self.comparator::<X>().select_op(v, StandardOperator::InSelect)
     }
 
     #[inline(always)]
-    pub fn not_in_select<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
+    pub fn not_in_select<V, X>(self, v: V) -> Condition<'a, Sqlite, X>
         where
             T: AstNode<'a, Sqlite, X>,
-            V: IntoOperand<'a, Dynamic, Sqlite, K, X> {
-        Comparator::<'a, Dynamic, Sqlite>::new(self.0.into_ast_operand())
-            .binary_op(v, StandardOperator::NotInSelect)
+            V: IntoSelectStatement<'a, Sqlite, X> {
+        self.comparator::<X>().select_op(v, StandardOperator::NotInSelect)
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanString + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
         where
-            T: AstNode<'a, Sqlite, X>,
-            V: IntoOperand<'a, T::Output, Sqlite, K, X> {
-        self.comparator::<X>().binary_op(v, StandardOperator::Like)
+            T: CanString<X> + AstNode<'a, Sqlite, X>,
+            V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
+        Comparator::<'a, Static<String>, Sqlite>::new(self.0.into_ast_operand())
+            .binary_op(v, StandardOperator::Like)
     }
 
     #[inline(always)]
     pub fn not_like<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
         where
-            T: AstNode<'a, Sqlite, X>,
-            V: IntoOperand<'a, T::Output, Sqlite, K, X> {
-        self.comparator::<X>().binary_op(v, StandardOperator::NotLike)
+            T: CanString<X> + AstNode<'a, Sqlite, X>,
+            V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
+        Comparator::<'a, Static<String>, Sqlite>::new(self.0.into_ast_operand())
+            .binary_op(v, StandardOperator::NotLike)
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanMath + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn add<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanMath<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
         Node(Math::new(MathOperator::Add, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -215,7 +229,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn sub<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanMath<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
         Node(Math::new(MathOperator::Sub, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -223,7 +237,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn mul<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanMath<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
         Node(Math::new(MathOperator::Mul, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -231,7 +245,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn div<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanMath<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
         Node(Math::new(MathOperator::Div, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -288,7 +302,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn increment<V, K, U, X>(self, v: V) -> Assignment<'a, Sqlite, X>
         where
-            T: IntoIdentifier<U>,
+            T: CanMath<X> + IntoIdentifier<U>,
             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
         Assignment::from(StandardAssignment::Increment(
             self.0.into_identifier().meta,
@@ -299,7 +313,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn decrement<V, K, U, X>(self, v: V) -> Assignment<'a, Sqlite, X>
         where
-            T: IntoIdentifier<U>,
+            T: CanMath<X> + IntoIdentifier<U>,
             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
         Assignment::from(StandardAssignment::Decrement(
             self.0.into_identifier().meta,
@@ -341,20 +355,11 @@ impl<'a, T> Node<T> {
     }
 }
 
-// SQLite Proprietary Extensibility (JSON / REGEXP / FTS5)
-pub trait CanSqliteJson {}
-pub trait CanSqliteString {}
-pub trait CanSqliteFts {
-    fn fts_table(&self) -> &'static str;
-}
-
-impl<'a, T> Node<T>
-    where
-        T: CanSqliteJson + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn json_extract<V, K, X>(self, path: V) -> JsonExtract<'a, X>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanSqliteJson<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
         Node(InnerJsonExtract {
             base: self.0.into_ast_operand(),
@@ -366,7 +371,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn jsonb_extract<V, K, X>(self, path: V) -> JsonbExtract<'a, X>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanSqliteJson<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
         Node(InnerJsonExtract {
             base: self.0.into_ast_operand(),
@@ -376,13 +381,11 @@ impl<'a, T> Node<T>
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanSqliteString + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn regexp<V, K, X>(self, pattern: V) -> Condition<'a, Sqlite, X>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanSqliteString<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
         Condition::from(Operator::from(ExtOperator::Regexp(
             self.0.into_ast_operand(),
@@ -391,13 +394,11 @@ impl<'a, T> Node<T>
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanSqliteFts {
+impl<'a, T> Node<T> {
     #[inline(always)]
     pub fn matches<V, K, X>(self, pattern: V) -> Condition<'a, Sqlite, X>
         where
-            T: AstNode<'a, Sqlite, X>,
+            T: CanSqliteFts<X> + AstNode<'a, Sqlite, X>,
             V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
         Condition::from(Operator::from(ExtOperator::Match(
             self.0.into_ast_operand(),
@@ -406,13 +407,16 @@ impl<'a, T> Node<T>
     }
 
     #[inline(always)]
-    pub fn bm25<X>(self) -> Bm25<'a, X> {
+    pub fn bm25<X>(self) -> Bm25<'a, X>
+        where
+            T: CanSqliteFts<X> {
         Node(InnerBm25 { table: self.0.fts_table(), weights: Vec::new(), _marker: PhantomData })
     }
 
     #[inline(always)]
     pub fn highlight<L, R, KL, KR, X>(self, col_index: i32, left: L, right: R) -> Highlight<'a, X>
         where
+            T: CanSqliteFts<X>,
             L: IntoOperand<'a, Static<String>, Sqlite, KL, X>,
             R: IntoOperand<'a, Static<String>, Sqlite, KR, X> {
         Node(InnerHighlight {
@@ -429,6 +433,7 @@ impl<'a, T> Node<T>
         self, col_index: i32, left: L, right: R, ellipsis: E, max_tokens: i32,
     ) -> Snippet<'a, X>
         where
+            T: CanSqliteFts<X>,
             L: IntoOperand<'a, Static<String>, Sqlite, KL, X>,
             R: IntoOperand<'a, Static<String>, Sqlite, KR, X>,
             E: IntoOperand<'a, Static<String>, Sqlite, KE, X> {
@@ -480,12 +485,21 @@ impl<'a, T, X> IntoGroupBy<'a, Sqlite, X> for Node<T>
     }
 }
 
-impl<'a, T> IntoArg<Operand<'a, Sqlite>, ArgAst> for Node<T>
+impl<'a, T, X> IntoPartitionBy<'a, Sqlite, X> for Node<T>
     where
-        T: AstNode<'a, Sqlite, ()> {
+        T: CanGroup + AstNode<'a, Sqlite, X> {
     #[inline(always)]
-    fn into_arg(self) -> Operand<'a, Sqlite> {
-        self.0.into_ast_operand()
+    fn into_partition_by(self) -> PartitionBy<'a, Sqlite, X> {
+        PartitionBy::new(self.0.into_ast_operand())
+    }
+}
+
+impl<'a, T, X> IntoConflict<'a, Sqlite, X> for Node<T>
+    where
+        T: CanConflict + AstNode<'a, Sqlite, X> {
+    #[inline(always)]
+    fn into_conflict(self) -> Conflict<'a, Sqlite, X> {
+        Conflict::new(self.0.into_ast_operand())
     }
 }
 
@@ -513,5 +527,23 @@ impl<'a, T, X> IntoArg<GroupBy<'a, Sqlite, X>, ArgAst> for Node<T>
     #[inline(always)]
     fn into_arg(self) -> GroupBy<'a, Sqlite, X> {
         self.into_group_by()
+    }
+}
+
+impl<'a, T, X> IntoArg<Conflict<'a, Sqlite, X>, ArgAst> for Node<T>
+    where
+        Self: IntoConflict<'a, Sqlite, X> {
+    #[inline(always)]
+    fn into_arg(self) -> Conflict<'a, Sqlite, X> {
+        self.into_conflict()
+    }
+}
+
+impl<'a, T, X> IntoArg<PartitionBy<'a, Sqlite, X>, ArgAst> for Node<T>
+    where
+        Self: IntoPartitionBy<'a, Sqlite, X> {
+    #[inline(always)]
+    fn into_arg(self) -> PartitionBy<'a, Sqlite, X> {
+        self.into_partition_by()
     }
 }

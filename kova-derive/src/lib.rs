@@ -1,60 +1,38 @@
 extern crate proc_macro;
 
-use proc_macro::TokenStream;
-use syn::parse_macro_input;
-
 mod generate;
 mod parse;
 
-// Internally shared data structures (IR)
+use parse::{DeriveRole, parse_struct};
+use proc_macro::TokenStream;
+use syn::{DeriveInput, parse_macro_input};
 
-pub(crate) struct ModelDef {
-    pub ident: syn::Ident,
-    pub table_name: String,
-    pub fields: Vec<FieldDef>,
-}
-
-pub(crate) struct FieldDef {
-    pub ident: syn::Ident,
-    pub ty: syn::Type,
-    pub column_name: String,
-    pub is_autoincrement: bool,
-    pub is_json: bool,
-    pub is_ignored: bool,
-}
-
-#[proc_macro_derive(Model, attributes(orm))]
+#[proc_macro_derive(Model, attributes(kova))]
 pub fn derive_model(input: TokenStream) -> TokenStream {
-    let ast = parse_macro_input!(input as syn::DeriveInput);
-
-    // Invoke the shared parsing logic
-    let model_def = match parse::parse_model_def(&ast) {
-        Ok(def) => def,
-        Err(e) => return e.to_compile_error().into(),
-    };
-
-    // For Model, generate both Model implementation and FromRow implementation.
-    let from_row_code = generate::from_row::generate_from_row_code(&model_def);
-    let model_code = generate::model::generate_model_code(&model_def);
-
-    let expanded = quote::quote! {
-        #from_row_code
-        #model_code
-    };
-
-    expanded.into()
+    let ast = parse_macro_input!(input as DeriveInput);
+    match parse_struct(&ast, DeriveRole::Model) {
+        Ok(def) => generate::model::expand(&def).into(),
+        Err(err) => err.to_compile_error().into(),
+    }
 }
 
-#[proc_macro_derive(FromRow, attributes(orm))]
+// Keep `attributes(kova)` registered on `FromRow` and `Cte` even though they don't
+// use `#[kova(...)]`. Otherwise rustc intercepts `#[kova(auto)]` with a generic "unknown
+// attribute" error before `parse_field` can explain that `#[kova(auto)]` is Model-only.
+#[proc_macro_derive(FromRow, attributes(kova))]
 pub fn derive_from_row(input: TokenStream) -> TokenStream {
-    let ast = parse_macro_input!(input as syn::DeriveInput);
+    let ast = parse_macro_input!(input as DeriveInput);
+    match parse_struct(&ast, DeriveRole::FromRow) {
+        Ok(def) => generate::from_row::expand(&def).into(),
+        Err(err) => err.to_compile_error().into(),
+    }
+}
 
-    // Invoke the shared parsing logic
-    let model_def = match parse::parse_model_def(&ast) {
-        Ok(def) => def,
-        Err(e) => return e.to_compile_error().into(),
-    };
-
-    // Only generate the implementation of FromRow
-    generate::from_row::generate_from_row_code(&model_def).into()
+#[proc_macro_derive(Cte, attributes(kova))]
+pub fn derive_cte(input: TokenStream) -> TokenStream {
+    let ast = parse_macro_input!(input as DeriveInput);
+    match parse_struct(&ast, DeriveRole::Cte) {
+        Ok(def) => generate::cte::expand(&def).into(),
+        Err(err) => err.to_compile_error().into(),
+    }
 }

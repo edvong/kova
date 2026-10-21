@@ -21,6 +21,6 @@ pub use {
     mode::{Async, Mode, Sync},
     model::{Cte, FromRow, Model, Relation},
     query::{Delete, Insert, Query, Select, Statement, Update},
-    row::{ColumnIndex, FromColumn, Row},
+    row::{ColumnIndex, DecodeColumn, Row},
     value::{FromValue, IntoValue, Value},
 };

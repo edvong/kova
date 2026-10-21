@@ -7,9 +7,10 @@ mod component;
 mod condition;
 mod function;
 mod identifier;
+#[rustfmt::skip]
 mod operand;
 mod operator;
-
+#[rustfmt::skip]
 mod can;
 mod math;
 mod relation;
@@ -22,16 +23,16 @@ pub mod func {
         CountMarker, FrameBound, FrameType, Function, Length, LengthMarker, Lower, LowerMarker,
         Max, MaxMarker, Min, MinMarker, Quantifier, Scalar, ScalarBuild, ScalarMarker, SetDistinct,
         SetFilter, SetOrderBy, SetWindow, StandardFunction, Sum, SumMarker, Upper, UpperMarker,
-        Wildcard, Window,
+        Wildcard, Window, PartitionBy, IntoPartitionBy,
     };
 }
 
 pub use {
-    arg::{IntoArg, ArgDirect, ArgAst, ArgEncode},
+    arg::{ArgAst, ArgDirect, ArgEncode, IntoArg},
     assignment::{Assignment, StandardAssignment},
     can::{
-        CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter, CanGroup, CanMath, CanOrder,
-        CanOrderBy, CanString, CanWindow,
+        CanAlias, CanAssignment, CanCompare, CanConflict, CanDistinct, CanFilter, CanGroup,
+        CanMath, CanOrder, CanOrderBy, CanString, CanWindow,
     },
     clause::*,
     column::Column,

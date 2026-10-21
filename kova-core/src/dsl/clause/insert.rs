@@ -43,42 +43,42 @@ pub trait IntoInsertSource<'a, DB: Database, T, X> {
     fn into_source(self) -> ValueSource<'a, DB, T>;
 }
 
-impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for T {
+impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for T {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, DB, T> {
         ValueSource { inner: SourceKind::Rows(SourceRows::Single(self)) }
     }
 }
 
-impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for Vec<T> {
+impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for Vec<T> {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, DB, T> {
         ValueSource { inner: SourceKind::Rows(SourceRows::Many(self)) }
     }
 }
 
-impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for &'a T {
+impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for &'a T {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, DB, T> {
         ValueSource { inner: SourceKind::Rows(SourceRows::BorrowedSingle(self)) }
     }
 }
 
-impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for &'a [T] {
+impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for &'a [T] {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, DB, T> {
         ValueSource { inner: SourceKind::Rows(SourceRows::BorrowedMany(self)) }
     }
 }
 
-impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X> for &'a Vec<T> {
+impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for &'a Vec<T> {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, DB, T> {
         ValueSource { inner: SourceKind::Rows(SourceRows::BorrowedMany(self)) }
     }
 }
 
-impl<'a, DB: Database, T: Model<DB = DB>, X> IntoInsertSource<'a, DB, T, X>
+impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X>
 for SelectStatement<'a, DB> {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, DB, T> {

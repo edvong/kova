@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanPgJsonb, Node};
+use crate::dsl::func::ExtFunction;
+use crate::dsl::node::Node;
 use crate::types::Pg;
 use kova_core::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
 use kova_core::dsl::{AstNode, CanCompare, JsonType, Static, TypedNode};
@@ -28,4 +28,3 @@ impl<'a, T, X> ScalarBuild<'a, Pg, T, X> for RowToJsonMarker
 }
 
 impl CanCompare for RowToJsonMarker {}
-impl CanPgJsonb for RowToJsonMarker {}

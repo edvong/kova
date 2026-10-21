@@ -16,7 +16,7 @@ impl<'a, DB: Database, M: Mode, X> Client<'a, DB, M, X> {
     }
 
     pub fn codec<CX>(self) -> Client<'a, DB, M, CX> {
-        Client { inner: self.inner.with::<CX>(), _marker: self._marker }
+        Client { inner: self.inner.codec::<CX>(), _marker: self._marker }
     }
 }
 

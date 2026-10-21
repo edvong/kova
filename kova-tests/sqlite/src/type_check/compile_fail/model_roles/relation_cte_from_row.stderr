@@ -1,0 +1,368 @@
+error[E0277]: `OnlyRelation` is not a valid `Model` under codec `()`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:24:20
+   |
+24 |     let _ = client.select::<OnlyRelation>();
+   |                    ^^^^^^ invalid table model for this codec
+   |
+help: the trait `Model<Engine, ()>` is not implemented for `OnlyRelation`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
+   |
+ 9 | pub struct OnlyRelation;
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+   = note: ensure `OnlyRelation` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `()`.
+   = help: the following other types implement trait `Model<DB, X>`:
+             Comment
+             EventLog
+             Order
+             Post
+             User
+note: required by a bound in `kova_core::types::query::Query::Select`
+  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
+   |
+ 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
+   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
+
+error[E0277]: `OnlyCte` is not a valid `Model` under codec `()`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:25:20
+   |
+25 |     let _ = client.select::<OnlyCte>();
+   |                    ^^^^^^ invalid table model for this codec
+   |
+help: the trait `Model<Engine, ()>` is not implemented for `OnlyCte`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:14:1
+   |
+14 | pub struct OnlyCte;
+   | ^^^^^^^^^^^^^^^^^^
+   = note: ensure `OnlyCte` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `()`.
+   = help: the following other types implement trait `Model<DB, X>`:
+             Comment
+             EventLog
+             Order
+             Post
+             User
+note: required by a bound in `kova_core::types::query::Query::Select`
+  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
+   |
+ 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
+   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
+
+error[E0277]: `PostView` is not a valid `Model` under codec `()`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:26:20
+   |
+26 |     let _ = client.select::<PostView>();
+   |                    ^^^^^^ invalid table model for this codec
+   |
+   = help: the trait `Model<Engine, ()>` is not implemented for `PostView`
+   = note: ensure `PostView` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `()`.
+   = help: the following other types implement trait `Model<DB, X>`:
+             Comment
+             EventLog
+             Order
+             Post
+             User
+note: required by a bound in `kova_core::types::query::Query::Select`
+  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
+   |
+ 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
+   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
+
+error[E0277]: `OnlyCte` is not a valid `Model` under codec `_`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:27:28
+    |
+ 27 |     let _ = Select::from::<OnlyCte>();
+    |                            ^^^^^^^ invalid table model for this codec
+    |
+help: the trait `Model<Engine, _>` is not implemented for `OnlyCte`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:14:1
+    |
+ 14 | pub struct OnlyCte;
+    | ^^^^^^^^^^^^^^^^^^
+    = note: ensure `OnlyCte` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `_`.
+    = help: the following other types implement trait `Model<DB, X>`:
+              Comment
+              EventLog
+              Order
+              Post
+              User
+note: required by a bound in `kova::query::Select::<'a, (), kova_sqlite::query::select::InnerQuery, kova_sqlite::query::select::Normal, X>::from`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:247:20
+    |
+247 |     pub fn from<M: Model<Sqlite, X>>() -> Select<'a, M, InnerQuery, JustAddFrom, X> {
+    |                    ^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, (), InnerQuery, Normal, X>::from`
+
+error[E0277]: `OnlyRelation` is not a valid `Model` under codec `()`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:28:20
+   |
+28 |     let _ = client.update::<OnlyRelation>();
+   |                    ^^^^^^ invalid table model for this codec
+   |
+help: the trait `Model<Engine, ()>` is not implemented for `OnlyRelation`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
+   |
+ 9 | pub struct OnlyRelation;
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+   = note: ensure `OnlyRelation` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `()`.
+   = help: the following other types implement trait `Model<DB, X>`:
+             Comment
+             EventLog
+             Order
+             Post
+             User
+note: required by a bound in `kova_core::types::query::Query::Update`
+  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:18:24
+   |
+18 |     type Update<'c, T: Model<DB, X>, E, X>: Update<'c, 'a, T, E, X>
+   |                        ^^^^^^^^^^^^ required by this bound in `Query::Update`
+
+error[E0277]: `OnlyRelation` is not a valid `Model` under codec `()`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:29:20
+   |
+29 |     let _ = client.delete::<OnlyRelation>();
+   |                    ^^^^^^ invalid table model for this codec
+   |
+help: the trait `Model<Engine, ()>` is not implemented for `OnlyRelation`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
+   |
+ 9 | pub struct OnlyRelation;
+   | ^^^^^^^^^^^^^^^^^^^^^^^
+   = note: ensure `OnlyRelation` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `()`.
+   = help: the following other types implement trait `Model<DB, X>`:
+             Comment
+             EventLog
+             Order
+             Post
+             User
+note: required by a bound in `kova_core::types::query::Query::Delete`
+  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:23:24
+   |
+23 |     type Delete<'c, T: Model<DB, X>, E, X>: Delete<'c, 'a, T, E, X>
+   |                        ^^^^^^^^^^^^ required by this bound in `Query::Delete`
+
+error[E0277]: `PostView` is not a valid `Model` under codec `()`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:30:20
+   |
+30 |     let _ = client.delete::<PostView>();
+   |                    ^^^^^^ invalid table model for this codec
+   |
+   = help: the trait `Model<Engine, ()>` is not implemented for `PostView`
+   = note: ensure `PostView` derives `Model` and all of its fields implement `Encode` and `Decode` under codec `()`.
+   = help: the following other types implement trait `Model<DB, X>`:
+             Comment
+             EventLog
+             Order
+             Post
+             User
+note: required by a bound in `kova_core::types::query::Query::Delete`
+  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:23:24
+   |
+23 |     type Delete<'c, T: Model<DB, X>, E, X>: Delete<'c, 'a, T, E, X>
+   |                        ^^^^^^^^^^^^ required by this bound in `Query::Delete`
+
+error[E0277]: the trait bound `Order: Cte` is not satisfied
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:33:44
+    |
+ 33 |     let _ = client.select::<User>().with::<Order>(Select::from::<Order>());
+    |                                     ----   ^^^^^ the trait `Cte` is not implemented for `Order`
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+help: the trait `Cte` is implemented for `OnlyCte`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:18:1
+    |
+ 18 | impl Cte for OnlyCte {}
+    | ^^^^^^^^^^^^^^^^^^^^
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::with`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:108:20
+    |
+108 |     pub fn with<C: Cte>(
+    |                    ^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
+
+error[E0277]: the trait bound `OnlyRelation: Cte` is not satisfied
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:34:44
+    |
+ 34 |     let _ = client.select::<User>().with::<OnlyRelation>(Select::from::<Order>());
+    |                                     ----   ^^^^^^^^^^^^ unsatisfied trait bound
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+help: the trait `Cte` is not implemented for `OnlyRelation`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
+    |
+  9 | pub struct OnlyRelation;
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+help: the trait `Cte` is implemented for `OnlyCte`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:18:1
+    |
+ 18 | impl Cte for OnlyCte {}
+    | ^^^^^^^^^^^^^^^^^^^^
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::with`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:108:20
+    |
+108 |     pub fn with<C: Cte>(
+    |                    ^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
+
+error[E0277]: the trait bound `PostView: Relation` is not satisfied
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:39:23
+    |
+ 39 |         .inner_join::<PostView>(User::id.eq(1));
+    |          ----------   ^^^^^^^^ the trait `Relation` is not implemented for `PostView`
+    |          |
+    |          required by a bound introduced by this call
+    |
+    = help: the following other types implement trait `Relation`:
+              Comment
+              EventLog
+              OnlyCte
+              OnlyRelation
+              Order
+              Post
+              User
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::inner_join`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:127:26
+    |
+127 |     pub fn inner_join<R: Relation>(
+    |                          ^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::inner_join`
+
+error[E0277]: the trait bound `PostView: kova_core::dsl::relation::IntoRelationList` is not satisfied
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:40:44
+   |
+40 |     let _ = client.update::<User>().from::<PostView>();
+   |                                     ----   ^^^^^^^^ the trait `Relation` is not implemented for `PostView`
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+   = help: the following other types implement trait `Relation`:
+             Comment
+             EventLog
+             OnlyCte
+             OnlyRelation
+             Order
+             Post
+             User
+   = note: required for `PostView` to implement `kova_core::dsl::relation::IntoRelationList`
+note: required by a bound in `Update::<'c, 'a, T, E, R, S, X>::from`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:60:22
+   |
+60 |     pub fn from<REL: IntoRelationList>(mut self) -> Self {
+   |                      ^^^^^^^^^^^^^^^^ required by this bound in `Update::<'c, 'a, T, E, R, S, X>::from`
+
+error[E0277]: the trait bound `(Order, PostView): kova_core::dsl::relation::IntoRelationList` is not satisfied
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:41:44
+   |
+41 |     let _ = client.update::<User>().from::<(Order, PostView)>();
+   |                                     ----   ^^^^^^^^^^^^^^^^^ the trait `kova_core::dsl::relation::IntoRelationList` is not implemented for `(Order, PostView)`
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+note: required by a bound in `Update::<'c, 'a, T, E, R, S, X>::from`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:60:22
+   |
+60 |     pub fn from<REL: IntoRelationList>(mut self) -> Self {
+   |                      ^^^^^^^^^^^^^^^^ required by this bound in `Update::<'c, 'a, T, E, R, S, X>::from`
+
+error[E0277]: cannot map a database row to `OnlyCte` (under codec `()`)
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:44:47
+    |
+ 44 |     let _ = client.select::<User>().load_as::<OnlyCte>();
+    |                                     -------   ^^^^^^^ invalid row mapping target
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+help: the trait `FromRow<Engine, ()>` is not implemented for `OnlyCte`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:14:1
+    |
+ 14 | pub struct OnlyCte;
+    | ^^^^^^^^^^^^^^^^^^
+    = note: expected a type that implements `FromRow<Engine, ()>`.
+            if `OnlyCte` is a struct, ensure it derives `Model` or `FromRow` and all fields implement `Decode` under codec `()`.
+    = help: the following other types implement trait `FromRow<DB, X>`:
+              `Comment` implements `FromRow<Engine, X>`
+              `EventLog` implements `FromRow<Engine, X>`
+              `Option<T>` implements `FromRow<DB, X>`
+              `Order` implements `FromRow<Engine, X>`
+              `Post` implements `FromRow<Engine, X>`
+              `PostView` implements `FromRow<Engine, X>`
+              `User` implements `FromRow<Engine, X>`
+note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
+    |
+231 |     pub fn load_as<U>(self) -> Result<Vec<U>>
+    |            ------- required by a bound in this associated function
+232 |         where
+233 |             U: FromRow<Sqlite, X> {
+    |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
+
+error[E0277]: cannot map a database row to `OnlyRelation` (under codec `()`)
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:45:47
+    |
+ 45 |     let _ = client.select::<User>().load_as::<OnlyRelation>();
+    |                                     -------   ^^^^^^^^^^^^ invalid row mapping target
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+help: the trait `FromRow<Engine, ()>` is not implemented for `OnlyRelation`
+   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
+    |
+  9 | pub struct OnlyRelation;
+    | ^^^^^^^^^^^^^^^^^^^^^^^
+    = note: expected a type that implements `FromRow<Engine, ()>`.
+            if `OnlyRelation` is a struct, ensure it derives `Model` or `FromRow` and all fields implement `Decode` under codec `()`.
+    = help: the following other types implement trait `FromRow<DB, X>`:
+              `Comment` implements `FromRow<Engine, X>`
+              `EventLog` implements `FromRow<Engine, X>`
+              `Option<T>` implements `FromRow<DB, X>`
+              `Order` implements `FromRow<Engine, X>`
+              `Post` implements `FromRow<Engine, X>`
+              `PostView` implements `FromRow<Engine, X>`
+              `User` implements `FromRow<Engine, X>`
+note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
+    |
+231 |     pub fn load_as<U>(self) -> Result<Vec<U>>
+    |            ------- required by a bound in this associated function
+232 |         where
+233 |             U: FromRow<Sqlite, X> {
+    |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
+
+error[E0277]: the trait bound `Post: kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, User, ()>` is not satisfied
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:48:35
+   |
+48 |     let _ = client.insert::<User>(Post);
+   |                    ------         ^^^^ the trait `kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, User, ()>` is not implemented for `Post`
+   |                    |
+   |                    required by a bound introduced by this call
+   |
+   = help: the following other types implement trait `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`:
+             `&'a T` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `&'a Vec<T>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `&'a [T]` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `Vec<T>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `kova::query::Select<'a, M, kova_sqlite::query::select::InnerQuery, S, X>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, Engine, T, X>`
+             `kova_core::dsl::statement::select::SelectStatement<'a, DB>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+note: required by a bound in `kova_core::database::operations::Operations::<'c, DB, E, X>::insert`
+  --> /Users/me/Workspace/kova/kova-core/src/database/operations.rs:31:47
+   |
+31 |     pub fn insert<'a, T>(&'c self, data: impl IntoInsertSource<'a, DB, T, X>)
+   |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Operations::<'c, DB, E, X>::insert`
+
+error[E0277]: the trait bound `Vec<Post>: kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, User, ()>` is not satisfied
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:49:35
+   |
+49 |     let _ = client.insert::<User>(vec![Post]);
+   |                    ------         ^^^^^^^^^^ the trait `kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, User, ()>` is not implemented for `Vec<Post>`
+   |                    |
+   |                    required by a bound introduced by this call
+   |
+help: the following other types implement trait `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/clause/insert.rs:53:1
+   |
+53 | impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for Vec<T> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Vec<T>`
+...
+74 | impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for &'a Vec<T> {
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&Vec<T>`
+note: required by a bound in `kova_core::database::operations::Operations::<'c, DB, E, X>::insert`
+  --> /Users/me/Workspace/kova/kova-core/src/database/operations.rs:31:47
+   |
+31 |     pub fn insert<'a, T>(&'c self, data: impl IntoInsertSource<'a, DB, T, X>)
+   |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Operations::<'c, DB, E, X>::insert`

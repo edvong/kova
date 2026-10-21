@@ -37,8 +37,9 @@ impl SrfSchemaMarker for JsonbEachTextMarker {
 }
 
 impl<'a, T, X> SrfBuildMarker<'a, T, X> for JsonbEachTextMarker
-    where
-        T: IntoSrfFunction<'a, X> {
+where
+    T: IntoSrfFunction<'a, X>,
+{
     #[inline(always)]
     fn build_srf(args: T) -> ExtSrfFunction<'a> {
         ExtSrfFunction::JsonbEachText(args.into_srf_function())

@@ -10,10 +10,16 @@ use kova_core::dsl::{
     Operand, Ordering, Projection, SetOperator, TypedNode,
 };
 use kova_core::types::{
-    Cte, ExecutableSync, FromColumn, FromRow, Model, Relation, Select as CoreSelect,
+    Cte, ExecutableSync, DecodeColumn, FromRow, Model, Relation, Select as NewSelect
 };
 use std::iter::once;
 use std::marker::PhantomData;
+
+pub struct Select<'a, T, D: Dispatch, S, X> {
+    pub(crate) executor: D::Executor,
+    pub(crate) statement: SelectStatement<'a, Sqlite>,
+    _marker: PhantomData<(T, S, X)>,
+}
 
 pub struct OuterQuery<'c, E>(PhantomData<&'c E>);
 pub struct InnerQuery;
@@ -34,25 +40,20 @@ pub struct TaggedFrom;
 pub struct JustAddSrf;
 pub struct JustAddJoin;
 
-pub struct Select<'a, T, D: Dispatch, TAG, X> {
-    pub(crate) executor: D::Executor,
-    pub(crate) statement: SelectStatement<'a, Sqlite>,
-    _marker: PhantomData<(T, TAG, X)>,
-}
+pub(crate) type InitSelect<'c, 'a, T, E, X> = Select<'a, T, OuterQuery<'c, E>, JustAddFrom, X>;
 
-impl<'c, 'a, T, E, X> CoreSelect<'c, 'a, Sqlite, T, E, X>
-    for Select<'a, T, OuterQuery<'c, E>, JustAddFrom, X>
+impl<'c, 'a, T, E, X> NewSelect<'c, 'a, Sqlite, T, E, X> for InitSelect<'c, 'a, T, E, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     fn new(executor: &'c Executor<E>) -> Self {
-        Self { executor, statement: SelectStatement::new(T::TABLE_NAME), _marker: PhantomData }
+        Self { executor, statement: SelectStatement::new(T::NAME), _marker: PhantomData }
     }
 }
 
 // Initial state: either .tag() or append .srf() to the main table.
 impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, TaggedFrom, X> {
         self.statement.tag_latest_from::<Marker>();
         self.into_state()
@@ -69,7 +70,7 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
 // Main table tagged status: still allows appending once .srf()
 impl<'a, T, D: Dispatch, X> Select<'a, T, D, TaggedFrom, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
         mut self, args: A,
     ) -> Select<'a, T, D, JustAddSrf, X> {
@@ -81,7 +82,7 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, TaggedFrom, X>
 // Just appended SRF status: .tag() is allowed for this SRF, but the .srf() method no longer exists.
 impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddSrf, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, Normal, X> {
         self.statement.tag_latest_from::<Marker>();
         self.into_state()
@@ -90,16 +91,16 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddSrf, X>
 
 impl<'c, 'a, T, D: Dispatch, X> Select<'a, T, D, JustAddJoin, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, Normal, X> {
         self.statement.tag_latest_join::<Marker>();
         self.into_state()
     }
 }
 
-impl<'a, T, D: Dispatch, TAG, X> Select<'a, T, D, TAG, X>
+impl<'a, T, D: Dispatch, S, X> Select<'a, T, D, S, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     fn into_state<State>(self) -> Select<'a, T, D, State, X> {
         Select { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
@@ -219,9 +220,9 @@ impl<'a, T, D: Dispatch, TAG, X> Select<'a, T, D, TAG, X>
     }
 }
 
-impl<'c, 'a, T, E, TAG, X> Select<'a, T, OuterQuery<'c, E>, TAG, X>
+impl<'c, 'a, T, E, S, X> Select<'a, T, OuterQuery<'c, E>, S, X>
     where
-        T: Model<DB = Sqlite>,
+        T: Model<Sqlite, X>,
         E: ExecutableSync<Native = rusqlite::Connection> {
     pub fn load(self) -> Result<Vec<T>> {
         self.load_as::<T>()
@@ -229,13 +230,13 @@ impl<'c, 'a, T, E, TAG, X> Select<'a, T, OuterQuery<'c, E>, TAG, X>
 
     pub fn load_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Sqlite> {
+            U: FromRow<Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
     }
 
     pub fn load_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Sqlite, X> {
+            U: DecodeColumn<Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
     }
 }
@@ -243,74 +244,73 @@ impl<'c, 'a, T, E, TAG, X> Select<'a, T, OuterQuery<'c, E>, TAG, X>
 // Inner Query
 
 impl<'a, X> Select<'a, (), InnerQuery, Normal, X> {
-    pub fn from<M: Model<DB = Sqlite>>() -> Select<'a, M, InnerQuery, JustAddFrom, X> {
+    pub fn from<M: Model<Sqlite, X>>() -> Select<'a, M, InnerQuery, JustAddFrom, X> {
         Select {
             executor: (),
-            statement: SelectStatement::new(M::TABLE_NAME),
+            statement: SelectStatement::new(M::NAME),
             _marker: PhantomData,
         }
     }
 }
 
-impl<'a, T: Model<DB = Sqlite>, TAG, X> Select<'a, T, InnerQuery, TAG, X> {
+impl<'a, T: Model<Sqlite, X>, S, X> Select<'a, T, InnerQuery, S, X> {
     pub fn alias<I: IntoIdentifier<A>, A>(self, alias: I) -> Projection<'a, Sqlite, X> {
         self.into_projection().alias(alias)
     }
 }
 
-impl<'a, T, TAG, X> TypedNode for Select<'a, T, InnerQuery, TAG, X> {
+impl<'a, T, S, X> TypedNode for Select<'a, T, InnerQuery, S, X> {
     type Output = Dynamic;
 }
 
-impl<'a, T: Model<DB = Sqlite>, Target, TAG, X> IntoOperand<'a, Target, Sqlite, Close, X>
-    for Select<'a, T, InnerQuery, TAG, X> {
+impl<'a, T: Model<Sqlite, X>, Target, S, X> IntoOperand<'a, Target, Sqlite, Close, X>
+    for Select<'a, T, InnerQuery, S, X> {
     fn into_operand(self) -> Operand<'a, Sqlite> {
         Operand::from_select(self.statement)
     }
 }
 
-impl<'a, T, TAG, X> IntoProjection<'a, Sqlite, X> for Select<'a, T, InnerQuery, TAG, X>
+impl<'a, T, S, X> IntoProjection<'a, Sqlite, X> for Select<'a, T, InnerQuery, S, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     fn into_projection(self) -> Projection<'a, Sqlite, X> {
         Projection::new(Operand::from_select(self.into_select_statement()))
     }
 }
 
-impl<'a, T, TAG, X> IntoArg<Projection<'a, Sqlite, X>, ArgAst>
-    for Select<'a, T, InnerQuery, TAG, X>
+impl<'a, T, S, X> IntoArg<Projection<'a, Sqlite, X>, ArgAst>
+    for Select<'a, T, InnerQuery, S, X>
     where
-        T: Model<DB = Sqlite> {
+        T: Model<Sqlite, X> {
     #[inline(always)]
     fn into_arg(self) -> Projection<'a, Sqlite, X> {
         self.into_projection()
     }
 }
 
-impl<'a, M, D, TAG, X> IntoSrfFunction<'a, X> for Select<'a, M, D, TAG, X>
-    where
-        M: Model<DB = Sqlite>,
-        D: Dispatch {
-    #[inline(always)]
-    fn into_srf_function(self) -> JsonSrfArgs<'a> {
-        JsonSrfArgs { base: Operand::from_select(self.statement), path: None }
-    }
-}
-
-impl<'a, T: Model<DB = Sqlite>, TAG, X> IntoSelectStatement<'a, Sqlite, X>
-    for Select<'a, T, InnerQuery, TAG, X> {
+impl<'a, T: Model<Sqlite, X>, S, X> IntoSelectStatement<'a, Sqlite, X>
+    for Select<'a, T, InnerQuery, S, X> {
     #[inline(always)]
     fn into_select_statement(self) -> SelectStatement<'a, Sqlite> {
         self.statement
     }
 }
 
-impl<'a, T, M, TAG, X> IntoInsertSource<'a, T::DB, T, X> for Select<'a, M, InnerQuery, TAG, X>
+impl<'a, T, M, S, X> IntoInsertSource<'a, Sqlite, T, X> for Select<'a, M, InnerQuery, S, X>
     where
-        T: Model<DB = Sqlite>,
-        M: Model<DB = Sqlite> {
+        T: Model<Sqlite, X>,
+        M: Model<Sqlite, X> {
     #[inline(always)]
     fn into_source(self) -> ValueSource<'a, Sqlite, T> {
-        IntoInsertSource::<'a, T::DB, T, X>::into_source(self.into_select_statement())
+        IntoInsertSource::<'a, Sqlite, T, X>::into_source(self.into_select_statement())
+    }
+}
+
+impl<'a, M, S, X> IntoSrfFunction<'a, X> for Select<'a, M, InnerQuery, S, X>
+    where
+        M: Model<Sqlite, X> {
+    #[inline(always)]
+    fn into_srf_function(self) -> JsonSrfArgs<'a> {
+        JsonSrfArgs { base: Operand::from_select(self.statement), path: None }
     }
 }

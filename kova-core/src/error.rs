@@ -39,6 +39,11 @@ pub enum Error {
     #[error("conversion/serialization error: {0}")]
     ConversionError(String),
 
+    /// Occurs when a non-nullable Rust type encounters a SQL `NULL` value.
+    /// Also used by `FromRow for Option<T>` to detect unmatched `LEFT JOIN` rows.
+    #[error("unexpected null value: {0}")]
+    UnexpectedNull(String),
+
     // ==========================================
     // Business & Query Errors
     // ==========================================

@@ -1,0 +1,579 @@
+error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<_>`) is not satisfied for `i32`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:12:53
+    |
+ 12 |     let _ = client.select::<User>().filter(User::id.json_extract("$.a").eq(1));
+    |                                                     ^^^^^^^^^^^^ expected a JSON, TEXT, or JSONB BLOB column/expression
+    |
+    = help: the trait `CanSqliteJson<_>` is not implemented for `i32`
+    = note: if `i32` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<_>` for it.
+    = help: the following other types implement trait `CanSqliteJson<X>`:
+              `&'a T` implements `CanSqliteJson<X>`
+              `AuditPayload` implements `CanSqliteJson<AppCodec>`
+              `BTreeMap<K, V>` implements `CanSqliteJson<X>`
+              `Box<T>` implements `CanSqliteJson<X>`
+              `Dynamic` implements `CanSqliteJson<X>`
+              `HashMap<K, V, S>` implements `CanSqliteJson<X>`
+              `JsonType` implements `CanSqliteJson<X>`
+              `JsonbType` implements `CanSqliteJson<X>`
+            and $N others
+    = note: required for `Static<i32>` to implement `CanSqliteJson<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<i32>` to implement `CanSqliteJson<_>`
+note: required by a bound in `Node::<T>::json_extract`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:362:16
+    |
+360 |     pub fn json_extract<V, K, X>(self, path: V) -> JsonExtract<'a, X>
+    |            ------------ required by a bound in this associated function
+361 |         where
+362 |             T: CanSqliteJson<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_extract`
+
+error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<_>`) is not satisfied for `f64`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:13:59
+    |
+ 13 |     let _ = client.select::<Order>().filter(Order::amount.jsonb_extract("$.a").eq(1));
+    |                                                           ^^^^^^^^^^^^^ expected a JSON, TEXT, or JSONB BLOB column/expression
+    |
+    = help: the trait `CanSqliteJson<_>` is not implemented for `f64`
+    = note: if `f64` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<_>` for it.
+    = help: the following other types implement trait `CanSqliteJson<X>`:
+              `&'a T` implements `CanSqliteJson<X>`
+              `AuditPayload` implements `CanSqliteJson<AppCodec>`
+              `BTreeMap<K, V>` implements `CanSqliteJson<X>`
+              `Box<T>` implements `CanSqliteJson<X>`
+              `Dynamic` implements `CanSqliteJson<X>`
+              `HashMap<K, V, S>` implements `CanSqliteJson<X>`
+              `JsonType` implements `CanSqliteJson<X>`
+              `JsonbType` implements `CanSqliteJson<X>`
+            and $N others
+    = note: required for `Static<f64>` to implement `CanSqliteJson<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<f64>` to implement `CanSqliteJson<_>`
+note: required by a bound in `Node::<T>::jsonb_extract`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:374:16
+    |
+372 |     pub fn jsonb_extract<V, K, X>(self, path: V) -> JsonbExtract<'a, X>
+    |            ------------- required by a bound in this associated function
+373 |         where
+374 |             T: CanSqliteJson<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::jsonb_extract`
+
+error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<_>`) is not satisfied for `uuid::Uuid`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:14:61
+    |
+ 14 |     let _ = client.select::<EventLog>().filter(EventLog::id.json_extract("$.a").eq(1));
+    |                                                             ^^^^^^^^^^^^ expected a JSON, TEXT, or JSONB BLOB column/expression
+    |
+    = help: the trait `CanSqliteJson<_>` is not implemented for `uuid::Uuid`
+    = note: if `uuid::Uuid` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<_>` for it.
+    = help: the following other types implement trait `CanSqliteJson<X>`:
+              `&'a T` implements `CanSqliteJson<X>`
+              `AuditPayload` implements `CanSqliteJson<AppCodec>`
+              `BTreeMap<K, V>` implements `CanSqliteJson<X>`
+              `Box<T>` implements `CanSqliteJson<X>`
+              `Dynamic` implements `CanSqliteJson<X>`
+              `HashMap<K, V, S>` implements `CanSqliteJson<X>`
+              `JsonType` implements `CanSqliteJson<X>`
+              `JsonbType` implements `CanSqliteJson<X>`
+            and $N others
+    = note: required for `Static<uuid::Uuid>` to implement `CanSqliteJson<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `CanSqliteJson<_>`
+note: required by a bound in `Node::<T>::json_extract`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:362:16
+    |
+360 |     pub fn json_extract<V, K, X>(self, path: V) -> JsonExtract<'a, X>
+    |            ------------ required by a bound in this associated function
+361 |         where
+362 |             T: CanSqliteJson<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_extract`
+
+error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<AppCodec>`) is not satisfied for `i32`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:15:45
+    |
+ 15 |     let _ = client.select::<User>().columns(Json(User::id));
+    |                                     ------- ^^^^^^^^^^^^^^ expected a JSON, TEXT, or JSONB BLOB column/expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanSqliteJson<AppCodec>` is not implemented for `i32`
+    = note: if `i32` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<AppCodec>` for it.
+help: the trait `CanSqliteJson<AppCodec>` is implemented for `AuditPayload`
+   --> src/type_check/codec.rs
+    |
+    | impl CanSqliteJson<AppCodec> for AuditPayload {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<i32>` to implement `CanSqliteJson<AppCodec>`
+    = note: required for `kova_sqlite::dsl::function::json::JsonMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<i32>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_sqlite::dsl::function::json::JsonMarker, Node<kova_core::dsl::column::Column<i32>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_sqlite::dsl::function::json::JsonMarker, Node<kova_core::dsl::column::Column<i32>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_sqlite::dsl::function::json::JsonMarker, Node<kova_core::dsl::column::Column<i32>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<AppCodec>`) is not satisfied for `i32`
+  --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:16:41
+   |
+16 |     let _ = client.select::<User>().srf(JsonEach(User::id));
+   |                                     --- ^^^^^^^^^^^^^^^^^^ expected a JSON, TEXT, or JSONB BLOB column/expression
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+   = help: the trait `CanSqliteJson<AppCodec>` is not implemented for `i32`
+   = note: if `i32` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<AppCodec>` for it.
+help: the trait `CanSqliteJson<AppCodec>` is implemented for `AuditPayload`
+  --> src/type_check/codec.rs
+   |
+   | impl CanSqliteJson<AppCodec> for AuditPayload {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Static<i32>` to implement `CanSqliteJson<AppCodec>`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::column::Column<i32>` to implement `CanSqliteJson<AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<i32>>` to implement `kova_sqlite::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+   = note: required for `kova_sqlite::dsl::function::srf::json_each::JsonEachMarker` to implement `kova_sqlite::dsl::function::srf::srf_node::SrfBuildMarker<'_, Node<kova_core::dsl::column::Column<i32>>, AppCodec>`
+   = note: required for `kova_sqlite::dsl::function::srf::srf_node::SrfNode<Node<kova_core::dsl::column::Column<i32>>, kova_sqlite::dsl::function::srf::json_each::JsonEachMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:62:19
+   |
+62 |     pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<AppCodec>`) is not satisfied for `bool`
+  --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:17:42
+   |
+17 |     let _ = client.select::<Order>().srf(JsonTree(Order::is_active));
+   |                                      --- ^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a JSON, TEXT, or JSONB BLOB column/expression
+   |                                      |
+   |                                      required by a bound introduced by this call
+   |
+   = help: the trait `CanSqliteJson<AppCodec>` is not implemented for `bool`
+   = note: if `bool` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<AppCodec>` for it.
+help: the trait `CanSqliteJson<AppCodec>` is implemented for `AuditPayload`
+  --> src/type_check/codec.rs
+   |
+   | impl CanSqliteJson<AppCodec> for AuditPayload {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Static<bool>` to implement `CanSqliteJson<AppCodec>`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::column::Column<bool>` to implement `CanSqliteJson<AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<bool>>` to implement `kova_sqlite::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+   = note: required for `kova_sqlite::dsl::function::srf::json_tree::JsonTreeMarker` to implement `kova_sqlite::dsl::function::srf::srf_node::SrfBuildMarker<'_, Node<kova_core::dsl::column::Column<bool>>, AppCodec>`
+   = note: required for `kova_sqlite::dsl::function::srf::srf_node::SrfNode<Node<kova_core::dsl::column::Column<bool>>, kova_sqlite::dsl::function::srf::json_tree::JsonTreeMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:62:19
+   |
+62 |     pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<String>` (under codec `_`)
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:22:49
+    |
+ 22 |         .filter(EventLog::metadata.json_extract(123_i32).eq(1));
+    |                                    ------------ ^^^^^^^ incompatible SQL type
+    |                                    |
+    |                                    required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<i32>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<i32>`.
+    = help: `Static<i32>` implements trait `Compatible<Target, X>`:
+              Compatible<Static<JsonType>, X>
+              Compatible<Static<JsonbType>, X>
+              Compatible<Static<Option<f64>>, X>
+              Compatible<Static<Option<i128>>, X>
+              Compatible<Static<Option<i64>>, X>
+              Compatible<Static<f64>, X>
+              Compatible<Static<i128>, X>
+              Compatible<Static<i64>, X>
+    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
+note: required by a bound in `Node::<T>::json_extract`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:363:16
+    |
+360 |     pub fn json_extract<V, K, X>(self, path: V) -> JsonExtract<'a, X>
+    |            ------------ required by a bound in this associated function
+...
+363 |             V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_extract`
+
+error[E0277]: SQL type mismatch: `Static<bool>` is not compatible with `Static<String>` (under codec `_`)
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:25:50
+    |
+ 25 |         .filter(EventLog::metadata.jsonb_extract(true).eq(1));
+    |                                    ------------- ^^^^ incompatible SQL type
+    |                                    |
+    |                                    required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<bool>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<bool>`.
+help: `Static<bool>` implements trait `Compatible<Target, X>`
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:187:1
+    |
+187 | impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonbType>, X>`
+...
+193 | impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonType>, X>`
+    = note: required for `bool` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
+note: required by a bound in `Node::<T>::jsonb_extract`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:375:16
+    |
+372 |     pub fn jsonb_extract<V, K, X>(self, path: V) -> JsonbExtract<'a, X>
+    |            ------------- required by a bound in this associated function
+...
+375 |             V: IntoOperand<'a, Static<String>, Sqlite, K, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::jsonb_extract`
+
+error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<String>` (under codec `AppCodec`)
+  --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:26:45
+   |
+26 |     let _ = client.select::<EventLog>().srf(JsonEach((EventLog::metadata, 123_i32)));
+   |                                         --- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ incompatible SQL type
+   |                                         |
+   |                                         required by a bound introduced by this call
+   |
+   = help: the trait `Compatible<Static<String>, AppCodec>` is not implemented for `Static<i32>`
+   = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, AppCodec> for Static<i32>`.
+   = help: `Static<i32>` implements trait `Compatible<Target, X>`:
+             Compatible<Static<JsonType>, X>
+             Compatible<Static<JsonbType>, X>
+             Compatible<Static<Option<f64>>, X>
+             Compatible<Static<Option<i128>>, X>
+             Compatible<Static<Option<i64>>, X>
+             Compatible<Static<f64>, X>
+             Compatible<Static<i128>, X>
+             Compatible<Static<i64>, X>
+   = note: required for `(Node<kova_core::dsl::column::Column<HashMap<String, String>>>, i32)` to implement `kova_sqlite::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+   = note: required for `kova_sqlite::dsl::function::srf::json_each::JsonEachMarker` to implement `kova_sqlite::dsl::function::srf::srf_node::SrfBuildMarker<'_, (Node<kova_core::dsl::column::Column<HashMap<String, String>>>, i32), AppCodec>`
+   = note: required for `kova_sqlite::dsl::function::srf::srf_node::SrfNode<(Node<kova_core::dsl::column::Column<HashMap<String, String>>>, i32), kova_sqlite::dsl::function::srf::json_each::JsonEachMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:62:19
+   |
+62 |     pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: SQL type mismatch: `Static<bool>` is not compatible with `Static<String>` (under codec `AppCodec`)
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:27:45
+    |
+ 27 |     let _ = client.select::<EventLog>().srf(JsonTree((EventLog::metadata, true)));
+    |                                         --- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ incompatible SQL type
+    |                                         |
+    |                                         required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, AppCodec>` is not implemented for `Static<bool>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, AppCodec> for Static<bool>`.
+help: `Static<bool>` implements trait `Compatible<Target, X>`
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:187:1
+    |
+187 | impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonbType>, X>`
+...
+193 | impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonType>, X>`
+    = note: required for `(Node<kova_core::dsl::column::Column<HashMap<String, String>>>, bool)` to implement `kova_sqlite::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+    = note: required for `kova_sqlite::dsl::function::srf::json_tree::JsonTreeMarker` to implement `kova_sqlite::dsl::function::srf::srf_node::SrfBuildMarker<'_, (Node<kova_core::dsl::column::Column<HashMap<String, String>>>, bool), AppCodec>`
+    = note: required for `kova_sqlite::dsl::function::srf::srf_node::SrfNode<(Node<kova_core::dsl::column::Column<HashMap<String, String>>>, bool), kova_sqlite::dsl::function::srf::json_tree::JsonTreeMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>::srf`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:62:19
+    |
+ 62 |     pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: cannot convert `i32` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:30:45
+    |
+ 30 |     let _ = client.select::<User>().columns(JsonObject(123_i32));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^ invalid SQL argument(s)
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, _>` is not implemented for `i32`
+    = note: expected a valid SQL construct or encodable value.
+            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
+    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+            and $N others
+    = note: required for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, i32, _, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, i32, _, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, i32, _, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: cannot convert `&str` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:31:45
+    |
+ 31 |     let _ = client.select::<User>().columns(JsonbObject("raw_str"));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^^^^ invalid SQL argument(s)
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, _>` is not implemented for `&str`
+    = note: expected a valid SQL construct or encodable value.
+            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
+    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+            and $N others
+    = note: required for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, &str, _, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, &str, _, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, &str, _, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i32`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:35:53
+    |
+ 35 |     let _ = client.select::<User>().filter(User::id.matches("fts_query"));
+    |                                                     ^^^^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `i32`
+    = note: if `i32` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<i32>` to implement `CanString<_>`
+    = note: required for `kova_core::dsl::column::Column<i32>` to implement `kova_sqlite::dsl::can::CanSqliteFts<_>`
+note: required by a bound in `Node::<T>::matches`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:401:16
+    |
+399 |     pub fn matches<V, K, X>(self, pattern: V) -> Condition<'a, Sqlite, X>
+    |            ------- required by a bound in this associated function
+400 |         where
+401 |             T: CanSqliteFts<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::matches`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `uuid::Uuid`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:36:61
+    |
+ 36 |     let _ = client.select::<EventLog>().filter(EventLog::id.matches("fts_query"));
+    |                                                             ^^^^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `uuid::Uuid`
+    = note: if `uuid::Uuid` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<uuid::Uuid>` to implement `CanString<_>`
+    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `kova_sqlite::dsl::can::CanSqliteFts<_>`
+note: required by a bound in `Node::<T>::matches`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:401:16
+    |
+399 |     pub fn matches<V, K, X>(self, pattern: V) -> Condition<'a, Sqlite, X>
+    |            ------- required by a bound in this associated function
+400 |         where
+401 |             T: CanSqliteFts<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::matches`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i32`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:37:54
+    |
+ 37 |     let _ = client.select::<User>().columns(User::id.bm25());
+    |                                                      ^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `i32`
+    = note: if `i32` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<i32>` to implement `CanString<_>`
+    = note: required for `kova_core::dsl::column::Column<i32>` to implement `kova_sqlite::dsl::can::CanSqliteFts<_>`
+note: required by a bound in `Node::<T>::bm25`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:412:16
+    |
+410 |     pub fn bm25<X>(self) -> Bm25<'a, X>
+    |            ---- required by a bound in this associated function
+411 |         where
+412 |             T: CanSqliteFts<X> {
+    |                ^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::bm25`
+
+error[E0277]: SQLite FTS5 capability (`CanSqliteFts<_>`) is not satisfied for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:40:47
+    |
+ 40 |         .columns(Lower(EventLog::description).bm25());
+    |                                               ^^^^ expected a textual FTS5 table column
+    |
+    = help: the trait `kova_sqlite::dsl::can::CanSqliteFts<_>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_sqlite::dsl::can::CanSqliteFts<X>`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:34:1
+    |
+ 34 |   impl<T: CanSqliteFts<X>, X> CanSqliteFts<X> for Node<T> {
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Node<T>`
+    |
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/can.rs:59:1
+    |
+ 59 | / impl<T, M, Mode: CanString<X>, X> CanSqliteFts<X> for Column<T, M, Mode>
+ 60 | |     where
+ 61 | |         M: IntoIdentifier<T> + Copy {
+    | |___________________________________^ `kova_core::dsl::column::Column<T, M, Mode>`
+note: required by a bound in `Node::<T>::bm25`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:412:16
+    |
+410 |     pub fn bm25<X>(self) -> Bm25<'a, X>
+    |            ---- required by a bound in this associated function
+411 |         where
+412 |             T: CanSqliteFts<X> {
+    |                ^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::bm25`
+
+error[E0277]: SQLite FTS5 capability (`CanSqliteFts<_>`) is not satisfied for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:43:47
+    |
+ 43 |         .columns(Lower(EventLog::description).highlight(0, "<b>", "</b>"));
+    |                                               ^^^^^^^^^ expected a textual FTS5 table column
+    |
+    = help: the trait `kova_sqlite::dsl::can::CanSqliteFts<_>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_sqlite::dsl::can::CanSqliteFts<X>`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:34:1
+    |
+ 34 |   impl<T: CanSqliteFts<X>, X> CanSqliteFts<X> for Node<T> {
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Node<T>`
+    |
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/can.rs:59:1
+    |
+ 59 | / impl<T, M, Mode: CanString<X>, X> CanSqliteFts<X> for Column<T, M, Mode>
+ 60 | |     where
+ 61 | |         M: IntoIdentifier<T> + Copy {
+    | |___________________________________^ `kova_core::dsl::column::Column<T, M, Mode>`
+note: required by a bound in `Node::<T>::highlight`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:419:16
+    |
+417 |     pub fn highlight<L, R, KL, KR, X>(self, col_index: i32, left: L, right: R) -> Highlight<'a, X>
+    |            --------- required by a bound in this associated function
+418 |         where
+419 |             T: CanSqliteFts<X>,
+    |                ^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::highlight`
+
+error[E0277]: SQLite FTS5 capability (`CanSqliteFts<_>`) is not satisfied for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:46:47
+    |
+ 46 |         .columns(Lower(EventLog::description).snippet(0, "<b>", "</b>", "...", 16));
+    |                                               ^^^^^^^ expected a textual FTS5 table column
+    |
+    = help: the trait `kova_sqlite::dsl::can::CanSqliteFts<_>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_sqlite::dsl::can::CanSqliteFts<X>`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:34:1
+    |
+ 34 |   impl<T: CanSqliteFts<X>, X> CanSqliteFts<X> for Node<T> {
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Node<T>`
+    |
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/can.rs:59:1
+    |
+ 59 | / impl<T, M, Mode: CanString<X>, X> CanSqliteFts<X> for Column<T, M, Mode>
+ 60 | |     where
+ 61 | |         M: IntoIdentifier<T> + Copy {
+    | |___________________________________^ `kova_core::dsl::column::Column<T, M, Mode>`
+note: required by a bound in `Node::<T>::snippet`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:436:16
+    |
+432 |     pub fn snippet<L, R, E, KL, KR, KE, X>(
+    |            ------- required by a bound in this associated function
+...
+436 |             T: CanSqliteFts<X>,
+    |                ^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::snippet`
+
+error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<String>` (under codec `_`)
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:51:53
+    |
+ 51 |         .columns(EventLog::description.highlight(0, 123_i32, "</b>"));
+    |                                        ---------    ^^^^^^^ incompatible SQL type
+    |                                        |
+    |                                        required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<i32>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<i32>`.
+    = help: `Static<i32>` implements trait `Compatible<Target, X>`:
+              Compatible<Static<JsonType>, X>
+              Compatible<Static<JsonbType>, X>
+              Compatible<Static<Option<f64>>, X>
+              Compatible<Static<Option<i128>>, X>
+              Compatible<Static<Option<i64>>, X>
+              Compatible<Static<f64>, X>
+              Compatible<Static<i128>, X>
+              Compatible<Static<i64>, X>
+    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
+note: required by a bound in `Node::<T>::highlight`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:420:16
+    |
+417 |     pub fn highlight<L, R, KL, KR, X>(self, col_index: i32, left: L, right: R) -> Highlight<'a, X>
+    |            --------- required by a bound in this associated function
+...
+420 |             L: IntoOperand<'a, Static<String>, Sqlite, KL, X>,
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::highlight`
+
+error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<String>` (under codec `_`)
+   --> src/type_check/compile_fail/dialect_and_conn/json_and_fts5.rs:54:66
+    |
+ 54 |         .columns(EventLog::description.snippet(0, "<b>", "</b>", 999_i32, 16));
+    |                                        -------                   ^^^^^^^ incompatible SQL type
+    |                                        |
+    |                                        required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<i32>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<i32>`.
+    = help: `Static<i32>` implements trait `Compatible<Target, X>`:
+              Compatible<Static<JsonType>, X>
+              Compatible<Static<JsonbType>, X>
+              Compatible<Static<Option<f64>>, X>
+              Compatible<Static<Option<i128>>, X>
+              Compatible<Static<Option<i64>>, X>
+              Compatible<Static<f64>, X>
+              Compatible<Static<i128>, X>
+              Compatible<Static<i64>, X>
+    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
+note: required by a bound in `Node::<T>::snippet`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:439:16
+    |
+432 |     pub fn snippet<L, R, E, KL, KR, KE, X>(
+    |            ------- required by a bound in this associated function
+...
+439 |             E: IntoOperand<'a, Static<String>, Sqlite, KE, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::snippet`

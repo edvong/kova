@@ -1,12 +1,13 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
+use crate::dsl::can::{CanPgArray, CanPgJsonb};
+use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Pg;
 use kova_core::dsl::func::{Function, SetWindow, Window};
 use kova_core::dsl::{
-    AstNode, CanAlias, CanMath, CanOrder, CanWindow, Close, IntoOperand, Open, Operand, Static,
-    TypedNode,
+    AstNode, CanAlias, CanCompare, CanMath, CanOrder, CanString, CanWindow, Close, IntoOperand,
+    Open, Operand, Static, TypedNode,
 };
 use std::marker::PhantomData;
 
@@ -63,9 +64,33 @@ impl<'a, M, E: TypedNode, O, D, KO, KD, X> TypedNode
 }
 
 impl<'a, M, E, O, D, KO, KD, X> CanAlias for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {}
+impl<'a, M, E, O, D, KO, KD, X> CanCompare for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {}
 impl<'a, M, E, O, D, KO, KD, X> CanOrder for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {}
-impl<'a, M, E, O, D, KO, KD, X> CanMath for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {}
 impl<'a, M, E, O, D, KO, KD, X> CanWindow for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {}
+
+impl<'a, M, E, O, D, KO, KD, X> CanMath<X> for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>
+    where
+        Self: TypedNode,
+        <Self as TypedNode>::Output: CanMath<X> {
+}
+
+impl<'a, M, E, O, D, KO, KD, X> CanString<X> for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>
+    where
+        Self: TypedNode,
+        <Self as TypedNode>::Output: CanString<X> {
+}
+
+impl<'a, M, E, O, D, KO, KD, X> CanPgArray<X> for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>
+    where
+        Self: TypedNode,
+        <Self as TypedNode>::Output: CanPgArray<X> {
+}
+
+impl<'a, M, E, O, D, KO, KD, X> CanPgJsonb<X> for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>
+    where
+        Self: TypedNode,
+        <Self as TypedNode>::Output: CanPgJsonb<X> {
+}
 
 impl<'a, M, E, O, D, KO, KD, X> SetWindow<'a, Pg, X>
     for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {

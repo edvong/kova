@@ -11,7 +11,7 @@ pub use self::scalar::{
     Upper, UpperMarker,
 };
 use crate::dsl::component::{Ext, Std};
-pub use crate::dsl::function::window::{FrameBound, FrameType, Window};
+pub use self::window::{FrameBound, FrameType, Window, PartitionBy, IntoPartitionBy};
 use crate::dsl::{Component, Condition, Operand, Ordering};
 use crate::types::{Database, Extension};
 

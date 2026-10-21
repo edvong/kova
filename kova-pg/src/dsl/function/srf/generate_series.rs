@@ -73,10 +73,11 @@ impl SrfSchemaMarker for GenerateSeriesMarker {
 
 impl<'a, L, R, S, KL, KR, KS, X> SrfBuildMarker<'a, SeriesArgs<L, R, S, (KL, KR, KS)>, X>
     for GenerateSeriesMarker
-    where
-        L: IntoOperand<'a, Dynamic, Pg, KL, X>,
-        R: IntoOperand<'a, Dynamic, Pg, KR, X>,
-        S: IntoOperand<'a, Dynamic, Pg, KS, X> {
+where
+    L: IntoOperand<'a, Dynamic, Pg, KL, X>,
+    R: IntoOperand<'a, Dynamic, Pg, KR, X>,
+    S: IntoOperand<'a, Dynamic, Pg, KS, X>,
+{
     #[inline(always)]
     fn build_srf(args: SeriesArgs<L, R, S, (KL, KR, KS)>) -> ExtSrfFunction<'a> {
         ExtSrfFunction::GenerateSeries {

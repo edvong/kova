@@ -6,7 +6,7 @@ use kova_core::database::Executor;
 use kova_core::dsl::statement::RawStatement;
 use kova_core::dsl::{Bind, IntoArg};
 use kova_core::types::{
-    ExecutableAsync, FromColumn, FromRow, Statement as CoreStatement,
+    ExecutableAsync, DecodeColumn, FromRow, Statement as CoreStatement,
 };
 use std::borrow::Cow;
 use std::iter::once;
@@ -43,13 +43,13 @@ impl<'c, 'a, E, X> Statement<'c, 'a, E, X>
 
     pub async fn load_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Postgres> {
+            U: FromRow<Postgres, X> {
         fetch_rows(self.executor, once(self.statement.build()?), |row| U::from_row(&row)).await
     }
 
     pub async fn load_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Postgres, X> {
+            U: DecodeColumn<Postgres, X> {
         fetch_rows(self.executor, once(self.statement.build()?), |row| U::extract(&row)).await
     }
 }

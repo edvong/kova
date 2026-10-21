@@ -5,41 +5,36 @@ mod select;
 mod statement;
 mod update;
 
-use crate::query::insert::NoConflict;
+use kova_core::types::Model;
 use crate::types::Sqlite;
-use kova_core::types::{Model, Query as CoreQuery};
+use crate::query::delete::InitDelete;
+use crate::query::insert::InitInsert;
+use crate::query::select::InitSelect;
+use crate::query::update::InitUpdate;
 
-pub use crate::query::delete::Delete;
-pub use crate::query::insert::Insert;
-use crate::query::select::{JustAddFrom, OuterQuery};
-pub use crate::query::select::Select;
-use crate::query::statement::Statement;
-pub use crate::query::update::Update;
-
-pub struct NoReturn;
-pub struct Returning;
+pub use {insert::Insert, select::Select, update::Update, delete::Delete, statement::Statement};
 
 pub struct Query;
 
 #[rustfmt::skip]
-impl<'a> CoreQuery<'a, Sqlite> for Query {
-    type Select<'c, T: Model<DB = Sqlite>, E, X> = Select<'a, T, OuterQuery<'c, E>, JustAddFrom, X>
+impl<'a> kova_core::types::Query<'a, Sqlite> for Query {
+    type Select<'c, T: Model<Sqlite, X>, E, X> = InitSelect<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;
 
-    type Insert<'c, T, E, X> = Insert<'c, 'a, T, E, X, NoReturn, NoConflict>
+    type Insert<'c, T, E, X> = InitInsert<'c, 'a, T, E, X>
         where
-            T: Model<DB = Sqlite> + 'a,
+            T: Model<Sqlite, X> + 'a,
             'a: 'c,
             E: 'c;
 
-    type Update<'c, T: Model<DB = Sqlite>, E, X> = Update<'c, 'a, T, E, X, NoReturn>
+    type Update<'c, T: Model<Sqlite, X>, E, X> = InitUpdate<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;
 
-    type Delete<'c, T: Model<DB = Sqlite>, E, X> = Delete<'c, 'a, T, E, X, NoReturn>
+    type Delete<'c, T: Model<Sqlite, X>, E, X> = InitDelete<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;

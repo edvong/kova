@@ -1,0 +1,289 @@
+error[E0599]: no method named `execute` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>` in the current scope
+ --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:9:60
+  |
+9 |     let _ = client.update::<User>().filter(User::id.eq(1)).execute();
+  |                                                            ^^^^^^^ method not found in `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>`
+  |
+  = note: the method was found for `Update<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Assigned, X>`
+
+error[E0599]: no method named `execute_in` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:10:37
+   |
+10 |     let _ = client.update::<User>().execute_in::<i32>();
+   |                                     ^^^^^^^^^^ method not found in `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>`
+   |
+   = note: the method was found for `Update<'c, 'a, T, E, kova_sqlite::query::update::Returning, kova_sqlite::query::update::Assigned, X>`
+
+error[E0599]: no method named `returning` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:11:37
+   |
+11 |     let _ = client.update::<User>().returning(User::id);
+   |                                     ^^^^^^^^^ method not found in `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>`
+   |
+   = note: the method was found for `Update<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Assigned, X>`
+
+error[E0599]: no method named `execute_in` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:14:34
+   |
+14 |     let _ = client.insert(&user).execute_in::<i32>();
+   |                                  ^^^^^^^^^^
+   |
+help: there is a method `execute` with a similar name
+   |
+14 -     let _ = client.insert(&user).execute_in::<i32>();
+14 +     let _ = client.insert(&user).execute::<i32>();
+   |
+
+error[E0599]: no method named `execute_as` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Assigned, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:15:62
+   |
+15 |     let _ = client.update::<User>().set(User::name.set("a")).execute_as::<User>();
+   |                    ----------------                          ^^^^^^^^^^
+   |                    |
+   |                    method `execute_as` is available on `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>`
+   |
+help: there is a method `execute` with a similar name
+   |
+15 -     let _ = client.update::<User>().set(User::name.set("a")).execute_as::<User>();
+15 +     let _ = client.update::<User>().set(User::name.set("a")).execute::<User>();
+   |
+
+error[E0599]: no method named `execute_in` found for struct `kova::query::Delete<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::delete::NoReturn, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:16:37
+   |
+16 |     let _ = client.delete::<User>().execute_in::<i32>();
+   |                                     ^^^^^^^^^^
+   |
+help: there is a method `execute` with a similar name
+   |
+16 -     let _ = client.delete::<User>().execute_in::<i32>();
+16 +     let _ = client.delete::<User>().execute::<i32>();
+   |
+
+error[E0599]: no method named `execute` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::Returning, kova_sqlite::query::insert::NoConflict, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:19:54
+   |
+19 |     let _ = client.insert(&user).returning(User::id).execute();
+   |                    -------------                     ^^^^^^^
+   |                    |
+   |                    method `execute` is available on `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>`
+   |
+help: there is a method `execute_as` with a similar name
+   |
+19 |     let _ = client.insert(&user).returning(User::id).execute_as();
+   |                                                             +++
+
+error[E0599]: no method named `execute` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::Returning, kova_sqlite::query::update::Assigned, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:24:10
+   |
+20 |       let _ = client
+   |  _____________-
+21 | |         .update::<User>()
+   | |          ---------------- method `execute` is available on `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Unset, ()>`
+22 | |         .set(User::name.set("a"))
+   | |          ------------------------ method `execute` is available on `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Assigned, ()>`
+23 | |         .returning(User::id)
+24 | |         .execute();
+   | |_________-^^^^^^^
+   |
+help: there is a method `execute_as` with a similar name
+   |
+24 |         .execute_as();
+   |                 +++
+
+error[E0599]: no method named `execute` found for struct `kova::query::Delete<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::delete::Returning, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:25:57
+   |
+25 |     let _ = client.delete::<User>().returning(User::id).execute();
+   |                    ----------------                     ^^^^^^^
+   |                    |
+   |                    method `execute` is available on `kova::query::Delete<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::delete::NoReturn, ()>`
+   |
+help: there is a method `execute_as` with a similar name
+   |
+25 |     let _ = client.delete::<User>().returning(User::id).execute_as();
+   |                                                                +++
+
+error[E0599]: no method named `returning` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::Returning, kova_sqlite::query::insert::NoConflict, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:28:54
+   |
+28 |     let _ = client.insert(&user).returning(User::id).returning(User::name);
+   |                                                      ^^^^^^^^^ method not found in `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::Returning, kova_sqlite::query::insert::NoConflict, ()>`
+   |
+   = note: the method was found for `Insert<'c, 'a, T, E, kova_sqlite::query::insert::NoReturn, C, X>`
+
+error[E0599]: no method named `returning` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::Returning, kova_sqlite::query::update::Assigned, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:33:10
+   |
+29 |       let _ = client
+   |  _____________-
+30 | |         .update::<User>()
+31 | |         .set(User::name.set("a"))
+32 | |         .returning(User::id)
+33 | |         .returning(User::name);
+   | |         -^^^^^^^^^ method not found in `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::Returning, kova_sqlite::query::update::Assigned, ()>`
+   | |_________|
+   |
+   |
+   = note: the method was found for `Update<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, kova_sqlite::query::update::Assigned, X>`
+
+error[E0599]: no method named `set` found for struct `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::Returning, kova_sqlite::query::update::Assigned, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:38:10
+   |
+34 |       let _ = client
+   |  _____________-
+35 | |         .update::<User>()
+36 | |         .set(User::name.set("a"))
+37 | |         .returning(User::id)
+38 | |         .set(User::is_active.set(true));
+   | |         -^^^ method not found in `Update<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::update::Returning, kova_sqlite::query::update::Assigned, ()>`
+   | |_________|
+   |
+   |
+   = note: the method was found for `Update<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, S, X>`
+
+error[E0599]: no method named `returning` found for struct `kova::query::Delete<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::delete::Returning, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:39:57
+   |
+39 |     let _ = client.delete::<User>().returning(User::id).returning(User::name);
+   |                                                         ^^^^^^^^^ method not found in `kova::query::Delete<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::delete::Returning, ()>`
+   |
+   = note: the method was found for `kova::query::Delete<'c, 'a, T, E, kova_sqlite::query::delete::NoReturn, X>`
+
+error[E0599]: no method named `do_nothing` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:43:34
+   |
+43 |     let _ = client.insert(&user).do_nothing();
+   |                                  ^^^^^^^^^^ method not found in `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>`
+   |
+   = note: the method was found for `Insert<'c, 'a, T, E, R, kova_sqlite::query::insert::ConflictTarget, X>`
+
+error[E0599]: no method named `update` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:44:34
+   |
+44 |     let _ = client.insert(&user).update(User::name.set("a"));
+   |                                  ^^^^^^ method not found in `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>`
+   |
+   = note: the method was found for `Insert<'c, 'a, T, E, R, kova_sqlite::query::insert::ConflictTarget, X>`
+
+error[E0599]: `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>` is not an iterator
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:45:34
+   |
+45 |     let _ = client.insert(&user).filter(User::is_active.eq(true));
+   |                                  ^^^^^^ `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>` is not an iterator
+   |
+  ::: /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:23:1
+   |
+23 | pub struct Insert<'c, 'a, T, E, R, C, X> {
+   | ---------------------------------------- doesn't satisfy `_: Iterator`
+   |
+   = note: the following trait bounds were not satisfied:
+           `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>: Iterator`
+           which is required by `&mut Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::NoConflict, ()>: Iterator`
+
+error[E0599]: the method `execute` exists for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:48:56
+   |
+48 |     let _ = client.insert(&user).on_conflict(User::id).execute();
+   |                                                        ^^^^^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:11:1
+   |
+11 | pub struct ConflictTarget;
+   | ------------------------- doesn't satisfy `_: CanExecute`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_sqlite::query::insert::ConflictTarget: kova_sqlite::query::insert::CanExecute`
+
+error[E0599]: the method `execute_in` exists for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::Returning, kova_sqlite::query::insert::ConflictTarget, ()>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:53:10
+   |
+49 |       let _ = client
+   |  _____________-
+50 | |         .insert(&user)
+51 | |         .on_conflict(User::id)
+52 | |         .returning(User::id)
+53 | |         .execute_in::<i32>();
+   | |         -^^^^^^^^^^ method cannot be called due to unsatisfied trait bounds
+   | |_________|
+   |
+   |
+  ::: /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:11:1
+   |
+11 |   pub struct ConflictTarget;
+   |   ------------------------- doesn't satisfy `_: CanExecute`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_sqlite::query::insert::ConflictTarget: kova_sqlite::query::insert::CanExecute`
+
+error[E0599]: `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>` is not an iterator
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:57:10
+   |
+54 |       let _ = client
+   |  _____________-
+55 | |         .insert(&user)
+56 | |         .on_conflict(User::id)
+57 | |         .filter(User::is_active.eq(true));
+   | |         -^^^^^^ `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>` is not an iterator
+   | |_________|
+   |
+   |
+  ::: /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:23:1
+   |
+23 |   pub struct Insert<'c, 'a, T, E, R, C, X> {
+   |   ---------------------------------------- doesn't satisfy `_: Iterator`
+   |
+   = note: the following trait bounds were not satisfied:
+           `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>: Iterator`
+           which is required by `&mut Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>: Iterator`
+
+error[E0599]: `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictNothing, ()>` is not an iterator
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:64:10
+   |
+60 |       let _ = client
+   |  _____________-
+61 | |         .insert(&user)
+62 | |         .on_conflict(User::id)
+63 | |         .do_nothing()
+64 | |         .filter(User::is_active.eq(true));
+   | |         -^^^^^^ `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictNothing, ()>` is not an iterator
+   | |_________|
+   |
+   |
+  ::: /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:23:1
+   |
+23 |   pub struct Insert<'c, 'a, T, E, R, C, X> {
+   |   ---------------------------------------- doesn't satisfy `_: Iterator`
+   |
+   = note: the following trait bounds were not satisfied:
+           `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictNothing, ()>: Iterator`
+           which is required by `&mut Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictNothing, ()>: Iterator`
+
+error[E0599]: no method named `update` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictNothing, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:69:10
+   |
+65 |       let _ = client
+   |  _____________-
+66 | |         .insert(&user)
+67 | |         .on_conflict(User::id)
+68 | |         .do_nothing()
+69 | |         .update(User::name.set("a"));
+   | |         -^^^^^^ method not found in `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictNothing, ()>`
+   | |_________|
+   |
+   |
+   = note: the method was found for `Insert<'c, 'a, T, E, R, kova_sqlite::query::insert::ConflictTarget, X>`
+
+error[E0599]: no method named `on_conflict` found for struct `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>` in the current scope
+  --> src/type_check/compile_fail/typestate/mutation_returning_and_conflict.rs:75:10
+   |
+72 |       let _ = client
+   |  _____________-
+73 | |         .insert(&user)
+74 | |         .on_conflict(User::id)
+75 | |         .on_conflict(User::name);
+   | |         -^^^^^^^^^^^ method not found in `Insert<'_, '_, User, kova_sqlite::types::conn::SqlitePool, kova_sqlite::query::insert::NoReturn, kova_sqlite::query::insert::ConflictTarget, ()>`
+   | |_________|
+   |
+   |
+   = note: the method was found for `Insert<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>`

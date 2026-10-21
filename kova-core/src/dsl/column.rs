@@ -1,4 +1,4 @@
-use crate::dsl::can::CanGroup;
+use crate::dsl::can::{CanConflict, CanGroup};
 use crate::dsl::identifier::{Identifier, IntoIdentifier};
 use crate::dsl::operand::{Dynamic, Static};
 use crate::dsl::{
@@ -80,7 +80,11 @@ impl<T, M, Mode> CanCompare for Column<T, M, Mode> {}
 impl<T, M, Mode> CanOrder for Column<T, M, Mode> {}
 impl<T, M, Mode> CanGroup for Column<T, M, Mode> {}
 impl<T, M, Mode> CanAlias for Column<T, M, Mode> {}
-impl<T, M, Mode> CanMath for Column<T, M, Mode> {}
-impl<T, M, Mode> CanString for Column<T, M, Mode> {}
-// Only the physical column (ColumnMeta) has the ability to be assigned values.
+
+// Capabilities derived from column output Mode
+impl<T, M, Mode: CanMath<X>, X> CanMath<X> for Column<T, M, Mode> {}
+impl<T, M, Mode: CanString<X>, X> CanString<X> for Column<T, M, Mode> {}
+
+// Only physical columns (ColumnMeta) can be assigned values or used as ON CONFLICT targets
 impl<T> CanAssignment for Column<T, ColumnMeta, Static<T>> {}
+impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}

@@ -24,5 +24,6 @@ postgres-native-tls = { workspace = true, optional = true }
 
 [features]
 default = []
+narrow-cast = []
 rustls = ["dep:rustls", "dep:tokio-postgres-rustls"]
 native-tls = ["dep:native-tls", "dep:postgres-native-tls"]

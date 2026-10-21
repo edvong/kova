@@ -1,21 +1,20 @@
 mod aggregate;
-mod can;
-// mod from;
+// mod can;
 mod fts5;
 mod json;
-mod standard;
 mod srf;
+mod standard;
 
 use crate::types::Sqlite;
 use kova_core::dsl::{Operand, Projection};
 
 pub use self::aggregate::{GroupConcat, JsonGroupArray, JsonbGroupArray};
-pub use self::srf::{ExtSrfFunction, IntoSrfFunction, JsonEach, JsonSrfArgs, JsonTree};
 pub use self::fts5::{Bm25, Highlight, InnerBm25, InnerHighlight, InnerSnippet, Snippet};
 pub use self::json::{
     InnerJsonExtract, Json, JsonExtract, JsonExtractMarker, JsonObject, JsonbExtract,
     JsonbExtractMarker, JsonbObject,
 };
+pub use self::srf::{ExtSrfFunction, IntoSrfFunction, JsonEach, JsonSrfArgs, JsonTree};
 pub use self::standard::*;
 
 pub enum ExtFunction<'a> {

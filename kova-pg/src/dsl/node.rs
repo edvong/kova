@@ -1,23 +1,36 @@
 #![allow(clippy::wrong_self_convention)]
 
+use crate::dsl::can::{CanPgArray, CanPgJsonb, CanPgString};
+use crate::dsl::function::ExtFunction;
 use crate::dsl::jsonb_chain::JsonbChain;
 use crate::dsl::jsonb_text::JsonbText;
 use crate::dsl::operator::JsonOp;
-use crate::dsl::{ExtAssignment, ExtFunction, ExtOperator};
+use crate::dsl::{ExtAssignment, ExtOperator};
 use crate::types::Pg;
-use kova_core::dsl::func::{Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window};
+use kova_core::dsl::func::{
+    IntoPartitionBy, PartitionBy, Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window,
+};
+use kova_core::dsl::statement::IntoSelectStatement;
 use kova_core::dsl::{
-    ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanDistinct, CanFilter,
-    CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator, Compatible,
-    Condition, Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg, IntoIdentifier,
-    IntoOperand, IntoOrdering, IntoProjection, Math, MathOperator, Operand, Operator, Ordering,
-    Projection, StandardAssignment, StandardOperator, Static, TypedNode,
+    ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanConflict, CanDistinct,
+    CanFilter, CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator,
+    Compatible, Condition, Conflict, Direction, Dynamic, EraseX, GroupBy, Identifier, IntoArg,
+    IntoConflict, IntoGroupBy, IntoIdentifier, IntoOperand, IntoOrdering, IntoProjection, Math,
+    MathOperator, Operand, Operator, Ordering, Projection, StandardAssignment, StandardOperator,
+    Static, TypedNode,
 };
 use kova_core::type_id;
 use kova_core::types::SetTag;
 
 #[derive(Copy, Clone)]
 pub struct Node<T>(pub T);
+
+impl<T: CanGroup> CanGroup for Node<T> {}
+impl<T: CanConflict> CanConflict for Node<T> {}
+impl<T: CanMath<X>, X> CanMath<X> for Node<T> {}
+impl<T: CanString<X>, X> CanString<X> for Node<T> {}
+impl<T: CanPgArray<X>, X> CanPgArray<X> for Node<T> {}
+impl<T: CanPgJsonb<X>, X> CanPgJsonb<X> for Node<T> {}
 
 impl<T: TypedNode> TypedNode for Node<T> {
     type Output = T::Output;
@@ -32,6 +45,7 @@ impl<'a, T, X> AstNode<'a, Pg, X> for Node<T>
     }
 }
 
+#[diagnostic::do_not_recommend]
 impl<'a, T, Target, X> IntoOperand<'a, Target, Pg, Close, X> for Node<T>
     where
         T: AstNode<'a, Pg, X>,
@@ -161,51 +175,47 @@ impl<'a, T> Node<T>
     }
 
     #[inline(always)]
-    pub fn in_select<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
+    pub fn in_select<V, X>(self, v: V) -> Condition<'a, Pg, X>
         where
             T: AstNode<'a, Pg, X>,
-            V: IntoOperand<'a, Dynamic, Pg, K, X> {
-        Comparator::<'a, Dynamic, Pg>::new(self.0.into_ast_operand())
-            .binary_op(v, StandardOperator::InSelect)
+            V: IntoSelectStatement<'a, Pg, X> {
+        self.comparator::<X>().select_op(v, StandardOperator::InSelect)
     }
 
     #[inline(always)]
-    pub fn not_in_select<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
+    pub fn not_in_select<V, X>(self, v: V) -> Condition<'a, Pg, X>
         where
             T: AstNode<'a, Pg, X>,
-            V: IntoOperand<'a, Dynamic, Pg, K, X> {
-        Comparator::<'a, Dynamic, Pg>::new(self.0.into_ast_operand())
-            .binary_op(v, StandardOperator::NotInSelect)
+            V: IntoSelectStatement<'a, Pg, X> {
+        self.comparator::<X>().select_op(v, StandardOperator::NotInSelect)
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanString + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
-            V: IntoOperand<'a, T::Output, Pg, K, X> {
-        self.comparator::<X>().binary_op(v, StandardOperator::Like)
+            T: CanString<X> + AstNode<'a, Pg, X>,
+            V: IntoOperand<'a, Static<String>, Pg, K, X> {
+        Comparator::<'a, Static<String>, Pg>::new(self.0.into_ast_operand())
+            .binary_op(v, StandardOperator::Like)
     }
 
     #[inline(always)]
     pub fn not_like<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
-            V: IntoOperand<'a, T::Output, Pg, K, X> {
-        self.comparator::<X>().binary_op(v, StandardOperator::NotLike)
+            T: CanString<X> + AstNode<'a, Pg, X>,
+            V: IntoOperand<'a, Static<String>, Pg, K, X> {
+        Comparator::<'a, Static<String>, Pg>::new(self.0.into_ast_operand())
+            .binary_op(v, StandardOperator::NotLike)
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanMath + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn add<V, K, X>(self, v: V) -> Node<Math<'a, Pg, T::Output, X>>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanMath<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Node(Math::new(MathOperator::Add, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -213,7 +223,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn sub<V, K, X>(self, v: V) -> Node<Math<'a, Pg, T::Output, X>>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanMath<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Node(Math::new(MathOperator::Sub, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -221,7 +231,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn mul<V, K, X>(self, v: V) -> Node<Math<'a, Pg, T::Output, X>>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanMath<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Node(Math::new(MathOperator::Mul, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -229,7 +239,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn div<V, K, X>(self, v: V) -> Node<Math<'a, Pg, T::Output, X>>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanMath<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Node(Math::new(MathOperator::Div, self.0.into_ast_operand(), v.into_operand()))
     }
@@ -286,7 +296,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn increment<V, K, U, X>(self, v: V) -> Assignment<'a, Pg, X>
         where
-            T: IntoIdentifier<U>,
+            T: CanMath<X> + IntoIdentifier<U>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Assignment::from(StandardAssignment::Increment(
             self.0.into_identifier().meta,
@@ -297,7 +307,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn decrement<V, K, U, X>(self, v: V) -> Assignment<'a, Pg, X>
         where
-            T: IntoIdentifier<U>,
+            T: CanMath<X> + IntoIdentifier<U>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Assignment::from(StandardAssignment::Decrement(
             self.0.into_identifier().meta,
@@ -339,17 +349,11 @@ impl<'a, T> Node<T> {
     }
 }
 
-pub trait CanPgString {}
-pub trait CanPgArray {}
-pub trait CanPgJsonb {}
-
-impl<'a, T> Node<T>
-    where
-        T: CanPgString + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn ilike<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgString<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::ILike(
             self.0.into_ast_operand(),
@@ -360,7 +364,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn not_ilike<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgString<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::NotILike(
             self.0.into_ast_operand(),
@@ -371,7 +375,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn matches<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgString<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::Matches(
             self.0.into_ast_operand(),
@@ -382,7 +386,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn not_matches<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgString<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::NotMatches(
             self.0.into_ast_operand(),
@@ -393,7 +397,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn imatches<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgString<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::IMatches(
             self.0.into_ast_operand(),
@@ -404,7 +408,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn not_imatches<V, K, X>(self, v: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgString<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::NotIMatches(
             self.0.into_ast_operand(),
@@ -413,13 +417,11 @@ impl<'a, T> Node<T>
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanPgArray + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn array_contains<V, K, X>(self, val: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgArray<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::ArrayContains(
             self.0.into_ast_operand(),
@@ -430,7 +432,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn array_contained_by<V, K, X>(self, val: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgArray<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::ArrayContainedBy(
             self.0.into_ast_operand(),
@@ -441,7 +443,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn array_overlap<V, K, X>(self, val: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgArray<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, T::Output, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::ArrayOverlap(
             self.0.into_ast_operand(),
@@ -450,13 +452,11 @@ impl<'a, T> Node<T>
     }
 }
 
-impl<'a, T> Node<T>
-    where
-        T: CanPgJsonb + TypedNode {
+impl<'a, T: TypedNode> Node<T> {
     #[inline(always)]
     pub fn json_path<V, K, X>(self, key: V) -> JsonbChain<'a, T, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         JsonbChain(self.0.into_ast_operand(), vec![JsonOp::Path(key.into_operand())])
     }
@@ -464,7 +464,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_path_array<I, V, K, X>(self, path: I) -> JsonbChain<'a, T, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         JsonbChain(self.0.into_ast_operand(), vec![JsonOp::PathArray(ExtFunction::from_iter(path))])
@@ -473,7 +473,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_concat<V, K, X>(self, val: V) -> JsonbChain<'a, T, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Dynamic, Pg, K, X> {
         JsonbChain(self.0.into_ast_operand(), vec![JsonOp::Concat(val.into_operand())])
     }
@@ -481,7 +481,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_delete<V, K, X>(self, key: V) -> JsonbChain<'a, T, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         JsonbChain(self.0.into_ast_operand(), vec![JsonOp::Delete(key.into_operand())])
     }
@@ -489,7 +489,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_delete_path<I, V, K, X>(self, path: I) -> JsonbChain<'a, T, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         JsonbChain(
@@ -501,7 +501,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_path_text<V, K, X>(self, key: V) -> JsonbText<'a, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         JsonbText(self.0.into_ast_operand(), vec![JsonOp::PathText(key.into_operand())])
     }
@@ -509,7 +509,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_path_text_array<I, V, K, X>(self, path: I) -> JsonbText<'a, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         JsonbText(
@@ -521,7 +521,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_contains<V, K, X>(self, val: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Dynamic, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonContains(
             self.0.into_ast_operand(),
@@ -532,7 +532,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_contained_by<V, K, X>(self, val: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Dynamic, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonContainedBy(
             self.0.into_ast_operand(),
@@ -543,7 +543,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_has_key<V, K, X>(self, key: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonHasKey(
             self.0.into_ast_operand(),
@@ -554,7 +554,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_has_any_keys<I, V, K, X>(self, keys: I) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonHasAnyKeys(
@@ -566,7 +566,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_has_all_keys<I, V, K, X>(self, keys: I) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             I: IntoIterator<Item = V>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonHasAllKeys(
@@ -578,7 +578,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_path_exists<V, K, X>(self, path: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonPathExists(
             self.0.into_ast_operand(),
@@ -589,7 +589,7 @@ impl<'a, T> Node<T>
     #[inline(always)]
     pub fn json_path_predicate<V, K, X>(self, path: V) -> Condition<'a, Pg, X>
         where
-            T: AstNode<'a, Pg, X>,
+            T: CanPgJsonb<X> + AstNode<'a, Pg, X>,
             V: IntoOperand<'a, Static<String>, Pg, K, X> {
         Condition::from(Operator::from(ExtOperator::JsonPathPredicate(
             self.0.into_ast_operand(),
@@ -625,12 +625,30 @@ impl<'a, T, X> IntoOrdering<'a, Pg, X> for Node<T>
     }
 }
 
-impl<'a, T> IntoArg<Operand<'a, Pg>, ArgAst> for Node<T>
+impl<'a, T, X> IntoGroupBy<'a, Pg, X> for Node<T>
     where
-        T: AstNode<'a, Pg, ()> {
+        T: CanGroup + AstNode<'a, Pg, X> {
     #[inline(always)]
-    fn into_arg(self) -> Operand<'a, Pg> {
-        self.0.into_ast_operand()
+    fn into_group_by(self) -> GroupBy<'a, Pg, X> {
+        GroupBy::new(self.0.into_ast_operand())
+    }
+}
+
+impl<'a, T, X> IntoPartitionBy<'a, Pg, X> for Node<T>
+    where
+        T: CanGroup + AstNode<'a, Pg, X> {
+    #[inline(always)]
+    fn into_partition_by(self) -> PartitionBy<'a, Pg, X> {
+        PartitionBy::new(self.0.into_ast_operand())
+    }
+}
+
+impl<'a, T, X> IntoConflict<'a, Pg, X> for Node<T>
+    where
+        T: CanConflict + AstNode<'a, Pg, X> {
+    #[inline(always)]
+    fn into_conflict(self) -> Conflict<'a, Pg, X> {
+        Conflict::new(self.0.into_ast_operand())
     }
 }
 
@@ -654,9 +672,27 @@ impl<'a, T, X> IntoArg<Ordering<'a, Pg, X>, ArgAst> for Node<T>
 
 impl<'a, T, X> IntoArg<GroupBy<'a, Pg, X>, ArgAst> for Node<T>
     where
-        T: CanGroup + AstNode<'a, Pg, X> {
+        Self: IntoGroupBy<'a, Pg, X> {
     #[inline(always)]
     fn into_arg(self) -> GroupBy<'a, Pg, X> {
-        GroupBy::new(self.0.into_ast_operand())
+        self.into_group_by()
+    }
+}
+
+impl<'a, T, X> IntoArg<Conflict<'a, Pg, X>, ArgAst> for Node<T>
+    where
+        Self: IntoConflict<'a, Pg, X> {
+    #[inline(always)]
+    fn into_arg(self) -> Conflict<'a, Pg, X> {
+        self.into_conflict()
+    }
+}
+
+impl<'a, T, X> IntoArg<PartitionBy<'a, Pg, X>, ArgAst> for Node<T>
+    where
+        Self: IntoPartitionBy<'a, Pg, X> {
+    #[inline(always)]
+    fn into_arg(self) -> PartitionBy<'a, Pg, X> {
+        self.into_partition_by()
     }
 }

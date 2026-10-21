@@ -1,7 +1,5 @@
-use crate::dsl::func::ExtSrfFunction;
-use crate::dsl::{
-    ExtAssignment, ExtFunction, ExtOperator, Locking,
-};
+use crate::dsl::func::{ExtFunction, ExtSrfFunction};
+use crate::dsl::{ExtAssignment, ExtOperator, Locking};
 
 pub struct Extension;
 

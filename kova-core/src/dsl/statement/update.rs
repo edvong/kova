@@ -3,7 +3,7 @@ use crate::dsl::{
     TableClause, WhereClause,
 };
 use crate::render::RenderData;
-use crate::types::{Database, Model};
+use crate::types::{Database, Relation};
 use std::marker::PhantomData;
 
 pub struct UpdateStatement<'a, DB: Database, T> {
@@ -15,12 +15,10 @@ pub struct UpdateStatement<'a, DB: Database, T> {
     _marker: PhantomData<T>,
 }
 
-impl<'a, DB: Database, T> UpdateStatement<'a, DB, T>
-    where
-        T: Model<DB = DB> {
+impl<'a, DB: Database, T: Relation> UpdateStatement<'a, DB, T> {
     pub fn new() -> Self {
         Self {
-            target: T::TABLE_NAME,
+            target: T::NAME,
             assignments: AssignmentClause::new(),
             r#where: WhereClause::new(),
             from: TableClause::new(),

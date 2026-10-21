@@ -1,5 +1,5 @@
 use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanSqliteString, Node};
+use crate::dsl::node::Node;
 use crate::types::Sqlite;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{
@@ -41,7 +41,7 @@ impl<'a, X> AstNode<'a, Sqlite, X> for InnerBm25<'a, X> {
 impl<'a, X> CanAlias for InnerBm25<'a, X> {}
 impl<'a, X> CanCompare for InnerBm25<'a, X> {}
 impl<'a, X> CanOrder for InnerBm25<'a, X> {}
-impl<'a, X> CanMath for InnerBm25<'a, X> {}
+impl<'a, X> CanMath<X> for InnerBm25<'a, X> {}
 
 // ==========================================
 // 2. Highlight
@@ -76,8 +76,8 @@ impl<'a, X> CanAlias for InnerHighlight<'a, X> {}
 impl<'a, X> CanCompare for InnerHighlight<'a, X> {}
 impl<'a, X> CanOrder for InnerHighlight<'a, X> {}
 impl<'a, X> CanGroup for InnerHighlight<'a, X> {}
-impl<'a, X> CanString for InnerHighlight<'a, X> {}
-impl<'a, X> CanSqliteString for InnerHighlight<'a, X> {}
+impl<'a, X> CanString<X> for InnerHighlight<'a, X> {}
+// impl<'a, X> CanSqliteString<X> for InnerHighlight<'a, X> {}
 
 // ==========================================
 // 3. Snippet
@@ -116,6 +116,4 @@ impl<'a, X> CanAlias for InnerSnippet<'a, X> {}
 impl<'a, X> CanCompare for InnerSnippet<'a, X> {}
 impl<'a, X> CanOrder for InnerSnippet<'a, X> {}
 impl<'a, X> CanGroup for InnerSnippet<'a, X> {}
-impl<'a, X> CanString for InnerSnippet<'a, X> {}
-impl<'a, X> CanSqliteString for InnerSnippet<'a, X> {}
-
+impl<'a, X> CanString<X> for InnerSnippet<'a, X> {}

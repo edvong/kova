@@ -3,7 +3,7 @@ use crate::types::Database;
 use std::marker::PhantomData;
 
 pub struct Window<'a, DB: Database, X> {
-    pub(crate) partition_by: Vec<Operand<'a, DB>>,
+    pub(crate) partition_by: Vec<PartitionBy<'a, DB, ()>>,
     pub(crate) order_by: Vec<Ordering<'a, DB, ()>>,
     pub(crate) frame: Option<WindowFrame>,
     _marker: PhantomData<X>,
@@ -52,9 +52,9 @@ pub enum FrameBound {
 
 impl<'a, DB: Database, X> Window<'a, DB, X> {
     pub fn partition_by<C, M>(mut self, cols: C) -> Self
-    where
-        C: IntoArg<Operand<'a, DB>, M>, {
-        self.partition_by = cols.into_args();
+        where
+            C: IntoArg<PartitionBy<'a, DB, X>, M> {
+        self.partition_by = cols.into_args_erased();
         self
     }
 
@@ -75,16 +75,39 @@ impl<'a, DB: Database, X> Window<'a, DB, X> {
 
     // Not in Node, Native curing method
     pub fn order_by<C, M>(mut self, cols: C) -> Self
-    where
-        C: IntoArg<Ordering<'a, DB, X>, M>, {
+        where
+            C: IntoArg<Ordering<'a, DB, X>, M> {
         self.order_by = cols.into_args_erased();
         self
     }
 
     pub fn alias<A, T>(self, alias: A) -> Projection<'a, DB, X>
-    where
-        A: IntoIdentifier<T>,
-        Self: IntoProjection<'a, DB, X>, {
+        where
+            A: IntoIdentifier<T>,
+            Self: IntoProjection<'a, DB, X> {
         self.into_projection().alias(alias)
+    }
+}
+
+pub struct PartitionBy<'a, DB: Database, X> {
+    operand: Operand<'a, DB>,
+    _marker: PhantomData<X>,
+}
+
+impl<'a, DB: Database, X> PartitionBy<'a, DB, X> {
+    pub fn new(operand: Operand<'a, DB>) -> Self {
+        Self { operand, _marker: PhantomData }
+    }
+}
+
+pub trait IntoPartitionBy<'a, DB: Database, X> {
+    fn into_partition_by(self) -> PartitionBy<'a, DB, X>;
+}
+
+impl<'a, DB: Database, X> EraseX for PartitionBy<'a, DB, X> {
+    type Erased = PartitionBy<'a, DB, ()>;
+
+    fn erase_x(self) -> Self::Erased {
+        PartitionBy { operand: self.operand, _marker: PhantomData }
     }
 }

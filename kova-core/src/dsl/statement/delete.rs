@@ -1,6 +1,6 @@
 use crate::dsl::{Condition, Projection, ProjectionClause, WhereClause};
 use crate::render::RenderData;
-use crate::types::{Database, Model};
+use crate::types::{Database, Relation};
 use std::marker::PhantomData;
 
 pub struct DeleteStatement<'a, DB: Database, T> {
@@ -9,7 +9,7 @@ pub struct DeleteStatement<'a, DB: Database, T> {
     _marker: PhantomData<T>,
 }
 
-impl<'a, DB: Database, T> DeleteStatement<'a, DB, T> where T: Model<DB = DB> {
+impl<'a, DB: Database, T: Relation> DeleteStatement<'a, DB, T> {
     pub fn new() -> Self {
         Self {
             r#where: WhereClause::new(),

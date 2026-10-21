@@ -2,7 +2,7 @@
 
 use crate::dsl::column::Column;
 use crate::dsl::function::ExtSrfFunction;
-use crate::dsl::function::srf::IntoSrfFunction;
+use crate::dsl::function::srf::IntoArraySrf;
 use crate::dsl::function::srf::srf_node::{SrfBuildMarker, SrfNode, SrfSchemaMarker};
 use kova_core::dsl::Dynamic;
 use kova_core::types::IdentifierMeta;
@@ -34,9 +34,9 @@ impl SrfSchemaMarker for UnnestMarker {
 
 impl<'a, T, X> SrfBuildMarker<'a, T, X> for UnnestMarker
     where
-        T: IntoSrfFunction<'a, X> {
+        T: IntoArraySrf<'a, X> {
     #[inline(always)]
     fn build_srf(args: T) -> ExtSrfFunction<'a> {
-        ExtSrfFunction::Unnest(args.into_srf_function())
+        ExtSrfFunction::Unnest(args.into_array_srf())
     }
 }

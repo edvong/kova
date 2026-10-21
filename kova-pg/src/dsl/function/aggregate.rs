@@ -1,13 +1,10 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanPgArray, CanPgJsonb, Node};
+use crate::dsl::func::ExtFunction;
+use crate::dsl::node::Node;
 use crate::types::Pg;
 use kova_core::dsl::func::{Aggregate, AggregateBuild, AggregateMarker, Function};
-use kova_core::dsl::{
-    AstNode, IntoArrayOutput, JsonbType, Static,
-    TypedNode,
-};
+use kova_core::dsl::{AstNode, IntoArrayOutput, JsonbType, Static, TypedNode};
 
 // ==========================================
 // 1. ArrayAgg
@@ -36,8 +33,6 @@ impl<'a, T, X> AggregateBuild<'a, Pg, T, X> for ArrayAggMarker
     }
 }
 
-impl CanPgArray for ArrayAggMarker {}
-
 // ==========================================
 // 2. JsonbAgg
 // ==========================================
@@ -61,5 +56,3 @@ impl<'a, T, X> AggregateBuild<'a, Pg, T, X> for JsonbAggMarker
         Function::from(ExtFunction::JsonbAgg(Box::new(expr.into_ast_operand())))
     }
 }
-
-impl CanPgJsonb for JsonbAggMarker {}

@@ -18,8 +18,9 @@ mod with;
 pub use {
     bind::Bind,
     combine::{SetOperation, SetOperator},
+    conflict::{Conflict, IntoConflict},
     group_by::{GroupBy, IntoGroupBy},
-    insert::{ValueSource, IntoInsertSource},
+    insert::{IntoInsertSource, ValueSource},
     join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
     locking::ExtLocking,
     order::{Direction, IntoOrdering, NullsOrder, OrderByClause, Ordering},

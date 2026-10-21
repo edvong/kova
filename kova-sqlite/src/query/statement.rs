@@ -4,7 +4,7 @@ use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::RawStatement;
 use kova_core::dsl::{Bind, IntoArg};
-use kova_core::types::{ExecutableSync, FromColumn, FromRow, Statement as CoreStatement};
+use kova_core::types::{ExecutableSync, DecodeColumn, FromRow, Statement as CoreStatement};
 use std::borrow::Cow;
 use std::iter::once;
 use std::marker::PhantomData;
@@ -39,13 +39,13 @@ impl<'c, 'a, E, X> Statement<'c, 'a, E, X>
 
     pub fn load_as<U>(self) -> Result<Vec<U>>
         where
-            U: FromRow<DB = Sqlite> {
+            U: FromRow<Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()?), |row| U::from_row(&row))
     }
 
     pub fn load_in<U>(self) -> Result<Vec<U>>
         where
-            for<'r> U: FromColumn<'r, Sqlite, X> {
+            U: DecodeColumn<Sqlite, X> {
         fetch_rows(self.executor, once(self.statement.build()?), |row| U::extract(&row))
     }
 }

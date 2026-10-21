@@ -1,5 +1,5 @@
-use crate::dsl::ExtFunction;
-use crate::query::{Dispatch, Select};
+use crate::dsl::func::ExtFunction;
+use crate::query::InnerSelect;
 use crate::types::Postgres;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{Close, IntoOperand, Open, Operand};
@@ -32,10 +32,10 @@ impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, (Close, Open), X> fo
     }
 }
 
-impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
-    for Any<Select<'a, M, D, TAG, X>>
+impl<'a, M, Target, S, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
+    for Any<InnerSelect<'a, M, S, X>>
     where
-        M: Model<DB = Postgres> {
+        M: Model<Postgres, X> {
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, Postgres> {
         let sub_op = Operand::from_select(self.0.statement);
@@ -43,10 +43,10 @@ impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, (Clos
     }
 }
 
-impl<'a, M, Target, D: Dispatch, TAG, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
-    for All<Select<'a, M, D, TAG, X>>
+impl<'a, M, Target, S, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
+    for All<InnerSelect<'a, M, S, X>>
     where
-        M: Model<DB = Postgres> {
+        M: Model<Postgres, X> {
     #[inline(always)]
     fn into_operand(self) -> Operand<'a, Postgres> {
         let sub_op = Operand::from_select(self.0.statement);

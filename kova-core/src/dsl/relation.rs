@@ -9,7 +9,7 @@ impl<T> IntoRelationList for T
         T: Relation {
     #[inline(always)]
     fn relation_list() -> Vec<&'static str> {
-        vec![T::RELATION_NAME]
+        vec![T::NAME]
     }
 }
 
@@ -19,7 +19,7 @@ macro_rules! impl_into_relation_list_tuple {
         impl<$($T: Relation),+> IntoRelationList for ($($T,)+) {
             #[inline(always)]
             fn relation_list() -> Vec<&'static str> {
-                vec![ $( $T::RELATION_NAME ),+ ]
+                vec![ $( $T::NAME ),+ ]
             }
         }
     };

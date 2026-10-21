@@ -34,8 +34,9 @@ impl SrfSchemaMarker for JsonbArrayElementsMarker {
 }
 
 impl<'a, T, X> SrfBuildMarker<'a, T, X> for JsonbArrayElementsMarker
-    where
-        T: IntoSrfFunction<'a, X> {
+where
+    T: IntoSrfFunction<'a, X>,
+{
     #[inline(always)]
     fn build_srf(args: T) -> ExtSrfFunction<'a> {
         ExtSrfFunction::JsonbArrayElements(args.into_srf_function())

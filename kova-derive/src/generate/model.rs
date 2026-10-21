@@ -1,74 +1,80 @@
-use crate::ModelDef;
+use crate::generate::from_row::expand_from_row_impl;
+use crate::generate::unique_field_types;
+use crate::parse::StructDef;
 use proc_macro2::TokenStream;
 use quote::quote;
 
-pub(crate) fn generate_model_code(model: &ModelDef) -> TokenStream {
-    let struct_ident = &model.ident;
-    let table_name = &model.table_name;
+pub(crate) fn expand(def: &StructDef) -> TokenStream {
+    let vis = &def.vis;
+    let struct_ident = &def.ident;
+    let table_name = &def.table_name;
+    let from_row_impl = expand_from_row_impl(def);
 
-    let mut const_columns = Vec::new();
-    let mut meta_columns = Vec::new();
-    let mut insert_values = Vec::new();
+    // Only non-auto fields are encoded in `to_values()`, so `#[kova(auto)]` fields
+    // don't need to force `for<'a> &'a Ty: Encode<'a, X>` bounds on `Model`.
+    let encode_tys = unique_field_types(def.fields.iter().filter(|f| !f.is_auto));
 
-    for field in &model.fields {
-        let field_ident = &field.ident;
-        let field_ty = &field.ty;
-        let col_name = &field.column_name;
-        let is_auto = field.is_autoincrement;
-        let is_json = field.is_json;
-        let is_ignore = field.is_ignored;
+    let mut const_columns = Vec::with_capacity(def.fields.len());
+    let mut meta_columns = Vec::with_capacity(def.fields.len());
+    let mut insert_values = Vec::with_capacity(def.fields.len());
+
+    for f in &def.fields {
+        let field_ident = &f.ident;
+        let field_ty = &f.ty;
+        let col_name = &f.col_name;
+        let is_auto = f.is_auto;
+
+        const_columns.push(quote! {
+            pub const #field_ident: ::kova::dsl::Column<#field_ty> =
+                ::kova::dsl::Column::new(#table_name, #col_name, #is_auto);
+        });
 
         meta_columns.push(quote! {
-            ::kova::types::ColumnMeta {
-                table_name: #table_name,
-                column_name: #col_name,
-                is_autoincrement: #is_auto,
-                is_ignore: #is_ignore,
-            }
+            ::kova::types::ColumnMeta::new(#table_name, #col_name, #is_auto)
         });
 
-        let column_generic_type = if is_json {
-            quote! { ::kova::types::Json<#field_ty> }
-        } else {
-            quote! { #field_ty }
-        };
-
-        let const_name = quote::format_ident!("{}", field_ident.to_string().to_lowercase());
-        const_columns.push(quote! {
-            #[allow(non_upper_case_globals)]
-            pub const #const_name: ::kova::dsl::Column<#column_generic_type> =
-                ::kova::dsl::Column::new(
-                    ::kova::types::ColumnMeta {
-                        table_name: #table_name,
-                        column_name: #col_name,
-                        is_autoincrement: #is_auto,
-                        is_ignore: #is_ignore,
-                    }
-                );
-        });
-
-        if !is_ignore && !is_auto {
-            let value_logic = if is_json {
-                quote! { ::kova::types::ToValue::to_value(&::kova::types::Json(&self.#field_ident))? }
-            } else {
-                quote! { ::kova::types::ToValue::to_value(&self.#field_ident)? }
-            };
-
-            insert_values.push(quote! { (#col_name, #value_logic) });
+        if !is_auto {
+            insert_values.push(quote! {
+                (#col_name, ::kova::codec::Encode::<'a, X>::encode(&self.#field_ident)?)
+            });
         }
     }
 
     quote! {
+        #[allow(non_upper_case_globals)]
+        #vis const #struct_ident: ::kova::dsl::Table<#struct_ident> =
+            ::kova::dsl::Table::new(#table_name, #table_name);
+
+        #[allow(non_upper_case_globals)]
         impl #struct_ident {
             #(#const_columns)*
         }
 
-        impl ::kova::types::Model for #struct_ident {
-            const TABLE_NAME: &'static str = #table_name;
-            const COLUMNS_META: &'static [::kova::types::ColumnMeta] = &[ #(#meta_columns),* ];
+        impl ::kova::types::Relation for #struct_ident {
+            const NAME: &'static ::core::primitive::str = #table_name;
+        }
 
-            fn to_values<'a>(&'a self) -> ::kova::Result<::std::vec::Vec<(&'static str, <Self::DB as ::kova::types::Database>::Value<'a>)>> {
-                ::kova::Result::Ok( ::std::vec![ #(#insert_values),* ] )
+        #from_row_impl
+
+        impl<X> ::kova::types::Model<::kova::types::Engine, X> for #struct_ident
+            where
+                Self: ::kova::types::FromRow<::kova::types::Engine, X>,
+                #( for<'a> &'a #encode_tys: ::kova::codec::Encode<'a, X>, )* {
+            const COLUMNS_META: &'static [::kova::types::ColumnMeta] = &[
+                #(#meta_columns),*
+            ];
+
+            fn to_values<'a>(
+                &'a self,
+            ) -> ::kova::Result<
+                ::std::vec::Vec<(
+                    &'static ::core::primitive::str,
+                    <::kova::types::Engine as ::kova::types::Database>::Value<'a>,
+                )>,
+            > {
+                ::kova::Result::Ok(::std::vec![
+                    #(#insert_values),*
+                ])
             }
         }
     }

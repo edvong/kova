@@ -1,12 +1,12 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanPgJsonb, Node};
+use crate::dsl::CanPgJsonb;
+use crate::dsl::func::ExtFunction;
+use crate::dsl::node::Node;
 use crate::types::Pg;
 use kova_core::dsl::func::Function;
 use kova_core::dsl::{
-    AstNode, CanAlias, CanCompare, IntoArg, JsonbType, Operand, Projection, Static,
-    TypedNode,
+    AstNode, CanAlias, CanCompare, IntoArg, JsonbType, Operand, Projection, Static, TypedNode,
 };
 use std::marker::PhantomData;
 
@@ -27,7 +27,7 @@ impl<A, M, X> TypedNode for InnerJsonbBuildObject<A, M, X> {
 
 impl<T, M, X> CanAlias for InnerJsonbBuildObject<T, M, X> {}
 impl<T, M, X> CanCompare for InnerJsonbBuildObject<T, M, X> {}
-impl<T, M, X> CanPgJsonb for InnerJsonbBuildObject<T, M, X> {}
+impl<T, M, X> CanPgJsonb<X> for InnerJsonbBuildObject<T, M, X> {}
 
 impl<'a, T, M, X> AstNode<'a, Pg, X> for InnerJsonbBuildObject<T, M, X>
     where

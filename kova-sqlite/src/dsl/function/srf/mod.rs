@@ -5,10 +5,11 @@ mod srf_node;
 pub use self::json_each::JsonEach;
 pub use self::json_tree::JsonTree;
 
+use crate::dsl::can::CanSqliteJson;
 use crate::dsl::node::Node;
 use crate::types::Sqlite;
-use kova_core::dsl::{AstNode, Operand};
-use kova_core::types::IntoValue;
+use kova_core::dsl::{AstNode, Compatible, Operand, Static};
+use kova_core::types::Encode;
 
 pub enum ExtSrfFunction<'a> {
     JsonEach(Operand<'a, Sqlite>, Option<Operand<'a, Sqlite>>),
@@ -26,7 +27,7 @@ pub trait IntoSrfFunction<'a, X> {
 
 impl<'a, T, X> IntoSrfFunction<'a, X> for Node<T>
     where
-        T: AstNode<'a, Sqlite, X> {
+        T: CanSqliteJson<X> + AstNode<'a, Sqlite, X> {
     #[inline(always)]
     fn into_srf_function(self) -> JsonSrfArgs<'a> {
         JsonSrfArgs { base: self.0.into_ast_operand(), path: None }
@@ -35,13 +36,14 @@ impl<'a, T, X> IntoSrfFunction<'a, X> for Node<T>
 
 impl<'a, T, P, X> IntoSrfFunction<'a, X> for (Node<T>, P)
     where
-        T: AstNode<'a, Sqlite, X>,
-        P: IntoValue<'a, Sqlite> {
+        T: CanSqliteJson<X> + AstNode<'a, Sqlite, X>,
+        Sqlite: Encode<'a, P, X>,
+        Static<P>: Compatible<Static<String>, X> {
     #[inline(always)]
     fn into_srf_function(self) -> JsonSrfArgs<'a> {
         JsonSrfArgs {
             base: self.0.0.into_ast_operand(),
-            path: Some(Operand::from_result(self.1.into_value())),
+            path: Some(Operand::from_result(<Sqlite as Encode<'a, P, X>>::encode(self.1))),
         }
     }
 }

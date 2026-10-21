@@ -1,6 +1,8 @@
 /Cargo.lock
 /target
 .DS_Store
+/models/Cargo.lock
+/models/target
 /pg/Cargo.lock
 /pg/target
 /sqlite/Cargo.lock

@@ -1,37 +1,46 @@
 use crate::types::{Postgres, Value};
 use kova_core::types::{FromValue, IntoValue};
-use kova_core::{Error, Result, impl_platform_codec};
+use kova_core::{Error, Result, impl_platform_codec, impl_platform_encode_only};
 use std::borrow::Cow;
-use std::convert::TryFrom;
 
+#[diagnostic::on_unimplemented(
+    message = "type `{Self}` cannot be encoded as a PostgreSQL parameter under codec `{X}`",
+    label = "not encodable under codec `{X}`",
+    note = "if `{Self}` is a custom type, implement `Encode<'a, {X}> for {Self}` and configure `client.codec::<{X}>()`.\nfor overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature."
+)]
 pub trait Encode<'a, X = ()> {
     fn encode(self) -> Result<Value<'a>>;
 }
 
-pub trait Decode<'a, X = ()>: Sized {
-    fn decode(value: Value<'a>) -> Result<Self>;
+#[diagnostic::on_unimplemented(
+    message = "type `{Self}` cannot be decoded from a PostgreSQL value under codec `{X}`",
+    label = "not decodable under codec `{X}`",
+    note = "if `{Self}` is a custom type, implement `Decode<'a, {X}> for {Self}` and `decode_column!({X}, {Self})`.\nfor narrowing integer extractions (`i8`, `u8`, `u16`, `u32`, `u64`, `usize`, `isize`), enable the `narrow-cast` feature."
+)]
+pub trait Decode<X = ()>: Sized {
+    fn decode(value: Value<'_>) -> Result<Self>;
 }
-#[rustfmt::skip]
-impl_platform_codec!(
-    Postgres,
-    i8, i16, i32, i64, u8, u16, u32, u64, isize, usize, f32, f64, bool, String, Vec<u8>
-);
-// str, [u8]
+
+// 1:1 Native Wire Types (Full Encode + Decode + FromColumn)
+impl_platform_codec!(Postgres, i16, i32, i64, f32, f64, bool, String, Vec<u8>);
+
+// Lossless Integer Upcasting (Encode Only by default)
+impl_platform_encode_only!(Postgres, i8, u8, u16, u32);
 
 // ==========================================
 // Native Aligned Types (PG Native Numeric & Bool)
 // ==========================================
-/// Native Rust types that perfectly align with PostgreSQL's primitive types.
-/// These implementations map directly to PG variants with zero overhead.
 macro_rules! impl_native_type {
-    ($ty:ty, $variant:ident) => {
+    ($ty:ty,$variant:ident) => {
         impl<'a> IntoValue<'a, Postgres> for $ty {
+            #[inline(always)]
             fn into_value(self) -> Result<Value<'a>> {
                 Ok(Value::$variant(self))
             }
         }
 
         impl<'a> IntoValue<'a, Postgres> for &'a $ty {
+            #[inline(always)]
             fn into_value(self) -> Result<Value<'a>> {
                 Ok(Value::$variant(*self))
             }
@@ -41,6 +50,7 @@ macro_rules! impl_native_type {
             fn from_value(value: Value<'_>) -> Result<Self> {
                 match value {
                     Value::$variant(v) => Ok(v),
+                    Value::Null => Err(Error::UnexpectedNull(format!("Unexpected NULL for {}", stringify!($ty)))),
                     _ => Err(Error::TypeMismatch(format!(
                         "Expected {} for {}",
                         stringify!($variant),
@@ -60,119 +70,65 @@ impl_native_type!(f64, Float8);
 impl_native_type!(bool, Bool);
 
 // ==========================================
-// Safe Cast Numeric Types
+// Lossless Upcast Numeric Types (Infallible From)
 // ==========================================
-/// Numeric types requiring safe casting.
-/// All conversions undergo strict boundary checking at runtime to prevent
-/// overflow or silent truncation when upcasting or downcasting to native PG types.
-macro_rules! impl_cast_int {
-    ($ty:ty, $target:ty, $variant:ident) => {
+macro_rules! impl_upcast_int_encode {
+    ($ty:ty, $target:ty,$variant:ident) => {
         impl<'a> IntoValue<'a, Postgres> for $ty {
+            #[inline(always)]
             fn into_value(self) -> Result<Value<'a>> {
-                <$target>::try_from(self).map(Value::$variant).map_err(|_| {
-                    Error::ConversionError(format!(
-                        "Overflow casting {} to {}",
-                        stringify!($ty),
-                        stringify!($target)
-                    ))
-                })
+                Ok(Value::$variant(<$target>::from(self)))
             }
         }
 
         impl<'a> IntoValue<'a, Postgres> for &'a $ty {
+            #[inline(always)]
             fn into_value(self) -> Result<Value<'a>> {
-                // Dereference *self to get value for safe conversion
-                <$target>::try_from(*self).map(Value::$variant).map_err(|_| {
-                    Error::ConversionError(format!(
-                        "Overflow casting &{} to {}",
-                        stringify!($ty),
-                        stringify!($target)
-                    ))
-                })
-            }
-        }
-
-        impl FromValue<Postgres> for $ty {
-            fn from_value(value: Value<'_>) -> Result<Self> {
-                match value {
-                    Value::$variant(v) => <$ty>::try_from(v).map_err(|_| {
-                        Error::ParseError(format!(
-                            "Out of bounds converting {} to {}",
-                            stringify!($variant),
-                            stringify!($ty)
-                        ))
-                    }),
-                    _ => Err(Error::TypeMismatch(format!(
-                        "Expected {} for {}",
-                        stringify!($variant),
-                        stringify!($ty)
-                    ))),
-                }
+                Ok(Value::$variant(<$target>::from(*self)))
             }
         }
     };
 }
 
-// Upcasting (Zero data loss guaranteed)
-impl_cast_int!(i8, i16, Int2);
-impl_cast_int!(u8, i16, Int2);
-impl_cast_int!(u16, i32, Int4);
-impl_cast_int!(u32, i64, Int8);
-
-// Platform pointer sizes with strict boundary checking against overflow
-impl_cast_int!(isize, i64, Int8);
-impl_cast_int!(usize, i64, Int8);
-impl_cast_int!(u64, i64, Int8);
+impl_upcast_int_encode!(i8, i16, Int2);
+impl_upcast_int_encode!(u8, i16, Int2);
+impl_upcast_int_encode!(u16, i32, Int4);
+impl_upcast_int_encode!(u32, i64, Int8);
 
 // ==========================================
 // Text Types (Zero-copy & Ownership)
 // ==========================================
-/// Text types mapped to PostgreSQL's TEXT/VARCHAR.
-/// Utilizes `Cow` (Clone-on-Write) to explicitly separate ownership from zero-copy borrowing.
-
-// String: Takes ownership and allocates memory
 impl<'a> IntoValue<'a, Postgres> for String {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Text(Cow::Owned(self)))
     }
 }
 
-// Extract String from Value: Unwraps if Owned, allocates (clones) only if Borrowed
 impl FromValue<Postgres> for String {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Text(cow) => Ok(cow.into_owned()),
+            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for String".into())),
             _ => Err(Error::TypeMismatch("Expected Text for String".into())),
         }
     }
 }
 
-// &'a String: Convenience conversion for references, wrapped as borrowed
 impl<'a> IntoValue<'a, Postgres> for &'a String {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Text(Cow::Borrowed(self)))
     }
 }
 
-// &'a str: Zero-copy borrowing. Wraps the slice in `Cow::Borrowed` without allocation.
 impl<'a> IntoValue<'a, Postgres> for &'a str {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Text(Cow::Borrowed(self)))
     }
 }
 
-/// Note: `&'a str` deliberately does not implement `FromValue`.
-/// Since the lifetime of the database response is bound to the underlying network stream,
-/// parsing directly into a borrowed `&str` is highly prone to dangling references.
-/// Users should always extract text data safely using `String`.
-
 // ==========================================
 // Binary Types (Zero-copy & Ownership)
 // ==========================================
-/// Binary data mapped to PostgreSQL's BYTEA.
-/// Leverages `Cow` for optimized memory management and zero-copy reads.
-
-// Vec<u8>: Takes ownership of the heap allocation
 impl<'a> IntoValue<'a, Postgres> for Vec<u8> {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Blob(Cow::Owned(self)))
@@ -183,19 +139,18 @@ impl FromValue<Postgres> for Vec<u8> {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Blob(cow) => Ok(cow.into_owned()),
+            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for Vec<u8>".into())),
             _ => Err(Error::TypeMismatch("Expected Blob for Vec<u8>".into())),
         }
     }
 }
 
-// &'a Vec<u8>: Convenience conversion for references
 impl<'a> IntoValue<'a, Postgres> for &'a Vec<u8> {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Blob(Cow::Borrowed(self.as_slice())))
     }
 }
 
-// &'a [u8]: Zero-copy borrowing. Avoids heap allocation by directly referencing the slice.
 impl<'a> IntoValue<'a, Postgres> for &'a [u8] {
     fn into_value(self) -> Result<Value<'a>> {
         Ok(Value::Blob(Cow::Borrowed(self)))
@@ -205,11 +160,8 @@ impl<'a> IntoValue<'a, Postgres> for &'a [u8] {
 // ==========================================
 // Fixed-Size Arrays (e.g., UUID, Hashes)
 // ==========================================
-/// Support for fixed-size byte arrays, commonly used for raw UUID bytes or cryptographic hashes.
-/// Ensures the blob length exactly matches the expected array size during deserialization.
 impl<'a, const N: usize> IntoValue<'a, Postgres> for [u8; N] {
     fn into_value(self) -> Result<Value<'a>> {
-        // Fixed-size array, consumed and converted to Vec for Cow.
         Ok(Value::Blob(Cow::Owned(self.to_vec())))
     }
 }
@@ -229,6 +181,7 @@ impl<const N: usize> FromValue<Postgres> for [u8; N] {
                     .try_into()
                     .map_err(|_| Error::ParseError(format!("Expected Blob of length {}", N)))
             }
+            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for [u8; N]".into())),
             _ => Err(Error::TypeMismatch("Expected Blob for fixed-size array".into())),
         }
     }

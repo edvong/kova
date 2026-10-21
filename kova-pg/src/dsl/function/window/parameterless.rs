@@ -1,10 +1,12 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
+use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Pg;
 use kova_core::dsl::func::{Function, SetWindow, Window};
-use kova_core::dsl::{AstNode, CanAlias, CanMath, CanOrder, CanWindow, Operand, Static, TypedNode};
+use kova_core::dsl::{
+    AstNode, CanAlias, CanCompare, CanMath, CanOrder, CanWindow, Operand, Static, TypedNode,
+};
 use std::marker::PhantomData;
 
 pub type RowNumber<'a, X> = Node<InnerWindowFunction<'a, RowNumberMarker, X>>;
@@ -90,9 +92,10 @@ impl<'a, M: ParameterlessWindowMarker, X> TypedNode for InnerWindowFunction<'a, 
     type Output = Static<M::Output>;
 }
 
+impl<'a, M, X> CanCompare for InnerWindowFunction<'a, M, X> {}
 impl<'a, M, X> CanAlias for InnerWindowFunction<'a, M, X> {}
 impl<'a, M, X> CanOrder for InnerWindowFunction<'a, M, X> {}
-impl<'a, M, X> CanMath for InnerWindowFunction<'a, M, X> {}
+impl<'a, M, X> CanMath<X> for InnerWindowFunction<'a, M, X> {}
 impl<'a, M, X> CanWindow for InnerWindowFunction<'a, M, X> {}
 
 impl<'a, M, X> SetWindow<'a, Pg, X> for InnerWindowFunction<'a, M, X> {

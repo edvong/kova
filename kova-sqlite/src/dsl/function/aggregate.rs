@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
+use crate::dsl::node::Node;
 use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanSqliteJson, CanSqliteString, Node};
 use crate::types::Sqlite;
 use kova_core::dsl::func::{
     Aggregate, AggregateBuild, AggregateMarker, Function, Quantifier, SetDistinct, SetFilter,
@@ -40,10 +40,6 @@ impl<'a, T, X> AggregateBuild<'a, Sqlite, T, X> for JsonGroupArrayMarker
     }
 }
 
-impl CanString for JsonGroupArrayMarker {}
-impl CanSqliteJson for JsonGroupArrayMarker {}
-impl CanSqliteString for JsonGroupArrayMarker {}
-
 impl<T: TypedNode> AggregateMarker<T> for JsonbGroupArrayMarker {
     type Output = Static<Vec<u8>>;
 }
@@ -56,8 +52,6 @@ impl<'a, T, X> AggregateBuild<'a, Sqlite, T, X> for JsonbGroupArrayMarker
         Function::from(ExtFunction::JsonbGroupArray(Box::new(expr.into_ast_operand())))
     }
 }
-
-impl CanSqliteJson for JsonbGroupArrayMarker {}
 
 pub type GroupConcat<'a, T, X> = Node<InnerGroupConcat<'a, T, X>>;
 
@@ -155,8 +149,7 @@ impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
 impl<'a, T, X> CanAlias for InnerGroupConcat<'a, T, X> {}
 impl<'a, T, X> CanCompare for InnerGroupConcat<'a, T, X> {}
 impl<'a, T, X> CanOrder for InnerGroupConcat<'a, T, X> {}
-impl<'a, T, X> CanString for InnerGroupConcat<'a, T, X> {}
-impl<'a, T, X> CanSqliteString for InnerGroupConcat<'a, T, X> {}
+impl<'a, T, X> CanString<X> for InnerGroupConcat<'a, T, X> {}
 impl<'a, T, X> CanDistinct for InnerGroupConcat<'a, T, X> {}
 impl<'a, T, X> CanFilter for InnerGroupConcat<'a, T, X> {}
 impl<'a, T, X> CanOrderBy for InnerGroupConcat<'a, T, X> {}

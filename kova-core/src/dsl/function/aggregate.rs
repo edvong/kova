@@ -46,16 +46,14 @@ pub trait AggregateBuild<'a, DB: Database, E, X>: AggregateMarker<E> {
 }
 
 impl<'a, DB: Database, M, E, X> TypedNode for Aggregate<'a, DB, M, E, X>
-where
-    M: AggregateMarker<E>,
-{
+    where
+        M: AggregateMarker<E> {
     type Output = M::Output;
 }
 
 impl<'a, DB: Database, M, E, X> AstNode<'a, DB, X> for Aggregate<'a, DB, M, E, X>
-where
-    M: AggregateBuild<'a, DB, E, X>,
-{
+    where
+        M: AggregateBuild<'a, DB, E, X> {
     #[inline(always)]
     fn into_ast_operand(self) -> Operand<'a, DB> {
         let mut f = M::build_function(self.expr);
@@ -115,11 +113,20 @@ impl<'a, DB: Database, M, E, X> CanDistinct for Aggregate<'a, DB, M, E, X> {}
 impl<'a, DB: Database, M, E, X> CanOrderBy for Aggregate<'a, DB, M, E, X> {}
 impl<'a, DB: Database, M, E, X> CanCompare for Aggregate<'a, DB, M, E, X> {}
 impl<'a, DB: Database, M, E, X> CanOrder for Aggregate<'a, DB, M, E, X> {}
-
-// Specific capabilities determined by Marker by return value type
 impl<'a, DB: Database, M: CanGroup, E, X> CanGroup for Aggregate<'a, DB, M, E, X> {}
-impl<'a, DB: Database, M: CanMath, E, X> CanMath for Aggregate<'a, DB, M, E, X> {}
-impl<'a, DB: Database, M: CanString, E, X> CanString for Aggregate<'a, DB, M, E, X> {}
+
+// Math & String capabilities derived from the resolved Output type
+impl<'a, DB: Database, M, E, X> CanMath<X> for Aggregate<'a, DB, M, E, X>
+    where
+        Self: TypedNode,
+        <Self as TypedNode>::Output: CanMath<X> {
+}
+
+impl<'a, DB: Database, M, E, X> CanString<X> for Aggregate<'a, DB, M, E, X>
+    where
+        Self: TypedNode,
+        <Self as TypedNode>::Output: CanString<X> {
+}
 
 // Isolation Wildcard
 pub struct Wildcard;
@@ -136,9 +143,8 @@ impl<'a, DB: Database, X> CountArg<'a, DB, X> for Wildcard {
 }
 
 impl<'a, DB: Database, T, X> CountArg<'a, DB, X> for T
-where
-    T: AstNode<'a, DB, X>,
-{
+    where
+        T: AstNode<'a, DB, X> {
     #[inline(always)]
     fn into_count_operand(self) -> Operand<'a, DB> {
         self.into_ast_operand()
@@ -152,17 +158,16 @@ impl<E> AggregateMarker<E> for CountMarker {
 }
 
 impl<'a, DB: Database, E, X> AggregateBuild<'a, DB, E, X> for CountMarker
-where
-    E: CountArg<'a, DB, X>,
-{
+    where
+        E: CountArg<'a, DB, X> {
     #[inline(always)]
     fn build_function(expr: E) -> Function<'a, DB> {
         Function::from(StandardFunction::Count(Box::new(expr.into_count_operand())))
     }
 }
 
-// Standard Homogeneous Aggregation Functions (Avg, Sum, Max, Min)
-macro_rules! impl_std_aggregate {
+// Numeric Aggregation Functions (Avg, Sum): require E::Output: CanMath
+macro_rules! impl_numeric_aggregate {
     ($marker:ident, $variant:ident) => {
         pub struct $marker;
 
@@ -171,9 +176,9 @@ macro_rules! impl_std_aggregate {
         }
 
         impl<'a, DB: Database, E, X> AggregateBuild<'a, DB, E, X> for $marker
-        where
-            E: AstNode<'a, DB, X>,
-        {
+            where
+                E: AstNode<'a, DB, X>,
+                E::Output: CanMath<X> {
             #[inline(always)]
             fn build_function(expr: E) -> Function<'a, DB> {
                 Function::from(StandardFunction::$variant(Box::new(expr.into_ast_operand())))
@@ -182,16 +187,28 @@ macro_rules! impl_std_aggregate {
     };
 }
 
-impl_std_aggregate!(AvgMarker, Avg);
-impl_std_aggregate!(SumMarker, Sum);
-impl_std_aggregate!(MaxMarker, Max);
-impl_std_aggregate!(MinMarker, Min);
+impl_numeric_aggregate!(AvgMarker, Avg);
+impl_numeric_aggregate!(SumMarker, Sum);
 
-impl CanMath for AvgMarker {}
-impl CanMath for SumMarker {}
+// Polymorphic Comparison Aggregation Functions (Max, Min)
+macro_rules! impl_ord_aggregate {
+    ($marker:ident, $variant:ident) => {
+        pub struct $marker;
 
-impl CanMath for MaxMarker {}
-impl CanMath for MinMarker {}
+        impl<E: TypedNode> AggregateMarker<E> for $marker {
+            type Output = E::Output;
+        }
 
-impl CanString for MaxMarker {}
-impl CanString for MinMarker {}
+        impl<'a, DB: Database, E, X> AggregateBuild<'a, DB, E, X> for $marker
+            where
+                E: AstNode<'a, DB, X> {
+            #[inline(always)]
+            fn build_function(expr: E) -> Function<'a, DB> {
+                Function::from(StandardFunction::$variant(Box::new(expr.into_ast_operand())))
+            }
+        }
+    };
+}
+
+impl_ord_aggregate!(MaxMarker, Max);
+impl_ord_aggregate!(MinMarker, Min);

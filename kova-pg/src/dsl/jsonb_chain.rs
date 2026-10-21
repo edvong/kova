@@ -1,7 +1,8 @@
 #![allow(non_snake_case)]
 
-use crate::dsl::ExtFunction;
-use crate::dsl::node::{CanPgJsonb, Node};
+use crate::dsl::CanPgJsonb;
+use crate::dsl::func::ExtFunction;
+use crate::dsl::node::Node;
 use crate::dsl::operator::JsonOp;
 use crate::types::{Pg, Postgres};
 use kova_core::dsl::func::Function;
@@ -32,7 +33,7 @@ impl<'a, T, X> CanAlias for InnerJsonbChain<'a, T, X> {}
 impl<'a, T, X> CanCompare for InnerJsonbChain<'a, T, X> {}
 impl<'a, T, X> CanOrder for InnerJsonbChain<'a, T, X> {}
 impl<'a, T, X> CanGroup for InnerJsonbChain<'a, T, X> {}
-impl<'a, T, X> CanPgJsonb for InnerJsonbChain<'a, T, X> {}
+impl<'a, T, X> CanPgJsonb<X> for InnerJsonbChain<'a, T, X> {}
 
 impl<'a, T, X> AstNode<'a, Pg, X> for InnerJsonbChain<'a, T, X> {
     fn into_ast_operand(self) -> Operand<'a, Pg> {

@@ -4,23 +4,23 @@ use crate::types::{Database, Model};
 use std::borrow::Cow;
 
 pub trait Query<'a, DB: Database> {
-    type Select<'c, T: Model<DB = DB>, E, X>: Select<'c, 'a, DB, T, E, X>
+    type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
         where
             'a: 'c,
             E: 'c;
 
     type Insert<'c, T, E, X>: Insert<'c, 'a, DB, T, E, X>
         where
-            T: Model<DB = DB> + 'a,
+            T: Model<DB, X> + 'a,
             'a: 'c,
             E: 'c;
 
-    type Update<'c, T: Model<DB = DB>, E, X>: Update<'c, 'a, T, E, X>
+    type Update<'c, T: Model<DB, X>, E, X>: Update<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;
 
-    type Delete<'c, T: Model<DB = DB>, E, X>: Delete<'c, 'a, T, E, X>
+    type Delete<'c, T: Model<DB, X>, E, X>: Delete<'c, 'a, T, E, X>
         where
             'a: 'c,
             E: 'c;

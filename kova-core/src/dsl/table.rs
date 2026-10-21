@@ -1,7 +1,4 @@
-use crate::dsl::{
-    ArgAst, AstNode, FromItem, Identifier, IntoArg, IntoIdentifier, IntoOrdering, Operand,
-    Ordering, Static, TypedNode,
-};
+use crate::dsl::{AstNode, Identifier, IntoIdentifier, Operand, Static, TypedNode};
 use crate::type_id;
 use crate::types::{Database, IdentifierMeta};
 use std::marker::PhantomData;
@@ -45,25 +42,5 @@ impl<'a, DB: Database, T, X> AstNode<'a, DB, X> for Table<T> {
 impl<T> IntoIdentifier<T> for Table<T> {
     fn into_identifier(self) -> Identifier<T> {
         Identifier::from(self.meta)
-    }
-}
-
-impl<T> IntoArg<IdentifierMeta, ArgAst> for Table<T> {
-    #[inline(always)]
-    fn into_arg(self) -> IdentifierMeta {
-        self.meta
-    }
-}
-
-impl<'a, DB: Database, T, X> IntoOrdering<'a, DB, X> for Table<T> {
-    fn into_ordering(self) -> Ordering<'a, DB, X> {
-        Ordering::from_operand(Operand::from_column(self.meta))
-    }
-}
-
-impl<'a, T, DB: Database, X> IntoArg<FromItem<'a, DB, X>, ArgAst> for Table<T> {
-    #[inline(always)]
-    fn into_arg(self) -> FromItem<'a, DB, X> {
-        FromItem::from_table(self.meta.source, self.meta.tag)
     }
 }

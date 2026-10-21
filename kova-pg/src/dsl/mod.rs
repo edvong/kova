@@ -1,39 +1,37 @@
 mod assignment;
+mod can;
 mod column;
 mod conflict;
 mod function;
 mod jsonb_chain;
 mod jsonb_text;
 mod locking;
-mod operator;
 mod node;
+mod operator;
 
 pub mod func {
     pub use crate::dsl::function::{
         Abs, Avg, Count, Length, Lower, Max, Min, Sum, Upper,
 
-        ExtFunction, ExtSrfFunction, All, Any,
-        ArrayAgg, JsonbAgg, JsonbBuildObject, JsonbObject, JsonbObjectSingle, RowToJson,
-        CumeDist, DenseRank, Lag, Lead, Ntile, PercentRank, Rank, RowNumber,
-        GenerateSeries, JsonbArrayElements, JsonbEach, JsonbEachText, Unnest,
+        All, Any, ArrayAgg, CumeDist, DenseRank, GenerateSeries, JsonbAgg, JsonbArrayElements,
+        JsonbBuildObject, JsonbEach, JsonbEachText, JsonbObject, JsonbObjectSingle, Lag, Lead,
+        Ntile, PercentRank, Rank, RowNumber, RowToJson, Unnest,
     };
-    
-    pub(crate) use crate::dsl::function::{
-        IntoSrfFunction,
-    };
+
+    pub(crate) use crate::dsl::function::{IntoSrfFunction, ExtFunction, ExtSrfFunction};
 }
 
 pub use {
+    can::{CanPgArray, CanPgJsonb},
     column::Column,
-    node::Node,
-    assignment::ExtAssignment,
     conflict::Constraint,
-    function::ExtFunction,
     locking::{LockMode, WaitPolicy},
+    node::Node,
 };
 
 pub(crate) use {
+    assignment::ExtAssignment,
+    can::CanPgString,
     locking::{LockItem, Locking},
     operator::ExtOperator,
 };
-

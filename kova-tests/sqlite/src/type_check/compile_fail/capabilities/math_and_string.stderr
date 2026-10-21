@@ -1,0 +1,707 @@
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:12:56
+    |
+ 12 |     let _ = client.select::<User>().columns(User::name.add("suffix"));
+    |                                                        ^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Static<String>` to implement `CanMath<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<String>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::add`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:224:16
+    |
+222 |     pub fn add<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
+    |            --- required by a bound in this associated function
+223 |         where
+224 |             T: CanMath<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::add`
+
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:13:55
+    |
+ 13 |     let _ = client.select::<User>().columns(User::bio.sub("bio"));
+    |                                                       ^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Option<String>` to implement `CanMath<_>`
+    = note: 2 redundant requirements hidden
+    = note: required for `kova_core::dsl::column::Column<Option<String>>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::sub`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:232:16
+    |
+230 |     pub fn sub<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
+    |            --- required by a bound in this associated function
+231 |         where
+232 |             T: CanMath<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::sub`
+
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `uuid::Uuid`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:14:62
+    |
+ 14 |     let _ = client.select::<EventLog>().columns(EventLog::id.add(EventLog::id));
+    |                                                              ^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `uuid::Uuid`
+    = note: if `uuid::Uuid` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Static<uuid::Uuid>` to implement `CanMath<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::add`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:224:16
+    |
+222 |     pub fn add<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
+    |            --- required by a bound in this associated function
+223 |         where
+224 |             T: CanMath<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::add`
+
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:15:52
+    |
+ 15 |     let _ = client.update::<User>().set(User::name.increment("a"));
+    |                                                    ^^^^^^^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Static<String>` to implement `CanMath<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<String>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::increment`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:305:16
+    |
+303 |     pub fn increment<V, K, U, X>(self, v: V) -> Assignment<'a, Sqlite, X>
+    |            --------- required by a bound in this associated function
+304 |         where
+305 |             T: CanMath<X> + IntoIdentifier<U>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::increment`
+
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:16:51
+    |
+ 16 |     let _ = client.update::<User>().set(User::bio.increment("a"));
+    |                                                   ^^^^^^^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Option<String>` to implement `CanMath<_>`
+    = note: 2 redundant requirements hidden
+    = note: required for `kova_core::dsl::column::Column<Option<String>>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::increment`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:305:16
+    |
+303 |     pub fn increment<V, K, U, X>(self, v: V) -> Assignment<'a, Sqlite, X>
+    |            --------- required by a bound in this associated function
+304 |         where
+305 |             T: CanMath<X> + IntoIdentifier<U>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::increment`
+
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `bool`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:17:57
+    |
+ 17 |     let _ = client.update::<User>().set(User::is_active.decrement(true));
+    |                                                         ^^^^^^^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `bool`
+    = note: if `bool` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Static<bool>` to implement `CanMath<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<bool>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::decrement`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:316:16
+    |
+314 |     pub fn decrement<V, K, U, X>(self, v: V) -> Assignment<'a, Sqlite, X>
+    |            --------- required by a bound in this associated function
+315 |         where
+316 |             T: CanMath<X> + IntoIdentifier<U>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::decrement`
+
+error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:20:45
+    |
+ 20 |     let _ = client.select::<User>().columns(Sum(User::name));
+    |                                     ------- ^^^^^^^^^^^^^^^ expected a numeric column or numeric expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanMath<AppCodec>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
+help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+   --> src/type_check/codec.rs
+    |
+    | impl CanMath<AppCodec> for Decimal {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<String>` to implement `CanMath<AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::SumMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:21:45
+    |
+ 21 |     let _ = client.select::<User>().columns(Sum(User::bio));
+    |                                     ------- ^^^^^^^^^^^^^^ expected a numeric column or numeric expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanMath<AppCodec>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
+help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+   --> src/type_check/codec.rs
+    |
+    | impl CanMath<AppCodec> for Decimal {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Option<String>` to implement `CanMath<AppCodec>`
+    = note: 1 redundant requirement hidden
+    = note: required for `Static<Option<String>>` to implement `CanMath<AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::SumMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `bool`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:22:45
+    |
+ 22 |     let _ = client.select::<User>().columns(Avg(User::is_active));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^^ expected a numeric column or numeric expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanMath<AppCodec>` is not implemented for `bool`
+    = note: if `bool` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
+help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+   --> src/type_check/codec.rs
+    |
+    | impl CanMath<AppCodec> for Decimal {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<bool>` to implement `CanMath<AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::AvgMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<bool>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::AvgMarker, Node<kova_core::dsl::column::Column<bool>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::AvgMarker, Node<kova_core::dsl::column::Column<bool>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::AvgMarker, Node<kova_core::dsl::column::Column<bool>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:23:45
+    |
+ 23 |     let _ = client.select::<User>().columns(Abs(User::name));
+    |                                     ------- ^^^^^^^^^^^^^^^ expected a numeric column or numeric expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanMath<AppCodec>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
+help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+   --> src/type_check/codec.rs
+    |
+    | impl CanMath<AppCodec> for Decimal {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<String>` to implement `CanMath<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::AbsMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::column::Column<String>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `uuid::Uuid`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:24:49
+    |
+ 24 |     let _ = client.select::<EventLog>().columns(Sum(EventLog::id));
+    |                                         ------- ^^^^^^^^^^^^^^^^^ expected a numeric column or numeric expression
+    |                                         |
+    |                                         required by a bound introduced by this call
+    |
+    = help: the trait `CanMath<AppCodec>` is not implemented for `uuid::Uuid`
+    = note: if `uuid::Uuid` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
+help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+   --> src/type_check/codec.rs
+    |
+    | impl CanMath<AppCodec> for Decimal {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<uuid::Uuid>` to implement `CanMath<AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::SumMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i32`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:27:53
+    |
+ 27 |     let _ = client.select::<User>().filter(User::id.like("%1%"));
+    |                                                     ^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `i32`
+    = note: if `i32` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<i32>` to implement `CanString<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<i32>` to implement `CanString<_>`
+note: required by a bound in `Node::<T>::like`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
+    |
+202 |     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
+    |            ---- required by a bound in this associated function
+203 |         where
+204 |             T: CanString<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^ required by this bound in `Node::<T>::like`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `f64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:28:61
+    |
+ 28 |     let _ = client.select::<Order>().filter(Order::discount.like("%1%"));
+    |                                                             ^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `f64`
+    = note: if `f64` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Option<f64>` to implement `CanString<_>`
+    = note: 2 redundant requirements hidden
+    = note: required for `kova_core::dsl::column::Column<Option<f64>>` to implement `CanString<_>`
+note: required by a bound in `Node::<T>::like`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
+    |
+202 |     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
+    |            ---- required by a bound in this associated function
+203 |         where
+204 |             T: CanString<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^ required by this bound in `Node::<T>::like`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `f64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:29:58
+    |
+ 29 |     let _ = client.select::<User>().filter(Order::amount.regexp("^[0-9]+"));
+    |                                                          ^^^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `f64`
+    = note: if `f64` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<f64>` to implement `CanString<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<f64>` to implement `CanString<_>`
+    = note: required for `kova_core::dsl::column::Column<f64>` to implement `kova_sqlite::dsl::can::CanSqliteString<_>`
+note: required by a bound in `Node::<T>::regexp`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:388:16
+    |
+386 |     pub fn regexp<V, K, X>(self, pattern: V) -> Condition<'a, Sqlite, X>
+    |            ------ required by a bound in this associated function
+387 |         where
+388 |             T: CanSqliteString<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::regexp`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `uuid::Uuid`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:30:61
+    |
+ 30 |     let _ = client.select::<EventLog>().filter(EventLog::id.regexp(".*"));
+    |                                                             ^^^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `uuid::Uuid`
+    = note: if `uuid::Uuid` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<uuid::Uuid>` to implement `CanString<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `CanString<_>`
+    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `kova_sqlite::dsl::can::CanSqliteString<_>`
+note: required by a bound in `Node::<T>::regexp`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:388:16
+    |
+386 |     pub fn regexp<V, K, X>(self, pattern: V) -> Condition<'a, Sqlite, X>
+    |            ------ required by a bound in this associated function
+387 |         where
+388 |             T: CanSqliteString<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::regexp`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:33:53
+    |
+ 33 |         .filter(JsonbObject((User::id, User::name)).like("%a%"));
+    |                                                     ^^^^ expected a textual column or string expression
+    |
+    = note: if `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>` is a custom textual type, implement `CanString<_>` for it.
+help: the trait `CanString<_>` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>`
+      but it is implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, _, _, _>`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/json.rs:98:1
+    |
+ 98 | impl<A, K, X> CanString<X> for InnerJsonObject<JsonObjectMarker, A, K, X> {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = help: for that trait implementation, expected `kova_sqlite::dsl::function::json::JsonObjectMarker`, found `kova_sqlite::dsl::function::json::JsonbObjectMarker`
+note: required by a bound in `Node::<T>::like`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
+    |
+202 |     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
+    |            ---- required by a bound in this associated function
+203 |         where
+204 |             T: CanString<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^ required by this bound in `Node::<T>::like`
+
+error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `i32`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:34:45
+    |
+ 34 |     let _ = client.select::<User>().columns(Lower(User::id));
+    |                                     ------- ^^^^^^^^^^^^^^^ expected a textual column or string expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanString<AppCodec>` is not implemented for `i32`
+    = note: if `i32` is a custom textual type, implement `CanString<AppCodec>` for it.
+help: the trait `CanString<AppCodec>` is implemented for `url::Url`
+   --> src/type_check/codec.rs
+    |
+    | impl CanString<AppCodec> for Url {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<i32>` to implement `CanString<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<i32>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<i32>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<i32>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<i32>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `f64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:35:46
+    |
+ 35 |     let _ = client.select::<Order>().columns(Lower(Order::discount));
+    |                                      ------- ^^^^^^^^^^^^^^^^^^^^^^ expected a textual column or string expression
+    |                                      |
+    |                                      required by a bound introduced by this call
+    |
+    = help: the trait `CanString<AppCodec>` is not implemented for `f64`
+    = note: if `f64` is a custom textual type, implement `CanString<AppCodec>` for it.
+help: the trait `CanString<AppCodec>` is implemented for `url::Url`
+   --> src/type_check/codec.rs
+    |
+    | impl CanString<AppCodec> for Url {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Option<f64>` to implement `CanString<AppCodec>`
+    = note: 1 redundant requirement hidden
+    = note: required for `Static<Option<f64>>` to implement `CanString<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<Option<f64>>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<Option<f64>>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<Option<f64>>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<Option<f64>>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `bool`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:36:45
+    |
+ 36 |     let _ = client.select::<User>().columns(Upper(User::is_active));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^^^^ expected a textual column or string expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanString<AppCodec>` is not implemented for `bool`
+    = note: if `bool` is a custom textual type, implement `CanString<AppCodec>` for it.
+help: the trait `CanString<AppCodec>` is implemented for `url::Url`
+   --> src/type_check/codec.rs
+    |
+    | impl CanString<AppCodec> for Url {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<bool>` to implement `CanString<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::UpperMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<bool>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::UpperMarker, Node<kova_core::dsl::column::Column<bool>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::UpperMarker, Node<kova_core::dsl::column::Column<bool>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::UpperMarker, Node<kova_core::dsl::column::Column<bool>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `f64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:37:45
+    |
+ 37 |     let _ = client.select::<User>().columns(Length(Order::amount));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^^^ expected a textual column or string expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanString<AppCodec>` is not implemented for `f64`
+    = note: if `f64` is a custom textual type, implement `CanString<AppCodec>` for it.
+help: the trait `CanString<AppCodec>` is implemented for `url::Url`
+   --> src/type_check/codec.rs
+    |
+    | impl CanString<AppCodec> for Url {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<f64>` to implement `CanString<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::LengthMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<f64>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<f64>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<f64>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<f64>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:40:63
+    |
+ 40 |     let _ = client.select::<User>().filter(Length(User::name).like("%1%"));
+    |                                                               ^^^^ expected a textual column or string expression
+    |
+    = help: the trait `CanString<_>` is not implemented for `i64`
+    = note: if `i64` is a custom textual type, implement `CanString<_>` for it.
+    = help: the following other types implement trait `CanString<X>`:
+              `&'a T` implements `CanString<X>`
+              `Box<T>` implements `CanString<X>`
+              `Dynamic` implements `CanString<X>`
+              `Node<T>` implements `CanString<X>`
+              `Option<T>` implements `CanString<X>`
+              `Static<T>` implements `CanString<X>`
+              `String` implements `CanString<X>`
+              `char` implements `CanString<X>`
+            and $N others
+    = note: required for `Static<i64>` to implement `CanString<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>` to implement `CanString<_>`
+note: required by a bound in `Node::<T>::like`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
+    |
+202 |     pub fn like<V, K, X>(self, v: V) -> Condition<'a, Sqlite, X>
+    |            ---- required by a bound in this associated function
+203 |         where
+204 |             T: CanString<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^^^ required by this bound in `Node::<T>::like`
+
+error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `i64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:41:45
+    |
+ 41 |     let _ = client.select::<User>().columns(Lower(Length(User::name)));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^^^^^^^ expected a textual column or string expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanString<AppCodec>` is not implemented for `i64`
+    = note: if `i64` is a custom textual type, implement `CanString<AppCodec>` for it.
+help: the trait `CanString<AppCodec>` is implemented for `url::Url`
+   --> src/type_check/codec.rs
+    |
+    | impl CanString<AppCodec> for Url {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<i64>` to implement `CanString<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `i64`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:42:45
+    |
+ 42 |     let _ = client.select::<User>().columns(Lower(Count(User::name)));
+    |                                     ------- ^^^^^^^^^^^^^^^^^^^^^^^^ expected a textual column or string expression
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `CanString<AppCodec>` is not implemented for `i64`
+    = note: if `i64` is a custom textual type, implement `CanString<AppCodec>` for it.
+help: the trait `CanString<AppCodec>` is implemented for `url::Url`
+   --> src/type_check/codec.rs
+    |
+    | impl CanString<AppCodec> for Url {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<i64>` to implement `CanString<AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>, AppCodec>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+    |
+120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+121 |         where
+122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/capabilities/math_and_string.rs:43:63
+    |
+ 43 |     let _ = client.select::<User>().columns(Lower(User::name).add("x"));
+    |                                                               ^^^ expected a numeric column or numeric expression
+    |
+    = help: the trait `CanMath<_>` is not implemented for `String`
+    = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<_>` for it.
+    = help: the following other types implement trait `CanMath<X>`:
+              `&'a T` implements `CanMath<X>`
+              `Box<T>` implements `CanMath<X>`
+              `Decimal` implements `CanMath<AppCodec>`
+              `Dynamic` implements `CanMath<X>`
+              `Node<T>` implements `CanMath<X>`
+              `Option<T>` implements `CanMath<X>`
+              `Static<T>` implements `CanMath<X>`
+              `f32` implements `CanMath<X>`
+            and $N others
+    = note: required for `Static<String>` to implement `CanMath<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>` to implement `CanMath<_>`
+note: required by a bound in `Node::<T>::add`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:224:16
+    |
+222 |     pub fn add<V, K, X>(self, v: V) -> Node<Math<'a, Sqlite, T::Output, X>>
+    |            --- required by a bound in this associated function
+223 |         where
+224 |             T: CanMath<X> + AstNode<'a, Sqlite, X>,
+    |                ^^^^^^^^^^ required by this bound in `Node::<T>::add`
