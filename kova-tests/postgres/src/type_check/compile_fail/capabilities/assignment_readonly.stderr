@@ -1,0 +1,153 @@
+error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::column::Column<i32, IdentifierMeta>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:16:53
+   |
+16 |     let _ = client.update::<User>().set(VIRTUAL_COL.set(1));
+   |                                                     ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+   |
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+   | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::column::Column<i32, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `increment` exists for struct `Node<kova_core::dsl::column::Column<i32, IdentifierMeta>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:17:53
+   |
+17 |     let _ = client.update::<User>().set(VIRTUAL_COL.increment(1));
+   |                                                     ^^^^^^^^^
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+   |
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+   | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::column::Column<i32, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `decrement` exists for struct `Node<kova_core::dsl::column::Column<i32, IdentifierMeta>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:18:53
+   |
+18 |     let _ = client.update::<User>().set(VIRTUAL_COL.decrement(1));
+   |                                                     ^^^^^^^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+   |
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+   | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::column::Column<i32, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `excluded` exists for struct `Node<kova_core::dsl::column::Column<models::type_check::post_view::Author, IdentifierMeta>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:19:58
+   |
+19 |     let _ = client.update::<User>().set(PostView::author.excluded());
+   |                                                          ^^^^^^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+   |
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+   | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::column::Column<models::type_check::post_view::Author, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:22:56
+   |
+22 |     let _ = client.update::<User>().set(Unnest::unnest.set(1));
+   |                                                        ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+   |
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+   | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:25:59
+   |
+25 |     let _ = client.update::<User>().set(Lower(User::name).set("alice"));
+   |                                                           ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/function/scalar.rs:15:1
+   |
+15 | pub struct Scalar<M, E>(pub E, PhantomData<M>);
+   | ----------------------- doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::math::Math<'_, Engine, Static<i32>, _>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:26:57
+   |
+26 |     let _ = client.update::<User>().set(User::id.add(1).set(10));
+   |                                                         ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/math.rs:8:1
+   |
+ 8 | pub struct Math<'a, DB: Database, Output, X> {
+   | -------------------------------------------- doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::math::Math<'_, Engine, Static<i32>, _>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, _>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:27:57
+   |
+27 |     let _ = client.update::<User>().set(Count(Wildcard).set(1_i64));
+   |                                                         ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:17:1
+   |
+17 | pub struct Aggregate<'a, DB: Database, M, E, X> {
+   | ----------------------------------------------- doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, _>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:28:53
+   |
+28 |     let _ = client.update::<User>().set(RowNumber().set(1_i64));
+   |                                                     ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/parameterless.rs:86:1
+   |
+86 | pub struct InnerWindowFunction<'a, M, X> {
+   | ---------------------------------------- doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, _>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:33:48
+   |
+33 |         .set(EventLog::metadata.json_path("k").set("v"));
+   |                                                ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/jsonb_chain.rs:22:1
+   |
+22 | pub struct InnerJsonbChain<'a, T, X> {
+   | ------------------------------------ doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, _>: kova_core::dsl::can::CanAssignment`
+
+error[E0599]: the method `set` exists for struct `Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>>`, but its trait bounds were not satisfied
+  --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:36:53
+   |
+36 |         .set(EventLog::metadata.json_path_text("k").set("v"));
+   |                                                     ^^^ method cannot be called due to unsatisfied trait bounds
+   |
+  ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/jsonb_text.rs:19:1
+   |
+19 | pub struct InnerJsonbText<'a, X> {
+   | -------------------------------- doesn't satisfy `_: CanAssignment`
+   |
+   = note: the following trait bounds were not satisfied:
+           `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>: kova_core::dsl::can::CanAssignment`

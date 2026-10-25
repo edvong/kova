@@ -4,7 +4,7 @@ use crate::types::IdentifierMeta;
 use std::marker::PhantomData;
 
 pub struct ProjectionClause<'a, DB: Database> {
-    items: Vec<Projection<'a, DB, ()>>,
+    pub(crate) items: Vec<Projection<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> ProjectionClause<'a, DB> {
@@ -33,6 +33,14 @@ impl<'a, DB: Database, X> Projection<'a, DB, X> {
             A: IntoIdentifier<T> {
         self.alias = Some(alias.into_identifier().meta);
         self
+    }
+
+    pub fn get_operand(&self) -> &Operand<'a, DB> {
+        &self.operand
+    }
+
+    pub fn get_alias(&self) -> &Option<IdentifierMeta> {
+        &self.alias
     }
 }
 

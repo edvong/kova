@@ -48,7 +48,7 @@ impl<M, E> CanAlias for Scalar<M, E> {}
 impl<M: CanCompare, E> CanCompare for Scalar<M, E> {}
 impl<M: CanOrder, E> CanOrder for Scalar<M, E> {}
 impl<M: CanGroup, E: CanGroup> CanGroup for Scalar<M, E> {}
-impl<M, E: CanConflict> CanConflict for Scalar<M, E> {}
+impl<M: CanConflict, E: CanConflict> CanConflict for Scalar<M, E> {}
 
 impl<M, E, X> CanMath<X> for Scalar<M, E>
     where
@@ -83,6 +83,7 @@ macro_rules! impl_std_scalar {
         impl CanCompare for $marker {}
         impl CanOrder for $marker {}
         impl CanGroup for $marker {}
+        impl CanConflict for $marker {}
     };
 }
 

@@ -5,60 +5,63 @@ use crate::types::{Async, Connection, ConnectionAsync, ConnectionSync, Database,
 use std::marker::PhantomData;
 use std::ops::Deref;
 
-pub struct Client<'a, DB: Database, M, X> {
-    inner: Operations<'a, DB, DB::Connection<'a>, X>,
+pub struct Client<DB: Database, M, X> {
+    inner: Operations<DB, DB::Connection, X>,
     _marker: PhantomData<M>,
 }
 
-impl<'a, DB: Database, M: Mode, X> Client<'a, DB, M, X> {
-    pub fn new(conn: DB::Connection<'a>) -> Self {
+// Manual Clone implementation so `X` (the user's Codec marker) is not required to implement `Clone`.
+impl<DB: Database, M, X> Clone for Client<DB, M, X>
+    where
+        DB::Connection: Clone {
+    #[inline(always)]
+    fn clone(&self) -> Self {
+        Self { inner: self.inner.clone(), _marker: PhantomData }
+    }
+}
+
+impl<DB: Database, M: Mode, X> Client<DB, M, X> {
+    pub fn new(conn: DB::Connection) -> Self {
         Self { inner: Operations::new(Executor::new(conn)), _marker: PhantomData }
     }
 
-    pub fn codec<CX>(self) -> Client<'a, DB, M, CX> {
+    pub fn codec<CX>(self) -> Client<DB, M, CX> {
         Client { inner: self.inner.codec::<CX>(), _marker: self._marker }
     }
 }
 
-impl<'a, DB: Database, M: Mode, X> Deref for Client<'a, DB, M, X> {
-    type Target = Operations<'a, DB, DB::Connection<'a>, X>;
+impl<DB: Database, M: Mode, X> Deref for Client<DB, M, X> {
+    type Target = Operations<DB, DB::Connection, X>;
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
-// 'a is the connection pool,
 // 'b is the mutable borrow itself,
-// 't is the lifetime of the underlying native transaction
-pub type Transaction<'a, 'b, 't, DB, X> = Operations<
-    'a,
-    DB,
-    &'b mut <<DB as Database>::Connection<'a> as Connection>::Transaction<'t>,
-    X,
->;
+// 't is the lifetime of the underlying native transaction.
+pub type Transaction<'b, 't, DB, X> =
+    Operations<DB, &'b mut <<DB as Database>::Connection as Connection>::Transaction<'t>, X>;
 
-impl<'a, DB, X> Client<'a, DB, Sync, X>
+impl<DB, X> Client<DB, Sync, X>
     where
-        DB::Connection<'a>: ConnectionSync,
         DB: Database,
-        X: 'a {
+        DB::Connection: ConnectionSync {
     pub fn transaction<F, R>(&self, f: F) -> Result<R>
         where
-            F: FnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> {
+            F: FnOnce(Transaction<'_, '_, DB, X>) -> Result<R> {
         self.executor
             .inner
             .transaction_sync(|native_tx| f(Operations::new(Executor::new(native_tx))))
     }
 }
 
-impl<'a, DB, X> Client<'a, DB, Async, X>
+impl<DB, X> Client<DB, Async, X>
     where
-        DB::Connection<'a>: ConnectionAsync,
         DB: Database,
-        X: 'a {
+        DB::Connection: ConnectionAsync {
     pub async fn transaction<F, R>(&self, f: F) -> Result<R>
         where
-            F: AsyncFnOnce(Transaction<'a, '_, '_, DB, X>) -> Result<R> + Send {
+            F: AsyncFnOnce(Transaction<'_, '_, DB, X>) -> Result<R> + Send {
         self.executor
             .inner
             .transaction_async(async |native_tx| f(Operations::new(Executor::new(native_tx))).await)

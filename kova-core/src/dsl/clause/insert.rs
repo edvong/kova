@@ -2,26 +2,26 @@ use crate::dsl::statement::SelectStatement;
 use crate::types::{ColumnMeta, Database, Model};
 
 pub struct ValuesClause<'a, DB: Database, T> {
-    pub(crate) columns: Vec<ColumnMeta>,
+    pub(crate) columns: &'static [ColumnMeta],
     pub(crate) source: ValueSource<'a, DB, T>,
 }
 
 impl<'a, DB: Database, T> ValuesClause<'a, DB, T> {
-    pub(crate) fn new(columns: Vec<ColumnMeta>, source: ValueSource<'a, DB, T>) -> Self {
+    pub(crate) fn new(columns: &'static [ColumnMeta], source: ValueSource<'a, DB, T>) -> Self {
         Self { columns, source }
     }
 }
 
 pub struct ValueSource<'a, DB: Database, T> {
-    inner: SourceKind<'a, DB, T>,
+    pub(crate) inner: SourceKind<'a, DB, T>,
 }
 
-enum SourceKind<'a, DB: Database, T> {
+pub(crate) enum SourceKind<'a, DB: Database, T> {
     Rows(SourceRows<'a, T>),
     Select(Box<SelectStatement<'a, DB>>),
 }
 
-enum SourceRows<'a, T> {
+pub(crate) enum SourceRows<'a, T> {
     Single(T),
     Many(Vec<T>),
     BorrowedSingle(&'a T),

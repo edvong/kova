@@ -11,12 +11,12 @@ error[E0277]: SQL type mismatch: `Static<Option<&str>>` is not compatible with `
    = help: the following other types implement trait `Compatible<Target, X>`:
              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
              `Static<&&T>` implements `Compatible<Static<T>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
            and $N others
    = note: required for `Option<&str>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
@@ -41,12 +41,12 @@ error[E0277]: SQL type mismatch: `Static<Option<String>>` is not compatible with
    = help: the following other types implement trait `Compatible<Target, X>`:
              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
              `Static<&&T>` implements `Compatible<Static<T>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
            and $N others
    = note: required for `Option<String>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
@@ -67,17 +67,16 @@ error[E0277]: SQL type mismatch: `Static<Option<i32>>` is not compatible with `S
     = help: the trait `Compatible<Static<i32>, _>` is not implemented for `Static<Option<i32>>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, _> for Static<Option<i32>>`.
 help: `Static<Option<i32>>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:201:9
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:237:9
     |
-201 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
+237 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |         |
     |         `Compatible<Static<Option<f64>>, X>`
-    |         `Compatible<Static<Option<i128>>, X>`
     |         `Compatible<Static<Option<i64>>, X>`
 ...
-209 | impl_compatible_cast!(i32 => i64, i128, f64);
-    | -------------------------------------------- in this macro invocation
+245 | impl_compatible_cast!(i32 => i64, f64);
+    | -------------------------------------- in this macro invocation
     = note: required for `Option<i32>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::in_list`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:170:16
@@ -100,17 +99,16 @@ error[E0277]: SQL type mismatch: `Static<Option<i32>>` is not compatible with `S
     = help: the trait `Compatible<Static<i32>, _>` is not implemented for `Static<Option<i32>>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, _> for Static<Option<i32>>`.
 help: `Static<Option<i32>>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:201:9
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:237:9
     |
-201 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
+237 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |         |
     |         `Compatible<Static<Option<f64>>, X>`
-    |         `Compatible<Static<Option<i128>>, X>`
     |         `Compatible<Static<Option<i64>>, X>`
 ...
-209 | impl_compatible_cast!(i32 => i64, i128, f64);
-    | -------------------------------------------- in this macro invocation
+245 | impl_compatible_cast!(i32 => i64, f64);
+    | -------------------------------------- in this macro invocation
     = note: required for `Option<i32>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::between`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:151:16
@@ -133,17 +131,16 @@ error[E0277]: SQL type mismatch: `Static<Option<i32>>` is not compatible with `S
     = help: the trait `Compatible<Static<i32>, _>` is not implemented for `Static<Option<i32>>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, _> for Static<Option<i32>>`.
 help: `Static<Option<i32>>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:201:9
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:237:9
     |
-201 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
+237 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |         |
     |         `Compatible<Static<Option<f64>>, X>`
-    |         `Compatible<Static<Option<i128>>, X>`
     |         `Compatible<Static<Option<i64>>, X>`
 ...
-209 | impl_compatible_cast!(i32 => i64, i128, f64);
-    | -------------------------------------------- in this macro invocation
+245 | impl_compatible_cast!(i32 => i64, f64);
+    | -------------------------------------- in this macro invocation
     = note: required for `Option<i32>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::between`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:152:16
@@ -241,17 +238,16 @@ error[E0277]: SQL type mismatch: `Static<Option<i32>>` is not compatible with `S
     = help: the trait `Compatible<Static<i32>, _>` is not implemented for `Static<Option<i32>>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, _> for Static<Option<i32>>`.
 help: `Static<Option<i32>>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:201:9
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:237:9
     |
-201 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
+237 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |         |
     |         `Compatible<Static<Option<f64>>, X>`
-    |         `Compatible<Static<Option<i128>>, X>`
     |         `Compatible<Static<Option<i64>>, X>`
 ...
-209 | impl_compatible_cast!(i32 => i64, i128, f64);
-    | -------------------------------------------- in this macro invocation
+245 | impl_compatible_cast!(i32 => i64, f64);
+    | -------------------------------------- in this macro invocation
     = note: required for `Option<i32>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::set`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:291:16
@@ -274,17 +270,16 @@ error[E0277]: SQL type mismatch: `Static<Option<i32>>` is not compatible with `S
     = help: the trait `Compatible<Static<i32>, _>` is not implemented for `Static<Option<i32>>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, _> for Static<Option<i32>>`.
 help: `Static<Option<i32>>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:201:9
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:237:9
     |
-201 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
+237 |         impl<X> Compatible<Static<Option<$to>>, X> for Static<Option<$from>> {}
     |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     |         |
     |         `Compatible<Static<Option<f64>>, X>`
-    |         `Compatible<Static<Option<i128>>, X>`
     |         `Compatible<Static<Option<i64>>, X>`
 ...
-209 | impl_compatible_cast!(i32 => i64, i128, f64);
-    | -------------------------------------------- in this macro invocation
+245 | impl_compatible_cast!(i32 => i64, f64);
+    | -------------------------------------- in this macro invocation
     = note: required for `Option<i32>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::increment`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:306:16

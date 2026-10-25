@@ -1,10 +1,10 @@
-use crate::dsl::{AstNode, Identifier, IntoIdentifier, Operand, Static, TypedNode};
-use crate::type_id;
-use crate::types::{Database, IdentifierMeta};
+use crate::dsl::{AstNode, Operand, Static, TypedNode};
+use crate::types::{Database, TableMeta};
+use std::any::TypeId;
 use std::marker::PhantomData;
 
 pub struct Table<T> {
-    pub meta: IdentifierMeta,
+    pub meta: TableMeta,
     _marker: PhantomData<T>,
 }
 
@@ -17,13 +17,14 @@ impl<T> Clone for Table<T> {
 }
 
 impl<T> Table<T> {
-    pub const fn new(source: &'static str, name: &'static str) -> Self {
-        Self { meta: IdentifierMeta::new(source, name), _marker: PhantomData }
+    #[inline(always)]
+    pub const fn new(name: &'static str) -> Self {
+        Self { meta: TableMeta::new(name), _marker: PhantomData }
     }
 
     #[inline(always)]
-    pub fn tag<Marker: 'static>(mut self) -> Self {
-        self.meta = self.meta.with_tag(type_id::<Marker>());
+    pub const fn tag<Marker: 'static>(mut self) -> Self {
+        self.meta.set_tag(TypeId::of::<Marker>());
         self
     }
 }
@@ -35,12 +36,6 @@ impl<T> TypedNode for Table<T> {
 impl<'a, DB: Database, T, X> AstNode<'a, DB, X> for Table<T> {
     #[inline(always)]
     fn into_ast_operand(self) -> Operand<'a, DB> {
-        Operand::from_column(self.meta)
-    }
-}
-
-impl<T> IntoIdentifier<T> for Table<T> {
-    fn into_identifier(self) -> Identifier<T> {
-        Identifier::from(self.meta)
+        Operand::from_table(self.meta)
     }
 }

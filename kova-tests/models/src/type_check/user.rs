@@ -1,6 +1,6 @@
 #![allow(unreachable_code, dead_code, unused)]
 
-use kova::Error;
+use kova::{Error, Result};
 use kova::codec::{Decode, Encode};
 use kova::dsl::{Column, Table};
 use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation, Row};
@@ -15,20 +15,20 @@ pub struct User {
 }
 
 #[allow(non_upper_case_globals)]
-pub const User: Table<User> = Table::new("user", "user");
+pub const User: Table<User> = Table::new("user");
 
 impl Relation for User {
     const NAME: &'static str = "user";
 }
 
 impl<X> FromRow<Engine, X> for User {
-    fn from_row(row: &<Engine as Database>::Row<'_>) -> Result<Self, Error> {
+    fn from_row_at(row: &<Engine as Database>::Row<'_>, idx: &mut usize) -> Result<Self, Error> {
         Ok(Self {
-            id: row.get_column::<_, X>("user.id", "id")?,
-            name: row.get_column::<_, X>("user.name", "name")?,
-            bio: row.get_column::<_, X>("user.bio", "bio")?,
-            balance: row.get_column::<_, X>("user.balance", "balance")?,
-            is_active: row.get_column::<_, X>("user.is_active", "is_active")?,
+            id: row.get_column::<_, X>(idx, "id")?,
+            name: row.get_column::<_, X>(idx, "name")?,
+            bio: row.get_column::<_, X>(idx, "bio")?,
+            balance: row.get_column::<_, X>(idx, "balance")?,
+            is_active: row.get_column::<_, X>(idx, "is_active")?,
         })
     }
 }
@@ -42,16 +42,15 @@ impl<X> Model<Engine, X> for User {
         ColumnMeta::new("user", "is_active", false),
     ];
 
-    fn to_values<'a>(
+    fn write_values<'a>(
         &'a self,
-    ) -> Result<Vec<(&'static str, <Engine as Database>::Value<'a>)>, Error> {
-        Ok(vec![
-            ("id", Encode::<'a, X>::encode(&self.id)?),
-            ("name", Encode::<'a, X>::encode(&self.name)?),
-            ("bio", Encode::<'a, X>::encode(&self.bio)?),
-            ("balance", Encode::<'a, X>::encode(&self.balance)?),
-            ("is_active", Encode::<'a, X>::encode(&self.is_active)?),
-        ])
+        out: &mut Vec<<Engine as Database>::Value<'a>>,
+    ) -> Result<()> {
+        out.push(Encode::<'a, X>::encode(&self.name)?);
+        out.push(Encode::<'a, X>::encode(&self.bio)?);
+        out.push(Encode::<'a, X>::encode(&self.balance)?);
+        out.push(Encode::<'a, X>::encode(&self.is_active)?);
+        Ok(())
     }
 }
 

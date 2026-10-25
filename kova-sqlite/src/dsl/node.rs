@@ -1,5 +1,6 @@
 #![allow(clippy::wrong_self_convention)]
 
+use std::any::TypeId;
 use crate::dsl::can::{CanSqliteFts, CanSqliteJson, CanSqliteString};
 use crate::dsl::function::{
     Bm25, Highlight, InnerBm25, InnerHighlight, InnerJsonExtract, InnerSnippet, JsonExtract,
@@ -19,7 +20,6 @@ use kova_core::dsl::{
     Operand, Operator, Ordering, Projection, StandardAssignment, StandardOperator, Static,
     TypedNode,
 };
-use kova_core::type_id;
 use kova_core::types::SetTag;
 use std::marker::PhantomData;
 
@@ -67,7 +67,7 @@ impl<T> Node<T> {
     pub fn tag<Marker: 'static>(mut self) -> Self
         where
             T: SetTag {
-        self.0.set_tag(type_id::<Marker>());
+        self.0.set_tag(TypeId::of::<Marker>());
         self
     }
 

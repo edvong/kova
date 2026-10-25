@@ -3,7 +3,7 @@ use crate::types::Database;
 use std::marker::PhantomData;
 
 pub struct GroupByClause<'a, DB: Database> {
-    items: Vec<GroupBy<'a, DB, ()>>,
+    pub(crate) items: Vec<GroupBy<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> GroupByClause<'a, DB> {
@@ -17,7 +17,7 @@ impl<'a, DB: Database> GroupByClause<'a, DB> {
 }
 
 pub struct GroupBy<'a, DB: Database, X> {
-    operand: Operand<'a, DB>,
+    pub(crate) operand: Operand<'a, DB>,
     _marker: PhantomData<X>,
 }
 

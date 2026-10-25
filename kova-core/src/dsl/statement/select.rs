@@ -1,26 +1,28 @@
+use crate::Result;
 use crate::dsl::{
     CombineClause, Condition, CteNode, DistinctClause, ExtLocking, ExtensionClause, FromItem,
     GroupBy, GroupByClause, HavingClause, IntoJoinConstraint, Join, JoinClause, JoinConstraint,
     JoinType, LockingClause, OrderByClause, Ordering, PaginationClause, Projection,
     ProjectionClause, SetOperator, TableClause, WhereClause, WithClause,
 };
-use crate::render::RenderData;
-use crate::type_id;
+use crate::render::{Render, RenderContext};
+use crate::render::{RenderData, Renderable};
 use crate::types::{Cte, Database, Relation};
+use std::any::TypeId;
 
 pub struct SelectStatement<'a, DB: Database> {
-    with: WithClause<'a, DB>,
-    from: TableClause<'a, DB>,
-    distinct: DistinctClause,
-    projection: ProjectionClause<'a, DB>,
-    join: JoinClause<'a, DB>,
-    r#where: WhereClause<'a, DB>,
-    group_by: GroupByClause<'a, DB>,
-    having: HavingClause<'a, DB>,
-    order_by: OrderByClause<'a, DB>,
-    pagination: PaginationClause,
-    locking: LockingClause<'a, DB>,
-    combine: CombineClause<'a, DB>,
+    pub(crate) with: WithClause<'a, DB>,
+    pub(crate) from: TableClause<'a, DB>,
+    pub(crate) distinct: DistinctClause,
+    pub(crate) projection: ProjectionClause<'a, DB>,
+    pub(crate) join: JoinClause<'a, DB>,
+    pub(crate) r#where: WhereClause<'a, DB>,
+    pub(crate) group_by: GroupByClause<'a, DB>,
+    pub(crate) having: HavingClause<'a, DB>,
+    pub(crate) order_by: OrderByClause<'a, DB>,
+    pub(crate) pagination: PaginationClause,
+    pub(crate) locking: LockingClause<DB>,
+    pub(crate) combine: CombineClause<'a, DB>,
 }
 
 pub trait IntoSelectStatement<'a, DB: Database, X> {
@@ -55,19 +57,21 @@ impl<'a, DB> SelectStatement<'a, DB>
         }
     }
 
-    pub fn build(&self) -> RenderData<'a, DB> {
-        let data = RenderData::new();
-        // let mut ctx = SelectContext::new(&mut data);
-        // self.render(&mut ctx);
-        data
+    pub fn build<'s>(&'s self) -> Result<RenderData<'s, DB>>
+        where
+            'a: 's,
+            DB: Renderable<'a, 's> {
+        let mut ctx = RenderContext::new();
+        self.render(&mut ctx)?;
+        Ok(ctx.into_data())
     }
 
     pub fn tag_latest_from<Marker: 'static>(&mut self) {
-        self.from.tag_latest(type_id::<Marker>());
+        self.from.tag_latest(TypeId::of::<Marker>());
     }
 
     pub fn tag_latest_join<Marker: 'static>(&mut self) {
-        self.join.tag_latest(type_id::<Marker>());
+        self.join.tag_latest(TypeId::of::<Marker>());
     }
 
     pub fn srf(&mut self, items: Vec<FromItem<'a, DB, ()>>) {
@@ -132,7 +136,7 @@ impl<'a, DB> SelectStatement<'a, DB>
         self.pagination.offset(offset);
     }
 
-    pub fn locking_mut(&mut self) -> &mut ExtLocking<'a, DB> {
+    pub fn locking_mut(&mut self) -> &mut ExtLocking<DB> {
         self.locking.ext_mut()
     }
 

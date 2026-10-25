@@ -5,9 +5,21 @@ pub struct Executor<E> {
     pub(crate) inner: E,
 }
 
+impl<E: Clone> Clone for Executor<E> {
+    #[inline(always)]
+    fn clone(&self) -> Self {
+        Self { inner: self.inner.clone() }
+    }
+}
+
 impl<'a, E> Executor<E> {
     pub(crate) fn new(e: E) -> Self {
         Self { inner: e }
+    }
+
+    #[inline(always)]
+    pub fn inner(&self) -> &E {
+        &self.inner
     }
 }
 

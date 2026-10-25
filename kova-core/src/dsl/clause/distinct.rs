@@ -1,5 +1,5 @@
 pub struct DistinctClause {
-    distinct: bool,
+    pub(crate) distinct: bool,
 }
 
 impl DistinctClause {

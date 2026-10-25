@@ -18,14 +18,14 @@ impl Relation for Order {
 }
 
 impl<X> FromRow<Engine, X> for Order {
-    fn from_row(row: &<Engine as Database>::Row<'_>) -> Result<Self, Error> {
+    fn from_row_at(row: &<Engine as Database>::Row<'_>, idx: &mut usize) -> Result<Self, Error> {
         Ok(Self {
-            id: row.get_column::<_, X>("order.id", "id")?,
-            user_id: row.get_column::<_, X>("order.user_id", "user_id")?,
-            amount: row.get_column::<_, X>("order.amount", "amount")?,
-            discount: row.get_column::<_, X>("order.discount", "discount")?,
-            is_active: row.get_column::<_, X>("order.is_active", "is_active")?,
-            raw_data: row.get_column::<_, X>("order.raw_data", "raw_data")?,
+            id: row.get_column::<_, X>(idx, "id")?,
+            user_id: row.get_column::<_, X>(idx, "user_id")?,
+            amount: row.get_column::<_, X>(idx, "amount")?,
+            discount: row.get_column::<_, X>(idx, "discount")?,
+            is_active: row.get_column::<_, X>(idx, "is_active")?,
+            raw_data: row.get_column::<_, X>(idx, "raw_data")?,
         })
     }
 }
@@ -40,17 +40,13 @@ impl<X> Model<Engine, X> for Order {
         ColumnMeta::new("order", "raw_data", false),
     ];
 
-    fn to_values<'a>(
-        &'a self,
-    ) -> Result<Vec<(&'static str, <Engine as Database>::Value<'a>)>, Error> {
-        Ok(vec![
-            ("id", Encode::<'a, X>::encode(&self.id)?),
-            ("user_id", Encode::<'a, X>::encode(&self.user_id)?),
-            ("amount", Encode::<'a, X>::encode(&self.amount)?),
-            ("discount", Encode::<'a, X>::encode(&self.discount)?),
-            ("is_active", Encode::<'a, X>::encode(&self.is_active)?),
-            ("raw_data", Encode::<'a, X>::encode(&self.raw_data)?),
-        ])
+    fn write_values<'a>(&'a self, out: &mut Vec<<Engine as Database>::Value<'a>>) -> Result<(), Error> {
+        out.push(Encode::<'a, X>::encode(&self.user_id)?);
+        out.push(Encode::<'a, X>::encode(&self.amount)?);
+        out.push(Encode::<'a, X>::encode(&self.discount)?);
+        out.push(Encode::<'a, X>::encode(&self.is_active)?);
+        out.push(Encode::<'a, X>::encode(&self.raw_data)?);
+        Ok(())
     }
 }
 

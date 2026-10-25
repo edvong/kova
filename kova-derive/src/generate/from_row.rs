@@ -16,19 +16,18 @@ pub(crate) fn expand(def: &StructDef) -> TokenStream {
 // Reused by `#[derive(Model)]`. Every field (including `#[kova(auto)]`) is decoded when reading rows.
 pub(crate) fn expand_from_row_impl(def: &StructDef) -> TokenStream {
     let struct_ident = &def.ident;
-    let table_name = &def.table_name;
+    let col_count = def.fields.len();
     let decode_tys = unique_field_types(&def.fields);
 
     let field_reads = def.fields.iter().map(|f| {
         let field_ident = &f.ident;
         let field_ty = &f.ty;
         let col_name = &f.col_name;
-        let strict_col_name = format!("{}.{}", table_name, col_name);
 
         quote! {
             #field_ident: ::kova::types::Row::get_column::<#field_ty, X>(
                 row,
-                #strict_col_name,
+                idx,
                 #col_name,
             )?
         }
@@ -38,8 +37,12 @@ pub(crate) fn expand_from_row_impl(def: &StructDef) -> TokenStream {
         impl<X> ::kova::types::FromRow<::kova::types::Engine, X> for #struct_ident
             where
                 #( #decode_tys: ::kova::codec::Decode<X>, )* {
-            fn from_row(
+            const COLUMN_COUNT: ::core::primitive::usize = #col_count;
+
+            #[inline(always)]
+            fn from_row_at(
                 row: &<::kova::types::Engine as ::kova::types::Database>::Row<'_>,
+                idx: &mut ::core::primitive::usize,
             ) -> ::kova::Result<Self> {
                 ::kova::Result::Ok(Self {
                     #(#field_reads),*

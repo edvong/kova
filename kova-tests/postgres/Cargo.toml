@@ -1,0 +1,29 @@
+[package]
+name = "postgres"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[dependencies]
+kova = { path = "../../kova", default-features = false, features = ["postgres"] }
+models = { path = "../models", default-features = false, features = ["postgres"] }
+
+uuid = { version = "1", features = ["v4"] }
+
+chrono = "0.4"
+time = "0.3"
+jiff = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+url = "2.5"
+trybuild = "1.0.122"
+tokio = { version = "1.54.1", features = ["macros", "rt"] }
+proptest = "1.12.0"
+rustls = "0.23.44"
+rustls-pemfile = "2.2.0"
+native-tls = "0.2.18"
+
+[features]
+narrow-cast = ["kova/narrow-cast"]
+rustls = ["kova/rustls"]
+native-tls = ["kova/native-tls"]

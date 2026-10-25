@@ -16,5 +16,5 @@ serde_json = "1"
 url = "2.5"
 
 [features]
-pg = ["kova/pg"]
+postgres = ["kova/postgres"]
 sqlite = ["kova/sqlite"]

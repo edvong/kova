@@ -2,12 +2,12 @@ use crate::dsl::Operand;
 use crate::dsl::component::{Component, Ext, Std};
 use crate::types::{Database, Extension};
 
-pub type ExtOperator<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Operator<'a>;
+pub type ExtOperator<'a, DB> = <<DB as Database>::Extension as Extension>::Operator<'a>;
 
 /// A unified operator node containing either a standard SQL operator
 /// or a database-specific extension.
 pub struct Operator<'a, DB: Database> {
-    inner: Component<StandardOperator<'a, DB>, ExtOperator<'a, DB>>,
+    pub(crate) inner: Component<StandardOperator<'a, DB>, ExtOperator<'a, DB>>,
 }
 
 impl<'a, DB: Database> Operator<'a, DB> {

@@ -31,14 +31,14 @@ impl<X> FromRow<Engine, X> for EventLog
         Timestamp: Decode<X>,
         Url: Decode<X>,
         HashMap<String, String>: Decode<X> {
-    fn from_row(row: &<Engine as Database>::Row<'_>) -> Result<Self> {
+    fn from_row_at(row: &<Engine as Database>::Row<'_>, idx: &mut usize) -> Result<Self> {
         Ok(Self {
-            id: row.get_column::<_, X>("event_log.id", "id")?,
-            description: row.get_column::<_, X>("event_log.description", "description")?,
-            created_at: row.get_column::<_, X>("event_log.created_at", "created_at")?,
-            updated_at: row.get_column::<_, X>("event_log.updated_at", "updated_at")?,
-            website: row.get_column::<_, X>("event_log.website", "website")?,
-            metadata: row.get_column::<_, X>("event_log.metadata", "metadata")?,
+            id: row.get_column::<_, X>(idx, "id")?,
+            description: row.get_column::<_, X>(idx, "description")?,
+            created_at: row.get_column::<_, X>(idx, "created_at")?,
+            updated_at: row.get_column::<_, X>(idx, "updated_at")?,
+            website: row.get_column::<_, X>(idx, "website")?,
+            metadata: row.get_column::<_, X>(idx, "metadata")?,
         })
     }
 }
@@ -61,15 +61,14 @@ impl<X> Model<Engine, X> for EventLog
         ColumnMeta::new("event_log", "metadata", false),
     ];
 
-    fn to_values<'a>(&'a self) -> Result<Vec<(&'static str, <Engine as Database>::Value<'a>)>> {
-        Ok(vec![
-            ("id", Encode::<'a, X>::encode(&self.id)?),
-            ("description", Encode::<'a, X>::encode(&self.description)?),
-            ("created_at", Encode::<'a, X>::encode(&self.created_at)?),
-            ("updated_at", Encode::<'a, X>::encode(&self.updated_at)?),
-            ("website", Encode::<'a, X>::encode(&self.website)?),
-            ("metadata", Encode::<'a, X>::encode(&self.metadata)?),
-        ])
+    fn write_values<'a>(&'a self, out: &mut Vec<<Engine as Database>::Value<'a>>) -> Result<()> {
+        out.push(Encode::<'a, X>::encode(&self.id)?);
+        out.push(Encode::<'a, X>::encode(&self.description)?);
+        out.push(Encode::<'a, X>::encode(&self.created_at)?);
+        out.push(Encode::<'a, X>::encode(&self.updated_at)?);
+        out.push(Encode::<'a, X>::encode(&self.website)?);
+        out.push(Encode::<'a, X>::encode(&self.metadata)?);
+        Ok(())
     }
 }
 
@@ -103,6 +102,6 @@ pub struct AuditPayload {
     pub level: i32,
 }
 
-// Custom Array domain type for testing `CanPgArray<AppCodec>` (in PG)
+// Custom Array domain type for testing `CanPgArray<AppCodec>` (in Postgres)
 #[derive(Clone, Default)]
 pub struct TagList(pub Vec<String>);

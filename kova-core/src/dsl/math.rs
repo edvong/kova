@@ -1,4 +1,4 @@
-use crate::dsl::can::{CanConflict, CanGroup};
+use crate::dsl::can::CanGroup;
 use crate::dsl::operand::MathOperator;
 use crate::dsl::{AstNode, CanAlias, CanCompare, CanMath, CanOrder, Operand, TypedNode};
 use crate::types::Database;
@@ -33,4 +33,3 @@ impl<'a, DB: Database, Output, X> CanCompare for Math<'a, DB, Output, X> {}
 impl<'a, DB: Database, Output, X> CanAlias for Math<'a, DB, Output, X> {}
 impl<'a, DB: Database, Output, X> CanOrder for Math<'a, DB, Output, X> {}
 impl<'a, DB: Database, Output, X> CanGroup for Math<'a, DB, Output, X> {}
-impl<'a, DB: Database, Output, X> CanConflict for Math<'a, DB, Output, X> {}

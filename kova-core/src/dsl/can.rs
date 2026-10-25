@@ -83,7 +83,7 @@ macro_rules! impl_can_math {
     };
 }
 
-impl_can_math!(i8, i16, i32, i64, i128, isize, u8, u16, u32, u64, u128, usize, f32, f64);
+impl_can_math!(i8, i16, i32, i64, isize, u8, u16, u32, u64, usize, f32, f64);
 
 impl<X> CanString<X> for String {}
 impl<X> CanString<X> for str {}

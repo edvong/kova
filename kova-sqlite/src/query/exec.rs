@@ -1,12 +1,11 @@
-use crate::types::{Row, Sqlite};
+use crate::types::{Row, Sqlite, SqliteExecutor};
 use kova_core::database::Executor;
 use kova_core::dsl::statement::StatementPayload;
-use kova_core::types::ExecutableSync;
 use kova_core::{Error, Result};
 
 pub(crate) fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) -> Result<u64>
     where
-        E: ExecutableSync<Native = rusqlite::Connection>,
+        E: SqliteExecutor,
         I: IntoIterator<Item = D>,
         D: Into<StatementPayload<'a, Sqlite>> {
     executor.with_conn_sync(|native| {
@@ -14,23 +13,23 @@ pub(crate) fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) 
 
         for data in payload {
             let raw_data = data.into();
-            let mut stmt =
-                native.prepare(raw_data.sql.as_ref()).map_err(|e| Error::Database(Box::new(e)))?;
+            executor.inner().inspect(raw_data.sql.as_ref(), &raw_data.params);
 
+            let mut stmt = native
+                .prepare_cached(raw_data.sql.as_ref())
+                .map_err(Error::database)?;
             total_affected += stmt
                 .execute(rusqlite::params_from_iter(raw_data.params))
-                .map_err(|e| Error::Database(Box::new(e)))?;
+                .map_err(Error::database)?;
         }
 
         Ok(total_affected as u64)
     })
 }
 
-pub(crate) fn fetch_rows<'a, E, I, D, U, F>(
-    executor: &Executor<E>, payload: I, mut f: F,
-) -> Result<Vec<U>>
+pub(crate) fn fetch_rows<'a, E, I, D, U, F>(executor: &Executor<E>, payload: I, mut f: F) -> Result<Vec<U>>
     where
-        E: ExecutableSync<Native = rusqlite::Connection>,
+        E: SqliteExecutor,
         I: IntoIterator<Item = D>,
         D: Into<StatementPayload<'a, Sqlite>>,
         F: FnMut(Row<'_>) -> Result<U> {
@@ -39,14 +38,16 @@ pub(crate) fn fetch_rows<'a, E, I, D, U, F>(
 
         for data in payload {
             let raw_data = data.into();
-            let mut stmt =
-                native.prepare(raw_data.sql.as_ref()).map_err(|e| Error::Database(Box::new(e)))?;
+            executor.inner().inspect(raw_data.sql.as_ref(), &raw_data.params);
 
+            let mut stmt = native
+                .prepare_cached(raw_data.sql.as_ref())
+                .map_err(Error::database)?;
             let mut rows = stmt
                 .query(rusqlite::params_from_iter(raw_data.params))
-                .map_err(|e| Error::Database(Box::new(e)))?;
+                .map_err(Error::database)?;
 
-            while let Some(raw_row) = rows.next().map_err(|e| Error::Database(Box::new(e)))? {
+            while let Some(raw_row) = rows.next().map_err(Error::database)? {
                 let row = Row::new(raw_row);
                 result.push(f(row)?);
             }

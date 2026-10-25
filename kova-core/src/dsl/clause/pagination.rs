@@ -1,6 +1,6 @@
 pub struct PaginationClause {
-    limit: Option<usize>,
-    offset: Option<usize>,
+    pub limit: Option<usize>,
+    pub offset: Option<usize>,
 }
 
 impl PaginationClause {

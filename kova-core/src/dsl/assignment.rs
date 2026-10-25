@@ -4,10 +4,10 @@ use crate::dsl::operand::Operand;
 use crate::types::{Database, Extension, IdentifierMeta};
 use std::marker::PhantomData;
 
-pub type ExtAssignment<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Assignment<'a>;
+pub type ExtAssignment<'a, DB> = <<DB as Database>::Extension as Extension>::Assignment<'a>;
 
 pub struct Assignment<'a, DB: Database, X> {
-    inner: Component<StandardAssignment<'a, DB>, ExtAssignment<'a, DB>>,
+    pub(crate) inner: Component<StandardAssignment<'a, DB>, ExtAssignment<'a, DB>>,
     _marker: PhantomData<X>,
 }
 

@@ -1,5 +1,0 @@
-error[E0601]: `main` function not found in crate `$CRATE`
- --> src/type_check/compile_fail/mod.rs:5:2
-  |
-5 | }
-  |  ^ consider adding a `main` function to `$DIR/src/type_check/compile_fail/mod.rs`

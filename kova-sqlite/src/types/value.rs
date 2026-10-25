@@ -4,34 +4,19 @@ use rusqlite::ToSql;
 use rusqlite::types::{Null, ToSqlOutput, ValueRef};
 use std::borrow::Cow;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum Value<'a> {
-    /// Represents a SQL NULL value.
     Null,
 
-    // ==========================================
     // Native Aligned Types
-    // ==========================================
     Int8(i64),
     Float8(f64),
 
-    // ==========================================
-    // Text & Binary Types (Zero-copy)
-    // ==========================================
-    /// Unified text representation.
-    /// Utilizes `Cow` to support both dynamically owned strings and highly efficient zero-allocation borrows.
     Text(Cow<'a, str>),
-
-    /// Unified binary representation.
-    /// Utilizes `Cow` to support both owned vectors and zero-allocation byte slice borrows.
     Blob(Cow<'a, [u8]>),
 }
 
 impl<'a> Value<'a> {
-    /// Constructs a `Value` directly from a lifetime-bound `ValueRef`.
-    ///
-    /// By bypassing the standard `FromSql` trait, this method preserves exact zero-copy
-    /// access to the underlying SQLite internal data structures, maximizing read performance.
     pub(crate) fn from_value_ref(val_ref: ValueRef<'a>) -> kova_core::Result<Self, Error> {
         match val_ref {
             ValueRef::Null => Ok(Value::Null),
@@ -46,19 +31,27 @@ impl<'a> Value<'a> {
             ValueRef::Blob(b) => Ok(Value::Blob(Cow::Borrowed(b))),
         }
     }
+
+    #[inline(always)]
+    pub fn as_borrowed<'s>(&'s self) -> Value<'s>
+        where
+            'a: 's {
+        match self {
+            Value::Null => Value::Null,
+            Value::Int8(i) => Value::Int8(*i),
+            Value::Float8(f) => Value::Float8(*f),
+            Value::Text(cow) => Value::Text(Cow::Borrowed(cow.as_ref())),
+            Value::Blob(cow) => Value::Blob(Cow::Borrowed(cow.as_ref())),
+        }
+    }
 }
 
-/// Implements the underlying `rusqlite` driver's `ToSql` trait for seamless serialization.
 impl<'a> ToSql for Value<'a> {
     fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
         match self {
             Value::Null => Ok(ToSqlOutput::from(Null)),
             Value::Int8(i) => Ok(ToSqlOutput::from(*i)),
             Value::Float8(f) => Ok(ToSqlOutput::from(*f)),
-
-            // The Cow contents are explicitly dereferenced to `&str` and `&[u8]`.
-            // This passes the zero-copy reference directly down to the driver
-            // without introducing any unnecessary intermediate allocations.
             Value::Text(t) => Ok(ToSqlOutput::from(t.as_ref())),
             Value::Blob(b) => Ok(ToSqlOutput::from(b.as_ref())),
         }

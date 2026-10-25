@@ -36,13 +36,13 @@ impl<X> FromRow<Engine, X> for PostView
         String: Decode<X>,
         Author: Decode<X>,
         Vec<CommentDto>: Decode<X> {
-    fn from_row(row: &<Engine as Database>::Row<'_>) -> Result<Self, Error> {
+    fn from_row_at(row: &<Engine as Database>::Row<'_>, idx: &mut usize) -> Result<Self, Error> {
         Ok(Self {
-            id: row.get_column::<_, X>("post_view.id", "id")?,
-            title: row.get_column::<_, X>("post_view.title", "title")?,
-            content: row.get_column::<_, X>("post_view.content", "content")?,
-            author: row.get_column::<_, X>("post_view.author", "author")?,
-            comments: row.get_column::<_, X>("post_view.comments", "comments")?,
+            id: row.get_column::<_, X>(idx, "id")?,
+            title: row.get_column::<_, X>(idx, "title")?,
+            content: row.get_column::<_, X>(idx, "content")?,
+            author: row.get_column::<_, X>(idx, "author")?,
+            comments: row.get_column::<_, X>(idx, "comments")?,
         })
     }
 }

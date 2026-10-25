@@ -30,6 +30,12 @@ macro_rules! impl_platform_prim_codec {
             impl<X> Decode<X> for $prim {
                 #[inline(always)]
                 fn decode(value: <$db as $crate::types::Database>::Value<'_>) -> $crate::Result<Self> {
+                    use $crate::types::Value as _;
+                    if value.is_none() {
+                        return Err($crate::Error::UnexpectedNull(
+                            concat!("Unexpected NULL for ", stringify!($prim)).into(),
+                        ));
+                    }
                     $crate::types::FromValue::from_value(value)
                 }
             }
@@ -39,7 +45,7 @@ macro_rules! impl_platform_prim_codec {
                 fn extract_next(
                     row: &<$db as $crate::types::Database>::Row<'_>, idx: &mut usize,
                 ) -> $crate::Result<Self> {
-                    Self::extract_value(row, idx)
+                    <Self as $crate::types::DecodeColumn<$db, X>>::extract_value(row, idx)
                 }
             }
         )+
@@ -74,6 +80,12 @@ macro_rules! impl_platform_decode_only {
             impl<X> Decode<X> for $prim {
                 #[inline(always)]
                 fn decode(value: <$db as $crate::types::Database>::Value<'_>) -> $crate::Result<Self> {
+                    use $crate::types::Value as _;
+                    if value.is_none() {
+                        return Err($crate::Error::UnexpectedNull(
+                            concat!("Unexpected NULL for ", stringify!($prim)).into(),
+                        ));
+                    }
                     $crate::types::FromValue::from_value(value)
                 }
             }
@@ -82,7 +94,7 @@ macro_rules! impl_platform_decode_only {
                 #[inline(always)]
                 fn extract_next(row: &<$db as $crate::types::Database>::Row<'_>, idx: &mut usize)
                     -> $crate::Result<Self> {
-                    Self::extract_value(row, idx)
+                    <Self as $crate::types::DecodeColumn<$db, X>>::extract_value(row, idx)
                 }
             }
         )+
@@ -102,7 +114,14 @@ macro_rules! impl_platform_codec {
         impl<T, X> $crate::types::Decode<T, X> for $db where T: Decode<X> {
             #[inline(always)]
             fn decode(val: Self::Value<'_>) -> $crate::Result<T> {
-                <T as Decode<X>>::decode(val)
+                use $crate::types::Value as _;
+                let is_null = val.is_none();
+                <T as Decode<X>>::decode(val).map_err(|e| match is_null {
+                    true if !matches!(e, $crate::Error::UnexpectedNull(_)) => {
+                        $crate::Error::UnexpectedNull(std::any::type_name::<T>().into())
+                    }
+                    _ => e,
+                })
             }
         }
 
@@ -212,6 +231,10 @@ macro_rules! impl_platform_codec {
                 [u8; N]: $crate::types::FromValue<$db> {
             #[inline(always)]
             fn decode(value: <$db as $crate::types::Database>::Value<'_>) -> $crate::Result<Self> {
+                use $crate::types::Value as _;
+                if value.is_none() {
+                    return Err($crate::Error::UnexpectedNull("Unexpected NULL for [u8; N]".into()));
+                }
                 $crate::types::FromValue::from_value(value)
             }
         }

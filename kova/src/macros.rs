@@ -11,7 +11,7 @@ macro_rules! decode_column {
                     row: &<$crate::types::Engine as $crate::types::Database>::Row<'_>,
                     idx: &mut usize,
                 ) -> $crate::Result<Self> {
-                    Self::extract_value(row, idx)
+                    <Self as ::kova::codec::DecodeColumn<::kova::types::Engine, $codec>>::extract_value(row, idx)
                 }
             }
         )+

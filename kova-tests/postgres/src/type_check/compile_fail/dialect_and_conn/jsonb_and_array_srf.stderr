@@ -1,0 +1,534 @@
+error[E0277]: PostgreSQL JSON/JSONB capability (`CanPgJsonb<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:16:55
+    |
+ 16 |     let _ = client.select::<User>().filter(User::name.json_path("key").eq("val"));
+    |                                                       ^^^^^^^^^ expected a JSON/JSONB column or JSON expression
+    |
+    = help: the trait `CanPgJsonb<_>` is not implemented for `String`
+    = note: if `String` is a custom JSON type (e.g., `serde_json::Value`), implement `CanPgJsonb<_>` for it.
+    = help: the following other types implement trait `CanPgJsonb<X>`:
+              `&'a T` implements `CanPgJsonb<X>`
+              `BTreeMap<K, V>` implements `CanPgJsonb<X>`
+              `Box<T>` implements `CanPgJsonb<X>`
+              `Dynamic` implements `CanPgJsonb<X>`
+              `HashMap<K, V, S>` implements `CanPgJsonb<X>`
+              `JsonType` implements `CanPgJsonb<X>`
+              `JsonbType` implements `CanPgJsonb<X>`
+              `Node<T>` implements `CanPgJsonb<X>`
+            and $N others
+    = note: required for `Static<String>` to implement `CanPgJsonb<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<String>` to implement `CanPgJsonb<_>`
+note: required by a bound in `Node::<T>::json_path`
+   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:459:16
+    |
+457 |     pub fn json_path<V, K, X>(self, key: V) -> JsonbChain<'a, T, X>
+    |            --------- required by a bound in this associated function
+458 |         where
+459 |             T: CanPgJsonb<X> + AstNode<'a, Postgres, X>,
+    |                ^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_path`
+
+error[E0277]: PostgreSQL JSON/JSONB capability (`CanPgJsonb<AppCodec>`) is not satisfied for `String`
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:17:41
+   |
+17 |     let _ = client.select::<User>().srf(JsonbEach(User::name));
+   |                                     --- ^^^^^^^^^^^^^^^^^^^^^ expected a JSON/JSONB column or JSON expression
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+   = help: the trait `CanPgJsonb<AppCodec>` is not implemented for `String`
+   = note: if `String` is a custom JSON type (e.g., `serde_json::Value`), implement `CanPgJsonb<AppCodec>` for it.
+help: the trait `CanPgJsonb<AppCodec>` is implemented for `models::type_check::event_log::AuditPayload`
+  --> src/type_check/codec.rs
+   |
+   | impl CanPgJsonb<AppCodec> for AuditPayload {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Static<String>` to implement `CanPgJsonb<AppCodec>`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::column::Column<String>` to implement `CanPgJsonb<AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<String>>` to implement `kova_postgres::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::jsonb_each::JsonbEachMarker` to implement `kova_postgres::dsl::function::srf::srf_node::SrfBuildMarker<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<Node<kova_core::dsl::column::Column<String>>, kova_postgres::dsl::function::srf::jsonb_each::JsonbEachMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_postgres::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:64:16
+   |
+62 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, JustAddSrf, X>
+   |            --- required by a bound in this associated function
+63 |         where
+64 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: PostgreSQL JSON/JSONB capability (`CanPgJsonb<AppCodec>`) is not satisfied for `String`
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:18:41
+   |
+18 |     let _ = client.select::<User>().srf(JsonbEachText(User::name));
+   |                                     --- ^^^^^^^^^^^^^^^^^^^^^^^^^ expected a JSON/JSONB column or JSON expression
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+   = help: the trait `CanPgJsonb<AppCodec>` is not implemented for `String`
+   = note: if `String` is a custom JSON type (e.g., `serde_json::Value`), implement `CanPgJsonb<AppCodec>` for it.
+help: the trait `CanPgJsonb<AppCodec>` is implemented for `models::type_check::event_log::AuditPayload`
+  --> src/type_check/codec.rs
+   |
+   | impl CanPgJsonb<AppCodec> for AuditPayload {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Static<String>` to implement `CanPgJsonb<AppCodec>`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::column::Column<String>` to implement `CanPgJsonb<AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<String>>` to implement `kova_postgres::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::jsonb_each_text::JsonbEachTextMarker` to implement `kova_postgres::dsl::function::srf::srf_node::SrfBuildMarker<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<Node<kova_core::dsl::column::Column<String>>, kova_postgres::dsl::function::srf::jsonb_each_text::JsonbEachTextMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_postgres::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:64:16
+   |
+62 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, JustAddSrf, X>
+   |            --- required by a bound in this associated function
+63 |         where
+64 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: PostgreSQL JSON/JSONB capability (`CanPgJsonb<_>`) is not satisfied for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>`
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:24:14
+    |
+ 24 |             .json_path("profile")
+    |              ^^^^^^^^^ expected a JSON/JSONB column or JSON expression
+    |
+    = help: the trait `CanPgJsonb<_>` is not implemented for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>`
+    = note: if `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>` is a custom JSON type (e.g., `serde_json::Value`), implement `CanPgJsonb<_>` for it.
+    = help: the following other types implement trait `CanPgJsonb<X>`:
+              `&'a T` implements `CanPgJsonb<X>`
+              `BTreeMap<K, V>` implements `CanPgJsonb<X>`
+              `Box<T>` implements `CanPgJsonb<X>`
+              `Dynamic` implements `CanPgJsonb<X>`
+              `HashMap<K, V, S>` implements `CanPgJsonb<X>`
+              `JsonType` implements `CanPgJsonb<X>`
+              `JsonbType` implements `CanPgJsonb<X>`
+              `Node<T>` implements `CanPgJsonb<X>`
+            and $N others
+note: required by a bound in `Node::<T>::json_path`
+   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:459:16
+    |
+457 |     pub fn json_path<V, K, X>(self, key: V) -> JsonbChain<'a, T, X>
+    |            --------- required by a bound in this associated function
+458 |         where
+459 |             T: CanPgJsonb<X> + AstNode<'a, Postgres, X>,
+    |                ^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_path`
+
+error[E0277]: PostgreSQL JSON/JSONB capability (`CanPgJsonb<_>`) is not satisfied for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>`
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:30:14
+    |
+ 30 |             .json_contains("admin"),
+    |              ^^^^^^^^^^^^^ expected a JSON/JSONB column or JSON expression
+    |
+    = help: the trait `CanPgJsonb<_>` is not implemented for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>`
+    = note: if `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, _>` is a custom JSON type (e.g., `serde_json::Value`), implement `CanPgJsonb<_>` for it.
+    = help: the following other types implement trait `CanPgJsonb<X>`:
+              `&'a T` implements `CanPgJsonb<X>`
+              `BTreeMap<K, V>` implements `CanPgJsonb<X>`
+              `Box<T>` implements `CanPgJsonb<X>`
+              `Dynamic` implements `CanPgJsonb<X>`
+              `HashMap<K, V, S>` implements `CanPgJsonb<X>`
+              `JsonType` implements `CanPgJsonb<X>`
+              `JsonbType` implements `CanPgJsonb<X>`
+              `Node<T>` implements `CanPgJsonb<X>`
+            and $N others
+note: required by a bound in `Node::<T>::json_contains`
+   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:518:16
+    |
+516 |     pub fn json_contains<V, K, X>(self, val: V) -> Condition<'a, Postgres, X>
+    |            ------------- required by a bound in this associated function
+517 |         where
+518 |             T: CanPgJsonb<X> + AstNode<'a, Postgres, X>,
+    |                ^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_contains`
+
+error[E0277]: PostgreSQL JSON/JSONB capability (`CanPgJsonb<AppCodec>`) is not satisfied for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>`
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:32:45
+   |
+32 |       let _ = client.select::<EventLog>().srf(JsonbArrayElements(
+   |  _________________________________________---_^
+   | |                                         |
+   | |                                         required by a bound introduced by this call
+33 | |         EventLog::metadata.json_path_text("tags"),
+34 | |     ));
+   | |_____^ expected a JSON/JSONB column or JSON expression
+   |
+   = help: the trait `CanPgJsonb<AppCodec>` is not implemented for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>`
+   = note: if `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>` is a custom JSON type (e.g., `serde_json::Value`), implement `CanPgJsonb<AppCodec>` for it.
+help: the trait `CanPgJsonb<AppCodec>` is implemented for `models::type_check::event_log::AuditPayload`
+  --> src/type_check/codec.rs
+   |
+   | impl CanPgJsonb<AppCodec> for AuditPayload {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>>` to implement `kova_postgres::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::jsonb_array_elements::JsonbArrayElementsMarker` to implement `kova_postgres::dsl::function::srf::srf_node::SrfBuildMarker<'_, Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>>, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>>, kova_postgres::dsl::function::srf::jsonb_array_elements::JsonbArrayElementsMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_postgres::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:64:16
+   |
+62 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, JustAddSrf, X>
+   |            --- required by a bound in this associated function
+63 |         where
+64 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<String>` (under codec `_`)
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:39:46
+    |
+ 39 |         .filter(EventLog::metadata.json_path(123_i32).eq("val"));
+    |                                    --------- ^^^^^^^ incompatible SQL type
+    |                                    |
+    |                                    required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<i32>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<i32>`.
+    = help: `Static<i32>` implements trait `Compatible<Target, X>`:
+              Compatible<Static<JsonType>, X>
+              Compatible<Static<JsonbType>, X>
+              Compatible<Static<Option<f64>>, X>
+              Compatible<Static<Option<i64>>, X>
+              Compatible<Static<f64>, X>
+              Compatible<Static<i64>, X>
+    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
+note: required by a bound in `Node::<T>::json_path`
+   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:460:16
+    |
+457 |     pub fn json_path<V, K, X>(self, key: V) -> JsonbChain<'a, T, X>
+    |            --------- required by a bound in this associated function
+...
+460 |             V: IntoOperand<'a, Static<String>, Postgres, K, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_path`
+
+error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<String>` (under codec `_`)
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:42:49
+    |
+ 42 |         .filter(EventLog::metadata.json_has_key(123_i32));
+    |                                    ------------ ^^^^^^^ incompatible SQL type
+    |                                    |
+    |                                    required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<i32>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<i32>`.
+    = help: `Static<i32>` implements trait `Compatible<Target, X>`:
+              Compatible<Static<JsonType>, X>
+              Compatible<Static<JsonbType>, X>
+              Compatible<Static<Option<f64>>, X>
+              Compatible<Static<Option<i64>>, X>
+              Compatible<Static<f64>, X>
+              Compatible<Static<i64>, X>
+    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
+note: required by a bound in `Node::<T>::json_has_key`
+   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:541:16
+    |
+538 |     pub fn json_has_key<V, K, X>(self, key: V) -> Condition<'a, Postgres, X>
+    |            ------------ required by a bound in this associated function
+...
+541 |             V: IntoOperand<'a, Static<String>, Postgres, K, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::json_has_key`
+
+error[E0277]: PostgreSQL array capability (`CanPgArray<_>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:45:55
+    |
+ 45 |     let _ = client.select::<User>().filter(User::name.array_contains("a"));
+    |                                                       ^^^^^^^^^^^^^^ expected an array column or `ArrayAgg` expression
+    |
+    = help: the trait `CanPgArray<_>` is not implemented for `String`
+    = note: if `String` is a custom array type, implement `CanPgArray<_>` for it.
+    = help: the following other types implement trait `CanPgArray<X>`:
+              `&'a T` implements `CanPgArray<X>`
+              `Box<T>` implements `CanPgArray<X>`
+              `Dynamic` implements `CanPgArray<X>`
+              `Node<T>` implements `CanPgArray<X>`
+              `Option<T>` implements `CanPgArray<X>`
+              `Static<T>` implements `CanPgArray<X>`
+              `Vec<T>` implements `CanPgArray<X>`
+              `[T; N]` implements `CanPgArray<X>`
+            and $N others
+    = note: required for `Static<String>` to implement `CanPgArray<_>`
+    = note: 1 redundant requirement hidden
+    = note: required for `kova_core::dsl::column::Column<String>` to implement `CanPgArray<_>`
+note: required by a bound in `Node::<T>::array_contains`
+   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:424:16
+    |
+422 |     pub fn array_contains<V, K, X>(self, val: V) -> Condition<'a, Postgres, X>
+    |            -------------- required by a bound in this associated function
+423 |         where
+424 |             T: CanPgArray<X> + AstNode<'a, Postgres, X>,
+    |                ^^^^^^^^^^^^^ required by this bound in `Node::<T>::array_contains`
+
+error[E0277]: PostgreSQL array capability (`CanPgArray<AppCodec>`) is not satisfied for `i32`
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:46:41
+   |
+46 |     let _ = client.select::<User>().srf(Unnest(User::id));
+   |                                     --- ^^^^^^^^^^^^^^^^ expected an array column or `ArrayAgg` expression
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+   = help: the trait `CanPgArray<AppCodec>` is not implemented for `i32`
+   = note: if `i32` is a custom array type, implement `CanPgArray<AppCodec>` for it.
+help: the trait `CanPgArray<AppCodec>` is implemented for `models::type_check::event_log::TagList`
+  --> src/type_check/codec.rs
+   |
+   | impl CanPgArray<AppCodec> for TagList {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Static<i32>` to implement `CanPgArray<AppCodec>`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::column::Column<i32>` to implement `CanPgArray<AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<i32>>` to implement `kova_postgres::dsl::function::srf::IntoArraySrf<'_, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::unnest::UnnestMarker` to implement `kova_postgres::dsl::function::srf::srf_node::SrfBuildMarker<'_, Node<kova_core::dsl::column::Column<i32>>, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<Node<kova_core::dsl::column::Column<i32>>, kova_postgres::dsl::function::srf::unnest::UnnestMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_postgres::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:64:16
+   |
+62 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, JustAddSrf, X>
+   |            --- required by a bound in this associated function
+63 |         where
+64 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: the trait bound `i32: kova_postgres::dsl::function::srf::IntoArraySrf<'_, AppCodec>` is not satisfied
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:47:41
+   |
+47 |     let _ = client.select::<User>().srf(Unnest(123_i32));
+   |                                     --- ^^^^^^^^^^^^^^^ the trait `kova_postgres::dsl::function::srf::IntoArraySrf<'_, AppCodec>` is not implemented for `i32`
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
+   = help: the following other types implement trait `kova_postgres::dsl::function::srf::IntoArraySrf<'a, X>`:
+             &'b Vec<T>
+             &'b [T; N]
+             &'b [T]
+             Node<T>
+             Vec<T>
+             [T; N]
+   = note: required for `kova_postgres::dsl::function::srf::unnest::UnnestMarker` to implement `kova_postgres::dsl::function::srf::srf_node::SrfBuildMarker<'_, i32, AppCodec>`
+   = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<i32, kova_postgres::dsl::function::srf::unnest::UnnestMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, kova_postgres::query::select::JustAddFrom, X>::srf`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:64:16
+   |
+62 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, JustAddSrf, X>
+   |            --- required by a bound in this associated function
+63 |         where
+64 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
+
+error[E0277]: PostgreSQL array capability (`CanPgArray<AppCodec>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:50:18
+    |
+ 50 |         .columns(JsonbObject(Post::title, Post::tags));
+    |          ------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected an array column or `ArrayAgg` expression
+    |          |
+    |          required by a bound introduced by this call
+    |
+    = help: the trait `CanPgArray<AppCodec>` is not implemented for `String`
+    = note: if `String` is a custom array type, implement `CanPgArray<AppCodec>` for it.
+help: the trait `CanPgArray<AppCodec>` is implemented for `models::type_check::event_log::TagList`
+   --> src/type_check/codec.rs
+    |
+    | impl CanPgArray<AppCodec> for TagList {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<String>` to implement `CanPgArray<AppCodec>`
+    = note: required for `kova_postgres::dsl::function::json::jsonb_object::InnerJsonbObject<Node<kova_core::dsl::column::Column<String>>, Node<kova_core::dsl::column::Column<Vec<String>>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_object::InnerJsonbObject<Node<kova_core::dsl::column::Column<String>>, Node<kova_core::dsl::column::Column<Vec<String>>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_object::InnerJsonbObject<Node<kova_core::dsl::column::Column<String>>, Node<kova_core::dsl::column::Column<Vec<String>>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:123:16
+    |
+121 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+122 |         where
+123 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: PostgreSQL array capability (`CanPgArray<AppCodec>`) is not satisfied for `String`
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:53:18
+    |
+ 53 |         .columns(JsonbObjectSingle(Post::title));
+    |          ------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected an array column or `ArrayAgg` expression
+    |          |
+    |          required by a bound introduced by this call
+    |
+    = help: the trait `CanPgArray<AppCodec>` is not implemented for `String`
+    = note: if `String` is a custom array type, implement `CanPgArray<AppCodec>` for it.
+help: the trait `CanPgArray<AppCodec>` is implemented for `models::type_check::event_log::TagList`
+   --> src/type_check/codec.rs
+    |
+    | impl CanPgArray<AppCodec> for TagList {}
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: required for `Static<String>` to implement `CanPgArray<AppCodec>`
+    = note: required for `kova_postgres::dsl::function::json::jsonb_object::InnerJsonbObject<Node<kova_core::dsl::column::Column<String>>, Node<kova_core::dsl::column::Column<String>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_object::InnerJsonbObject<Node<kova_core::dsl::column::Column<String>>, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_object::InnerJsonbObject<Node<kova_core::dsl::column::Column<String>>, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:123:16
+    |
+121 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+122 |         where
+123 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: cannot use `kova::dsl::func::Any<Vec<&str>>` as an operand where `Static<i32>` is expected (under codec `_`)
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:58:29
+   |
+58 |         .filter(User::id.eq(Any(vec!["not_an_int"])));
+   |                          -- ^^^^^^^^^^^^^^^^^^^^^^^ invalid or incompatible SQL operand
+   |                          |
+   |                          required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `kova::dsl::func::Any<Vec<&str>>`
+   = note: ensure the operand type is compatible with `Static<i32>` and implements `Encode` under codec `_`.
+help: the following other types implement trait `kova_core::dsl::operand::IntoOperand<'a, Target, DB, K, X>`
+  --> /Users/me/Workspace/kova/kova-postgres/src/dsl/function/any_all.rs:11:1
+   |
+11 | / impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, (Close, Open), X> for Any<I>
+12 | |     where
+13 | |         I: IntoIterator<Item = V>,
+14 | |         V: IntoOperand<'a, Target, Postgres, Open, X> {
+   | |_____________________________________________________^ `kova::dsl::func::Any<I>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Open), X>`
+...
+35 | / impl<'a, M, Target, S, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
+36 | |     for Any<InnerSelect<'a, M, S, X>>
+37 | |     where
+38 | |         M: Model<Postgres, X> {
+   | |_____________________________^ `kova::dsl::func::Any<kova::query::Select<'_, M, kova_postgres::query::select::InnerQuery, S, X>>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Close), X>`
+note: required by a bound in `Node::<T>::eq`
+  --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:83:16
+   |
+80 |     pub fn eq<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
+   |            -- required by a bound in this associated function
+...
+83 |             V: IntoOperand<'a, T::Output, Postgres, K, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::eq`
+
+error[E0277]: cannot use `All<[&str; 1]>` as an operand where `Static<i32>` is expected (under codec `_`)
+  --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:61:29
+   |
+61 |         .filter(User::id.gt(All(["bad_element"])));
+   |                          -- ^^^^^^^^^^^^^^^^^^^^ invalid or incompatible SQL operand
+   |                          |
+   |                          required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `All<[&str; 1]>`
+   = note: ensure the operand type is compatible with `Static<i32>` and implements `Encode` under codec `_`.
+help: the following other types implement trait `kova_core::dsl::operand::IntoOperand<'a, Target, DB, K, X>`
+  --> /Users/me/Workspace/kova/kova-postgres/src/dsl/function/any_all.rs:23:1
+   |
+23 | / impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, (Close, Open), X> for All<I>
+24 | |     where
+25 | |         I: IntoIterator<Item = V>,
+26 | |         V: IntoOperand<'a, Target, Postgres, Open, X> {
+   | |_____________________________________________________^ `All<I>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Open), X>`
+...
+46 | / impl<'a, M, Target, S, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
+47 | |     for All<InnerSelect<'a, M, S, X>>
+48 | |     where
+49 | |         M: Model<Postgres, X> {
+   | |_____________________________^ `All<kova::query::Select<'_, M, kova_postgres::query::select::InnerQuery, S, X>>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Close), X>`
+note: required by a bound in `Node::<T>::gt`
+  --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:99:16
+   |
+96 |     pub fn gt<V, K, X>(self, v: V) -> Condition<'a, Postgres, X>
+   |            -- required by a bound in this associated function
+...
+99 |             V: IntoOperand<'a, T::Output, Postgres, K, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::gt`
+
+error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i32>` (under codec `AppCodec`)
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:64:46
+    |
+ 64 |     let _ = client.select::<Order>().columns(Ntile("not_an_i32"));
+    |                                      ------- ^^^^^^^^^^^^^^^^^^^ incompatible SQL type
+    |                                      |
+    |                                      required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<i32>, AppCodec>` is not implemented for `Static<&str>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, AppCodec> for Static<&str>`.
+    = help: the following other types implement trait `Compatible<Target, X>`:
+              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
+              `Static<&&T>` implements `Compatible<Static<T>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
+              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
+              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
+              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
+              `Static<&&str>` implements `Compatible<Static<String>, X>`
+            and $N others
+    = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, AppCodec>`
+    = note: required for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, &str, kova_core::dsl::operand::Open, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::window::ntile::InnerNtile<'_, &str, kova_core::dsl::operand::Open, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::window::ntile::InnerNtile<'_, &str, kova_core::dsl::operand::Open, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:123:16
+    |
+121 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+122 |         where
+123 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i32>` (under codec `AppCodec`)
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:67:18
+    |
+ 67 |         .columns(Lag(Order::amount).offset("bad_offset"));
+    |          ------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ incompatible SQL type
+    |          |
+    |          required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<i32>, AppCodec>` is not implemented for `Static<&str>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<i32>, AppCodec> for Static<&str>`.
+    = help: the following other types implement trait `Compatible<Target, X>`:
+              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
+              `Static<&&T>` implements `Compatible<Static<T>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
+              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
+              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
+              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
+              `Static<&&str>` implements `Compatible<Static<String>, X>`
+            and $N others
+    = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, AppCodec>`
+    = note: required for `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, &str, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, &str, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, &str, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:123:16
+    |
+121 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+122 |         where
+123 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
+
+error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<f64>` (under codec `AppCodec`)
+   --> src/type_check/compile_fail/dialect_and_conn/jsonb_and_array_srf.rs:70:18
+    |
+ 70 |         .columns(Lead(Order::amount).default("bad_default_for_f64"));
+    |          ------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ incompatible SQL type
+    |          |
+    |          required by a bound introduced by this call
+    |
+    = help: the trait `Compatible<Static<f64>, AppCodec>` is not implemented for `Static<&str>`
+    = note: if this is a custom cross-type comparison, implement `Compatible<Static<f64>, AppCodec> for Static<&str>`.
+    = help: the following other types implement trait `Compatible<Target, X>`:
+              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
+              `Static<&&T>` implements `Compatible<Static<T>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
+              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
+              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
+              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
+              `Static<&&str>` implements `Compatible<Static<String>, X>`
+            and $N others
+    = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<f64>, Engine, kova_core::dsl::operand::Open, AppCodec>`
+    = note: required for `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LeadMarker, Node<kova_core::dsl::column::Column<f64>>, i32, &str, kova_core::dsl::operand::Open, kova_core::dsl::operand::Open, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LeadMarker, Node<kova_core::dsl::column::Column<f64>>, i32, &str, kova_core::dsl::operand::Open, kova_core::dsl::operand::Open, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LeadMarker, Node<kova_core::dsl::column::Column<f64>>, i32, &str, kova_core::dsl::operand::Open, kova_core::dsl::operand::Open, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:123:16
+    |
+121 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            ------- required by a bound in this associated function
+122 |         where
+123 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`

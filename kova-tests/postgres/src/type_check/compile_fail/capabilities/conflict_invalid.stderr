@@ -1,0 +1,383 @@
+error[E0277]: `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:16:46
+   |
+16 |     let _ = client.insert(&user).on_conflict(Count(Wildcard));
+   |                                  ----------- ^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::AbsMarker
+             kova_core::dsl::function::scalar::LengthMarker
+             kova_core::dsl::function::scalar::LowerMarker
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::function::scalar::UpperMarker
+   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, AppCodec>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:17:46
+   |
+17 |     let _ = client.insert(&user).on_conflict(RowNumber());
+   |                                  ----------- ^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, AppCodec>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::AbsMarker
+             kova_core::dsl::function::scalar::LengthMarker
+             kova_core::dsl::function::scalar::LowerMarker
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::function::scalar::UpperMarker
+   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<String, IdentifierMeta>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:20:46
+   |
+20 |     let _ = client.insert(&user).on_conflict(VIRTUAL_NAME);
+   |                                  ----------- ^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<String, IdentifierMeta>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:91:1
+   |
+91 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:21:46
+   |
+21 |     let _ = client.insert(&user).on_conflict(Unnest::unnest);
+   |                                  ----------- ^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:91:1
+   |
+91 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_core::dsl::column::Column<Dynamic, IdentifierMeta, Dynamic>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::column::Column<String, IdentifierMeta>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:24:46
+   |
+24 |     let _ = client.insert(&user).on_conflict(Lower(VIRTUAL_NAME));
+   |                                  ----------- ^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::column::Column<String, IdentifierMeta>`
+help: the trait `kova_core::dsl::can::CanConflict` is implemented for `kova_core::dsl::column::Column<T>`
+  --> /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:91:1
+   |
+91 | impl<T> CanConflict for Column<T, ColumnMeta, Static<T>> {}
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   = note: required for `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>` to implement `kova_core::dsl::can::CanConflict`
+   = note: 1 redundant requirement hidden
+   = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>` to implement `kova_core::dsl::can::CanConflict`
+   = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String, IdentifierMeta>>>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `Table<models::type_check::user::User>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:27:46
+   |
+27 |     let _ = client.insert(&user).on_conflict(User);
+   |                                  ----------- ^^^^ invalid `ON CONFLICT` target
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, _>` is not implemented for `Table<models::type_check::user::User>`
+   = note: expected a physical table column, a tuple of columns/scalar expressions, or a platform-specific conflict target.
+   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_postgres::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+           and $N others
+   = note: required for `Table<models::type_check::user::User>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, _), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:30:22
+   |
+30 |         .on_conflict(JsonbBuildObject((User::id, User::name)));
+   |          ----------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |          |
+   |          required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::AbsMarker
+             kova_core::dsl::function::scalar::LengthMarker
+             kova_core::dsl::function::scalar::LowerMarker
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::function::scalar::UpperMarker
+   = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, AppCodec>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:33:22
+   |
+33 |         .on_conflict(EventLog::metadata.json_path("key"));
+   |          ----------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |          |
+   |          required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, AppCodec>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::AbsMarker
+             kova_core::dsl::function::scalar::LengthMarker
+             kova_core::dsl::function::scalar::LowerMarker
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::function::scalar::UpperMarker
+   = note: required for `Node<kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_postgres::dsl::jsonb_chain::InnerJsonbChain<'_, kova_core::dsl::column::Column<HashMap<String, String>>, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<HashMap<String, String>>>` and `Node<kova_core::dsl::column::Column<HashMap<String, String>>>: kova_core::dsl::can::CanConflict` trivially holds
+   |
+33 -         .on_conflict(EventLog::metadata.json_path("key"));
+33 +         .on_conflict(EventLog::metadata);
+   |
+
+error[E0277]: `(Constraint, Constraint)` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:36:47
+   |
+36 |     let _ = client.insert(&user).on_conflict((Constraint("uk_1"), Constraint("uk_2")));
+   |                                               ^^^^^^^^^^^^^^^^^^ invalid `ON CONFLICT` target
+   |
+   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgTuple<(_, _)>>` is not implemented for `(Constraint, Constraint)`
+   = note: expected a physical table column, a tuple of columns/scalar expressions, or a platform-specific conflict target.
+   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_postgres::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+           and $N others
+   = note: required for `(Constraint, Constraint)` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgTuple<(_, _)>), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `(Constraint, Constraint)` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:36:67
+   |
+36 |     let _ = client.insert(&user).on_conflict((Constraint("uk_1"), Constraint("uk_2")));
+   |                                                                   ^^^^^^^^^^^^^^^^^^ invalid `ON CONFLICT` target
+   |
+   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgTuple<(_, _)>>` is not implemented for `(Constraint, Constraint)`
+   = note: expected a physical table column, a tuple of columns/scalar expressions, or a platform-specific conflict target.
+   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_postgres::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+           and $N others
+   = note: required for `(Constraint, Constraint)` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgTuple<(_, _)>), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `(Node<kova_core::dsl::column::Column<i32>>, Constraint)` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:37:57
+   |
+37 |     let _ = client.insert(&user).on_conflict((User::id, Constraint("uk_1")));
+   |                                                         ^^^^^^^^^^^^^^^^^^ invalid `ON CONFLICT` target
+   |
+   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, _)>>` is not implemented for `(Node<kova_core::dsl::column::Column<i32>>, Constraint)`
+   = note: expected a physical table column, a tuple of columns/scalar expressions, or a platform-specific conflict target.
+   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_postgres::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
+             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+           and $N others
+   = note: required for `(Node<kova_core::dsl::column::Column<i32>>, Constraint)` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, _)>), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+
+error[E0277]: `kova_core::dsl::math::Math<'_, Engine, Static<i32>, AppCodec>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:40:46
+   |
+40 |     let _ = client.insert(&user).on_conflict(User::id.add(1));
+   |                                  ----------- ^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_core::dsl::math::Math<'_, Engine, Static<i32>, AppCodec>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::AbsMarker
+             kova_core::dsl::function::scalar::LengthMarker
+             kova_core::dsl::function::scalar::LowerMarker
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::function::scalar::UpperMarker
+   = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<i32>, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<i32>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<i32>, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<i32>>` and `Node<kova_core::dsl::column::Column<i32>>: kova_core::dsl::can::CanConflict` trivially holds
+   |
+40 -     let _ = client.insert(&user).on_conflict(User::id.add(1));
+40 +     let _ = client.insert(&user).on_conflict(User::id);
+   |
+
+error[E0277]: `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>` cannot be used as an `ON CONFLICT` target
+  --> src/type_check/compile_fail/capabilities/conflict_invalid.rs:41:46
+   |
+41 |     let _ = client.insert(&user).on_conflict(EventLog::metadata.json_path_text("key"));
+   |                                  ----------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ expected a physical table column, scalar expression over physical columns, or `Constraint`
+   |                                  |
+   |                                  required by a bound introduced by this call
+   |
+   = help: the trait `kova_core::dsl::can::CanConflict` is not implemented for `kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>`
+   = help: the following other types implement trait `kova_core::dsl::can::CanConflict`:
+             Node<T>
+             kova_core::dsl::column::Column<T>
+             kova_core::dsl::function::scalar::AbsMarker
+             kova_core::dsl::function::scalar::LengthMarker
+             kova_core::dsl::function::scalar::LowerMarker
+             kova_core::dsl::function::scalar::Scalar<M, E>
+             kova_core::dsl::function::scalar::UpperMarker
+   = note: required for `Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflict<'_, Engine, AppCodec>`
+   = note: required for `Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_postgres::dsl::jsonb_text::InnerJsonbText<'_, AppCodec>>` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgAst), AppCodec>`
+note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_postgres::query::insert::NoConflict, X>::on_conflict`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/insert.rs:60:16
+   |
+57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
+   |            ----------- required by a bound in this associated function
+...
+60 |             A: IntoConflictTarget<'a, Postgres, M, X> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<HashMap<String, String>>>` and `Node<kova_core::dsl::column::Column<HashMap<String, String>>>: kova_core::dsl::can::CanConflict` trivially holds
+   |
+41 -     let _ = client.insert(&user).on_conflict(EventLog::metadata.json_path_text("key"));
+41 +     let _ = client.insert(&user).on_conflict(EventLog::metadata);
+   |

@@ -1,10 +1,10 @@
 use crate::query::exec::{execute_affected, fetch_rows};
-use crate::types::Sqlite;
+use crate::types::{Sqlite, SqliteExecutor};
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::RawStatement;
 use kova_core::dsl::{Bind, IntoArg};
-use kova_core::types::{ExecutableSync, DecodeColumn, FromRow, Statement as CoreStatement};
+use kova_core::types::{DecodeColumn, FromRow, Statement as CoreStatement};
 use std::borrow::Cow;
 use std::iter::once;
 use std::marker::PhantomData;
@@ -32,7 +32,7 @@ impl<'c, 'a, E, X> Statement<'c, 'a, E, X> {
 
 impl<'c, 'a, E, X> Statement<'c, 'a, E, X>
     where
-        E: ExecutableSync<Native = rusqlite::Connection> {
+        E: SqliteExecutor {
     pub fn execute(self) -> Result<u64> {
         execute_affected(self.executor, once(self.statement.build()?))
     }

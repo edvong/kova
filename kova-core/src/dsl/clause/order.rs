@@ -3,7 +3,7 @@ use crate::types::Database;
 use std::marker::PhantomData;
 
 pub struct OrderByClause<'a, DB: Database> {
-    items: Vec<Ordering<'a, DB, ()>>,
+    pub(crate) items: Vec<Ordering<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> OrderByClause<'a, DB> {
@@ -17,13 +17,13 @@ impl<'a, DB: Database> OrderByClause<'a, DB> {
 }
 
 pub struct Ordering<'a, DB: Database, X> {
-    operand: OrderOperand<'a, DB>,
-    direction: Option<Direction>,
-    nulls: Option<NullsOrder>,
+    pub(crate) operand: OrderOperand<'a, DB>,
+    pub(crate) direction: Option<Direction>,
+    pub(crate) nulls: Option<NullsOrder>,
     _marker: PhantomData<X>,
 }
 
-enum OrderOperand<'a, DB: Database> {
+pub(crate) enum OrderOperand<'a, DB: Database> {
     Operand(Operand<'a, DB>),
     Condition(Condition<'a, DB, ()>),
 }

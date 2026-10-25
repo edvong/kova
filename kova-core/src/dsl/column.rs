@@ -1,3 +1,4 @@
+use std::any::TypeId;
 use crate::dsl::can::{CanConflict, CanGroup};
 use crate::dsl::identifier::{Identifier, IntoIdentifier};
 use crate::dsl::operand::{Dynamic, Static};
@@ -41,7 +42,7 @@ impl Column<Dynamic, IdentifierMeta, Dynamic> {
 impl<T, M, Mode> SetTag for Column<T, M, Mode>
     where
         M: SetTag {
-    fn set_tag(&mut self, tag: usize) {
+    fn set_tag(&mut self, tag: TypeId) {
         self.meta.set_tag(tag);
     }
 }
@@ -51,7 +52,7 @@ impl<T, M, Mode> Column<T, M, Mode>
         M: IntoIdentifier<T> + Copy {
     #[inline(always)]
     pub fn source(&self) -> &'static str {
-        self.meta.into_identifier().meta.source
+        self.meta.into_identifier().meta.table.name
     }
 }
 

@@ -4,11 +4,12 @@ use kova::dsl::func::{Count, GroupConcat, JsonEach, JsonObject, Lower, Wildcard}
 use kova::types::IdentifierMeta;
 use models::type_check::event_log::EventLog;
 use models::type_check::user::User;
+use sqlite::type_check::codec::AppCodec;
 
 const VIRTUAL_NAME: Column<String, IdentifierMeta> = Column::identifier("cte", "name");
 
 fn main() {
-    let client = Options::in_memory().build().unwrap();
+    let client = Options::in_memory().build().unwrap().codec::<AppCodec>();
     let user = User::default();
 
     // 1. Aggregate functions cannot be used as ON CONFLICT targets

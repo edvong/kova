@@ -1,68 +1,74 @@
-use thiserror::Error;
+use std::fmt;
+use std::sync::Arc;
 
-/// Errors that can occur during Kova database operations.
-#[derive(Error, Debug)]
+#[derive(Debug, Clone)]
 pub enum Error {
     // ==========================================
     // Infrastructure Errors
     // ==========================================
-    /// Wraps errors returned directly from the underlying database driver (rusqlite, tokio-postgres).
-    #[error("database internal error: {0}")]
-    Database(#[source] Box<dyn std::error::Error + Send + Sync>),
-
-    /// Represents I/O failures, such as a missing database file.
-    #[error("file system error: {0}")]
-    Io(#[from] std::io::Error),
-
-    /// Errors related to connection pool exhaustion or initialization failures.
-    #[error("connection error: {0}")]
+    Database(Arc<dyn std::error::Error + Send + Sync>),
+    Io(Arc<std::io::Error>),
     ConnectionError(String),
 
     // ==========================================
     // Mapping & Parsing Errors
     // ==========================================
-    /// Occurs when a requested column index or name does not exist in the returned row.
-    /// Crucial for dynamic tuple projections and JOIN offset extractions.
-    #[error("column not found: {0}")]
     ColumnNotFound(String),
-
-    /// Occurs when the database returns a storage class different from what the Rust type expects.
-    /// Extremely useful for custom `Type` implementations during `from_db`.
-    #[error("type mismatch: {0}")]
     TypeMismatch(String),
-
-    /// Occurs when failing to parse or deserialize database text/blob into a strongly-typed Rust struct or enum.
-    #[error("parse error: {0}")]
     ParseError(String),
-
-    /// Occurs when failing to serialize or convert a Rust type into a database-supported value during `to_db`.
-    #[error("conversion/serialization error: {0}")]
     ConversionError(String),
-
-    /// Occurs when a non-nullable Rust type encounters a SQL `NULL` value.
-    /// Also used by `FromRow for Option<T>` to detect unmatched `LEFT JOIN` rows.
-    #[error("unexpected null value: {0}")]
     UnexpectedNull(String),
 
     // ==========================================
     // Business & Query Errors
     // ==========================================
-    /// Indicates that a requested record does not exist in the database.
-    /// Uses String to support various Primary Key types (i32, i64, UUID, String).
-    #[error("record not found (ID: {0})")]
     NotFound(String),
-
-    /// Used when a provided parameter fails structural validation before querying.
-    #[error("invalid parameter: {0}")]
     InvalidParam(String),
-
-    /// Used for custom domain-driven validation rules before saving to the database.
-    /// E.g., intercepting empty strings or negative balances inside `to_db`.
-    #[error("validation error: {0}")]
     ValidationError(String),
-
-    /// Occurs when the AST builder fails to compile into a valid SQL.
-    /// E.g., Executing an UPDATE builder without calling `.set()`.
-    #[error("query syntax/build error: {0}")]
     QueryError(String),
+}
+
+impl Error {
+    #[inline(always)]
+    pub fn database<E>(err: E) -> Self
+        where
+            E: std::error::Error + Send + Sync + 'static {
+        Self::Database(Arc::new(err))
+    }
+}
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Database(e) => write!(f, "database internal error: {e}"),
+            Self::Io(e) => write!(f, "file system error: {e}"),
+            Self::ConnectionError(s) => write!(f, "connection error: {s}"),
+            Self::ColumnNotFound(s) => write!(f, "column not found: {s}"),
+            Self::TypeMismatch(s) => write!(f, "type mismatch: {s}"),
+            Self::ParseError(s) => write!(f, "parse error: {s}"),
+            Self::ConversionError(s) => write!(f, "conversion/serialization error: {s}"),
+            Self::UnexpectedNull(s) => write!(f, "unexpected null value: {s}"),
+            Self::NotFound(s) => write!(f, "record not found (ID: {s})"),
+            Self::InvalidParam(s) => write!(f, "invalid parameter: {s}"),
+            Self::ValidationError(s) => write!(f, "validation error: {s}"),
+            Self::QueryError(s) => write!(f, "query syntax/build error: {s}"),
+        }
+    }
+}
+
+impl std::error::Error for Error {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Database(e) => Some(&**e),
+            Self::Io(e) => Some(&**e),
+            _ => None,
+        }
+    }
+}
+
+impl From<std::io::Error> for Error {
+    #[inline(always)]
+    fn from(err: std::io::Error) -> Self {
+        Self::Io(Arc::new(err))
+    }
 }

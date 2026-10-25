@@ -1,34 +1,39 @@
+use crate::Result;
 use crate::dsl::{
-    Condition, IntoInsertSource, OnConflictClause, Projection, ProjectionClause,
-    ValuesClause, WhereClause,
+    Condition, IntoInsertSource, OnConflictClause, Projection, ProjectionClause, ValuesClause
 };
-use crate::render::RenderData;
+use crate::render::{RenderData, Renderable};
 use crate::types::{Database, Model};
 use std::marker::PhantomData;
 
-pub struct InsertStatement<'a, DB: Database, T> {
+pub struct InsertStatement<'a, DB: Database, T, X> {
+    pub(crate) target: &'static str,
     pub(crate) values: ValuesClause<'a, DB, T>,
     pub(crate) on_conflict: OnConflictClause<'a, DB>,
     pub(crate) returning: ProjectionClause<'a, DB>,
-    pub(crate) r#where: WhereClause<'a, DB>,
-    _marker: PhantomData<T>,
+    _marker: PhantomData<(T, X)>,
 }
 
-impl<'a, DB: Database, T> InsertStatement<'a, DB, T> {
-    pub fn new<X>(data: impl IntoInsertSource<'a, DB, T, X>) -> Self
+impl<'a, DB: Database, T, X> InsertStatement<'a, DB, T, X> {
+    pub fn new(data: impl IntoInsertSource<'a, DB, T, X>) -> Self
         where
             T: Model<DB, X> {
         Self {
-            values: ValuesClause::new(T::COLUMNS_META.to_vec(), data.into_source()),
+            target: T::NAME,
+            values: ValuesClause::new(T::COLUMNS_META, data.into_source()),
             on_conflict: OnConflictClause::new(),
             returning: ProjectionClause::new(),
-            r#where: WhereClause::new(),
             _marker: PhantomData,
         }
     }
 
-    pub fn build(&self) -> Vec<RenderData<'a, DB>> {
-        unimplemented!()
+    #[inline(always)]
+    pub fn build<'s>(&'s self) -> Result<Vec<RenderData<'s, DB>>>
+        where
+            'a: 's,
+            T: Model<DB, X>,
+            DB: Renderable<'a, 's> {
+        self.render_batches()
     }
 
     pub fn returning(&mut self, cols: Vec<Projection<'a, DB, ()>>) {
@@ -40,6 +45,6 @@ impl<'a, DB: Database, T> InsertStatement<'a, DB, T> {
     }
 
     pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {
-        self.r#where.set(cond)
+        self.on_conflict.set_where(cond)
     }
 }

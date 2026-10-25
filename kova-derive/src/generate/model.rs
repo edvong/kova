@@ -10,7 +10,7 @@ pub(crate) fn expand(def: &StructDef) -> TokenStream {
     let table_name = &def.table_name;
     let from_row_impl = expand_from_row_impl(def);
 
-    // Only non-auto fields are encoded in `to_values()`, so `#[kova(auto)]` fields
+    // Only non-auto fields are encoded in `write_values()`, so `#[kova(auto)]` fields
     // don't need to force `for<'a> &'a Ty: Encode<'a, X>` bounds on `Model`.
     let encode_tys = unique_field_types(def.fields.iter().filter(|f| !f.is_auto));
 
@@ -35,7 +35,7 @@ pub(crate) fn expand(def: &StructDef) -> TokenStream {
 
         if !is_auto {
             insert_values.push(quote! {
-                (#col_name, ::kova::codec::Encode::<'a, X>::encode(&self.#field_ident)?)
+                out.push(::kova::codec::Encode::<'a, X>::encode(&self.#field_ident)?);
             });
         }
     }
@@ -43,7 +43,7 @@ pub(crate) fn expand(def: &StructDef) -> TokenStream {
     quote! {
         #[allow(non_upper_case_globals)]
         #vis const #struct_ident: ::kova::dsl::Table<#struct_ident> =
-            ::kova::dsl::Table::new(#table_name, #table_name);
+            ::kova::dsl::Table::new(#table_name);
 
         #[allow(non_upper_case_globals)]
         impl #struct_ident {
@@ -64,17 +64,15 @@ pub(crate) fn expand(def: &StructDef) -> TokenStream {
                 #(#meta_columns),*
             ];
 
-            fn to_values<'a>(
+            #[inline(always)]
+            fn write_values<'a>(
                 &'a self,
-            ) -> ::kova::Result<
-                ::std::vec::Vec<(
-                    &'static ::core::primitive::str,
+                out: &mut ::std::vec::Vec<
                     <::kova::types::Engine as ::kova::types::Database>::Value<'a>,
-                )>,
-            > {
-                ::kova::Result::Ok(::std::vec![
-                    #(#insert_values),*
-                ])
+                >,
+            ) -> ::kova::Result<()> {
+                #(#insert_values)*
+                ::kova::Result::Ok(())
             }
         }
     }

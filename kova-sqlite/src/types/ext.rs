@@ -4,12 +4,11 @@ use kova_core::types::Extension;
 
 pub struct SqliteExtension;
 
-impl Extension<'_> for SqliteExtension {
+impl Extension for SqliteExtension {
     type Operator<'a> = ExtOperator<'a>;
     type Function<'a> = ExtFunction<'a>;
-    type TableFunction<'t> = ExtSrfFunction<'t>;
-    type OrderOperand = ();
-    type Assignment<'t> = ExtAssignment;
-    type GroupBy = ();
+    type TableFunction<'a> = ExtSrfFunction<'a>;
+    type Assignment<'a> = ExtAssignment;
+    type ConflictTarget = ();
     type Locking = ();
 }

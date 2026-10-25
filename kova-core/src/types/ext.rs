@@ -1,16 +1,14 @@
-pub trait Extension<'a>: Sized {
-    type Operator<'o> where Self: 'o;
 
-    // Expression Extension
-    type Function<'t> where Self: 't;
+pub trait Extension: Sized {
+    type Operator<'a> where Self: 'a;
 
-    type TableFunction<'t> where Self: 't;
+    type Function<'a> where Self: 'a;
 
-    type OrderOperand;
+    type TableFunction<'a> where Self: 'a;
 
-    type Assignment<'t> where Self: 't;
+    type Assignment<'a> where Self: 'a;
 
-    // Clause Extension
-    type GroupBy;
+    type ConflictTarget;
+
     type Locking: Default;
 }

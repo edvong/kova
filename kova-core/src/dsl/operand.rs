@@ -1,12 +1,11 @@
 use crate::dsl::function::Function;
 use crate::dsl::statement::SelectStatement;
-use crate::types::IdentifierMeta;
-use crate::types::{Database, Encode};
+use crate::types::{Database, Encode, IdentifierMeta, TableMeta};
 use crate::{Error, Result};
 use std::marker::PhantomData;
 
 pub struct Operand<'a, DB: Database> {
-    inner: OperandNode<'a, DB>,
+    pub(crate) inner: OperandNode<'a, DB>,
 }
 
 #[derive(Copy, Clone)]
@@ -17,9 +16,10 @@ pub enum MathOperator {
     Div,
 }
 
-enum OperandNode<'a, DB: Database> {
+pub(crate) enum OperandNode<'a, DB: Database> {
     Value(DB::Value<'a>),
     Column(IdentifierMeta),
+    Table(TableMeta),
     Function(Function<'a, DB>),
     Subselect(Box<SelectStatement<'a, DB>>),
     Wildcard,
@@ -43,6 +43,10 @@ impl<'a, DB: Database> Operand<'a, DB> {
         Operand { inner: OperandNode::Column(meta) }
     }
 
+    pub fn from_table(meta: TableMeta) -> Self {
+        Operand { inner: OperandNode::Table(meta) }
+    }
+
     pub fn from_function(f: Function<'a, DB>) -> Self {
         Operand { inner: OperandNode::Function(f) }
     }
@@ -61,6 +65,19 @@ impl<'a, DB: Database> Operand<'a, DB> {
 
     pub fn from_error(err: Error) -> Self {
         Operand { inner: OperandNode::Error(Box::new(err)) }
+    }
+
+    #[inline(always)]
+    pub fn column_name(&self) -> Option<&'static str> {
+        match &self.inner {
+            OperandNode::Column(meta) => Some(meta.name),
+            _ => None,
+        }
+    }
+
+    #[inline(always)]
+    pub fn is_composite(&self) -> bool {
+        matches!(self.inner, OperandNode::Function(_) | OperandNode::Math(..))
     }
 }
 
@@ -176,8 +193,27 @@ impl<'a, T, const N: usize, X> Compatible<Static<Vec<T>>, X> for Static<&'a [T; 
 impl<T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<[T; N]> {}
 impl<'a, T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<&'a [T; N]> {}
 impl<T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<Option<[T; N]>> {}
-impl<'a, T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X>
-    for Static<Option<&'a [T; N]>> {}
+impl<'a, T, const N: usize, X> Compatible<Static<Option<Vec<T>>>, X> for Static<Option<&'a [T; N]>> {}
+
+// &str Slices / Arrays -> Vec<String> compatibility
+impl<'a, X> Compatible<Static<Vec<String>>, X> for Static<Vec<&'a str>> {}
+impl<'a, 'b, X> Compatible<Static<Vec<String>>, X> for Static<&'b Vec<&'a str>> {}
+impl<'a, 'b, X> Compatible<Static<Vec<String>>, X> for Static<&'b [&'a str]> {}
+impl<'a, 'b, 'c, X> Compatible<Static<Vec<String>>, X> for Static<&'c &'b [&'a str]> {}
+impl<'a, const N: usize, X> Compatible<Static<Vec<String>>, X> for Static<[&'a str; N]> {}
+impl<'a, 'b, const N: usize, X> Compatible<Static<Vec<String>>, X> for Static<&'b [&'a str; N]> {}
+
+impl<'a, X> Compatible<Static<Option<Vec<String>>>, X> for Static<Vec<&'a str>> {}
+impl<'a, 'b, X> Compatible<Static<Option<Vec<String>>>, X> for Static<&'b Vec<&'a str>> {}
+impl<'a, 'b, X> Compatible<Static<Option<Vec<String>>>, X> for Static<&'b [&'a str]> {}
+impl<'a, 'b, 'c, X> Compatible<Static<Option<Vec<String>>>, X> for Static<&'c &'b [&'a str]> {}
+impl<'a, const N: usize, X> Compatible<Static<Option<Vec<String>>>, X> for Static<[&'a str; N]> {}
+impl<'a, 'b, const N: usize, X> Compatible<Static<Option<Vec<String>>>, X> for Static<&'b [&'a str; N]> {}
+impl<'a, X> Compatible<Static<Option<Vec<String>>>, X> for Static<Option<Vec<&'a str>>> {}
+impl<'a, 'b, X> Compatible<Static<Option<Vec<String>>>, X> for Static<Option<&'b [&'a str]>> {}
+impl<'a, 'b, 'c, X> Compatible<Static<Option<Vec<String>>>, X> for Static<&'c Option<&'b [&'a str]>> {}
+impl<'a, const N: usize, X> Compatible<Static<Option<Vec<String>>>, X> for Static<Option<[&'a str; N]>> {}
+impl<'a, 'b, const N: usize, X> Compatible<Static<Option<Vec<String>>>, X> for Static<Option<&'b [&'a str; N]>> {}
 
 // JSON / JSONB compatibility
 impl<'a, X> Compatible<Static<JsonbType>, X> for Static<&'a str> {}
@@ -204,14 +240,12 @@ macro_rules! impl_compatible_cast {
     )+};
 }
 
-impl_compatible_cast!(i8  => i16, i32, i64, i128, isize, f32, f64);
-impl_compatible_cast!(i16 => i32, i64, i128, isize, f32, f64);
-impl_compatible_cast!(i32 => i64, i128, f64);
-impl_compatible_cast!(i64 => i128);
-impl_compatible_cast!(u8  => u16, u32, u64, u128, usize, i16, i32, i64, i128, isize, f32, f64);
-impl_compatible_cast!(u16 => u32, u64, u128, usize, i32, i64, i128, f32, f64);
-impl_compatible_cast!(u32 => u64, u128, usize, i64, i128, f64);
-impl_compatible_cast!(u64 => u128);
+impl_compatible_cast!(i8  => i16, i32, i64, isize, f32, f64);
+impl_compatible_cast!(i16 => i32, i64, isize, f32, f64);
+impl_compatible_cast!(i32 => i64, f64);
+impl_compatible_cast!(u8  => u16, u32, u64, usize, i16, i32, i64, isize, f32, f64);
+impl_compatible_cast!(u16 => u32, u64, usize, i32, i64, f32, f64);
+impl_compatible_cast!(u32 => u64, usize, i64, f64);
 impl_compatible_cast!(f32 => f64);
 
 // 2. Static -> Dynamic

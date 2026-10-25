@@ -15,7 +15,7 @@ use url::Url;
 use uuid::Uuid;
 
 /// Stress Test 1: Synchronous Multi-Step Transaction Pipeline on SQLite
-/// Memo: Validates that synchronous `client.transaction(|tx| ...)` chains `insert -> returning`,
+/// Validates that synchronous `client.transaction(|tx| ...)` chains `insert -> returning`,
 /// `update -> returning`, `delete`, `select` (with `.srf()`), and `statement` seamlessly.
 fn compile_check_sqlite_transaction_pipeline() -> Result<()> {
     let client = Options::in_memory().build()?;

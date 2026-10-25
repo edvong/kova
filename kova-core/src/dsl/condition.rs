@@ -4,11 +4,11 @@ use std::marker::PhantomData;
 use std::ops::{BitAnd, BitOr, Not};
 
 pub struct Condition<'a, DB: Database, X> {
-    node: ConditionNode<'a, DB>,
+    pub(crate) node: ConditionNode<'a, DB>,
     _marker: PhantomData<X>,
 }
 
-enum ConditionNode<'a, DB: Database> {
+pub(crate) enum ConditionNode<'a, DB: Database> {
     Op(Box<Operator<'a, DB>>),
     And(Vec<Self>), // N-ary tree, contiguous memory
     Or(Vec<Self>),
@@ -66,7 +66,7 @@ impl<'a, DB: Database, X> Not for Condition<'a, DB, X> {
     }
 }
 
-impl<'a, DB: Database, N, X> IntoOrdering<'a, DB, X> for Condition<'a, DB, N> {
+impl<'a, DB: Database, X> IntoOrdering<'a, DB, X> for Condition<'a, DB, X> {
     fn into_ordering(self) -> Ordering<'a, DB, X> {
         Ordering::from_condition(self.erase_x())
     }

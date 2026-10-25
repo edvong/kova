@@ -1,16 +1,16 @@
 use crate::dsl::func::{IntoSrfFunction, JsonSrfArgs};
 use crate::query::exec::fetch_rows;
-use crate::types::Sqlite;
+use crate::types::{Sqlite, SqliteExecutor};
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
 use kova_core::dsl::{
-    ArgAst, Close, Condition, Dynamic, EraseX, FromItem, GroupBy, ValueSource, IntoArg,
+    ArgAst, Close, Condition, Dynamic, EraseX, FromItem, GroupBy, IntoArg,
     IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, IntoProjection, JoinType,
-    Operand, Ordering, Projection, SetOperator, TypedNode,
+    Operand, Ordering, Projection, SetOperator, TypedNode, ValueSource,
 };
 use kova_core::types::{
-    Cte, ExecutableSync, DecodeColumn, FromRow, Model, Relation, Select as NewSelect
+    Cte, DecodeColumn, FromRow, Model, Relation, Select as NewSelect,
 };
 use std::iter::once;
 use std::marker::PhantomData;
@@ -223,7 +223,7 @@ impl<'a, T, D: Dispatch, S, X> Select<'a, T, D, S, X>
 impl<'c, 'a, T, E, S, X> Select<'a, T, OuterQuery<'c, E>, S, X>
     where
         T: Model<Sqlite, X>,
-        E: ExecutableSync<Native = rusqlite::Connection> {
+        E: SqliteExecutor {
     pub fn load(self) -> Result<Vec<T>> {
         self.load_as::<T>()
     }
@@ -231,13 +231,13 @@ impl<'c, 'a, T, E, S, X> Select<'a, T, OuterQuery<'c, E>, S, X>
     pub fn load_as<U>(self) -> Result<Vec<U>>
         where
             U: FromRow<Sqlite, X> {
-        fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
+        fetch_rows(self.executor, once(self.statement.build()?), |row| U::from_row(&row))
     }
 
     pub fn load_in<U>(self) -> Result<Vec<U>>
         where
             U: DecodeColumn<Sqlite, X> {
-        fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
+        fetch_rows(self.executor, once(self.statement.build()?), |row| U::extract(&row))
     }
 }
 

@@ -36,6 +36,7 @@ impl<'a, T, X> AggregateBuild<'a, Sqlite, T, X> for JsonGroupArrayMarker
         T: AstNode<'a, Sqlite, X> {
     #[inline(always)]
     fn build_function(expr: T) -> Function<'a, Sqlite> {
+        // Function::agg("json_group_array", expr.into_ast_operand())
         Function::from(ExtFunction::JsonGroupArray(Box::new(expr.into_ast_operand())))
     }
 }
@@ -49,6 +50,7 @@ impl<'a, T, X> AggregateBuild<'a, Sqlite, T, X> for JsonbGroupArrayMarker
         T: AstNode<'a, Sqlite, X> {
     #[inline(always)]
     fn build_function(expr: T) -> Function<'a, Sqlite> {
+        // Function::agg("jsonb_group_array", expr.into_ast_operand())
         Function::from(ExtFunction::JsonbGroupArray(Box::new(expr.into_ast_operand())))
     }
 }

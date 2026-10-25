@@ -15,14 +15,14 @@ pub use self::window::{FrameBound, FrameType, Window, PartitionBy, IntoPartition
 use crate::dsl::{Component, Condition, Operand, Ordering};
 use crate::types::{Database, Extension};
 
-pub type ExtFunction<'a, DB> = <<DB as Database>::Extension<'a> as Extension<'a>>::Function<'a>;
+pub type ExtFunction<'a, DB> = <<DB as Database>::Extension as Extension>::Function<'a>;
 
 pub struct Function<'a, DB: Database> {
-    inner: Component<StandardFunction<'a, DB>, ExtFunction<'a, DB>>,
-    quantifier: Option<Quantifier>,
-    order_by: Vec<Ordering<'a, DB, ()>>,
-    window: Option<Box<Window<'a, DB, ()>>>,
-    filter: Option<Box<Condition<'a, DB, ()>>>,
+    pub(crate) inner: Component<StandardFunction<'a, DB>, ExtFunction<'a, DB>>,
+    pub(crate) quantifier: Option<Quantifier>,
+    pub(crate) order_by: Vec<Ordering<'a, DB, ()>>,
+    pub(crate) window: Option<Box<Window<'a, DB, ()>>>,
+    pub(crate) filter: Option<Box<Condition<'a, DB, ()>>>,
 }
 
 impl<'a, DB: Database> Function<'a, DB> {
@@ -31,6 +31,16 @@ impl<'a, DB: Database> Function<'a, DB> {
             T: IntoFunctionInner<'a, DB, M> {
         func.into_function()
     }
+
+    // #[inline(always)]
+    // pub fn agg(name: &'static str, op: Operand<'a, DB>) -> Self {
+    //     Self::from(StandardFunction::Aggregate { name, op: Box::new(op), sep: None })
+    // }
+    //
+    // #[inline(always)]
+    // pub fn agg_with_sep(name: &'static str, op: Operand<'a, DB>, sep: Option<&'static str>) -> Self {
+    //     Self::from(StandardFunction::Aggregate { name, op: Box::new(op), sep })
+    // }
 
     pub fn quantifier(mut self, quantifier: Quantifier) -> Self {
         self.quantifier = Some(quantifier);
@@ -69,27 +79,6 @@ pub trait SetOrderBy<'a, DB: Database, X> {
     fn set_order_by(self, ordering: Vec<Ordering<'a, DB, ()>>) -> Self;
 }
 
-// impl<'a, DB: Database> SetDistinct for Function<'a, DB> {
-//     fn set_distinct(mut self, quantifier: Quantifier) -> Self {
-//         self.quantifier = Some(quantifier);
-//         self
-//     }
-// }
-//
-// impl<'a, DB: Database, X> SetWindow<'a, DB, X> for Function<'a, DB> {
-//     fn set_window(mut self, window: Window<'a, DB, ()>) -> Self {
-//         self.window = Some(Box::new(window));
-//         self
-//     }
-// }
-//
-// impl<'a, DB: Database, X> SetFilter<'a, DB, X> for Function<'a, DB> {
-//     fn set_filter(mut self, cond: Condition<'a, DB, ()>) -> Self {
-//         self.filter = Some(Box::new(cond));
-//         self
-//     }
-// }
-
 pub enum StandardFunction<'a, DB: Database> {
     Count(Box<Operand<'a, DB>>),
     Sum(Box<Operand<'a, DB>>),
@@ -108,10 +97,6 @@ pub enum Quantifier {
     All,
     Distinct,
 }
-
-// pub trait IntoFunction<'a, DB: Database, X> {
-//     fn into_function(self) -> Function<'a, DB>;
-// }
 
 pub trait IntoFunctionInner<'a, DB: Database, Marker> {
     fn into_function(self) -> Function<'a, DB>;

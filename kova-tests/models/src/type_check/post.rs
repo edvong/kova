@@ -8,16 +8,14 @@ impl Relation for Post {
 }
 
 impl<X> FromRow<Engine, X> for Post {
-    fn from_row(_: &<Engine as Database>::Row<'_>) -> kova::Result<Self> {
+    fn from_row_at(_: &<Engine as Database>::Row<'_>, _idx: &mut usize) -> kova::Result<Self> {
         unimplemented!()
     }
 }
 
 impl<X> Model<Engine, X> for Post {
     const COLUMNS_META: &'static [ColumnMeta] = &[];
-    fn to_values<'a>(
-        &'a self,
-    ) -> kova::Result<Vec<(&'static str, <Engine as Database>::Value<'a>)>> {
+    fn write_values<'a>( &'a self, _out: &mut Vec<<Engine as Database>::Value<'a>>) -> kova::Result<()> {
         unimplemented!()
     }
 }

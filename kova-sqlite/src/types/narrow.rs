@@ -21,7 +21,6 @@ macro_rules! impl_sqlite_narrow_int_decode {
                                 stringify!($ty)
                             ))
                         }),
-                        Value::Null => Err(Error::UnexpectedNull(format!("Unexpected NULL for {}", stringify!($ty)))),
                         _ => Err(Error::TypeMismatch(format!(
                             "Expected Int8 for {}",
                             stringify!($ty)
@@ -39,7 +38,6 @@ impl FromValue<Sqlite> for f32 {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Float8(f) => Ok(f as f32),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for f32".into())),
             _ => Err(Error::TypeMismatch("Expected Float8 for f32".into())),
         }
     }

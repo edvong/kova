@@ -1,12 +1,12 @@
 #![allow(non_snake_case)]
 
+use crate::dsl::ExtFunction;
 use crate::dsl::can::CanSqliteJson;
 use crate::dsl::node::Node;
-use crate::dsl::ExtFunction;
 use crate::types::Sqlite;
 use kova_core::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
 use kova_core::dsl::{
-    AstNode, CanAlias, CanCompare, CanConflict, CanGroup, CanMath, CanOrder, CanString, Dynamic,
+    AstNode, CanAlias, CanCompare, CanGroup, CanMath, CanOrder, CanString, Dynamic,
     IntoArg, Operand, Projection, Static, TypedNode,
 };
 use std::marker::PhantomData;
@@ -156,5 +156,4 @@ impl<'a, M, X> CanOrder for InnerJsonExtract<'a, M, X> {}
 impl<'a, M, X> CanGroup for InnerJsonExtract<'a, M, X> {}
 impl<'a, M, X> CanMath<X> for InnerJsonExtract<'a, M, X> {}
 impl<'a, M, X> CanString<X> for InnerJsonExtract<'a, M, X> {}
-impl<'a, M, X> CanConflict for InnerJsonExtract<'a, M, X> {}
 impl<'a, M, X> CanSqliteJson<X> for InnerJsonExtract<'a, M, X> {}

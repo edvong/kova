@@ -2,7 +2,7 @@ use crate::dsl::Condition;
 use crate::types::Database;
 
 pub struct HavingClause<'a, DB: Database> {
-    cond: Option<Condition<'a, DB, ()>>,
+    pub(crate) cond: Option<Condition<'a, DB, ()>>,
 }
 
 impl<'a, DB: Database> HavingClause<'a, DB> {

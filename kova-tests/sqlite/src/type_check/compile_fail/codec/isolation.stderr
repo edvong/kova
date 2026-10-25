@@ -15,7 +15,7 @@ help: the following other types implement trait `Encode<'a, X>`
 ...
    | impl<'a, 'b: 'a> Encode<'a, AppCodec> for &'b Uuid {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&Uuid`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -39,7 +39,7 @@ help: the following other types implement trait `Encode<'a, X>`
 ...
    | impl<'a, 'b: 'a> Encode<'a, AppCodec> for &'b DateTime<Utc> {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&chrono::datetime::DateTime<chrono::offset::utc::Utc>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -63,7 +63,7 @@ help: the following other types implement trait `Encode<'a, X>`
 ...
    | impl<'a, 'b: 'a> Encode<'a, AppCodec> for &'b Timestamp {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&jiff::timestamp::Timestamp`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -87,7 +87,7 @@ help: the following other types implement trait `Encode<'a, X>`
 ...
    | impl<'a, 'b: 'a> Encode<'a, AppCodec> for &'b Url {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&url::Url`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -111,7 +111,7 @@ help: the following other types implement trait `Encode<'a, X>`
 ...
    | impl<'a, 'b: 'a> Encode<'a, AppCodec> for &'b HashMap<String, String> {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&HashMap<String, String>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -133,8 +133,8 @@ help: the trait `Decode<()>` is not implemented for `Uuid`
    | impl Decode<AppCodec> for Uuid {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = help: for that trait implementation, expected `AppCodec`, found `()`
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `FromRow<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -156,8 +156,8 @@ help: the trait `Decode<()>` is not implemented for `chrono::datetime::DateTime<
    | impl Decode<AppCodec> for DateTime<Utc> {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = help: for that trait implementation, expected `AppCodec`, found `()`
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `FromRow<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -179,8 +179,8 @@ help: the trait `Decode<()>` is not implemented for `jiff::timestamp::Timestamp`
    | impl Decode<AppCodec> for Timestamp {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = help: for that trait implementation, expected `AppCodec`, found `()`
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `FromRow<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -202,8 +202,8 @@ help: the trait `Decode<()>` is not implemented for `url::Url`
    | impl Decode<AppCodec> for Url {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = help: for that trait implementation, expected `AppCodec`, found `()`
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `FromRow<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
@@ -225,15 +225,15 @@ help: the trait `Decode<()>` is not implemented for `HashMap<String, String>`
    | impl Decode<AppCodec> for HashMap<String, String> {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
    = help: for that trait implementation, expected `AppCodec`, found `()`
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `FromRow<Engine, ()>`
+   = note: required for `models::type_check::event_log::EventLog` to implement `Model<Engine, ()>`
 note: required by a bound in `kova_core::types::query::Query::Select`
   --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
    |
  7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
 
-error[E0277]: type `Author` cannot be decoded from a SQLite value under codec `()`
+error[E0277]: type `models::type_check::post_view::Author` cannot be decoded from a SQLite value under codec `()`
    --> src/type_check/compile_fail/codec/isolation.rs:28:55
     |
  28 |     let _ = default_client.select::<User>().load_as::<PostView>();
@@ -241,16 +241,16 @@ error[E0277]: type `Author` cannot be decoded from a SQLite value under codec `(
     |                                             |
     |                                             required by a bound introduced by this call
     |
-    = note: if `Author` is a custom type, implement `Decode<'a, ()> for Author` and `decode_column!((), Author)`.
+    = note: if `models::type_check::post_view::Author` is a custom type, implement `Decode<'a, ()> for models::type_check::post_view::Author` and `decode_column!((), models::type_check::post_view::Author)`.
             for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-help: the trait `Decode<()>` is not implemented for `Author`
+help: the trait `Decode<()>` is not implemented for `models::type_check::post_view::Author`
       but trait `Decode<ViewCodec>` is implemented for it
    --> src/type_check/codec_post_view.rs
     |
     | impl Decode<ViewCodec> for Author {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = help: for that trait implementation, expected `ViewCodec`, found `()`
-    = note: required for `PostView` to implement `FromRow<Engine, ()>`
+    = note: required for `models::type_check::post_view::PostView` to implement `FromRow<Engine, ()>`
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
     |
@@ -260,7 +260,7 @@ note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::s
 233 |             U: FromRow<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
 
-error[E0277]: type `Vec<CommentDto>` cannot be decoded from a SQLite value under codec `()`
+error[E0277]: type `Vec<models::type_check::post_view::CommentDto>` cannot be decoded from a SQLite value under codec `()`
    --> src/type_check/compile_fail/codec/isolation.rs:28:55
     |
  28 |     let _ = default_client.select::<User>().load_as::<PostView>();
@@ -268,16 +268,16 @@ error[E0277]: type `Vec<CommentDto>` cannot be decoded from a SQLite value under
     |                                             |
     |                                             required by a bound introduced by this call
     |
-    = note: if `Vec<CommentDto>` is a custom type, implement `Decode<'a, ()> for Vec<CommentDto>` and `decode_column!((), Vec<CommentDto>)`.
+    = note: if `Vec<models::type_check::post_view::CommentDto>` is a custom type, implement `Decode<'a, ()> for Vec<models::type_check::post_view::CommentDto>` and `decode_column!((), Vec<models::type_check::post_view::CommentDto>)`.
             for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-help: the trait `Decode<()>` is not implemented for `Vec<CommentDto>`
+help: the trait `Decode<()>` is not implemented for `Vec<models::type_check::post_view::CommentDto>`
       but trait `Decode<ViewCodec>` is implemented for it
    --> src/type_check/codec_post_view.rs
     |
     | impl Decode<ViewCodec> for Vec<CommentDto> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = help: for that trait implementation, expected `ViewCodec`, found `()`
-    = note: required for `PostView` to implement `FromRow<Engine, ()>`
+    = note: required for `models::type_check::post_view::PostView` to implement `FromRow<Engine, ()>`
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
     |
@@ -287,7 +287,7 @@ note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::s
 233 |             U: FromRow<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
 
-error[E0277]: type `Author` cannot be decoded from a SQLite value under codec `AppCodec`
+error[E0277]: type `models::type_check::post_view::Author` cannot be decoded from a SQLite value under codec `AppCodec`
    --> src/type_check/compile_fail/codec/isolation.rs:29:51
     |
  29 |     let _ = app_client.select::<User>().load_as::<PostView>();
@@ -295,16 +295,16 @@ error[E0277]: type `Author` cannot be decoded from a SQLite value under codec `A
     |                                         |
     |                                         required by a bound introduced by this call
     |
-    = note: if `Author` is a custom type, implement `Decode<'a, AppCodec> for Author` and `decode_column!(AppCodec, Author)`.
+    = note: if `models::type_check::post_view::Author` is a custom type, implement `Decode<'a, AppCodec> for models::type_check::post_view::Author` and `decode_column!(AppCodec, models::type_check::post_view::Author)`.
             for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-help: the trait `Decode<AppCodec>` is not implemented for `Author`
+help: the trait `Decode<AppCodec>` is not implemented for `models::type_check::post_view::Author`
       but trait `Decode<ViewCodec>` is implemented for it
    --> src/type_check/codec_post_view.rs
     |
     | impl Decode<ViewCodec> for Author {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = help: for that trait implementation, expected `ViewCodec`, found `AppCodec`
-    = note: required for `PostView` to implement `FromRow<Engine, AppCodec>`
+    = note: required for `models::type_check::post_view::PostView` to implement `FromRow<Engine, AppCodec>`
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
     |
@@ -314,7 +314,7 @@ note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::s
 233 |             U: FromRow<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
 
-error[E0277]: type `Vec<CommentDto>` cannot be decoded from a SQLite value under codec `AppCodec`
+error[E0277]: type `Vec<models::type_check::post_view::CommentDto>` cannot be decoded from a SQLite value under codec `AppCodec`
    --> src/type_check/compile_fail/codec/isolation.rs:29:51
     |
  29 |     let _ = app_client.select::<User>().load_as::<PostView>();
@@ -322,16 +322,16 @@ error[E0277]: type `Vec<CommentDto>` cannot be decoded from a SQLite value under
     |                                         |
     |                                         required by a bound introduced by this call
     |
-    = note: if `Vec<CommentDto>` is a custom type, implement `Decode<'a, AppCodec> for Vec<CommentDto>` and `decode_column!(AppCodec, Vec<CommentDto>)`.
+    = note: if `Vec<models::type_check::post_view::CommentDto>` is a custom type, implement `Decode<'a, AppCodec> for Vec<models::type_check::post_view::CommentDto>` and `decode_column!(AppCodec, Vec<models::type_check::post_view::CommentDto>)`.
             for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-help: the trait `Decode<AppCodec>` is not implemented for `Vec<CommentDto>`
+help: the trait `Decode<AppCodec>` is not implemented for `Vec<models::type_check::post_view::CommentDto>`
       but trait `Decode<ViewCodec>` is implemented for it
    --> src/type_check/codec_post_view.rs
     |
     | impl Decode<ViewCodec> for Vec<CommentDto> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = help: for that trait implementation, expected `ViewCodec`, found `AppCodec`
-    = note: required for `PostView` to implement `FromRow<Engine, AppCodec>`
+    = note: required for `models::type_check::post_view::PostView` to implement `FromRow<Engine, AppCodec>`
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
     |
@@ -349,8 +349,8 @@ error[E0308]: mismatched types
     |                                             |
     |                                             arguments to this method are incorrect
     |
-    = note: expected struct `Condition<'_, Engine, ()>`
-               found struct `Condition<'_, Engine, AppCodec>`
+    = note: expected struct `Condition<'_, Sqlite, ()>`
+               found struct `Condition<'_, Sqlite, AppCodec>`
 note: method defined here
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:160:12
     |
@@ -378,7 +378,7 @@ help: the following other types implement trait `Encode<'a, X>`
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&Uuid`
    = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, Uuid, ()>`
    = note: required for `Uuid` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
-note: required by a bound in `kova_sqlite::query::statement::Statement::<'c, 'a, E, X>::bind`
+note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/statement.rs:27:16
    |
 25 |     pub fn bind<A, M>(mut self, args: A) -> Self
@@ -397,8 +397,8 @@ error[E0277]: cannot extract `Uuid` from the database column(s)
     |
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
-help: the trait `DecodeColumn<Engine, ()>` is not implemented for `Uuid`
-      but trait `DecodeColumn<Engine, AppCodec>` is implemented for it
+help: the trait `DecodeColumn<Sqlite, ()>` is not implemented for `Uuid`
+      but trait `DecodeColumn<Sqlite, AppCodec>` is implemented for it
    --> $KOVA/src/macros.rs
     |
     | /             impl $crate::codec::DecodeColumn<$crate::types::Engine, $codec> for $type
@@ -429,8 +429,8 @@ error[E0308]: mismatched types
     |                                           |
     |                                           arguments to this method are incorrect
     |
-    = note: expected struct `Condition<'_, Engine, OtherCodec>`
-               found struct `Condition<'_, Engine, AppCodec>`
+    = note: expected struct `Condition<'_, Sqlite, OtherCodec>`
+               found struct `Condition<'_, Sqlite, AppCodec>`
 note: method defined here
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:160:12
     |
@@ -459,15 +459,15 @@ error[E0277]: cannot convert `kova_core::dsl::assignment::Assignment<'_, Engine,
              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
            and $N others
 note: required by a bound in `Update::<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, S, X>::set`
-  --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:40:16
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:38:16
    |
-38 |     pub fn set<A, M>(mut self, assignments: A) -> Update<'c, 'a, T, E, NoReturn, Assigned, X>
+36 |     pub fn set<A, M>(mut self, assignments: A) -> Update<'c, 'a, T, E, NoReturn, Assigned, X>
    |            --- required by a bound in this associated function
-39 |         where
-40 |             A: IntoArg<Assignment<'a, Sqlite, X>, M> {
+37 |         where
+38 |             A: IntoArg<Assignment<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Update::<'c, 'a, T, E, NoReturn, S, X>::set`
 
-error[E0277]: the trait bound `kova_core::dsl::math::Math<'_, Engine, Static<Decimal>, AppCodec>: kova_core::dsl::operand::AstNode<'_, Engine, OtherCodec>` is not satisfied
+error[E0277]: the trait bound `kova_core::dsl::math::Math<'_, Engine, Static<models::type_check::event_log::Decimal>, AppCodec>: kova_core::dsl::operand::AstNode<'_, Engine, OtherCodec>` is not satisfied
    --> src/type_check/compile_fail/codec/isolation.rs:43:18
     |
  43 |         .columns(EventLog::cost.add(10_i64));
@@ -475,15 +475,15 @@ error[E0277]: the trait bound `kova_core::dsl::math::Math<'_, Engine, Static<Dec
     |          |
     |          required by a bound introduced by this call
     |
-help: the trait `AstNode<'_, Engine, OtherCodec>` is not implemented for `kova_core::dsl::math::Math<'_, Engine, Static<Decimal>, AppCodec>`
-      but trait `AstNode<'_, Engine, AppCodec>` is implemented for it
+help: the trait `AstNode<'_, Sqlite, OtherCodec>` is not implemented for `kova_core::dsl::math::Math<'_, Engine, Static<models::type_check::event_log::Decimal>, AppCodec>`
+      but trait `AstNode<'_, Sqlite, AppCodec>` is implemented for it
    --> /Users/me/Workspace/kova/kova-core/src/dsl/math.rs:24:1
     |
  24 | impl<'a, DB: Database, Output, X> AstNode<'a, DB, X> for Math<'a, DB, Output, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = help: for that trait implementation, expected `AppCodec`, found `OtherCodec`
-    = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<Decimal>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, OtherCodec>`
-    = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<Decimal>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, OtherCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<models::type_check::event_log::Decimal>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, OtherCodec>`
+    = note: required for `Node<kova_core::dsl::math::Math<'_, Engine, Static<models::type_check::event_log::Decimal>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, OtherCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
     |
@@ -492,7 +492,7 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
 121 |         where
 122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
-help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<Decimal>>` and `Node<kova_core::dsl::column::Column<Decimal>>: kova_core::dsl::operand::AstNode<'_, Engine, OtherCodec>` trivially holds
+help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<models::type_check::event_log::Decimal>>` and `Node<kova_core::dsl::column::Column<models::type_check::event_log::Decimal>>: kova_core::dsl::operand::AstNode<'_, Engine, OtherCodec>` trivially holds
     |
  43 -         .columns(EventLog::cost.add(10_i64));
  43 +         .columns(EventLog::cost);
@@ -506,8 +506,8 @@ error[E0308]: mismatched types
     |          |
     |          arguments to this method are incorrect
     |
-    = note: expected struct `Condition<'_, Engine, OtherCodec>`
-               found struct `Condition<'_, Engine, AppCodec>`
+    = note: expected struct `Condition<'_, Sqlite, OtherCodec>`
+               found struct `Condition<'_, Sqlite, AppCodec>`
 note: method defined here
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:160:12
     |
@@ -522,8 +522,8 @@ error[E0308]: mismatched types
     |          |
     |          arguments to this method are incorrect
     |
-    = note: expected struct `Condition<'_, Engine, OtherCodec>`
-               found struct `Condition<'_, Engine, AppCodec>`
+    = note: expected struct `Condition<'_, Sqlite, OtherCodec>`
+               found struct `Condition<'_, Sqlite, AppCodec>`
 note: method defined here
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:160:12
     |
@@ -546,12 +546,12 @@ help: the trait `DecodeColumn<Engine, AppCodec>` is not implemented for `Unregis
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
     = help: the following other types implement trait `DecodeColumn<DB, X>`:
-              AuditPayload
-              Decimal
               HashMap<String, String>
               Uuid
               chrono::datetime::DateTime<chrono::offset::utc::Utc>
               jiff::timestamp::Timestamp
+              models::type_check::event_log::AuditPayload
+              models::type_check::event_log::Decimal
               url::Url
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16

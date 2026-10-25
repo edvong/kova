@@ -1,69 +1,69 @@
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::TaggedFrom, ()>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::TaggedFrom, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:14:49
    |
 14 |     let _ = client.select::<User>().tag::<T1>().tag::<T2>();
-   |                                                 ^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::TaggedFrom, ()>`
+   |                                                 ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::TaggedFrom, ()>`
    |
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddJoin, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddSrf, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::InnerQuery, kova_sqlite::query::select::TaggedFrom, _>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::InnerQuery, kova_sqlite::query::select::TaggedFrom, _>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:15:48
    |
 15 |     let _ = Select::from::<User>().tag::<T1>().tag::<T2>();
-   |                                                ^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::InnerQuery, kova_sqlite::query::select::TaggedFrom, _>`
+   |                                                ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::InnerQuery, kova_sqlite::query::select::TaggedFrom, _>`
    |
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddJoin, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddSrf, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:18:60
    |
 18 |     let _ = client.select::<User>().filter(User::id.eq(1)).tag::<T1>();
-   |                                                            ^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
+   |                                                            ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
    |
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddJoin, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddSrf, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:19:55
    |
 19 |     let _ = client.select::<User>().columns(User::id).tag::<T1>();
-   |                                                       ^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
+   |                                                       ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
    |
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddJoin, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddSrf, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:20:48
    |
 20 |     let _ = client.select::<User>().distinct().tag::<T1>();
-   |                                                ^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
+   |                                                ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
    |
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddJoin, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddSrf, X>`
 
-error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
+error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:23:60
    |
 23 |     let _ = client.select::<User>().filter(User::id.eq(1)).srf(JsonEach(User::name));
-   |                                                            ^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
+   |                                                            ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
    |
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::TaggedFrom, X>`
 
-error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddJoin, ()>` in the current scope
+error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddJoin, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:27:10
    |
 24 |       let _ = client
@@ -71,7 +71,7 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, Us
 25 | |         .select::<User>()
 26 | |         .inner_join::<Order>(Order::user_id.eq(User::id))
 27 | |         .srf(JsonEach(User::name));
-   | |         -^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddJoin, ()>`
+   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddJoin, ()>`
    | |_________|
    |
    |
@@ -79,7 +79,7 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, Us
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::TaggedFrom, X>`
 
-error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddSrf, ()>` in the current scope
+error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddSrf, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:33:10
    |
 30 |       let _ = client
@@ -87,7 +87,7 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, Us
 31 | |         .select::<User>()
 32 | |         .srf(JsonEach(User::name))
 33 | |         .srf(JsonEach(User::name));
-   | |         -^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddSrf, ()>`
+   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddSrf, ()>`
    | |_________|
    |
    |
@@ -95,7 +95,7 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, Us
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::TaggedFrom, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:38:10
    |
 34 |       let _ = client
@@ -104,7 +104,7 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, Us
 36 | |         .srf(JsonEach(User::name))
 37 | |         .tag::<T1>()
 38 | |         .tag::<T2>();
-   | |         -^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
+   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
    | |_________|
    |
    |
@@ -113,7 +113,7 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, Us
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddJoin, X>`
            - `kova::query::Select<'a, T, D, kova_sqlite::query::select::JustAddSrf, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:45:10
    |
 41 |       let _ = client
@@ -122,7 +122,7 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, Us
 43 | |         .inner_join::<Order>(Order::user_id.eq(User::id))
 44 | |         .tag::<T1>()
 45 | |         .tag::<T2>();
-   | |         -^^^ method not found in `kova::query::Select<'_, User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
+   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::Normal, ()>`
    | |_________|
    |
    |

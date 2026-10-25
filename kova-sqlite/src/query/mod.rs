@@ -1,4 +1,5 @@
 mod delete;
+#[rustfmt::skip]
 mod exec;
 mod insert;
 mod select;

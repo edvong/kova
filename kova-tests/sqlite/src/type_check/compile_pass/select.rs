@@ -86,14 +86,14 @@ fn compile_check_sqlite_math_and_compatible() -> Result<()> {
         .select::<User>()
         .inner_join::<Order>(Order::user_id.eq(User::id))
         .columns((
-            // Memo: Chained arithmetic (add/sub/mul/div) preserving output type Static<f64>
+            // Chained arithmetic (add/sub/mul/div) preserving output type Static<f64>
             User::balance
                 .add(Order::amount)
                 .sub(10.0)
                 .mul(float_32)
                 .div(2_i16)
                 .alias(User::balance),
-            // Memo: Integer arithmetic with implicit widening (i8 -> i32)
+            // Integer arithmetic with implicit widening (i8 -> i32)
             User::id.add(small_i8).mul(2).alias(User::id),
         ))
         .filter(

@@ -12,17 +12,17 @@ keywords.workspace = true
 [dependencies]
 kova-core = { workspace = true }
 kova-derive = { workspace = true }
-kova-pg = { workspace = true, optional = true }
+kova-postgres = { workspace = true, optional = true }
 kova-sqlite = { workspace = true, optional = true }
 
 [features]
-default = ["pg"]
-narrow-cast = ["kova-pg?/narrow-cast", "kova-sqlite?/narrow-cast"]
+default = ["postgres"]
+narrow-cast = ["kova-postgres?/narrow-cast", "kova-sqlite?/narrow-cast"]
 
 # PostgreSQL-specific features
-pg = ["dep:kova-pg"]
-rustls = ["kova-pg?/rustls"]
-native-tls = ["kova-pg?/native-tls"]
+postgres = ["dep:kova-postgres"]
+rustls = ["kova-postgres?/rustls"]
+native-tls = ["kova-postgres?/native-tls"]
 
 # SQLite-specific features
 sqlite = ["dep:kova-sqlite"]

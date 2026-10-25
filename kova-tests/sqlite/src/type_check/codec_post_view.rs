@@ -10,7 +10,6 @@ impl Decode<ViewCodec> for Author {
             Value::Text(t) => {
                 serde_json::from_str(&t).map_err(|e| Error::ParseError(e.to_string()))
             }
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for Author".into())),
             _ => Err(Error::TypeMismatch("Expected Text(JSON) for Author".into())),
         }
     }
@@ -23,7 +22,6 @@ impl Decode<ViewCodec> for Vec<CommentDto> {
             Value::Text(t) => {
                 serde_json::from_str(&t).map_err(|e| Error::ParseError(e.to_string()))
             }
-            Value::Null => Ok(Vec::new()),
             _ => Err(Error::TypeMismatch("Expected Text(JSON) for Vec<CommentDto>".into())),
         }
     }

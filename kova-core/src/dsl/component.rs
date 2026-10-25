@@ -2,10 +2,10 @@ pub struct Std;
 pub struct Ext;
 
 pub struct Component<S, E> {
-    inner: ComponentKind<S, E>,
+    pub inner: ComponentKind<S, E>,
 }
 
-enum ComponentKind<S, E> {
+pub enum ComponentKind<S, E> {
     Standard(S),
     Extension(E),
 }

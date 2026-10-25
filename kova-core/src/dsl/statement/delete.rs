@@ -1,5 +1,7 @@
+use crate::Result;
 use crate::dsl::{Condition, Projection, ProjectionClause, WhereClause};
 use crate::render::RenderData;
+use crate::render::{Render, RenderContext, Renderable};
 use crate::types::{Database, Relation};
 use std::marker::PhantomData;
 
@@ -18,8 +20,14 @@ impl<'a, DB: Database, T: Relation> DeleteStatement<'a, DB, T> {
         }
     }
 
-    pub fn build(&self) -> RenderData<'a, DB> {
-        unimplemented!()
+    #[inline(always)]
+    pub fn build<'s>(&'s self) -> Result<RenderData<'s, DB>>
+        where
+            'a: 's,
+            DB: Renderable<'a, 's> {
+        let mut ctx = RenderContext::new();
+        self.render(&mut ctx)?;
+        Ok(ctx.into_data())
     }
 
     pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {

@@ -1,10 +1,12 @@
 use crate::query::exec::{execute_affected, fetch_rows};
-use crate::types::Sqlite;
+use crate::types::{Sqlite, SqliteExecutor};
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{Assignment, Condition, Conflict, EraseX, IntoArg, IntoInsertSource, Projection};
-use kova_core::types::{ExecutableSync, DecodeColumn, FromRow, Insert as NewInsert, Model};
+use kova_core::dsl::{
+    Assignment, Condition, EraseX, IntoArg, IntoConflictTarget, IntoInsertSource, Projection,
+};
+use kova_core::types::{DecodeColumn, FromRow, Insert as NewInsert, Model};
 use std::marker::PhantomData;
 
 pub struct NoConflict;
@@ -22,8 +24,8 @@ pub struct Returning;
 
 pub struct Insert<'c, 'a, T, E, R, C, X> {
     executor: &'c Executor<E>,
-    statement: InsertStatement<'a, Sqlite, T>,
-    _marker: PhantomData<(R, C, X)>,
+    statement: InsertStatement<'a, Sqlite, T, X>,
+    _marker: PhantomData<(R, C)>,
 }
 
 pub(crate) type InitInsert<'c, 'a, T, E, X> = Insert<'c, 'a, T, E, NoReturn, NoConflict, X>;
@@ -54,8 +56,9 @@ impl<'c, 'a, T, E, R, X> Insert<'c, 'a, T, E, R, NoConflict, X>
         T: Model<Sqlite, X> {
     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
         where
-            A: IntoArg<Conflict<'a, Sqlite, X>, M> {
-        self.statement.conflict_mut().set_targets(targets.into_args_erased());
+            // A: IntoArg<Conflict<'a, Sqlite, X>, M> {
+        A: IntoConflictTarget<'a, Sqlite, M, X>, {
+        self.statement.conflict_mut().set_target(targets.into_conflict_target());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
 }
@@ -63,7 +66,7 @@ impl<'c, 'a, T, E, R, X> Insert<'c, 'a, T, E, R, NoConflict, X>
 impl<'c, 'a, T, E, R, X> Insert<'c, 'a, T, E, R, ConflictTarget, X>
     where
         T: Model<Sqlite, X> {
-    pub fn do_nothing(mut self) ->  Insert<'c, 'a, T, E, R, ConflictNothing, X> {
+    pub fn do_nothing(mut self) -> Insert<'c, 'a, T, E, R, ConflictNothing, X> {
         self.statement.conflict_mut().set_do_nothing();
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }
@@ -88,25 +91,25 @@ impl<'c, 'a, T, E, R, X> Insert<'c, 'a, T, E, R, ConflictUpdate, X>
 impl<'c, 'a, T, E, C: CanExecute, X> Insert<'c, 'a, T, E, NoReturn, C, X>
     where
         T: Model<Sqlite, X>,
-        E: ExecutableSync<Native = rusqlite::Connection> {
+        E: SqliteExecutor {
     pub fn execute(self) -> Result<u64> {
-        execute_affected(self.executor, self.statement.build())
+        execute_affected(self.executor, self.statement.build()?)
     }
 }
 
 impl<'c, 'a, T, E, C: CanExecute, X> Insert<'c, 'a, T, E, Returning, C, X>
     where
         T: Model<Sqlite, X>,
-        E: ExecutableSync<Native = rusqlite::Connection> {
+        E: SqliteExecutor {
     pub fn execute_as<U>(self) -> Result<Vec<U>>
         where
             U: FromRow<Sqlite, X> {
-        fetch_rows(self.executor, self.statement.build(), |row| U::from_row(&row))
+        fetch_rows(self.executor, self.statement.build()?, |row| U::from_row(&row))
     }
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
         where
             U: DecodeColumn<Sqlite, X> {
-        fetch_rows(self.executor, self.statement.build(), |row| U::extract(&row))
+        fetch_rows(self.executor, self.statement.build()?, |row| U::extract(&row))
     }
 }

@@ -1,7 +1,7 @@
 error[E0277]: `kova_core::dsl::function::aggregate::CountMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:14:47
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:15:47
     |
- 14 |     let _ = client.select::<Order>().group_by(Count(Wildcard));
+ 15 |     let _ = client.select::<Order>().group_by(Count(Wildcard));
     |                                      -------- ^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |                                      |
     |                                      required by a bound introduced by this call
@@ -17,9 +17,9 @@ error[E0277]: `kova_core::dsl::function::aggregate::CountMarker` cannot be used 
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -30,9 +30,9 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:15:47
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:16:47
     |
- 15 |     let _ = client.select::<Order>().group_by(Sum(Order::amount));
+ 16 |     let _ = client.select::<Order>().group_by(Sum(Order::amount));
     |                                      -------- ^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |                                      |
     |                                      required by a bound introduced by this call
@@ -48,9 +48,9 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -60,15 +60,15 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
 167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:16:46
+error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:17:46
     |
- 16 |     let _ = client.select::<User>().group_by(GroupConcat(User::name));
+ 17 |     let _ = client.select::<User>().group_by(GroupConcat(User::name));
     |                                     -------- ^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>`
+    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
     = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
               Node<T>
               kova_core::dsl::column::Column<T, M, Mode>
@@ -79,8 +79,8 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -91,9 +91,9 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:17:46
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:18:46
     |
- 17 |     let _ = client.select::<User>().group_by(JsonGroupArray(User::id));
+ 18 |     let _ = client.select::<User>().group_by(JsonGroupArray(User::id));
     |                                     -------- ^^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |                                     |
     |                                     required by a bound introduced by this call
@@ -109,9 +109,9 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker` cann
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -122,9 +122,9 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:18:46
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:19:46
     |
- 18 |     let _ = client.select::<User>().group_by(JsonbGroupArray(User::id));
+ 19 |     let _ = client.select::<User>().group_by(JsonbGroupArray(User::id));
     |                                     -------- ^^^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |                                     |
     |                                     required by a bound introduced by this call
@@ -140,9 +140,9 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker` can
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -153,9 +153,9 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:19:47
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:20:47
     |
- 19 |     let _ = client.select::<Order>().group_by(Abs(Sum(Order::amount)));
+ 20 |     let _ = client.select::<Order>().group_by(Abs(Sum(Order::amount)));
     |                                      -------- ^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |                                      |
     |                                      required by a bound introduced by this call
@@ -171,11 +171,11 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
     = note: 2 redundant requirements hidden
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -185,15 +185,15 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
 167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:24:19
+error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:25:19
     |
- 24 |         .group_by(JsonObject((User::id, User::name)));
+ 25 |         .group_by(JsonObject((User::id, User::name)));
     |          -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>`
+    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
     = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
               Node<T>
               kova_core::dsl::column::Column<T, M, Mode>
@@ -204,8 +204,8 @@ error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::ds
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -215,15 +215,15 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
 167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:27:19
+error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:28:19
     |
- 27 |         .group_by(JsonbObject((User::id, User::name)));
+ 28 |         .group_by(JsonbObject((User::id, User::name)));
     |          -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>`
+    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
     = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
               Node<T>
               kova_core::dsl::column::Column<T, M, Mode>
@@ -234,8 +234,8 @@ error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::ds
               kova_core::dsl::function::scalar::Scalar<M, E>
               kova_core::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
     |
@@ -245,348 +245,50 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
 167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: type `&'a uuid::Uuid` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a uuid::Uuid`
-   = note: if `&'a uuid::Uuid` is a custom type, implement `Encode<'a, ()> for &'a uuid::Uuid` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>`
-   = note: if `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>` is a custom type, implement `Encode<'a, ()> for &'a chrono::datetime::DateTime<chrono::offset::utc::Utc>` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a jiff::timestamp::Timestamp` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a jiff::timestamp::Timestamp`
-   = note: if `&'a jiff::timestamp::Timestamp` is a custom type, implement `Encode<'a, ()> for &'a jiff::timestamp::Timestamp` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a url::Url` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a url::Url`
-   = note: if `&'a url::Url` is a custom type, implement `Encode<'a, ()> for &'a url::Url` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a HashMap<String, String>` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a HashMap<String, String>`
-   = note: if `&'a HashMap<String, String>` is a custom type, implement `Encode<'a, ()> for &'a HashMap<String, String>` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `uuid::Uuid` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `uuid::Uuid`
-   = note: if `uuid::Uuid` is a custom type, implement `Decode<'a, ()> for uuid::Uuid` and `decode_column!((), uuid::Uuid)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `chrono::datetime::DateTime<chrono::offset::utc::Utc>` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `chrono::datetime::DateTime<chrono::offset::utc::Utc>`
-   = note: if `chrono::datetime::DateTime<chrono::offset::utc::Utc>` is a custom type, implement `Decode<'a, ()> for chrono::datetime::DateTime<chrono::offset::utc::Utc>` and `decode_column!((), chrono::datetime::DateTime<chrono::offset::utc::Utc>)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `jiff::timestamp::Timestamp` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `jiff::timestamp::Timestamp`
-   = note: if `jiff::timestamp::Timestamp` is a custom type, implement `Decode<'a, ()> for jiff::timestamp::Timestamp` and `decode_column!((), jiff::timestamp::Timestamp)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `url::Url` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `url::Url`
-   = note: if `url::Url` is a custom type, implement `Decode<'a, ()> for url::Url` and `decode_column!((), url::Url)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `HashMap<String, String>` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:10
-   |
-29 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `HashMap<String, String>`
-   = note: if `HashMap<String, String>` is a custom type, implement `Decode<'a, ()> for HashMap<String, String>` and `decode_column!((), HashMap<String, String>)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0599]: the method `group_by` exists for struct `kova::query::Select<'_, EventLog, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddFrom, ()>`, but its trait bounds were not satisfied
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:30:10
-   |
-28 |       let _ = client
-   |  _____________-
-29 | |         .select::<EventLog>()
-30 | |         .group_by(EventLog::description.bm25());
-   | |         -^^^^^^^^ method cannot be called due to unsatisfied trait bounds
-   | |_________|
-   |
-   |
-  ::: $MODELS/src/type_check/event_log.rs
-   |
-   |   pub struct EventLog {
-   |   ------------------- doesn't satisfy `EventLog: Model<Engine, ()>`
-   |
-  ::: $RUST/std/src/collections/hash/map.rs
-   |
-   | / pub struct HashMap<
-   | |     K,
-   | |     V,
-   | |     S = RandomState,
-   | |     #[unstable(feature = "allocator_api", issue = "32838")] A: Allocator = Global,
-   | | > {
-   | |_- doesn't satisfy `HashMap<String, String>: Decode`
-   |
-  ::: $CARGO/url-$VERSION/src/lib.rs
-   |
-   |   pub struct Url {
-   |   -------------- doesn't satisfy `url::Url: Decode`
-   |
-  ::: $CARGO/uuid-$VERSION/src/lib.rs
-   |
-   |   pub struct Uuid(Bytes);
-   |   --------------- doesn't satisfy `uuid::Uuid: Decode`
-   |
-  ::: $CARGO/chrono-$VERSION/src/datetime/mod.rs
-   |
-   |   pub struct DateTime<Tz: TimeZone> {
-   |   --------------------------------- doesn't satisfy `_: Decode`
-   |
-  ::: $CARGO/jiff-$VERSION/src/timestamp.rs
-   |
-   |   pub struct Timestamp {
-   |   -------------------- doesn't satisfy `jiff::timestamp::Timestamp: Decode`
-   |
-   = note: the following trait bounds were not satisfied:
-           `&'a uuid::Uuid: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a jiff::timestamp::Timestamp: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a url::Url: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a HashMap<String, String>: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `uuid::Uuid: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `chrono::datetime::DateTime<chrono::offset::utc::Utc>: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `jiff::timestamp::Timestamp: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `url::Url: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `HashMap<String, String>: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-
-error[E0277]: the trait bound `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>: kova_core::dsl::can::CanOrder` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:33:19
+error[E0277]: `kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:31:19
     |
- 33 |         .order_by(JsonObject((User::id, User::name)));
+ 31 |         .group_by(EventLog::description.bm25());
+    |          -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
+    |          |
+    |          required by a bound introduced by this call
+    |
+    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>`
+    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+              Node<T>
+              kova_core::dsl::column::Column<T, M, Mode>
+              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_core::dsl::function::scalar::AbsMarker
+              kova_core::dsl::function::scalar::LengthMarker
+              kova_core::dsl::function::scalar::LowerMarker
+              kova_core::dsl::function::scalar::Scalar<M, E>
+              kova_core::dsl::function::scalar::UpperMarker
+            and $N others
+    = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+    |
+165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+    |            -------- required by a bound in this associated function
+166 |         where
+167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
+help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<String>>` and `Node<kova_core::dsl::column::Column<String>>: kova_core::dsl::can::CanGroup` trivially holds
+    |
+ 31 -         .group_by(EventLog::description.bm25());
+ 31 +         .group_by(EventLog::description);
+    |
+
+error[E0277]: the trait bound `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>: kova_core::dsl::can::CanOrder` is not satisfied
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:34:19
+    |
+ 34 |         .order_by(JsonObject((User::id, User::name)));
     |          -------- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanOrder` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>`
+    = help: the trait `kova_core::dsl::can::CanOrder` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
     = help: the following other types implement trait `kova_core::dsl::can::CanOrder`:
               kova_core::dsl::column::Column<T, M, Mode>
               kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
@@ -597,8 +299,8 @@ error[E0277]: the trait bound `kova_sqlite::dsl::function::json::InnerJsonObject
               kova_core::dsl::function::scalar::UpperMarker
               kova_core::dsl::math::Math<'a, DB, Output, X>
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::clause::order::IntoOrdering<'_, Engine, ()>`
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::order::IntoOrdering<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:179:16
     |
@@ -609,9 +311,9 @@ note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::order_by`
 
 error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:37:53
+  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:38:53
    |
-37 |         Count(Order::id).over(Window().partition_by(Sum(Order::amount))),
+38 |         Count(Order::id).over(Window().partition_by(Sum(Order::amount))),
    |                                        ------------ ^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
    |                                        |
    |                                        required by a bound introduced by this call
@@ -640,9 +342,9 @@ note: required by a bound in `Window::<'a, DB, X>::partition_by`
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Window::<'a, DB, X>::partition_by`
 
 error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, _>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:40:52
+  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:41:52
    |
-40 |         Count(User::id).over(Window().partition_by(GroupConcat(User::name))),
+41 |         Count(User::id).over(Window().partition_by(GroupConcat(User::name))),
    |                                       ------------ ^^^^^^^^^^^^^^^^^^^^^^^ invalid grouping or partitioning expression
    |                                       |
    |                                       required by a bound introduced by this call
@@ -670,9 +372,9 @@ note: required by a bound in `Window::<'a, DB, X>::partition_by`
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Window::<'a, DB, X>::partition_by`
 
 error[E0277]: window clause `.over(...)` is not available on `kova_core::dsl::column::Column<i32>`
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:44:54
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:54
     |
- 44 |     let _ = client.select::<User>().columns(User::id.over(Window()));
+ 45 |     let _ = client.select::<User>().columns(User::id.over(Window()));
     |                                                      ^^^^ only aggregate and window functions support `.over(...)`
     |
     = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_core::dsl::column::Column<i32>`
@@ -682,9 +384,9 @@ help: the following other types implement trait `kova_core::dsl::can::CanWindow`
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:158:1
     |
-156 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
+158 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:16
@@ -696,9 +398,9 @@ note: required by a bound in `Node::<T>::over`
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
 error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:44:59
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:59
     |
- 44 |     let _ = client.select::<User>().columns(User::id.over(Window()));
+ 45 |     let _ = client.select::<User>().columns(User::id.over(Window()));
     |                                                      ---- ^^^^^^^^ the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_core::dsl::column::Column<i32>`
     |                                                      |
     |                                                      required by a bound introduced by this call
@@ -709,9 +411,9 @@ help: the following other types implement trait `kova_core::dsl::function::SetWi
 100 | impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:141:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:143:1
     |
-141 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+143 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:28
@@ -723,9 +425,9 @@ note: required by a bound in `Node::<T>::over`
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
 error[E0277]: window clause `.over(...)` is not available on `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:63
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:46:63
     |
- 45 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
+ 46 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
     |                                                               ^^^^ only aggregate and window functions support `.over(...)`
     |
     = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
@@ -735,9 +437,9 @@ help: the following other types implement trait `kova_core::dsl::can::CanWindow`
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:158:1
     |
-156 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
+158 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:16
@@ -749,9 +451,9 @@ note: required by a bound in `Node::<T>::over`
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
 error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:68
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:46:68
     |
- 45 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
+ 46 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
     |                                                               ---- ^^^^^^^^ unsatisfied trait bound
     |                                                               |
     |                                                               required by a bound introduced by this call
@@ -763,9 +465,9 @@ help: the following other types implement trait `kova_core::dsl::function::SetWi
 100 | impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:141:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:143:1
     |
-141 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+143 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:28
@@ -776,343 +478,10 @@ note: required by a bound in `Node::<T>::over`
 338 |             T: CanWindow + SetWindow<'a, Sqlite, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: type `&'a uuid::Uuid` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a uuid::Uuid`
-   = note: if `&'a uuid::Uuid` is a custom type, implement `Encode<'a, ()> for &'a uuid::Uuid` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>`
-   = note: if `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>` is a custom type, implement `Encode<'a, ()> for &'a chrono::datetime::DateTime<chrono::offset::utc::Utc>` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a jiff::timestamp::Timestamp` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a jiff::timestamp::Timestamp`
-   = note: if `&'a jiff::timestamp::Timestamp` is a custom type, implement `Encode<'a, ()> for &'a jiff::timestamp::Timestamp` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a url::Url` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a url::Url`
-   = note: if `&'a url::Url` is a custom type, implement `Encode<'a, ()> for &'a url::Url` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `&'a HashMap<String, String>` cannot be encoded as a SQLite parameter under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not encodable under codec `()`
-   |
-   = help: the trait `for<'a> Encode<'a>` is not implemented for `&'a HashMap<String, String>`
-   = note: if `&'a HashMap<String, String>` is a custom type, implement `Encode<'a, ()> for &'a HashMap<String, String>` and configure `client.codec::<()>()`.
-           for overflow-prone 64-bit unsigned/pointer types (`u64`, `usize`, `isize`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Encode<'a, X>`:
-             &'b Box<T>
-             &'b Option<T>
-             &'b String
-             &'b Vec<u8>
-             &'b [u8; N]
-             &'b [u8]
-             &'b bool
-             &'b f32
-           and $N others
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `uuid::Uuid` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `uuid::Uuid`
-   = note: if `uuid::Uuid` is a custom type, implement `Decode<'a, ()> for uuid::Uuid` and `decode_column!((), uuid::Uuid)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `chrono::datetime::DateTime<chrono::offset::utc::Utc>` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `chrono::datetime::DateTime<chrono::offset::utc::Utc>`
-   = note: if `chrono::datetime::DateTime<chrono::offset::utc::Utc>` is a custom type, implement `Decode<'a, ()> for chrono::datetime::DateTime<chrono::offset::utc::Utc>` and `decode_column!((), chrono::datetime::DateTime<chrono::offset::utc::Utc>)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `jiff::timestamp::Timestamp` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `jiff::timestamp::Timestamp`
-   = note: if `jiff::timestamp::Timestamp` is a custom type, implement `Decode<'a, ()> for jiff::timestamp::Timestamp` and `decode_column!((), jiff::timestamp::Timestamp)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `url::Url` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `url::Url`
-   = note: if `url::Url` is a custom type, implement `Decode<'a, ()> for url::Url` and `decode_column!((), url::Url)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0277]: type `HashMap<String, String>` cannot be decoded from a SQLite value under codec `()`
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:47:10
-   |
-47 |         .select::<EventLog>()
-   |          ^^^^^^ not decodable under codec `()`
-   |
-   = help: the trait `Decode` is not implemented for `HashMap<String, String>`
-   = note: if `HashMap<String, String>` is a custom type, implement `Decode<'a, ()> for HashMap<String, String>` and `decode_column!((), HashMap<String, String>)`.
-           for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
-   = help: the following other types implement trait `Decode<X>`:
-             Box<T>
-             Option<T>
-             String
-             Vec<u8>
-             [u8; N]
-             bool
-             f64
-             i32
-             i64
-   = note: required for `EventLog` to implement `FromRow<Engine, ()>`
-   = note: required for `EventLog` to implement `Model<Engine, ()>`
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
-   |
- 7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
-   |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
-
-error[E0599]: the method `columns` exists for struct `kova::query::Select<'_, EventLog, kova_sqlite::query::select::OuterQuery<'_, kova_sqlite::types::conn::SqlitePool>, kova_sqlite::query::select::JustAddFrom, ()>`, but its trait bounds were not satisfied
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:48:10
-   |
-46 |       let _ = client
-   |  _____________-
-47 | |         .select::<EventLog>()
-48 | |         .columns(EventLog::description.bm25().over(Window()));
-   | |         -^^^^^^^ method cannot be called due to unsatisfied trait bounds
-   | |_________|
-   |
-   |
-  ::: $MODELS/src/type_check/event_log.rs
-   |
-   |   pub struct EventLog {
-   |   ------------------- doesn't satisfy `EventLog: Model<Engine, ()>`
-   |
-  ::: $RUST/std/src/collections/hash/map.rs
-   |
-   | / pub struct HashMap<
-   | |     K,
-   | |     V,
-   | |     S = RandomState,
-   | |     #[unstable(feature = "allocator_api", issue = "32838")] A: Allocator = Global,
-   | | > {
-   | |_- doesn't satisfy `HashMap<String, String>: Decode`
-   |
-  ::: $CARGO/url-$VERSION/src/lib.rs
-   |
-   |   pub struct Url {
-   |   -------------- doesn't satisfy `url::Url: Decode`
-   |
-  ::: $CARGO/uuid-$VERSION/src/lib.rs
-   |
-   |   pub struct Uuid(Bytes);
-   |   --------------- doesn't satisfy `uuid::Uuid: Decode`
-   |
-  ::: $CARGO/chrono-$VERSION/src/datetime/mod.rs
-   |
-   |   pub struct DateTime<Tz: TimeZone> {
-   |   --------------------------------- doesn't satisfy `_: Decode`
-   |
-  ::: $CARGO/jiff-$VERSION/src/timestamp.rs
-   |
-   |   pub struct Timestamp {
-   |   -------------------- doesn't satisfy `jiff::timestamp::Timestamp: Decode`
-   |
-   = note: the following trait bounds were not satisfied:
-           `&'a uuid::Uuid: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a chrono::datetime::DateTime<chrono::offset::utc::Utc>: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a jiff::timestamp::Timestamp: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a url::Url: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `&'a HashMap<String, String>: Encode<'a>`
-           which is required by `EventLog: Model<Engine, ()>`
-           `uuid::Uuid: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `chrono::datetime::DateTime<chrono::offset::utc::Utc>: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `jiff::timestamp::Timestamp: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `url::Url: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-           `HashMap<String, String>: Decode`
-           which is required by `EventLog: Model<Engine, ()>`
-
 error[E0277]: window clause `.over(...)` is not available on `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:48:47
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:49:47
     |
- 48 |         .columns(EventLog::description.bm25().over(Window()));
+ 49 |         .columns(EventLog::description.bm25().over(Window()));
     |                                               ^^^^ only aggregate and window functions support `.over(...)`
     |
     = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
@@ -1122,9 +491,9 @@ help: the following other types implement trait `kova_core::dsl::can::CanWindow`
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:158:1
     |
-156 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
+158 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:16
@@ -1136,9 +505,9 @@ note: required by a bound in `Node::<T>::over`
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
 error[E0277]: the trait bound `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:48:52
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:49:52
     |
- 48 |         .columns(EventLog::description.bm25().over(Window()));
+ 49 |         .columns(EventLog::description.bm25().over(Window()));
     |                                               ---- ^^^^^^^^ the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
     |                                               |
     |                                               required by a bound introduced by this call
@@ -1149,9 +518,9 @@ help: the following other types implement trait `kova_core::dsl::function::SetWi
 100 | impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:141:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:143:1
     |
-141 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+143 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:28
@@ -1163,14 +532,14 @@ note: required by a bound in `Node::<T>::over`
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
 error[E0599]: the method `distinct` exists for struct `Node<kova_core::dsl::column::Column<i32>>`, but its trait bounds were not satisfied
-  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:49:54
+  --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:50:54
    |
-49 |     let _ = client.select::<User>().columns(User::id.distinct());
+50 |     let _ = client.select::<User>().columns(User::id.distinct());
    |                                                      ^^^^^^^^ method cannot be called on `Node<kova_core::dsl::column::Column<i32>>` due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanDistinct` or `_: SetDistinct`
    |
    = note: the following trait bounds were not satisfied:
@@ -1178,9 +547,9 @@ error[E0599]: the method `distinct` exists for struct `Node<kova_core::dsl::colu
            `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetDistinct`
 
 error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:50:63
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:63
     |
- 50 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
+ 51 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
     |                                                               ^^^^^^ only aggregate functions support `.filter(...)`
     |
     = help: the trait `kova_core::dsl::can::CanFilter` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
@@ -1190,9 +559,9 @@ help: the following other types implement trait `kova_core::dsl::can::CanFilter`
 111 | impl<'a, DB: Database, M, E, X> CanFilter for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:154:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
     |
-154 | impl<'a, T, X> CanFilter for InnerGroupConcat<'a, T, X> {}
+156 | impl<'a, T, X> CanFilter for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::filter`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:345:16
@@ -1204,9 +573,9 @@ note: required by a bound in `Node::<T>::filter`
     |                ^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
 error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:50:70
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:70
     |
- 50 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
+ 51 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
     |                                                               ------ ^^^^^^^^^^^^^^^^^^^^^^^^ unsatisfied trait bound
     |                                                               |
     |                                                               required by a bound introduced by this call
@@ -1218,9 +587,9 @@ help: the following other types implement trait `kova_core::dsl::function::SetFi
  92 | impl<'a, DB: Database, M, E, X> SetFilter<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetFilter<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:133:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:135:1
     |
-133 | impl<'a, T, X> SetFilter<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+135 | impl<'a, T, X> SetFilter<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetFilter<'a, Engine, X>`
 note: required by a bound in `Node::<T>::filter`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:345:28
@@ -1232,9 +601,9 @@ note: required by a bound in `Node::<T>::filter`
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
 error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::can::CanOrderBy` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:54
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:52:54
     |
- 51 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
+ 52 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
     |                                                      ^^^^^^^^ the trait `kova_core::dsl::can::CanOrderBy` is not implemented for `kova_core::dsl::column::Column<i32>`
     |
 help: the following other types implement trait `kova_core::dsl::can::CanOrderBy`
@@ -1243,9 +612,9 @@ help: the following other types implement trait `kova_core::dsl::can::CanOrderBy
 113 | impl<'a, DB: Database, M, E, X> CanOrderBy for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:155:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:157:1
     |
-155 | impl<'a, T, X> CanOrderBy for InnerGroupConcat<'a, T, X> {}
+157 | impl<'a, T, X> CanOrderBy for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::order_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:352:16
@@ -1257,9 +626,9 @@ note: required by a bound in `Node::<T>::order_by`
     |                ^^^^^^^^^^ required by this bound in `Node::<T>::order_by`
 
 error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
-   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:54
+   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:52:54
     |
- 51 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
+ 52 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
     |                                                      ^^^^^^^^ the trait `kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_core::dsl::column::Column<i32>`
     |
 help: the following other types implement trait `kova_core::dsl::function::SetOrderBy<'a, DB, X>`
@@ -1268,9 +637,9 @@ help: the following other types implement trait `kova_core::dsl::function::SetOr
  84 | impl<'a, DB: Database, M, E, X> SetOrderBy<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetOrderBy<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:125:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:127:1
     |
-125 | impl<'a, T, X> SetOrderBy<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+127 | impl<'a, T, X> SetOrderBy<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetOrderBy<'a, Engine, X>`
 note: required by a bound in `Node::<T>::order_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:352:29

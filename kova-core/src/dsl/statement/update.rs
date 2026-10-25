@@ -1,8 +1,10 @@
+use crate::Result;
 use crate::dsl::{
     Assignment, AssignmentClause, Condition, IntoRelationList, Projection, ProjectionClause,
     TableClause, WhereClause,
 };
 use crate::render::RenderData;
+use crate::render::{Render, RenderContext, Renderable};
 use crate::types::{Database, Relation};
 use std::marker::PhantomData;
 
@@ -27,18 +29,21 @@ impl<'a, DB: Database, T: Relation> UpdateStatement<'a, DB, T> {
         }
     }
 
-    pub fn build(&self) -> RenderData<'a, DB> {
-        unimplemented!()
+    #[inline(always)]
+    pub fn build<'s>(&'s self) -> Result<RenderData<'s, DB>>
+        where
+            'a: 's,
+            DB: Renderable<'a, 's> {
+        let mut ctx = RenderContext::new();
+        self.render(&mut ctx)?;
+        Ok(ctx.into_data())
     }
-
     pub fn set(&mut self, assignments: Vec<Assignment<'a, DB, ()>>) {
         self.assignments.set(assignments);
     }
 
     pub fn from<R: IntoRelationList>(&mut self) {
-        for table in R::relation_list() {
-            self.from.add_table(table);
-        }
+        self.from.set_tables(R::relation_list());
     }
 
     pub fn r#where(&mut self, cond: Condition<'a, DB, ()>) {

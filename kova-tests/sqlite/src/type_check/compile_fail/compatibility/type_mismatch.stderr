@@ -11,12 +11,12 @@ error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i
    = help: the following other types implement trait `Compatible<Target, X>`:
              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
              `Static<&&T>` implements `Compatible<Static<T>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
            and $N others
    = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
@@ -42,10 +42,8 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<St
              Compatible<Static<JsonType>, X>
              Compatible<Static<JsonbType>, X>
              Compatible<Static<Option<f64>>, X>
-             Compatible<Static<Option<i128>>, X>
              Compatible<Static<Option<i64>>, X>
              Compatible<Static<f64>, X>
-             Compatible<Static<i128>, X>
              Compatible<Static<i64>, X>
    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
@@ -71,10 +69,8 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<bo
              Compatible<Static<JsonType>, X>
              Compatible<Static<JsonbType>, X>
              Compatible<Static<Option<f64>>, X>
-             Compatible<Static<Option<i128>>, X>
              Compatible<Static<Option<i64>>, X>
              Compatible<Static<f64>, X>
-             Compatible<Static<i128>, X>
              Compatible<Static<i64>, X>
    = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<bool>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
@@ -99,12 +95,12 @@ error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<V
    = help: the following other types implement trait `Compatible<Target, X>`:
              `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
              `Static<&&T>` implements `Compatible<Static<T>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+             `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
              `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-             `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
            and $N others
    = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<Vec<u8>>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
@@ -129,12 +125,12 @@ error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i
     = help: the following other types implement trait `Compatible<Target, X>`:
               `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
               `Static<&&T>` implements `Compatible<Static<T>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
               `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
               `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
-              `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-              `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
             and $N others
     = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::between`
@@ -184,12 +180,12 @@ error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i
     = help: the following other types implement trait `Compatible<Target, X>`:
               `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
               `Static<&&T>` implements `Compatible<Static<T>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
               `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
               `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
-              `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-              `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
             and $N others
     = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::add`
@@ -214,12 +210,12 @@ error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i
     = help: the following other types implement trait `Compatible<Target, X>`:
               `Static<&&T>` implements `Compatible<Static<Option<T>>, X>`
               `Static<&&T>` implements `Compatible<Static<T>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Option<Vec<String>>>, X>`
+              `Static<&&[&str]>` implements `Compatible<Static<Vec<String>>, X>`
               `Static<&&[T]>` implements `Compatible<Static<Option<Vec<T>>>, X>`
               `Static<&&[T]>` implements `Compatible<Static<Vec<T>>, X>`
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
-              `Static<&Box<T>>` implements `Compatible<Static<Option<T>>, X>`
-              `Static<&Box<T>>` implements `Compatible<Static<T>, X>`
             and $N others
     = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::set`

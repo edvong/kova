@@ -1,21 +1,21 @@
 mod arg;
 mod assignment;
-mod clause;
+pub(crate) mod clause;
 mod column;
 mod comparator;
-mod component;
-mod condition;
+pub mod component;
+pub(crate) mod condition;
 mod function;
 mod identifier;
 #[rustfmt::skip]
-mod operand;
+pub(crate) mod operand;
 mod operator;
 #[rustfmt::skip]
 mod can;
 mod math;
 mod relation;
 pub mod statement;
-mod table;
+pub(crate) mod table;
 
 pub mod func {
     pub use crate::dsl::function::{
@@ -37,7 +37,7 @@ pub use {
     clause::*,
     column::Column,
     comparator::Comparator,
-    component::Component,
+    component::{Component, Std, Ext},
     condition::Condition,
     identifier::{Identifier, IntoIdentifier},
     math::Math,

@@ -1,0 +1,28 @@
+[package]
+name = "kova-postgres"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "PostgreSQL support for Kova"
+readme = "../README.md"
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+
+[dependencies]
+kova-core = { workspace = true }
+
+tokio-postgres = { workspace = true }
+deadpool-postgres = { workspace = true }
+
+rustls = { workspace = true, optional = true }
+tokio-postgres-rustls = { workspace = true, optional = true }
+
+native-tls = { workspace = true, optional = true }
+postgres-native-tls = { workspace = true, optional = true }
+
+[features]
+default = []
+narrow-cast = []
+rustls = ["dep:rustls", "dep:tokio-postgres-rustls"]
+native-tls = ["dep:native-tls", "dep:postgres-native-tls"]

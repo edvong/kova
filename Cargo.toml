@@ -1,7 +1,7 @@
 [workspace]
 members = [
     "kova-core",
-    "kova-pg",
+    "kova-postgres",
     "kova-sqlite",
     "kova-derive",
     "kova",
@@ -23,10 +23,8 @@ keywords = ["postgres", "sqlite", "orm", "database", "sql"]
 [workspace.dependencies]
 kova-core = { path = "kova-core" }
 kova-derive = { path = "kova-derive" }
-kova-pg = { path = "kova-pg" }
+kova-postgres = { path = "kova-postgres" }
 kova-sqlite = { path = "kova-sqlite" }
-
-thiserror = "2"
 
 tokio-postgres = "0.7"
 deadpool-postgres = "0.14"
@@ -37,9 +35,7 @@ tokio-postgres-rustls = "0.14"
 native-tls = "0.2.18"
 postgres-native-tls = "0.5"
 
-rusqlite = "0.40"
-r2d2 = "0.8"
-r2d2_sqlite = "0.35"
+rusqlite = "0.41.1"
 
 proc-macro2 = "1"
 syn = { version = "3.0.9", features = ["full", "extra-traits"] }

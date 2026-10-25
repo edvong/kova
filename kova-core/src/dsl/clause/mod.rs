@@ -1,24 +1,27 @@
 mod assignment;
 mod bind;
 mod combine;
-mod conflict;
+pub(crate) mod conflict;
 mod distinct;
 mod group_by;
 mod having;
-mod insert;
-mod join;
+pub(crate) mod insert;
+pub(crate) mod join;
 mod locking;
-mod order;
+pub(crate) mod order;
 mod pagination;
 mod projection;
-mod table;
+pub(crate) mod table;
 mod r#where;
 mod with;
 
 pub use {
     bind::Bind,
     combine::{SetOperation, SetOperator},
-    conflict::{Conflict, IntoConflict},
+    conflict::{
+        Conflict, ConflictAction, ExtConflictTarget, OnConflictClause, IntoConflict,
+        IntoConflictTarget
+    },
     group_by::{GroupBy, IntoGroupBy},
     insert::{IntoInsertSource, ValueSource},
     join::{IntoJoinConstraint, Join, JoinClause, JoinConstraint, JoinType},
@@ -33,15 +36,14 @@ pub(crate) use {
     assignment::AssignmentClause,
     bind::BindClause,
     combine::CombineClause,
-    conflict::OnConflictClause,
     distinct::DistinctClause,
     group_by::GroupByClause,
     having::HavingClause,
     insert::ValuesClause,
     locking::LockingClause,
     projection::ProjectionClause,
-    table::TableClause,
     r#where::WhereClause,
+    table::TableClause,
     with::{CteNode, WithClause},
 };
 

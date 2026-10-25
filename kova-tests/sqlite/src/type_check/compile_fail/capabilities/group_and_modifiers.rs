@@ -6,9 +6,10 @@ use kova::dsl::func::{
 use models::type_check::event_log::EventLog;
 use models::type_check::order::Order;
 use models::type_check::user::User;
+use sqlite::type_check::codec::AppCodec;
 
 fn main() {
-    let client = Options::in_memory().build().unwrap();
+    let client = Options::in_memory().build().unwrap().codec::<AppCodec>();
 
     // 1. Aggregates and Scalars wrapping Aggregates cannot be in GROUP BY
     let _ = client.select::<Order>().group_by(Count(Wildcard));

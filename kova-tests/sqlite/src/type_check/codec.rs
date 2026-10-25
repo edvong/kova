@@ -13,7 +13,7 @@ use uuid::Uuid;
 
 pub struct AppCodec;
 
-// Memo: Custom cross-type compatibility rule under AppCodec.
+// Custom cross-type compatibility rule under AppCodec.
 // Allows passing `&str` or `String` directly into `Column<Url>` filters and assignments.
 impl<'a> Compatible<Static<Url>, AppCodec> for Static<&'a str> {}
 impl Compatible<Static<Url>, AppCodec> for Static<String> {}

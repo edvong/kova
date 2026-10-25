@@ -1,0 +1,211 @@
+error[E0277]: cannot convert `i128` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
+  --> src/type_check/compile_fail/default_only/unsupported_types.rs:7:48
+   |
+ 7 |     let _ = client.statement("SELECT $1").bind(1_i128);
+   |                                           ---- ^^^^^^ invalid SQL argument(s)
+   |                                           |
+   |                                           required by a bound introduced by this call
+   |
+   = help: the trait `Encode<'_>` is not implemented for `i128`
+   = note: expected a valid SQL construct or encodable value.
+           if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
+   = help: the following other types implement trait `Encode<'a, X>`:
+             &f32
+             &f64
+             &i16
+             &i32
+             &i64
+             &i8
+             &u16
+             &u32
+           and $N others
+   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, i128, ()>`
+   = note: required for `i128` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
+note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/statement.rs:27:16
+   |
+25 |     pub fn bind<A, M>(mut self, args: A) -> Self
+   |            ---- required by a bound in this associated function
+26 |         where
+27 |             A: IntoArg<Bind<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Statement::<'c, 'a, E, X>::bind`
+
+error[E0277]: cannot convert `u128` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
+  --> src/type_check/compile_fail/default_only/unsupported_types.rs:8:48
+   |
+ 8 |     let _ = client.statement("SELECT $1").bind(1_u128);
+   |                                           ---- ^^^^^^ invalid SQL argument(s)
+   |                                           |
+   |                                           required by a bound introduced by this call
+   |
+   = help: the trait `Encode<'_>` is not implemented for `u128`
+   = note: expected a valid SQL construct or encodable value.
+           if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
+   = help: the following other types implement trait `Encode<'a, X>`:
+             &f32
+             &f64
+             &i16
+             &i32
+             &i64
+             &i8
+             &u16
+             &u32
+           and $N others
+   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, u128, ()>`
+   = note: required for `u128` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
+note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
+  --> /Users/me/Workspace/kova/kova-postgres/src/query/statement.rs:27:16
+   |
+25 |     pub fn bind<A, M>(mut self, args: A) -> Self
+   |            ---- required by a bound in this associated function
+26 |         where
+27 |             A: IntoArg<Bind<'a, Postgres, X>, M> {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Statement::<'c, 'a, E, X>::bind`
+
+error[E0277]: cannot extract `i128` from the database column(s)
+   --> src/type_check/compile_fail/default_only/unsupported_types.rs:10:47
+    |
+ 10 |     let _ = client.select::<User>().load_in::<i128>().await;
+    |                                     -------   ^^^^ invalid column extraction target
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `DecodeColumn<Engine, ()>` is not implemented for `i128`
+    = note: expected a type that implements `DecodeColumn` or `Decode`.
+            if passing a tuple, ensure every element can be decoded from the database.
+    = help: the following other types implement trait `DecodeColumn<DB, X>`:
+              f32
+              f64
+              i16
+              i32
+              i64
+note: required by a bound in `kova::query::Select::<'a, T, kova_postgres::query::select::OuterQuery<'c, E>, S, X>::load_in`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:258:16
+    |
+256 |     pub async fn load_in<U>(self) -> Result<Vec<U>>
+    |                  ------- required by a bound in this associated function
+257 |         where
+258 |             U: DecodeColumn<Postgres, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
+
+error[E0277]: cannot extract `i128` from the database column(s)
+   --> src/type_check/compile_fail/default_only/unsupported_types.rs:10:13
+    |
+ 10 |     let _ = client.select::<User>().load_in::<i128>().await;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invalid column extraction target
+    |
+    = help: the trait `DecodeColumn<Engine, ()>` is not implemented for `i128`
+    = note: expected a type that implements `DecodeColumn` or `Decode`.
+            if passing a tuple, ensure every element can be decoded from the database.
+    = help: the following other types implement trait `DecodeColumn<DB, X>`:
+              f32
+              f64
+              i16
+              i32
+              i64
+note: required by a bound in `kova::query::Select::<'a, T, kova_postgres::query::select::OuterQuery<'c, E>, S, X>::load_in`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:258:16
+    |
+256 |     pub async fn load_in<U>(self) -> Result<Vec<U>>
+    |                  ------- required by a bound in this associated function
+257 |         where
+258 |             U: DecodeColumn<Postgres, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
+
+error[E0277]: cannot extract `i128` from the database column(s)
+   --> src/type_check/compile_fail/default_only/unsupported_types.rs:10:55
+    |
+ 10 |     let _ = client.select::<User>().load_in::<i128>().await;
+    |                                                       ^^^^^ invalid column extraction target
+    |
+    = help: the trait `DecodeColumn<Engine, ()>` is not implemented for `i128`
+    = note: expected a type that implements `DecodeColumn` or `Decode`.
+            if passing a tuple, ensure every element can be decoded from the database.
+    = help: the following other types implement trait `DecodeColumn<DB, X>`:
+              f32
+              f64
+              i16
+              i32
+              i64
+note: required by a bound in `kova::query::Select::<'a, T, kova_postgres::query::select::OuterQuery<'c, E>, S, X>::load_in`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:258:16
+    |
+256 |     pub async fn load_in<U>(self) -> Result<Vec<U>>
+    |                  ------- required by a bound in this associated function
+257 |         where
+258 |             U: DecodeColumn<Postgres, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
+
+error[E0277]: cannot extract `u128` from the database column(s)
+   --> src/type_check/compile_fail/default_only/unsupported_types.rs:11:47
+    |
+ 11 |     let _ = client.select::<User>().load_in::<u128>().await;
+    |                                     -------   ^^^^ invalid column extraction target
+    |                                     |
+    |                                     required by a bound introduced by this call
+    |
+    = help: the trait `DecodeColumn<Engine, ()>` is not implemented for `u128`
+    = note: expected a type that implements `DecodeColumn` or `Decode`.
+            if passing a tuple, ensure every element can be decoded from the database.
+    = help: the following other types implement trait `DecodeColumn<DB, X>`:
+              f32
+              f64
+              i16
+              i32
+              i64
+note: required by a bound in `kova::query::Select::<'a, T, kova_postgres::query::select::OuterQuery<'c, E>, S, X>::load_in`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:258:16
+    |
+256 |     pub async fn load_in<U>(self) -> Result<Vec<U>>
+    |                  ------- required by a bound in this associated function
+257 |         where
+258 |             U: DecodeColumn<Postgres, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
+
+error[E0277]: cannot extract `u128` from the database column(s)
+   --> src/type_check/compile_fail/default_only/unsupported_types.rs:11:13
+    |
+ 11 |     let _ = client.select::<User>().load_in::<u128>().await;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invalid column extraction target
+    |
+    = help: the trait `DecodeColumn<Engine, ()>` is not implemented for `u128`
+    = note: expected a type that implements `DecodeColumn` or `Decode`.
+            if passing a tuple, ensure every element can be decoded from the database.
+    = help: the following other types implement trait `DecodeColumn<DB, X>`:
+              f32
+              f64
+              i16
+              i32
+              i64
+note: required by a bound in `kova::query::Select::<'a, T, kova_postgres::query::select::OuterQuery<'c, E>, S, X>::load_in`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:258:16
+    |
+256 |     pub async fn load_in<U>(self) -> Result<Vec<U>>
+    |                  ------- required by a bound in this associated function
+257 |         where
+258 |             U: DecodeColumn<Postgres, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
+
+error[E0277]: cannot extract `u128` from the database column(s)
+   --> src/type_check/compile_fail/default_only/unsupported_types.rs:11:55
+    |
+ 11 |     let _ = client.select::<User>().load_in::<u128>().await;
+    |                                                       ^^^^^ invalid column extraction target
+    |
+    = help: the trait `DecodeColumn<Engine, ()>` is not implemented for `u128`
+    = note: expected a type that implements `DecodeColumn` or `Decode`.
+            if passing a tuple, ensure every element can be decoded from the database.
+    = help: the following other types implement trait `DecodeColumn<DB, X>`:
+              f32
+              f64
+              i16
+              i32
+              i64
+note: required by a bound in `kova::query::Select::<'a, T, kova_postgres::query::select::OuterQuery<'c, E>, S, X>::load_in`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:258:16
+    |
+256 |     pub async fn load_in<U>(self) -> Result<Vec<U>>
+    |                  ------- required by a bound in this associated function
+257 |         where
+258 |             U: DecodeColumn<Postgres, X> {
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`

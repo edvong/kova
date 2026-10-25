@@ -8,13 +8,13 @@ error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<_>`) is not satisfied
     = note: if `i32` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<_>` for it.
     = help: the following other types implement trait `CanSqliteJson<X>`:
               `&'a T` implements `CanSqliteJson<X>`
-              `AuditPayload` implements `CanSqliteJson<AppCodec>`
               `BTreeMap<K, V>` implements `CanSqliteJson<X>`
               `Box<T>` implements `CanSqliteJson<X>`
               `Dynamic` implements `CanSqliteJson<X>`
               `HashMap<K, V, S>` implements `CanSqliteJson<X>`
               `JsonType` implements `CanSqliteJson<X>`
               `JsonbType` implements `CanSqliteJson<X>`
+              `Node<T>` implements `CanSqliteJson<X>`
             and $N others
     = note: required for `Static<i32>` to implement `CanSqliteJson<_>`
     = note: 1 redundant requirement hidden
@@ -38,13 +38,13 @@ error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<_>`) is not satisfied
     = note: if `f64` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<_>` for it.
     = help: the following other types implement trait `CanSqliteJson<X>`:
               `&'a T` implements `CanSqliteJson<X>`
-              `AuditPayload` implements `CanSqliteJson<AppCodec>`
               `BTreeMap<K, V>` implements `CanSqliteJson<X>`
               `Box<T>` implements `CanSqliteJson<X>`
               `Dynamic` implements `CanSqliteJson<X>`
               `HashMap<K, V, S>` implements `CanSqliteJson<X>`
               `JsonType` implements `CanSqliteJson<X>`
               `JsonbType` implements `CanSqliteJson<X>`
+              `Node<T>` implements `CanSqliteJson<X>`
             and $N others
     = note: required for `Static<f64>` to implement `CanSqliteJson<_>`
     = note: 1 redundant requirement hidden
@@ -68,13 +68,13 @@ error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<_>`) is not satisfied
     = note: if `uuid::Uuid` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<_>` for it.
     = help: the following other types implement trait `CanSqliteJson<X>`:
               `&'a T` implements `CanSqliteJson<X>`
-              `AuditPayload` implements `CanSqliteJson<AppCodec>`
               `BTreeMap<K, V>` implements `CanSqliteJson<X>`
               `Box<T>` implements `CanSqliteJson<X>`
               `Dynamic` implements `CanSqliteJson<X>`
               `HashMap<K, V, S>` implements `CanSqliteJson<X>`
               `JsonType` implements `CanSqliteJson<X>`
               `JsonbType` implements `CanSqliteJson<X>`
+              `Node<T>` implements `CanSqliteJson<X>`
             and $N others
     = note: required for `Static<uuid::Uuid>` to implement `CanSqliteJson<_>`
     = note: 1 redundant requirement hidden
@@ -98,7 +98,7 @@ error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<AppCodec>`) is not sa
     |
     = help: the trait `CanSqliteJson<AppCodec>` is not implemented for `i32`
     = note: if `i32` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<AppCodec>` for it.
-help: the trait `CanSqliteJson<AppCodec>` is implemented for `AuditPayload`
+help: the trait `CanSqliteJson<AppCodec>` is implemented for `models::type_check::event_log::AuditPayload`
    --> src/type_check/codec.rs
     |
     | impl CanSqliteJson<AppCodec> for AuditPayload {}
@@ -127,7 +127,7 @@ error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<AppCodec>`) is not sa
    |
    = help: the trait `CanSqliteJson<AppCodec>` is not implemented for `i32`
    = note: if `i32` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<AppCodec>` for it.
-help: the trait `CanSqliteJson<AppCodec>` is implemented for `AuditPayload`
+help: the trait `CanSqliteJson<AppCodec>` is implemented for `models::type_check::event_log::AuditPayload`
   --> src/type_check/codec.rs
    |
    | impl CanSqliteJson<AppCodec> for AuditPayload {}
@@ -154,7 +154,7 @@ error[E0277]: SQLite JSON/JSONB capability (`CanSqliteJson<AppCodec>`) is not sa
    |
    = help: the trait `CanSqliteJson<AppCodec>` is not implemented for `bool`
    = note: if `bool` is a custom JSON type (e.g., `serde_json::Value`), implement `CanSqliteJson<AppCodec>` for it.
-help: the trait `CanSqliteJson<AppCodec>` is implemented for `AuditPayload`
+help: the trait `CanSqliteJson<AppCodec>` is implemented for `models::type_check::event_log::AuditPayload`
   --> src/type_check/codec.rs
    |
    | impl CanSqliteJson<AppCodec> for AuditPayload {}
@@ -185,10 +185,8 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<St
               Compatible<Static<JsonType>, X>
               Compatible<Static<JsonbType>, X>
               Compatible<Static<Option<f64>>, X>
-              Compatible<Static<Option<i128>>, X>
               Compatible<Static<Option<i64>>, X>
               Compatible<Static<f64>, X>
-              Compatible<Static<i128>, X>
               Compatible<Static<i64>, X>
     = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::json_extract`
@@ -211,12 +209,12 @@ error[E0277]: SQL type mismatch: `Static<bool>` is not compatible with `Static<S
     = help: the trait `Compatible<Static<String>, _>` is not implemented for `Static<bool>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, _> for Static<bool>`.
 help: `Static<bool>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:187:1
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:223:1
     |
-187 | impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
+223 | impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonbType>, X>`
 ...
-193 | impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
+229 | impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonType>, X>`
     = note: required for `bool` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::jsonb_extract`
@@ -242,10 +240,8 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<St
              Compatible<Static<JsonType>, X>
              Compatible<Static<JsonbType>, X>
              Compatible<Static<Option<f64>>, X>
-             Compatible<Static<Option<i128>>, X>
              Compatible<Static<Option<i64>>, X>
              Compatible<Static<f64>, X>
-             Compatible<Static<i128>, X>
              Compatible<Static<i64>, X>
    = note: required for `(Node<kova_core::dsl::column::Column<HashMap<String, String>>>, i32)` to implement `kova_sqlite::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
    = note: required for `kova_sqlite::dsl::function::srf::json_each::JsonEachMarker` to implement `kova_sqlite::dsl::function::srf::srf_node::SrfBuildMarker<'_, (Node<kova_core::dsl::column::Column<HashMap<String, String>>>, i32), AppCodec>`
@@ -267,12 +263,12 @@ error[E0277]: SQL type mismatch: `Static<bool>` is not compatible with `Static<S
     = help: the trait `Compatible<Static<String>, AppCodec>` is not implemented for `Static<bool>`
     = note: if this is a custom cross-type comparison, implement `Compatible<Static<String>, AppCodec> for Static<bool>`.
 help: `Static<bool>` implements trait `Compatible<Target, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:187:1
+   --> /Users/me/Workspace/kova/kova-core/src/dsl/operand.rs:223:1
     |
-187 | impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
+223 | impl<X> Compatible<Static<JsonbType>, X> for Static<bool> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonbType>, X>`
 ...
-193 | impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
+229 | impl<X> Compatible<Static<JsonType>, X> for Static<bool> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Compatible<Static<JsonType>, X>`
     = note: required for `(Node<kova_core::dsl::column::Column<HashMap<String, String>>>, bool)` to implement `kova_sqlite::dsl::function::srf::IntoSrfFunction<'_, AppCodec>`
     = note: required for `kova_sqlite::dsl::function::srf::json_tree::JsonTreeMarker` to implement `kova_sqlite::dsl::function::srf::srf_node::SrfBuildMarker<'_, (Node<kova_core::dsl::column::Column<HashMap<String, String>>>, bool), AppCodec>`
@@ -534,10 +530,8 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<St
               Compatible<Static<JsonType>, X>
               Compatible<Static<JsonbType>, X>
               Compatible<Static<Option<f64>>, X>
-              Compatible<Static<Option<i128>>, X>
               Compatible<Static<Option<i64>>, X>
               Compatible<Static<f64>, X>
-              Compatible<Static<i128>, X>
               Compatible<Static<i64>, X>
     = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::highlight`
@@ -563,10 +557,8 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<St
               Compatible<Static<JsonType>, X>
               Compatible<Static<JsonbType>, X>
               Compatible<Static<Option<f64>>, X>
-              Compatible<Static<Option<i128>>, X>
               Compatible<Static<Option<i64>>, X>
               Compatible<Static<f64>, X>
-              Compatible<Static<i128>, X>
               Compatible<Static<i64>, X>
     = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<String>, Engine, kova_core::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::snippet`

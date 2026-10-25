@@ -1,4 +1,4 @@
-use crate::dsl::{EraseX, IntoArg, IntoIdentifier, IntoProjection, Operand, Ordering, Projection};
+use crate::dsl::{EraseX, IntoArg, Operand, Ordering};
 use crate::types::Database;
 use std::marker::PhantomData;
 
@@ -80,17 +80,10 @@ impl<'a, DB: Database, X> Window<'a, DB, X> {
         self.order_by = cols.into_args_erased();
         self
     }
-
-    pub fn alias<A, T>(self, alias: A) -> Projection<'a, DB, X>
-        where
-            A: IntoIdentifier<T>,
-            Self: IntoProjection<'a, DB, X> {
-        self.into_projection().alias(alias)
-    }
 }
 
 pub struct PartitionBy<'a, DB: Database, X> {
-    operand: Operand<'a, DB>,
+    pub(crate) operand: Operand<'a, DB>,
     _marker: PhantomData<X>,
 }
 

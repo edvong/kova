@@ -1,10 +1,10 @@
 use crate::query::exec::{execute_affected, fetch_rows};
-use crate::types::Sqlite;
+use crate::types::{Sqlite, SqliteExecutor};
 use kova_core::Result;
 use kova_core::database::Executor;
 use kova_core::dsl::statement::DeleteStatement;
 use kova_core::dsl::{Condition, EraseX, IntoArg, Projection};
-use kova_core::types::{Delete as CreateDelete, ExecutableSync, DecodeColumn, FromRow, Model};
+use kova_core::types::{DecodeColumn, Delete as CreateDelete, FromRow, Model};
 use std::iter::once;
 use std::marker::PhantomData;
 
@@ -50,25 +50,25 @@ impl<'c, 'a, T, E, R, X> Delete<'c, 'a, T, E, R, X>
 impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, NoReturn, X>
     where
         T: Model<Sqlite, X>,
-        E: ExecutableSync<Native = rusqlite::Connection> {
+        E: SqliteExecutor {
     pub fn execute(self) -> Result<u64> {
-        execute_affected(self.executor, once(self.statement.build()))
+        execute_affected(self.executor, once(self.statement.build()?))
     }
 }
 
 impl<'c, 'a, T, E, X> Delete<'c, 'a, T, E, Returning, X>
     where
         T: Model<Sqlite, X>,
-        E: ExecutableSync<Native = rusqlite::Connection> {
+        E: SqliteExecutor {
     pub fn execute_as<U>(self) -> Result<Vec<U>>
         where
             U: FromRow<Sqlite, X> {
-        fetch_rows(self.executor, once(self.statement.build()), |row| U::from_row(&row))
+        fetch_rows(self.executor, once(self.statement.build()?), |row| U::from_row(&row))
     }
 
     pub fn execute_in<U>(self) -> Result<Vec<U>>
         where
             U: DecodeColumn<Sqlite, X> {
-        fetch_rows(self.executor, once(self.statement.build()), |row| U::extract(&row))
+        fetch_rows(self.executor, once(self.statement.build()?), |row| U::extract(&row))
     }
 }

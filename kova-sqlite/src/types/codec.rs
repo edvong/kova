@@ -49,7 +49,6 @@ impl FromValue<Sqlite> for i64 {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Int8(i) => Ok(i),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for i64".into())),
             _ => Err(Error::TypeMismatch("Expected Int8 for i64".into())),
         }
     }
@@ -74,7 +73,6 @@ impl FromValue<Sqlite> for i32 {
         match value {
             Value::Int8(i) => i32::try_from(i)
                 .map_err(|_| Error::ParseError("Integer out of bounds for i32".into())),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for i32".into())),
             _ => Err(Error::TypeMismatch("Expected Int8 for i32".into())),
         }
     }
@@ -139,7 +137,6 @@ impl FromValue<Sqlite> for f64 {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Float8(f) => Ok(f),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for f64".into())),
             _ => Err(Error::TypeMismatch("Expected Float8 for f64".into())),
         }
     }
@@ -164,7 +161,6 @@ impl FromValue<Sqlite> for bool {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Int8(i) => Ok(i != 0),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for bool".into())),
             _ => Err(Error::TypeMismatch("Expected Int8 (0 or 1) for bool".into())),
         }
     }
@@ -183,7 +179,6 @@ impl FromValue<Sqlite> for String {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Text(cow) => Ok(cow.into_owned()),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for String".into())),
             _ => Err(Error::TypeMismatch("Expected Text for String".into())),
         }
     }
@@ -214,7 +209,6 @@ impl FromValue<Sqlite> for Vec<u8> {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
             Value::Blob(cow) => Ok(cow.into_owned()),
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for Vec<u8>".into())),
             _ => Err(Error::TypeMismatch("Expected Blob for Vec<u8>".into())),
         }
     }
@@ -247,13 +241,10 @@ impl<'a, const N: usize> IntoValue<'a, Sqlite> for &'a [u8; N] {
 impl<const N: usize> FromValue<Sqlite> for [u8; N] {
     fn from_value(value: Value<'_>) -> Result<Self> {
         match value {
-            Value::Blob(cow) => {
-                let bytes = cow.into_owned();
-                bytes
-                    .try_into()
-                    .map_err(|_| Error::ParseError(format!("Expected Blob of length {}", N)))
-            }
-            Value::Null => Err(Error::UnexpectedNull("Unexpected NULL for [u8; N]".into())),
+            Value::Blob(cow) => cow
+                .as_ref()
+                .try_into()
+                .map_err(|_| Error::ParseError(format!("Expected Blob of length {}", N))),
             _ => Err(Error::TypeMismatch("Expected Blob for fixed-size array".into())),
         }
     }

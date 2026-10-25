@@ -1,5 +1,6 @@
 use kova::dsl::Column;
 use kova::types::{ColumnMeta, Database, Engine, FromRow, Model, Relation};
+use kova::Result;
 
 pub struct Comment;
 
@@ -8,16 +9,14 @@ impl Relation for Comment {
 }
 
 impl<X> FromRow<Engine, X> for Comment {
-    fn from_row(_: &<Engine as Database>::Row<'_>) -> kova::Result<Self> {
+    fn from_row_at(_: &<Engine as Database>::Row<'_>, _idx: &mut usize) -> Result<Self> {
         unimplemented!()
     }
 }
 
 impl<X> Model<Engine, X> for Comment {
     const COLUMNS_META: &'static [ColumnMeta] = &[];
-    fn to_values<'a>(
-        &'a self,
-    ) -> kova::Result<Vec<(&'static str, <Engine as Database>::Value<'a>)>> {
+    fn write_values<'a>( &'a self, _out: &mut Vec<<Engine as Database>::Value<'a>>) -> Result<()> {
         unimplemented!()
     }
 }

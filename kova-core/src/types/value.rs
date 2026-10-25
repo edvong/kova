@@ -43,5 +43,3 @@ impl<DB: Database, T: FromValue<DB>> FromValue<DB> for Box<T> {
         T::from_value(value).map(Box::new)
     }
 }
-
-// For RC/ARC, accept Only Ref Type.

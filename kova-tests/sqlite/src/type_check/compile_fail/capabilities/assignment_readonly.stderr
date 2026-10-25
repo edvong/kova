@@ -4,9 +4,9 @@ error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::column::C
 16 |     let _ = client.update::<User>().set(VIRTUAL_COL.set(1));
    |                                                     ^^^ method cannot be called due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
    |
    = note: the following trait bounds were not satisfied:
@@ -18,9 +18,9 @@ error[E0599]: the method `increment` exists for struct `Node<kova_core::dsl::col
 17 |     let _ = client.update::<User>().set(VIRTUAL_COL.increment(1));
    |                                                     ^^^^^^^^^ method cannot be called due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
    |
    = note: the following trait bounds were not satisfied:
@@ -32,27 +32,27 @@ error[E0599]: the method `decrement` exists for struct `Node<kova_core::dsl::col
 18 |     let _ = client.update::<User>().set(VIRTUAL_COL.decrement(1));
    |                                                     ^^^^^^^^^ method cannot be called due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
    |
    = note: the following trait bounds were not satisfied:
            `kova_core::dsl::column::Column<i32, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
 
-error[E0599]: the method `excluded` exists for struct `Node<kova_core::dsl::column::Column<Author, IdentifierMeta>>`, but its trait bounds were not satisfied
+error[E0599]: the method `excluded` exists for struct `Node<kova_core::dsl::column::Column<models::type_check::post_view::Author, IdentifierMeta>>`, but its trait bounds were not satisfied
   --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:19:58
    |
 19 |     let _ = client.update::<User>().set(PostView::author.excluded());
    |                                                          ^^^^^^^^ method cannot be called due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
    |
    = note: the following trait bounds were not satisfied:
-           `kova_core::dsl::column::Column<Author, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
+           `kova_core::dsl::column::Column<models::type_check::post_view::Author, IdentifierMeta>: kova_core::dsl::can::CanAssignment`
 
 error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::column::Column<String, IdentifierMeta>>`, but its trait bounds were not satisfied
   --> src/type_check/compile_fail/capabilities/assignment_readonly.rs:22:55
@@ -60,9 +60,9 @@ error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::column::C
 22 |     let _ = client.update::<User>().set(JsonEach::key.set("k"));
    |                                                       ^^^ method cannot be called due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
    |
    = note: the following trait bounds were not satisfied:
@@ -74,9 +74,9 @@ error[E0599]: the method `set` exists for struct `Node<kova_core::dsl::column::C
 23 |     let _ = client.update::<User>().set(JsonEach::value.set(1));
    |                                                         ^^^ method cannot be called due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:10:1
+  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
    |
-10 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
+11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanAssignment`
    |
    = note: the following trait bounds were not satisfied:

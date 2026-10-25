@@ -13,7 +13,15 @@ pub trait Cte: Relation { }
     note = "expected a type that implements `FromRow<{DB}, {X}>`.\nif `{Self}` is a struct, ensure it derives `Model` or `FromRow` and all fields implement `Decode` under codec `{X}`."
 )]
 pub trait FromRow<DB: Database, X>: Sized {
-    fn from_row(row: &DB::Row<'_>) -> Result<Self>;
+    const COLUMN_COUNT: usize = 0;
+
+    #[inline(always)]
+    fn from_row(row: &DB::Row<'_>) -> Result<Self> {
+        let mut idx = 0;
+        Self::from_row_at(row, &mut idx)
+    }
+
+    fn from_row_at(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self>;
 }
 
 #[diagnostic::on_unimplemented(
@@ -24,22 +32,27 @@ pub trait FromRow<DB: Database, X>: Sized {
 pub trait Model<DB: Database, X>: FromRow<DB, X> + Relation {
     const COLUMNS_META: &'static [ColumnMeta];
 
-    fn to_values<'a>(&'a self) -> Result<Vec<(&'static str, DB::Value<'a>)>>;
+    fn write_values<'a>(&'a self, out: &mut Vec<DB::Value<'a>>) -> Result<()>;
 }
 
 impl<T, DB, X> FromRow<DB, X> for Option<T>
     where
         DB: Database,
         T: FromRow<DB, X> {
-    fn from_row(row: &DB::Row<'_>) -> Result<Self> {
-        match T::from_row(row) {
+    const COLUMN_COUNT: usize = T::COLUMN_COUNT;
+
+    fn from_row_at(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self> {
+        let start = *idx;
+        match T::from_row_at(row, idx) {
             Ok(val) => Ok(Some(val)),
-            Err(Error::UnexpectedNull(_)) | Err(Error::NotFound(_)) => Ok(None),
+            Err(Error::UnexpectedNull(_)) | Err(Error::NotFound(_)) => {
+                *idx = start + T::COLUMN_COUNT;
+                Ok(None)
+            }
             Err(e) => Err(e),
         }
     }
 }
-
 macro_rules! impl_from_row_for_tuple {
     ( $($T:ident),+ ) => {
         #[diagnostic::do_not_recommend]
@@ -47,8 +60,11 @@ macro_rules! impl_from_row_for_tuple {
             where
                 DB: Database,
                 $( $T: FromRow<DB, X>, )+ {
-            fn from_row(row: &DB::Row<'_>) -> Result<Self> {
-                Ok(( $( $T::from_row(row)?, )+ ))
+            const COLUMN_COUNT: usize = 0 $( + <$T as FromRow<DB, X>>::COLUMN_COUNT )+;
+
+            #[inline(always)]
+            fn from_row_at(row: &DB::Row<'_>, idx: &mut usize) -> Result<Self> {
+                Ok(( $( $T::from_row_at(row, idx)?, )+ ))
             }
         }
     };

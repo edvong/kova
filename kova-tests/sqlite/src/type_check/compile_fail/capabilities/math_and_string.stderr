@@ -9,12 +9,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Static<String>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
@@ -39,12 +39,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Option<String>` to implement `CanMath<_>`
     = note: 2 redundant requirements hidden
@@ -69,12 +69,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `uuid::Uuid
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Static<uuid::Uuid>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
@@ -99,12 +99,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Static<String>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
@@ -129,12 +129,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Option<String>` to implement `CanMath<_>`
     = note: 2 redundant requirements hidden
@@ -159,12 +159,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `bool`
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Static<bool>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
@@ -188,7 +188,7 @@ error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `Str
     |
     = help: the trait `CanMath<AppCodec>` is not implemented for `String`
     = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
-help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::event_log::Decimal`
    --> src/type_check/codec.rs
     |
     | impl CanMath<AppCodec> for Decimal {}
@@ -217,7 +217,7 @@ error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `Str
     |
     = help: the trait `CanMath<AppCodec>` is not implemented for `String`
     = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
-help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::event_log::Decimal`
    --> src/type_check/codec.rs
     |
     | impl CanMath<AppCodec> for Decimal {}
@@ -248,7 +248,7 @@ error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `boo
     |
     = help: the trait `CanMath<AppCodec>` is not implemented for `bool`
     = note: if `bool` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
-help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::event_log::Decimal`
    --> src/type_check/codec.rs
     |
     | impl CanMath<AppCodec> for Decimal {}
@@ -277,7 +277,7 @@ error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `Str
     |
     = help: the trait `CanMath<AppCodec>` is not implemented for `String`
     = note: if `String` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
-help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::event_log::Decimal`
    --> src/type_check/codec.rs
     |
     | impl CanMath<AppCodec> for Decimal {}
@@ -306,7 +306,7 @@ error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `uui
     |
     = help: the trait `CanMath<AppCodec>` is not implemented for `uuid::Uuid`
     = note: if `uuid::Uuid` is a custom numeric type (e.g., `Decimal`), implement `CanMath<AppCodec>` for it.
-help: the trait `CanMath<AppCodec>` is implemented for `Decimal`
+help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::event_log::Decimal`
    --> src/type_check/codec.rs
     |
     | impl CanMath<AppCodec> for Decimal {}
@@ -454,8 +454,8 @@ error[E0277]: textual capability (`CanString<_>`) is not satisfied for `kova_sql
     |                                                     ^^^^ expected a textual column or string expression
     |
     = note: if `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>` is a custom textual type, implement `CanString<_>` for it.
-help: the trait `CanString<_>` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>`
-      but it is implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, _, _, _>`
+help: the trait `CanString<_>` is not implemented for `InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>`
+      but it is implemented for `InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, _, _, _>`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/json.rs:98:1
     |
  98 | impl<A, K, X> CanString<X> for InnerJsonObject<JsonObjectMarker, A, K, X> {}
@@ -687,12 +687,12 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
     = help: the following other types implement trait `CanMath<X>`:
               `&'a T` implements `CanMath<X>`
               `Box<T>` implements `CanMath<X>`
-              `Decimal` implements `CanMath<AppCodec>`
               `Dynamic` implements `CanMath<X>`
               `Node<T>` implements `CanMath<X>`
               `Option<T>` implements `CanMath<X>`
               `Static<T>` implements `CanMath<X>`
               `f32` implements `CanMath<X>`
+              `f64` implements `CanMath<X>`
             and $N others
     = note: required for `Static<String>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
