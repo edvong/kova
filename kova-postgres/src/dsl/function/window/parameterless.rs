@@ -3,8 +3,8 @@
 use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Postgres;
-use kova_core::dsl::func::{Function, SetWindow, Window};
-use kova_core::dsl::{
+use kova_kernel::dsl::func::{Function, SetWindow, Window};
+use kova_kernel::dsl::{
     AstNode, CanAlias, CanCompare, CanMath, CanOrder, CanWindow, Operand, Static, TypedNode,
 };
 use std::marker::PhantomData;

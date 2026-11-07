@@ -22,6 +22,8 @@ impl Relation for User {
 }
 
 impl<X> FromRow<Engine, X> for User {
+    const COLUMN_COUNT: usize = 0;
+
     fn from_row_at(row: &<Engine as Database>::Row<'_>, idx: &mut usize) -> Result<Self, Error> {
         Ok(Self {
             id: row.get_column::<_, X>(idx, "id")?,

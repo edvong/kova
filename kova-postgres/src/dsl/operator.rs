@@ -1,5 +1,5 @@
 use crate::types::Postgres;
-use kova_core::dsl::Operand;
+use kova_kernel::dsl::Operand;
 
 pub enum ExtOperator<'a> {
     // Terminal operators that directly produce boolean conditions.

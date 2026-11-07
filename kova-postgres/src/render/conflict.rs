@@ -1,9 +1,9 @@
 use crate::dsl::Constraint;
 use crate::types::Postgres;
-use kova_core::Result;
-use kova_core::dsl::component::ComponentKind;
-use kova_core::dsl::{ConflictAction, OnConflictClause};
-use kova_core::render::{PlatformRender, Render, RenderContext};
+use kova_kernel::Result;
+use kova_kernel::dsl::component::ComponentKind;
+use kova_kernel::dsl::{ConflictAction, OnConflictClause};
+use kova_kernel::render::{PlatformRender, Render, RenderContext};
 
 impl<'a: 's, 's> PlatformRender<'a, 's, &'s OnConflictClause<'a, Postgres>> for Postgres {
     fn render(clause: &'s OnConflictClause<'a, Postgres>, ctx: &mut RenderContext<'a, 's, Self>)

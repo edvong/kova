@@ -2,7 +2,7 @@ use crate::query::Query;
 use crate::types::conn::SqlitePool;
 use crate::types::ext::SqliteExtension;
 use crate::types::{Row, Value};
-use kova_core::types::Database;
+use kova_kernel::types::Database;
 
 #[derive(Copy, Clone)]
 pub struct Sqlite;

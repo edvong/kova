@@ -4,8 +4,8 @@ use crate::dsl::column::Column;
 use crate::dsl::function::srf::ExtSrfFunction;
 use crate::dsl::function::srf::srf_node::{SrfBuildMarker, SrfNode, SrfSchemaMarker};
 use crate::types::Postgres;
-use kova_core::dsl::{Dynamic, IntoOperand};
-use kova_core::types::IdentifierMeta;
+use kova_kernel::dsl::{Dynamic, IntoOperand};
+use kova_kernel::types::IdentifierMeta;
 use std::marker::PhantomData;
 
 pub type GenerateSeries<L = (), R = (), S = (), K = ()> =
@@ -73,11 +73,10 @@ impl SrfSchemaMarker for GenerateSeriesMarker {
 
 impl<'a, L, R, S, KL, KR, KS, X> SrfBuildMarker<'a, SeriesArgs<L, R, S, (KL, KR, KS)>, X>
     for GenerateSeriesMarker
-where
-    L: IntoOperand<'a, Dynamic, Postgres, KL, X>,
-    R: IntoOperand<'a, Dynamic, Postgres, KR, X>,
-    S: IntoOperand<'a, Dynamic, Postgres, KS, X>,
-{
+    where
+        L: IntoOperand<'a, Dynamic, Postgres, KL, X>,
+        R: IntoOperand<'a, Dynamic, Postgres, KR, X>,
+        S: IntoOperand<'a, Dynamic, Postgres, KS, X> {
     #[inline(always)]
     fn build_srf(args: SeriesArgs<L, R, S, (KL, KR, KS)>) -> ExtSrfFunction<'a> {
         ExtSrfFunction::GenerateSeries {

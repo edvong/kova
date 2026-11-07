@@ -7,7 +7,6 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, mo
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`
 
 error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::InnerQuery, kova_postgres::query::select::TaggedFrom, _>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:16:48
@@ -18,7 +17,6 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, mo
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`
 
 error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:19:60
@@ -29,7 +27,6 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, mo
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`
 
 error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:20:55
@@ -40,7 +37,6 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, mo
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`
 
 error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:21:48
@@ -51,12 +47,21 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, mo
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`
+
+error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:22:62
+   |
+22 |     let _ = client.select::<User>().srf(Unnest(vec![1_i32])).tag::<T1>();
+   |                                                              ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>`
+   |
+   = note: the method was found for
+           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
+           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
 
 error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
-  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:24:60
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:25:60
    |
-24 |     let _ = client.select::<User>().filter(User::id.eq(1)).srf(Unnest(vec![1_i32]));
+25 |     let _ = client.select::<User>().filter(User::id.eq(1)).srf(Unnest(vec![1_i32]));
    |                                                            ^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>`
    |
    = note: the method was found for
@@ -64,13 +69,13 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, mo
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::TaggedFrom, X>`
 
 error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddJoin, AppCodec>` in the current scope
-  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:28:10
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:29:10
    |
-25 |       let _ = client
+26 |       let _ = client
    |  _____________-
-26 | |         .select::<User>()
-27 | |         .inner_join::<Order>(Order::user_id.eq(User::id))
-28 | |         .srf(Unnest(vec![1_i32]));
+27 | |         .select::<User>()
+28 | |         .inner_join::<Order>(Order::user_id.eq(User::id))
+29 | |         .srf(Unnest(vec![1_i32]));
    | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddJoin, AppCodec>`
    | |_________|
    |
@@ -79,15 +84,15 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, mo
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::TaggedFrom, X>`
 
-error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddSrf, AppCodec>` in the current scope
-  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:34:10
+error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:36:10
    |
-31 |       let _ = client
+33 |       let _ = client
    |  _____________-
-32 | |         .select::<User>()
-33 | |         .srf(Unnest(vec![1_i32]))
-34 | |         .srf(Unnest(vec![2_i32]));
-   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddSrf, AppCodec>`
+34 | |         .select::<User>()
+35 | |         .srf(Unnest(vec![1_i32]))
+36 | |         .srf(Unnest(vec![2_i32]));
+   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>`
    | |_________|
    |
    |
@@ -95,23 +100,40 @@ error[E0599]: no method named `srf` found for struct `kova::query::Select<'_, mo
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::TaggedFrom, X>`
 
-error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
-  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:39:10
+error[E0599]: no method named `tag` found for struct `kova_postgres::dsl::function::srf::srf_node::SrfNode<Vec<i32>, kova_postgres::dsl::function::srf::unnest::UnnestMarker, kova_postgres::dsl::function::srf::srf_node::Tagged>` in the current scope
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:37:45
    |
-35 |       let _ = client
-   |  _____________-
-36 | |         .select::<User>()
-37 | |         .srf(Unnest(vec![1_i32]))
-38 | |         .tag::<T1>()
-39 | |         .tag::<T2>();
-   | |         -^^^ method not found in `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>`
-   | |_________|
+37 |     let _ = Unnest(vec![1_i32]).tag::<T1>().tag::<T2>();
+   |             -------------------             ^^^ private field, not a method
+   |             |
+   |             method `tag` is available on `kova_postgres::dsl::function::srf::srf_node::SrfNode<Vec<i32>, kova_postgres::dsl::function::srf::unnest::UnnestMarker>`
    |
+help: one of the expressions' fields has a method of the same name
    |
-   = note: the method was found for
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`
+37 |     let _ = Unnest(vec![1_i32]).tag::<T1>().unnest.tag::<T2>();
+   |                                             +++++++
+
+error[E0599]: no method named `tag` found for struct `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova_postgres::dsl::function::srf::generate_series::SeriesArgs<i32, i32, i32, (_, _, _)>, kova_postgres::dsl::function::srf::generate_series::GenerateSeriesMarker, kova_postgres::dsl::function::srf::srf_node::Tagged>` in the current scope
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:38:67
+   |
+38 |     let _ = GenerateSeries(1_i32, 10_i32).step(1_i32).tag::<T1>().tag::<T2>();
+   |             ----------------------------- -----------             ^^^ private field, not a method
+   |             |                             |
+   |             |                             method `tag` is available on `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova_postgres::dsl::function::srf::generate_series::SeriesArgs<i32, i32, i32, (_, _, _)>, kova_postgres::dsl::function::srf::generate_series::GenerateSeriesMarker>`
+   |             method `tag` is available on `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova_postgres::dsl::function::srf::generate_series::SeriesArgs<i32, i32, i32, (_, _, _)>, kova_postgres::dsl::function::srf::generate_series::GenerateSeriesMarker>`
+   |
+help: one of the expressions' fields has a method of the same name
+   |
+38 |     let _ = GenerateSeries(1_i32, 10_i32).step(1_i32).tag::<T1>().generate_series.tag::<T2>();
+   |                                                                   ++++++++++++++++
+
+error[E0599]: no method named `step` found for struct `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova_postgres::dsl::function::srf::generate_series::SeriesArgs<i32, i32, i32, (_, _, _)>, kova_postgres::dsl::function::srf::generate_series::GenerateSeriesMarker, kova_postgres::dsl::function::srf::srf_node::Tagged>` in the current scope
+  --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:39:55
+   |
+39 |     let _ = GenerateSeries(1_i32, 10_i32).tag::<T1>().step(1_i32);
+   |                                                       ^^^^ method not found in `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova_postgres::dsl::function::srf::generate_series::SeriesArgs<i32, i32, i32, (_, _, _)>, kova_postgres::dsl::function::srf::generate_series::GenerateSeriesMarker, kova_postgres::dsl::function::srf::srf_node::Tagged>`
+   |
+   = note: the method was found for `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova_postgres::dsl::function::srf::generate_series::SeriesArgs<L, R, S, (KL, KR, KS)>, kova_postgres::dsl::function::srf::generate_series::GenerateSeriesMarker>`
 
 error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, AppCodec>` in the current scope
   --> src/type_check/compile_fail/typestate/select_tag_and_srf.rs:46:10
@@ -129,4 +151,3 @@ error[E0599]: no method named `tag` found for struct `kova::query::Select<'_, mo
    = note: the method was found for
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddFrom, X>`
            - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddJoin, X>`
-           - `kova::query::Select<'a, T, D, kova_postgres::query::select::JustAddSrf, X>`

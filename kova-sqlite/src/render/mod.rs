@@ -3,9 +3,9 @@ mod conflict;
 use crate::dsl::func::ExtSrfFunction;
 use crate::dsl::{ExtAssignment, ExtFunction, ExtOperator};
 use crate::types::{Sqlite, Value};
-use kova_core::dsl::{PaginationClause, Projection};
-use kova_core::render::{PlatformRender, Render, RenderContext};
-use kova_core::{Error, Result};
+use kova_kernel::dsl::{PaginationClause, Projection};
+use kova_kernel::render::{PlatformRender, Render, RenderContext};
+use kova_kernel::{Error, Result};
 use std::any::TypeId;
 use std::fmt::Write;
 

@@ -18,7 +18,7 @@ error[E0277]: SQL type mismatch: `Static<i64>` is not compatible with `Static<i3
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `i64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `i64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -45,7 +45,7 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<i1
              Compatible<Static<Option<i64>>, X>
              Compatible<Static<f64>, X>
              Compatible<Static<i64>, X>
-   = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i16>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `i32` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i16>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -76,7 +76,7 @@ error[E0277]: SQL type mismatch: `Static<i16>` is not compatible with `Static<i8
              Compatible<Static<i32>, X>
              Compatible<Static<i64>, X>
              Compatible<Static<isize>, X>
-   = note: required for `i16` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i8>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `i16` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i8>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -106,7 +106,7 @@ error[E0277]: SQL type mismatch: `Static<Option<i64>>` is not compatible with `S
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `Option<i64>` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<Option<i32>>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `Option<i64>` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<Option<i32>>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -136,7 +136,7 @@ error[E0277]: SQL type mismatch: `Static<f64>` is not compatible with `Static<f3
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `f64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<f32>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `f64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<f32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -166,7 +166,7 @@ error[E0277]: SQL type mismatch: `Static<f64>` is not compatible with `Static<i3
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `f64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `f64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -196,7 +196,7 @@ error[E0277]: SQL type mismatch: `Static<i64>` is not compatible with `Static<f6
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `i64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<f64>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `i64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<f64>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -226,7 +226,7 @@ error[E0277]: SQL type mismatch: `Static<i64>` is not compatible with `Static<Op
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `i64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<Option<f64>>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `i64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<Option<f64>>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -253,7 +253,7 @@ error[E0277]: SQL type mismatch: `Static<i32>` is not compatible with `Static<f3
              Compatible<Static<Option<i64>>, X>
              Compatible<Static<f64>, X>
              Compatible<Static<i64>, X>
-   = note: required for `i32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<f32>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `i32` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<f32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -294,7 +294,7 @@ error[E0277]: SQL type mismatch: `Static<u8>` is not compatible with `Static<i8>
              Compatible<Static<u32>, X>
              Compatible<Static<u64>, X>
              Compatible<Static<usize>, X>
-   = note: required for `u8` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i8>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `u8` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i8>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -329,7 +329,7 @@ error[E0277]: SQL type mismatch: `Static<u16>` is not compatible with `Static<i1
              Compatible<Static<u32>, X>
              Compatible<Static<u64>, X>
              Compatible<Static<usize>, X>
-   = note: required for `u16` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i16>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `u16` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i16>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -358,7 +358,7 @@ error[E0277]: SQL type mismatch: `Static<u32>` is not compatible with `Static<i3
              Compatible<Static<i64>, X>
              Compatible<Static<u64>, X>
              Compatible<Static<usize>, X>
-   = note: required for `u32` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `u32` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -388,7 +388,7 @@ error[E0277]: SQL type mismatch: `Static<u64>` is not compatible with `Static<i6
              `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
              `Static<&&str>` implements `Compatible<Static<String>, X>`
            and $N others
-   = note: required for `u64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i64>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `u64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i64>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -418,8 +418,8 @@ error[E0277]: cannot use `u64` as an operand where `Static<i64>` is expected (un
              &u16
              &u32
            and $N others
-   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, u64, _>`
-   = note: required for `u64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i64>, Engine, kova_core::dsl::operand::Open, _>`
+   = note: required for `Engine` to implement `kova_kernel::types::codec::Encode<'_, u64, _>`
+   = note: required for `u64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i64>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
    |
@@ -429,7 +429,7 @@ note: required by a bound in `Node::<T>::eq`
 89 |             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::eq`
 
-error[E0277]: cannot use `Node<kova_core::dsl::column::Column<f64>>` as an operand where `Static<i32>` is expected (under codec `_`)
+error[E0277]: cannot use `Node<kova_kernel::dsl::column::Column<f64>>` as an operand where `Static<i32>` is expected (under codec `_`)
    --> src/type_check/compile_fail/default_only/narrowing_and_precision.rs:37:56
     |
  37 |     let _ = client.select::<User>().filter(User::id.eq(Order::amount));
@@ -437,13 +437,13 @@ error[E0277]: cannot use `Node<kova_core::dsl::column::Column<f64>>` as an opera
     |                                                     |
     |                                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `Node<kova_core::dsl::column::Column<f64>>`
+    = help: the trait `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `Node<kova_kernel::dsl::column::Column<f64>>`
     = note: ensure the operand type is compatible with `Static<i32>` and implements `Encode` under codec `_`.
-help: the trait `kova_core::dsl::operand::IntoOperand<'a, Target, Engine, kova_core::dsl::operand::Close, X>` is implemented for `kova::query::Select<'a, T, kova_sqlite::query::select::InnerQuery, S, X>`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:266:1
+help: the trait `kova_kernel::dsl::operand::IntoOperand<'a, Target, Engine, kova_kernel::dsl::operand::Close, X>` is implemented for `kova::query::Select<'a, T, kova_sqlite::query::select::InnerQuery, S, X>`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:255:1
     |
-266 | / impl<'a, T: Model<Sqlite, X>, Target, S, X> IntoOperand<'a, Target, Sqlite, Close, X>
-267 | |     for Select<'a, T, InnerQuery, S, X> {
+255 | / impl<'a, T: Model<Sqlite, X>, Target, S, X> IntoOperand<'a, Target, Sqlite, Close, X>
+256 | |     for Select<'a, T, InnerQuery, S, X> {
     | |_______________________________________^
 note: required by a bound in `Node::<T>::eq`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:89:16
@@ -474,7 +474,7 @@ error[E0277]: SQL type mismatch: `Static<i64>` is not compatible with `Static<i3
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
             and $N others
-    = note: required for `i64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+    = note: required for `i64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::add`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:225:16
     |
@@ -504,7 +504,7 @@ error[E0277]: SQL type mismatch: `Static<i64>` is not compatible with `Static<i3
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
             and $N others
-    = note: required for `i64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+    = note: required for `i64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::between`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:151:16
     |
@@ -534,7 +534,7 @@ error[E0277]: SQL type mismatch: `Static<i64>` is not compatible with `Static<i3
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
             and $N others
-    = note: required for `i64` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+    = note: required for `i64` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::between`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:152:16
     |

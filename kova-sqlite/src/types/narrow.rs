@@ -1,6 +1,6 @@
 use crate::types::{Decode, Encode, Sqlite, Value};
-use kova_core::types::{FromValue, IntoValue};
-use kova_core::{Error, Result, impl_platform_decode_only, impl_platform_prim_codec};
+use kova_kernel::types::{FromValue, IntoValue};
+use kova_kernel::{Error, Result, impl_platform_decode_only, impl_platform_prim_codec};
 use std::convert::TryFrom;
 
 // 1. Narrowing Decode for types whose lossless Encode is already in codec.rs

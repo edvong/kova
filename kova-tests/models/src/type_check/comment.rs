@@ -9,6 +9,8 @@ impl Relation for Comment {
 }
 
 impl<X> FromRow<Engine, X> for Comment {
+    const COLUMN_COUNT: usize = 0;
+
     fn from_row_at(_: &<Engine as Database>::Row<'_>, _idx: &mut usize) -> Result<Self> {
         unimplemented!()
     }

@@ -1,4 +1,4 @@
-error[E0277]: `kova_core::dsl::function::aggregate::CountMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::CountMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:13:47
     |
  13 |     let _ = client.select::<Order>().group_by(Count(Wildcard));
@@ -6,30 +6,30 @@ error[E0277]: `kova_core::dsl::function::aggregate::CountMarker` cannot be used 
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::CountMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::CountMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Wildcard, ()>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Wildcard, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:14:47
     |
  14 |     let _ = client.select::<Order>().group_by(Sum(Order::amount));
@@ -37,27 +37,27 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::SumMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::SumMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_postgres::dsl::function::aggregate::ArrayAggMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -68,27 +68,27 @@ error[E0277]: `kova_postgres::dsl::function::aggregate::ArrayAggMarker` cannot b
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::aggregate::ArrayAggMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::aggregate::ArrayAggMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::ArrayAggMarker, Node<kova_core::dsl::column::Column<f64>>, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::ArrayAggMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::ArrayAggMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::ArrayAggMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::ArrayAggMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::ArrayAggMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_postgres::dsl::function::aggregate::JsonbAggMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -99,27 +99,27 @@ error[E0277]: `kova_postgres::dsl::function::aggregate::JsonbAggMarker` cannot b
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::aggregate::JsonbAggMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::aggregate::JsonbAggMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::JsonbAggMarker, Node<kova_core::dsl::column::Column<f64>>, ()>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::JsonbAggMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::JsonbAggMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::JsonbAggMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::JsonbAggMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_postgres::dsl::function::aggregate::JsonbAggMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -130,29 +130,29 @@ error[E0277]: `kova_postgres::dsl::function::window::parameterless::InnerWindowF
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:18:47
     |
  18 |     let _ = client.select::<Order>().group_by(Lag(Order::amount));
@@ -160,29 +160,29 @@ error[E0277]: `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, ()>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, ()>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_core::dsl::operand::Open, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_kernel::dsl::operand::Open, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:19:47
     |
  19 |     let _ = client.select::<Order>().group_by(Ntile(4));
@@ -190,29 +190,29 @@ error[E0277]: `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {inte
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_core::dsl::operand::Open, ()>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_kernel::dsl::operand::Open, ()>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_core::dsl::operand::Open, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_core::dsl::operand::Open, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_kernel::dsl::operand::Open, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, kova_kernel::dsl::operand::Open, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:20:47
     |
  20 |     let _ = client.select::<Order>().group_by(Abs(Sum(Order::amount)));
@@ -220,32 +220,32 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::SumMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::SumMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>` to implement `kova_kernel::dsl::can::CanGroup`
     = note: 2 redundant requirements hidden
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, ()>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, ()>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:25:19
     |
  25 |         .group_by(JsonbBuildObject((User::id, User::name)));
@@ -253,26 +253,26 @@ error[E0277]: `kova_postgres::dsl::function::json::jsonb_build_object::InnerJson
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -283,27 +283,27 @@ error[E0277]: `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker`
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `Table<models::type_check::user::User>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -314,30 +314,30 @@ error[E0277]: `Table<models::type_check::user::User>` cannot be used in a `GROUP
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `Table<models::type_check::user::User>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `Table<models::type_check::user::User>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:168:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:157:16
     |
-166 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+155 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-167 |         where
-168 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
+156 |         where
+157 |             A: IntoArg<GroupBy<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: the trait bound `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>: kova_core::dsl::can::CanOrder` is not satisfied
+error[E0277]: the trait bound `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>: kova_kernel::dsl::can::CanOrder` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:29:19
     |
  29 |         .order_by(JsonbBuildObject((User::id, User::name)));
@@ -345,59 +345,59 @@ error[E0277]: the trait bound `kova_postgres::dsl::function::json::jsonb_build_o
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanOrder` is not implemented for `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanOrder`:
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
-              kova_core::dsl::math::Math<'a, DB, Output, X>
+    = help: the trait `kova_kernel::dsl::can::CanOrder` is not implemented for `kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanOrder`:
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::math::Math<'a, DB, Output, X>
             and $N others
-    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::clause::order::IntoOrdering<'_, Engine, ()>`
-    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, ()>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>>` to implement `kova_kernel::dsl::clause::order::IntoOrdering<'_, Engine, ()>`
+    = note: required for `Node<kova_postgres::dsl::function::json::jsonb_build_object::InnerJsonbBuildObject<(Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, ()>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:180:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:169:16
     |
-178 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+167 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-179 |         where
-180 |             A: IntoArg<Ordering<'a, Postgres, X>, M> {
+168 |         where
+169 |             A: IntoArg<Ordering<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::order_by`
 
-error[E0277]: the trait bound `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker: kova_core::dsl::can::CanOrder` is not satisfied
+error[E0277]: the trait bound `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker: kova_kernel::dsl::can::CanOrder` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:30:46
     |
  30 |     let _ = client.select::<User>().order_by(RowToJson(User));
-    |                                     -------- ^^^^^^^^^^^^^^^ the trait `kova_core::dsl::can::CanOrder` is not implemented for `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker`
+    |                                     -------- ^^^^^^^^^^^^^^^ the trait `kova_kernel::dsl::can::CanOrder` is not implemented for `kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker`
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the following other types implement trait `kova_core::dsl::can::CanOrder`:
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
-              kova_core::dsl::math::Math<'a, DB, Output, X>
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanOrder`:
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::math::Math<'a, DB, Output, X>
             and $N others
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>` to implement `kova_core::dsl::can::CanOrder`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_core::dsl::clause::order::IntoOrdering<'_, Engine, ()>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>` to implement `kova_kernel::dsl::can::CanOrder`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_kernel::dsl::clause::order::IntoOrdering<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_postgres::dsl::function::json::row_to_json::RowToJsonMarker, Table<models::type_check::user::User>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:180:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:169:16
     |
-178 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+167 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-179 |         where
-180 |             A: IntoArg<Ordering<'a, Postgres, X>, M> {
+168 |         where
+169 |             A: IntoArg<Ordering<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::order_by`
 
-error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:34:53
    |
 34 |         Count(Order::id).over(Window().partition_by(Sum(Order::amount))),
@@ -405,22 +405,22 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
    |                                        |
    |                                        required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::SumMarker`
-   = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+   = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::SumMarker`
+   = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
              Node<T>
-             kova_core::dsl::column::Column<T, M, Mode>
-             kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-             kova_core::dsl::function::scalar::AbsMarker
-             kova_core::dsl::function::scalar::LengthMarker
-             kova_core::dsl::function::scalar::LowerMarker
-             kova_core::dsl::function::scalar::Scalar<M, E>
-             kova_core::dsl::function::scalar::UpperMarker
+             kova_kernel::dsl::column::Column<T, M, Mode>
+             kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+             kova_kernel::dsl::function::scalar::AbsMarker
+             kova_kernel::dsl::function::scalar::LengthMarker
+             kova_kernel::dsl::function::scalar::LowerMarker
+             kova_kernel::dsl::function::scalar::Scalar<M, E>
+             kova_kernel::dsl::function::scalar::UpperMarker
            and $N others
-   = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, _>` to implement `kova_core::dsl::can::CanGroup`
-   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, _>>` to implement `kova_core::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
-   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, _>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'_, Engine, _>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, _>` to implement `kova_kernel::dsl::can::CanGroup`
+   = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, _>>` to implement `kova_kernel::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
+   = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, _>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'_, Engine, _>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `Window::<'a, DB, X>::partition_by`
-  --> /Users/me/Workspace/kova/kova-core/src/dsl/function/window.rs:56:16
+  --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/window.rs:56:16
    |
 54 |     pub fn partition_by<C, M>(mut self, cols: C) -> Self
    |            ------------ required by a bound in this associated function
@@ -436,21 +436,21 @@ error[E0277]: `kova_postgres::dsl::function::window::parameterless::InnerWindowF
    |                                        |
    |                                        required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
-   = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+   = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
+   = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
              Node<T>
-             kova_core::dsl::column::Column<T, M, Mode>
-             kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-             kova_core::dsl::function::scalar::AbsMarker
-             kova_core::dsl::function::scalar::LengthMarker
-             kova_core::dsl::function::scalar::LowerMarker
-             kova_core::dsl::function::scalar::Scalar<M, E>
-             kova_core::dsl::function::scalar::UpperMarker
+             kova_kernel::dsl::column::Column<T, M, Mode>
+             kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+             kova_kernel::dsl::function::scalar::AbsMarker
+             kova_kernel::dsl::function::scalar::LengthMarker
+             kova_kernel::dsl::function::scalar::LowerMarker
+             kova_kernel::dsl::function::scalar::Scalar<M, E>
+             kova_kernel::dsl::function::scalar::UpperMarker
            and $N others
-   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>>` to implement `kova_core::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
-   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'_, Engine, _>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>>` to implement `kova_kernel::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
+   = note: required for `Node<kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'_, Engine, _>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `Window::<'a, DB, X>::partition_by`
-  --> /Users/me/Workspace/kova/kova-core/src/dsl/function/window.rs:56:16
+  --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/window.rs:56:16
    |
 54 |     pub fn partition_by<C, M>(mut self, cols: C) -> Self
    |            ------------ required by a bound in this associated function
@@ -458,18 +458,18 @@ note: required by a bound in `Window::<'a, DB, X>::partition_by`
 56 |             C: IntoArg<PartitionBy<'a, DB, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Window::<'a, DB, X>::partition_by`
 
-error[E0277]: window clause `.over(...)` is not available on `kova_core::dsl::column::Column<i32>`
+error[E0277]: window clause `.over(...)` is not available on `kova_kernel::dsl::column::Column<i32>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:41:54
     |
  41 |     let _ = client.select::<User>().columns(User::id.over(Window()));
     |                                                      ^^^^ only aggregate and window functions support `.over(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_core::dsl::column::Column<i32>`
-help: the following other types implement trait `kova_core::dsl::can::CanWindow`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:110:1
+    = help: the trait `kova_kernel::dsl::can::CanWindow` is not implemented for `kova_kernel::dsl::column::Column<i32>`
+help: the following other types implement trait `kova_kernel::dsl::can::CanWindow`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:110:1
     |
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/lag_lead.rs:69:1
     |
@@ -494,35 +494,35 @@ note: required by a bound in `Node::<T>::over`
 332 |             T: CanWindow + SetWindow<'a, Postgres, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:41:59
     |
  41 |     let _ = client.select::<User>().columns(User::id.over(Window()));
-    |                                                      ---- ^^^^^^^^ the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_core::dsl::column::Column<i32>`
+    |                                                      ---- ^^^^^^^^ the trait `kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_kernel::dsl::column::Column<i32>`
     |                                                      |
     |                                                      required by a bound introduced by this call
     |
-help: the following other types implement trait `kova_core::dsl::function::SetWindow<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:100:1
+help: the following other types implement trait `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:100:1
     |
 100 |   impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/lag_lead.rs:95:1
     |
  95 | / impl<'a, M, E, O, D, KO, KD, X> SetWindow<'a, Postgres, X>
  96 | |     for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {
-    | |__________________________________________________^ `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+    | |__________________________________________________^ `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/ntile.rs:35:1
     |
  35 |   impl<'a, E, K, X> SetWindow<'a, Postgres, X> for InnerNtile<'a, E, K, X> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::ntile::InnerNtile<'a, E, K, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::ntile::InnerNtile<'a, E, K, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/parameterless.rs:101:1
     |
 101 |   impl<'a, M, X> SetWindow<'a, Postgres, X> for InnerWindowFunction<'a, M, X> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'a, M, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'a, M, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:332:28
     |
@@ -532,18 +532,18 @@ note: required by a bound in `Node::<T>::over`
 332 |             T: CanWindow + SetWindow<'a, Postgres, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: window clause `.over(...)` is not available on `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+error[E0277]: window clause `.over(...)` is not available on `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:42:63
     |
  42 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
     |                                                               ^^^^ only aggregate and window functions support `.over(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the following other types implement trait `kova_core::dsl::can::CanWindow`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:110:1
+    = help: the trait `kova_kernel::dsl::can::CanWindow` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_kernel::dsl::can::CanWindow`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:110:1
     |
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/lag_lead.rs:69:1
     |
@@ -568,7 +568,7 @@ note: required by a bound in `Node::<T>::over`
 332 |             T: CanWindow + SetWindow<'a, Postgres, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>: kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:42:68
     |
  42 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
@@ -576,28 +576,28 @@ error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_cor
     |                                                               |
     |                                                               required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the following other types implement trait `kova_core::dsl::function::SetWindow<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:100:1
+    = help: the trait `kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:100:1
     |
 100 |   impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/lag_lead.rs:95:1
     |
  95 | / impl<'a, M, E, O, D, KO, KD, X> SetWindow<'a, Postgres, X>
  96 | |     for InnerOffsetFunc<'a, M, E, O, D, KO, KD, X> {
-    | |__________________________________________________^ `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+    | |__________________________________________________^ `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'a, M, E, O, D, KO, KD, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/ntile.rs:35:1
     |
  35 |   impl<'a, E, K, X> SetWindow<'a, Postgres, X> for InnerNtile<'a, E, K, X> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::ntile::InnerNtile<'a, E, K, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::ntile::InnerNtile<'a, E, K, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
     |
    ::: /Users/me/Workspace/kova/kova-postgres/src/dsl/function/window/parameterless.rs:101:1
     |
 101 |   impl<'a, M, X> SetWindow<'a, Postgres, X> for InnerWindowFunction<'a, M, X> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'a, M, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'a, M, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:332:28
     |
@@ -607,30 +607,30 @@ note: required by a bound in `Node::<T>::over`
 332 |             T: CanWindow + SetWindow<'a, Postgres, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0599]: the method `distinct` exists for struct `Node<kova_core::dsl::column::Column<i32>>`, but its trait bounds were not satisfied
+error[E0599]: the method `distinct` exists for struct `Node<kova_kernel::dsl::column::Column<i32>>`, but its trait bounds were not satisfied
   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:43:54
    |
 43 |     let _ = client.select::<User>().columns(User::id.distinct());
-   |                                                      ^^^^^^^^ method cannot be called on `Node<kova_core::dsl::column::Column<i32>>` due to unsatisfied trait bounds
+   |                                                      ^^^^^^^^ method cannot be called on `Node<kova_kernel::dsl::column::Column<i32>>` due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+  ::: /Users/me/Workspace/kova/kova-kernel/src/dsl/column.rs:11:1
    |
 11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanDistinct` or `_: SetDistinct`
    |
    = note: the following trait bounds were not satisfied:
-           `kova_core::dsl::column::Column<i32>: kova_core::dsl::can::CanDistinct`
-           `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetDistinct`
+           `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::can::CanDistinct`
+           `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::function::SetDistinct`
 
-error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:44:63
     |
  44 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
     |                                                               ^^^^^^ only aggregate functions support `.filter(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanFilter` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the trait `kova_core::dsl::can::CanFilter` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:111:1
+    = help: the trait `kova_kernel::dsl::can::CanFilter` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the trait `kova_kernel::dsl::can::CanFilter` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:111:1
     |
 111 | impl<'a, DB: Database, M, E, X> CanFilter for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -643,7 +643,7 @@ note: required by a bound in `Node::<T>::filter`
 339 |             T: CanFilter + SetFilter<'a, Postgres, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>: kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:44:70
     |
  44 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
@@ -651,9 +651,9 @@ error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_cor
     |                                                               |
     |                                                               required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the trait `kova_core::dsl::function::SetFilter<'a, DB, X>` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:92:1
+    = help: the trait `kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the trait `kova_kernel::dsl::function::SetFilter<'a, DB, X>` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:92:1
     |
  92 | impl<'a, DB: Database, M, E, X> SetFilter<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -666,14 +666,14 @@ note: required by a bound in `Node::<T>::filter`
 339 |             T: CanFilter + SetFilter<'a, Postgres, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::can::CanOrderBy` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::can::CanOrderBy` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:54
     |
  45 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
-    |                                                      ^^^^^^^^ the trait `kova_core::dsl::can::CanOrderBy` is not implemented for `kova_core::dsl::column::Column<i32>`
+    |                                                      ^^^^^^^^ the trait `kova_kernel::dsl::can::CanOrderBy` is not implemented for `kova_kernel::dsl::column::Column<i32>`
     |
-help: the trait `kova_core::dsl::can::CanOrderBy` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:113:1
+help: the trait `kova_kernel::dsl::can::CanOrderBy` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:113:1
     |
 113 | impl<'a, DB: Database, M, E, X> CanOrderBy for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -686,14 +686,14 @@ note: required by a bound in `Node::<T>::order_by`
 346 |             T: CanOrderBy + SetOrderBy<'a, Postgres, X>,
     |                ^^^^^^^^^^ required by this bound in `Node::<T>::order_by`
 
-error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:54
     |
  45 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
-    |                                                      ^^^^^^^^ the trait `kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_core::dsl::column::Column<i32>`
+    |                                                      ^^^^^^^^ the trait `kova_kernel::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_kernel::dsl::column::Column<i32>`
     |
-help: the trait `kova_core::dsl::function::SetOrderBy<'a, DB, X>` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:84:1
+help: the trait `kova_kernel::dsl::function::SetOrderBy<'a, DB, X>` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:84:1
     |
  84 | impl<'a, DB: Database, M, E, X> SetOrderBy<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -718,8 +718,8 @@ error[E0599]: the method `distinct` exists for struct `Node<kova_postgres::dsl::
    | ---------------------------------------- doesn't satisfy `_: CanDistinct` or `_: SetDistinct`
    |
    = note: the following trait bounds were not satisfied:
-           `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_core::dsl::can::CanDistinct`
-           `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_core::dsl::function::SetDistinct`
+           `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_kernel::dsl::can::CanDistinct`
+           `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_kernel::dsl::function::SetDistinct`
 
 error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:49:58
@@ -727,9 +727,9 @@ error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_
  49 |     let _ = client.select::<Order>().columns(RowNumber().filter(Order::is_active.eq(true)));
     |                                                          ^^^^^^ only aggregate functions support `.filter(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanFilter` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
-help: the trait `kova_core::dsl::can::CanFilter` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:111:1
+    = help: the trait `kova_kernel::dsl::can::CanFilter` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
+help: the trait `kova_kernel::dsl::can::CanFilter` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:111:1
     |
 111 | impl<'a, DB: Database, M, E, X> CanFilter for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -742,7 +742,7 @@ note: required by a bound in `Node::<T>::filter`
 339 |             T: CanFilter + SetFilter<'a, Postgres, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_core::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:49:65
     |
  49 |     let _ = client.select::<Order>().columns(RowNumber().filter(Order::is_active.eq(true)));
@@ -750,9 +750,9 @@ error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterle
     |                                                          |
     |                                                          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
-help: the trait `kova_core::dsl::function::SetFilter<'a, DB, X>` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:92:1
+    = help: the trait `kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
+help: the trait `kova_kernel::dsl::function::SetFilter<'a, DB, X>` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:92:1
     |
  92 | impl<'a, DB: Database, M, E, X> SetFilter<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -765,15 +765,15 @@ note: required by a bound in `Node::<T>::filter`
 339 |             T: CanFilter + SetFilter<'a, Postgres, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_core::dsl::can::CanOrderBy` is not satisfied
+error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_kernel::dsl::can::CanOrderBy` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:50:58
     |
  50 |     let _ = client.select::<Order>().columns(RowNumber().order_by(Order::id.asc()));
     |                                                          ^^^^^^^^ unsatisfied trait bound
     |
-    = help: the trait `kova_core::dsl::can::CanOrderBy` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
-help: the trait `kova_core::dsl::can::CanOrderBy` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:113:1
+    = help: the trait `kova_kernel::dsl::can::CanOrderBy` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
+help: the trait `kova_kernel::dsl::can::CanOrderBy` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:113:1
     |
 113 | impl<'a, DB: Database, M, E, X> CanOrderBy for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -786,15 +786,15 @@ note: required by a bound in `Node::<T>::order_by`
 346 |             T: CanOrderBy + SetOrderBy<'a, Postgres, X>,
     |                ^^^^^^^^^^ required by this bound in `Node::<T>::order_by`
 
-error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>: kova_kernel::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:50:58
     |
  50 |     let _ = client.select::<Order>().columns(RowNumber().order_by(Order::id.asc()));
     |                                                          ^^^^^^^^ unsatisfied trait bound
     |
-    = help: the trait `kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
-help: the trait `kova_core::dsl::function::SetOrderBy<'a, DB, X>` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:84:1
+    = help: the trait `kova_kernel::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_postgres::dsl::function::window::parameterless::InnerWindowFunction<'_, kova_postgres::dsl::function::window::parameterless::RowNumberMarker, _>`
+help: the trait `kova_kernel::dsl::function::SetOrderBy<'a, DB, X>` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:84:1
     |
  84 | impl<'a, DB: Database, M, E, X> SetOrderBy<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -807,7 +807,7 @@ note: required by a bound in `Node::<T>::order_by`
 346 |             T: CanOrderBy + SetOrderBy<'a, Postgres, X>,
     |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::order_by`
 
-error[E0599]: the method `distinct` exists for struct `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, _>>`, but its trait bounds were not satisfied
+error[E0599]: the method `distinct` exists for struct `Node<kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, _>>`, but its trait bounds were not satisfied
   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:65
    |
 51 |     let _ = client.select::<Order>().columns(Lag(Order::amount).distinct());
@@ -819,8 +819,8 @@ error[E0599]: the method `distinct` exists for struct `Node<kova_postgres::dsl::
    | ----------------------------------------------------- doesn't satisfy `_: CanDistinct` or `_: SetDistinct`
    |
    = note: the following trait bounds were not satisfied:
-           `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, _>: kova_core::dsl::can::CanDistinct`
-           `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_core::dsl::column::Column<f64>>, i32, Node<kova_core::dsl::column::Column<f64>>, kova_core::dsl::operand::Open, kova_core::dsl::operand::Close, _>: kova_core::dsl::function::SetDistinct`
+           `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, _>: kova_kernel::dsl::can::CanDistinct`
+           `kova_postgres::dsl::function::window::lag_lead::InnerOffsetFunc<'_, kova_postgres::dsl::function::window::lag_lead::LagMarker, Node<kova_kernel::dsl::column::Column<f64>>, i32, Node<kova_kernel::dsl::column::Column<f64>>, kova_kernel::dsl::operand::Open, kova_kernel::dsl::operand::Close, _>: kova_kernel::dsl::function::SetDistinct`
 
 error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:52:55
@@ -828,9 +828,9 @@ error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_
  52 |     let _ = client.select::<Order>().columns(Ntile(4).filter(Order::is_active.eq(true)));
     |                                                       ^^^^^^ only aggregate functions support `.filter(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanFilter` is not implemented for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>`
-help: the trait `kova_core::dsl::can::CanFilter` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:111:1
+    = help: the trait `kova_kernel::dsl::can::CanFilter` is not implemented for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>`
+help: the trait `kova_kernel::dsl::can::CanFilter` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:111:1
     |
 111 | impl<'a, DB: Database, M, E, X> CanFilter for Aggregate<'a, DB, M, E, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -843,7 +843,7 @@ note: required by a bound in `Node::<T>::filter`
 339 |             T: CanFilter + SetFilter<'a, Postgres, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>: kova_core::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>: kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:52:62
     |
  52 |     let _ = client.select::<Order>().columns(Ntile(4).filter(Order::is_active.eq(true)));
@@ -851,9 +851,9 @@ error[E0277]: the trait bound `kova_postgres::dsl::function::window::ntile::Inne
     |                                                       |
     |                                                       required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>`
-help: the trait `kova_core::dsl::function::SetFilter<'a, DB, X>` is implemented for `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:92:1
+    = help: the trait `kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_postgres::dsl::function::window::ntile::InnerNtile<'_, {integer}, _, _>`
+help: the trait `kova_kernel::dsl::function::SetFilter<'a, DB, X>` is implemented for `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:92:1
     |
  92 | impl<'a, DB: Database, M, E, X> SetFilter<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

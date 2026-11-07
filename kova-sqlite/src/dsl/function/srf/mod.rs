@@ -8,8 +8,8 @@ pub use self::json_tree::JsonTree;
 use crate::dsl::can::CanSqliteJson;
 use crate::dsl::node::Node;
 use crate::types::Sqlite;
-use kova_core::dsl::{AstNode, Compatible, Operand, Static};
-use kova_core::types::Encode;
+use kova_kernel::dsl::{AstNode, Compatible, Operand, Static};
+use kova_kernel::types::Encode;
 
 pub enum ExtSrfFunction<'a> {
     JsonEach(Operand<'a, Sqlite>, Option<Operand<'a, Sqlite>>),

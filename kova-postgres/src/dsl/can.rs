@@ -1,6 +1,6 @@
 use crate::types::Postgres;
-use kova_core::dsl::func::{Aggregate, Scalar};
-use kova_core::dsl::{CanString, Column, Dynamic, JsonType, JsonbType, Static, TypedNode};
+use kova_kernel::dsl::func::{Aggregate, Scalar};
+use kova_kernel::dsl::{CanString, Column, Dynamic, JsonType, JsonbType, Static, TypedNode};
 use std::collections::{BTreeMap, HashMap};
 
 #[diagnostic::on_unimplemented(

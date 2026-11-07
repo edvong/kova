@@ -8,11 +8,11 @@ use crate::dsl::function::{
 };
 use crate::dsl::{ExtAssignment, ExtOperator};
 use crate::types::Sqlite;
-use kova_core::dsl::func::{
+use kova_kernel::dsl::func::{
     IntoPartitionBy, PartitionBy, Quantifier, SetDistinct, SetFilter, SetOrderBy, SetWindow, Window,
 };
-use kova_core::dsl::statement::IntoSelectStatement;
-use kova_core::dsl::{
+use kova_kernel::dsl::statement::IntoSelectStatement;
+use kova_kernel::dsl::{
     ArgAst, Assignment, AstNode, CanAlias, CanAssignment, CanCompare, CanConflict, CanDistinct,
     CanFilter, CanGroup, CanMath, CanOrder, CanOrderBy, CanString, CanWindow, Close, Comparator,
     Compatible, Condition, Conflict, Direction, EraseX, GroupBy, Identifier, IntoArg, IntoConflict,
@@ -20,7 +20,7 @@ use kova_core::dsl::{
     Operand, Operator, Ordering, Projection, StandardAssignment, StandardOperator, Static,
     TypedNode,
 };
-use kova_core::types::SetTag;
+use kova_kernel::types::SetTag;
 use std::marker::PhantomData;
 
 #[derive(Copy, Clone)]

@@ -1,6 +1,6 @@
 use crate::dsl::func::ExtSrfFunction;
 use crate::dsl::{ExtAssignment, ExtFunction, ExtOperator};
-use kova_core::types::Extension;
+use kova_kernel::types::Extension;
 
 pub struct SqliteExtension;
 

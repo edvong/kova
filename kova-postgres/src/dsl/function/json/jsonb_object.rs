@@ -5,8 +5,8 @@ use crate::dsl::node::Node;
 use crate::dsl::CanPgJsonb;
 use crate::dsl::func::ExtFunction;
 use crate::types::Postgres;
-use kova_core::dsl::func::Function;
-use kova_core::dsl::{AstNode, CanAlias, CanCompare, JsonbType, Operand, Static, TypedNode};
+use kova_kernel::dsl::func::Function;
+use kova_kernel::dsl::{AstNode, CanAlias, CanCompare, JsonbType, Operand, Static, TypedNode};
 
 pub type JsonbObject<K, V> = Node<InnerJsonbObject<K, V>>;
 

@@ -4,8 +4,8 @@ use crate::dsl::CanPgJsonb;
 use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Postgres;
-use kova_core::dsl::func::Function;
-use kova_core::dsl::{
+use kova_kernel::dsl::func::Function;
+use kova_kernel::dsl::{
     AstNode, CanAlias, CanCompare, IntoArg, JsonbType, Operand, Projection, Static, TypedNode,
 };
 use std::marker::PhantomData;

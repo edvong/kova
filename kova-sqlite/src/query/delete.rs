@@ -1,10 +1,10 @@
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::types::{Sqlite, SqliteExecutor};
-use kova_core::Result;
-use kova_core::database::Executor;
-use kova_core::dsl::statement::DeleteStatement;
-use kova_core::dsl::{Condition, EraseX, IntoArg, Projection};
-use kova_core::types::{DecodeColumn, Delete as CreateDelete, FromRow, Model};
+use kova_kernel::Result;
+use kova_kernel::database::Executor;
+use kova_kernel::dsl::statement::DeleteStatement;
+use kova_kernel::dsl::{Condition, EraseX, IntoArg, Projection};
+use kova_kernel::types::{DecodeColumn, Delete as CreateDelete, FromRow, Model};
 use std::iter::once;
 use std::marker::PhantomData;
 

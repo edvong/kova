@@ -15,6 +15,7 @@ use models::runtime::order::Order;
 use models::runtime::user::User;
 
 struct TagSrf;
+struct TagSrf2;
 struct TagTbl;
 
 #[derive(Model)]
@@ -155,9 +156,8 @@ async fn pg_srf_functions_and_tagged_srf_aliases() {
             .select::<Post>()
             .srf((
                 Unnest(Post::tags),
-                GenerateSeries(1_i32, 10_i32).step(2_i32),
+                GenerateSeries(1_i32, 10_i32).step(2_i32).tag::<TagSrf>(),
             ))
-            .tag::<TagSrf>()
             .columns((Unnest::unnest, GenerateSeries::generate_series.tag::<TagSrf>()))
             .load_in::<(String, i32)>(),
     )
@@ -173,14 +173,13 @@ async fn pg_srf_functions_and_tagged_srf_aliases() {
             .select::<EventLog>()
             .srf((
                 JsonbArrayElements(EventLog::metadata.json_path("items")),
-                JsonbEach(EventLog::metadata),
-                JsonbEachText(EventLog::metadata),
+                JsonbEach(EventLog::metadata).tag::<TagSrf>(),
+                JsonbEachText(EventLog::metadata).tag::<TagSrf2>(),
             ))
-            .tag::<TagSrf>()
             .columns((
                 JsonbArrayElements::value,
-                JsonbEach::key,
-                JsonbEachText::value.tag::<TagSrf>(),
+                JsonbEachText::value.tag::<TagSrf2>(),
+                JsonbEach::key.tag::<TagSrf>(),
             ))
             .load_in::<(String, String, String)>(),
     )
@@ -188,6 +187,6 @@ async fn pg_srf_functions_and_tagged_srf_aliases() {
 
     assert_eq!(
         cap_json_srf.sql,
-        r#"select "jsonb_array_elements"."value", "jsonb_each"."key", "jsonb_each_text_0"."value" from "event_log", jsonb_array_elements("event_log"."metadata" -> $1), jsonb_each("event_log"."metadata"), jsonb_each_text("event_log"."metadata") as "jsonb_each_text_0""#
+        r#"select "jsonb_array_elements"."value", "jsonb_each_text_1"."value", "jsonb_each_0"."key" from "event_log", jsonb_array_elements("event_log"."metadata" -> $1), jsonb_each("event_log"."metadata") as "jsonb_each_0", jsonb_each_text("event_log"."metadata") as "jsonb_each_text_1""#
     );
 }

@@ -1,25 +1,25 @@
 use crate::dsl::node::Node;
-use kova_core::dsl::{ArgAst, Dynamic, IntoArg, IntoIdentifier, Static};
-use kova_core::types::{ColumnMeta, IdentifierMeta};
+use kova_kernel::dsl::{ArgAst, Dynamic, IntoArg, IntoIdentifier, Static};
+use kova_kernel::types::{ColumnMeta, IdentifierMeta};
 
 pub type Column<T = Dynamic, M = ColumnMeta, Mode = Static<T>> =
-    Node<kova_core::dsl::Column<T, M, Mode>>;
+    Node<kova_kernel::dsl::Column<T, M, Mode>>;
 
 impl<T> Column<T, ColumnMeta, Static<T>> {
     pub const fn new(source: &'static str, name: &'static str, is_auto: bool) -> Self {
-        Node(kova_core::dsl::Column::new(source, name, is_auto))
+        Node(kova_kernel::dsl::Column::new(source, name, is_auto))
     }
 }
 
 impl<T> Column<T, IdentifierMeta, Static<T>> {
     pub const fn identifier(source: &'static str, name: &'static str) -> Self {
-        Node(kova_core::dsl::Column::identifier(source, name))
+        Node(kova_kernel::dsl::Column::identifier(source, name))
     }
 }
 
 impl Column<Dynamic, IdentifierMeta, Dynamic> {
     pub const fn dynamic(source: &'static str, name: &'static str) -> Self {
-        Node(kova_core::dsl::Column::dynamic(source, name))
+        Node(kova_kernel::dsl::Column::dynamic(source, name))
     }
 }
 

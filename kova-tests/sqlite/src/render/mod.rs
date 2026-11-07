@@ -63,7 +63,7 @@ pub fn render_client() -> Client {
     Options::in_memory()
         .max_size(1)
         .init(|conn| {
-            conn.regexp(|_pat, _text| true)?;
+            conn.regexp(|_text, _pat| true)?;
             conn.execute_batch(
                 r#"
                 CREATE TABLE "user" (

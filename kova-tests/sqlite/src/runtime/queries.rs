@@ -134,7 +134,26 @@ fn sqlite_srf_json_each_json_tree_and_fts5_execution() {
         .unwrap();
     assert_eq!(fullkeys, vec!["$.meta".to_string(), "$.meta.ver".to_string()]);
 
-    // 3. FTS5 full-text search with BM25, Highlight, and Snippet
+    struct TagA;
+    struct TagB;
+
+    // 3. Tag two JsonEach with (TagA, TagB) in the same query and extract Cartesian combinations
+    let paired_tags = client
+        .select::<User>()
+        .srf((
+            JsonEach((User::name, "$.tags")).tag::<TagA>(),
+            JsonEach((User::name, "$.tags")).tag::<TagB>(),
+        ))
+        .columns((
+            JsonEach::value.tag::<TagA>(),
+            JsonEach::value.tag::<TagB>(),
+        ))
+        .filter(JsonEach::id.tag::<TagA>().lt(JsonEach::id.tag::<TagB>()))
+        .load_in::<(String, String)>()
+        .unwrap();
+    assert_eq!(paired_tags, vec![("rust".to_string(), "sql".to_string())]);
+
+    // 4. FTS5 full-text search with BM25, Highlight, and Snippet
     client
         .insert(vec![
             FtsDoc {

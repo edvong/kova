@@ -19,6 +19,16 @@ impl<'a, DB: Database, X> Condition<'a, DB, X> {
     pub fn from(operator: Operator<'a, DB>) -> Self {
         Self { node: ConditionNode::Op(Box::new(operator)), _marker: PhantomData }
     }
+
+    #[inline(always)]
+    pub fn asc(self) -> Ordering<'a, DB, X> {
+        self.into_ordering().direction(Direction::Asc)
+    }
+
+    #[inline(always)]
+    pub fn desc(self) -> Ordering<'a, DB, X> {
+        self.into_ordering().direction(Direction::Desc)
+    }
 }
 
 impl<'a, DB: Database, X> BitAnd for Condition<'a, DB, X> {

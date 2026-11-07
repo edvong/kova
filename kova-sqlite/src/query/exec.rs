@@ -1,7 +1,7 @@
 use crate::types::{Row, Sqlite, SqliteExecutor};
-use kova_core::database::Executor;
-use kova_core::dsl::statement::StatementPayload;
-use kova_core::{Error, Result};
+use kova_kernel::database::Executor;
+use kova_kernel::dsl::statement::StatementPayload;
+use kova_kernel::{Error, Result};
 
 pub(crate) fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) -> Result<u64>
     where

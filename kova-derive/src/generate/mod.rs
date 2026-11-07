@@ -25,9 +25,8 @@ pub(crate) fn unique_field_types<'a>(
 }
 
 // Shared by `#[derive(FromRow)]` and `#[derive(Cte)]`: generates read-only `IdentifierMeta` columns.
-pub(crate) fn expand_identifier_columns(def: &StructDef) -> TokenStream {
+pub(crate) fn expand_identifier_columns(def: &StructDef, source: &str) -> TokenStream {
     let struct_ident = &def.ident;
-    let table_name = &def.table_name;
 
     let const_cols = def.fields.iter().map(|f| {
         let field_ident = &f.ident;
@@ -35,7 +34,7 @@ pub(crate) fn expand_identifier_columns(def: &StructDef) -> TokenStream {
         let col_name = &f.col_name;
         quote! {
             pub const #field_ident: ::kova::dsl::Column<#field_ty, ::kova::types::IdentifierMeta> =
-                ::kova::dsl::Column::identifier(#table_name, #col_name);
+                ::kova::dsl::Column::identifier(#source, #col_name);
         }
     });
 

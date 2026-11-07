@@ -1,7 +1,7 @@
 use crate::types::Sqlite;
 use crate::types::value::Value;
-use kova_core::Error;
-use kova_core::types::{ColumnIndex, Row as CoreRow};
+use kova_kernel::Error;
+use kova_kernel::types::{ColumnIndex, Row as CoreRow};
 
 pub struct Row<'a> {
     pub(crate) inner: &'a rusqlite::Row<'a>,
@@ -19,7 +19,7 @@ impl<'a> CoreRow<'a, Sqlite> for Row<'a> {
         self.inner.as_ref().column_name(idx).ok()
     }
 
-    fn get_value<'i, I>(&self, idx: I) -> kova_core::Result<Value<'a>>
+    fn get_value<'i, I>(&self, idx: I) -> kova_kernel::Result<Value<'a>>
         where
             I: Into<ColumnIndex<'i>> {
         let val_ref = match idx.into() {

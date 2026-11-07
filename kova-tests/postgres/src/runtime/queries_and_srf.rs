@@ -14,6 +14,7 @@ use url::Url;
 use uuid::Uuid;
 
 struct GsAlias;
+struct GsAlias2;
 
 #[tokio::test]
 async fn pg_cte_window_and_left_join_option_model_execution() {
@@ -142,18 +143,32 @@ async fn pg_srf_unnest_generate_series_and_jsonb_each_execution() {
     // 2. GenerateSeries(start, stop).step(step) + Tag
     let series = client
         .select::<User>()
-        .srf(GenerateSeries(1_i32, 3_i32).step(2_i32))
-        .tag::<GsAlias>()
+        .srf((
+            GenerateSeries(1_i32, 3_i32).step(2_i32).tag::<GsAlias>(),
+            GenerateSeries(10_i32, 20_i32).step(10_i32).tag::<GsAlias2>(),
+        ))
         .columns((
             User::name,
             GenerateSeries::generate_series.tag::<GsAlias>(),
+            GenerateSeries::generate_series.tag::<GsAlias2>(),
         ))
         .filter(User::id.eq(GenerateSeries::generate_series.tag::<GsAlias>()))
-        .order_by(User::id.asc())
-        .load_in::<(String, i32)>()
+        .order_by((
+            User::id.asc(),
+            GenerateSeries::generate_series.tag::<GsAlias2>().asc(),
+        ))
+        .load_in::<(String, i32, i32)>()
         .await
         .unwrap();
-    assert_eq!(series, vec![("U1".to_string(), 1), ("U3".to_string(), 3)]);
+    assert_eq!(
+        series,
+        vec![
+            ("U1".to_string(), 1, 10),
+            ("U1".to_string(), 1, 20),
+            ("U3".to_string(), 3, 10),
+            ("U3".to_string(), 3, 20),
+        ]
+    );
 
     // 3. JsonbEachText expanding JSONB key-value pairs
     client

@@ -3,8 +3,8 @@
 use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Postgres;
-use kova_core::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
-use kova_core::dsl::{AstNode, CanCompare, JsonType, Static, Table};
+use kova_kernel::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
+use kova_kernel::dsl::{AstNode, CanCompare, JsonType, Static, Table};
 
 pub struct RowToJsonMarker;
 

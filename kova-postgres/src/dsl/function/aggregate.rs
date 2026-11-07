@@ -3,8 +3,8 @@
 use crate::dsl::func::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Postgres;
-use kova_core::dsl::func::{Aggregate, AggregateBuild, AggregateMarker, Function};
-use kova_core::dsl::{AstNode, IntoArrayOutput, JsonbType, Static, TypedNode};
+use kova_kernel::dsl::func::{Aggregate, AggregateBuild, AggregateMarker, Function};
+use kova_kernel::dsl::{AstNode, IntoArrayOutput, JsonbType, Static, TypedNode};
 
 // ==========================================
 // 1. ArrayAgg

@@ -14,6 +14,14 @@ pub type Upper<E> = Scalar<UpperMarker, E>;
 
 pub struct Scalar<M, E>(pub E, PhantomData<M>);
 
+impl<M, E: Copy> Copy for Scalar<M, E> {}
+impl<M, E: Clone> Clone for Scalar<M, E> {
+    #[inline(always)]
+    fn clone(&self) -> Self {
+        Self(self.0.clone(), PhantomData)
+    }
+}
+
 impl<M, E> Scalar<M, E> {
     #[inline(always)]
     pub const fn new(expr: E) -> Self {

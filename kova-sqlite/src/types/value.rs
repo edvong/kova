@@ -1,5 +1,5 @@
-use kova_core::Error;
-use kova_core::types::Value as CoreValue;
+use kova_kernel::Error;
+use kova_kernel::types::Value as CoreValue;
 use rusqlite::ToSql;
 use rusqlite::types::{Null, ToSqlOutput, ValueRef};
 use std::borrow::Cow;
@@ -17,7 +17,7 @@ pub enum Value<'a> {
 }
 
 impl<'a> Value<'a> {
-    pub(crate) fn from_value_ref(val_ref: ValueRef<'a>) -> kova_core::Result<Self, Error> {
+    pub(crate) fn from_value_ref(val_ref: ValueRef<'a>) -> kova_kernel::Result<Self, Error> {
         match val_ref {
             ValueRef::Null => Ok(Value::Null),
             ValueRef::Integer(i) => Ok(Value::Int8(i)),

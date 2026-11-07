@@ -6,7 +6,7 @@ use quote::quote;
 pub(crate) fn expand(def: &StructDef) -> TokenStream {
     let struct_ident = &def.ident;
     let table_name = &def.table_name;
-    let columns_block = expand_identifier_columns(def);
+    let columns_block = expand_identifier_columns(def, &def.table_name);
 
     quote! {
         #columns_block

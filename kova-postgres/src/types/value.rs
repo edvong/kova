@@ -1,4 +1,4 @@
-use kova_core::types::Value as CoreValue;
+use kova_kernel::types::Value as CoreValue;
 use std::borrow::Cow;
 use std::error::Error;
 use tokio_postgres::types::private::BytesMut;

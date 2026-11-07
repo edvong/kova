@@ -8,6 +8,7 @@ use kova::dsl::func::{
 use models::runtime::event_log::EventLog;
 use models::runtime::user::User;
 
+struct J1;
 struct J2;
 
 #[test]
@@ -67,15 +68,14 @@ fn sqlite_fts5_and_srf_rendering() {
         client
             .select::<EventLog>()
             .srf((
-                JsonEach(EventLog::metadata),
-                JsonTree((EventLog::metadata, "$.nested")),
+                JsonEach(EventLog::metadata).tag::<J1>(),
+                JsonTree((EventLog::metadata, "$.nested")).tag::<J2>(),
             ))
-            .tag::<J2>()
             .columns((
                 EventLog::description.bm25().weights([10.0, 2.5]),
                 EventLog::description.highlight(1, "<b>", "</b>"),
                 EventLog::description.snippet(1, "[", "]", "...", 32),
-                JsonEach::key,
+                JsonEach::key.tag::<J1>(),
                 JsonTree::value.tag::<J2>(),
             ))
             .filter(
@@ -87,7 +87,7 @@ fn sqlite_fts5_and_srf_rendering() {
 
     assert_eq!(
         cap.sql,
-        r#"select bm25("event_log", 10, 2.5), highlight("event_log", 1, ?, ?), snippet("event_log", 1, ?, ?, ?, 32), "json_each"."key", "json_tree_0"."value" from "event_log", json_each("event_log"."metadata"), json_tree("event_log"."metadata", ?) as "json_tree_0" where "event_log"."description" match ? and "event_log"."description" regexp ?"#
+        r#"select bm25("event_log", 10, 2.5), highlight("event_log", 1, ?, ?), snippet("event_log", 1, ?, ?, ?, 32), "json_each_0"."key", "json_tree_1"."value" from "event_log", json_each("event_log"."metadata") as "json_each_0", json_tree("event_log"."metadata", ?) as "json_tree_1" where "event_log"."description" match ? and "event_log"."description" regexp ?"#
     );
     assert_eq!(
         cap.params,

@@ -16,6 +16,8 @@ impl Relation for EmptyColumnsModel {
 }
 
 impl<X> FromRow<Engine, X> for EmptyColumnsModel {
+    const COLUMN_COUNT: usize = 0;
+
     fn from_row_at(_: &<Engine as Database>::Row<'_>, _idx: &mut usize) -> Result<Self> {
         Ok(Self)
     }

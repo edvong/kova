@@ -2,12 +2,14 @@
 name = "kova-derive"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 authors.workspace = true
 description = "Procedural macros for Kova"
-readme = "../README.md"
+readme = false
 license.workspace = true
 repository.workspace = true
 keywords.workspace = true
+categories.workspace = true
 
 [lib]
 proc-macro = true

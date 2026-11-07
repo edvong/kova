@@ -1,7 +1,6 @@
 #[test]
 fn compile_fail_type_boundary() {
     let t = trybuild::TestCases::new();
-    // t.compile_fail("src/type_check/compile_fail/**/*.rs");
 
     let base_dir = "src/type_check/compile_fail";
     if let Ok(entries) = std::fs::read_dir(base_dir) {

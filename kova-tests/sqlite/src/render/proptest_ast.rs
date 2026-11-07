@@ -93,7 +93,6 @@ proptest! {
 
         let mut iter = ops.into_iter();
         let first = iter.next().unwrap();
-        // let mut expr: Node<Math<'_, Engine, _, ()>> = match first {
         let mut expr: Math<_, ()> = match first {
             MathOpKind::Add(v) => User::balance.add(v),
             MathOpKind::Sub(v) => User::balance.sub(v),

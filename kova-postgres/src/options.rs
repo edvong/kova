@@ -2,9 +2,9 @@ use crate::types::{Inspector, PgPool, Postgres};
 use deadpool_postgres::{
     Manager, ManagerConfig, Pool, PoolConfig, RecyclingMethod as NativeRecyclingMethod, Runtime,
 };
-use kova_core::database::Client;
-use kova_core::types::Async;
-use kova_core::{Error, Result};
+use kova_kernel::database::Client;
+use kova_kernel::types::Async;
+use kova_kernel::{Error, Result};
 use std::str::FromStr;
 use std::time::Duration;
 use tokio_postgres::Config;

@@ -1,8 +1,8 @@
 use crate::dsl::ExtOperator;
 use crate::dsl::operator::JsonOp;
 use crate::types::Postgres;
-use kova_core::Result;
-use kova_core::render::{Render, RenderContext};
+use kova_kernel::Result;
+use kova_kernel::render::{Render, RenderContext};
 
 impl<'a: 's, 's> Render<'a, 's, Postgres> for ExtOperator<'a> {
     fn render(&'s self, ctx: &mut RenderContext<'a, 's, Postgres>) -> Result<()> {

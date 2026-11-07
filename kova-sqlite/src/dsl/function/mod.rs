@@ -1,12 +1,11 @@
 mod aggregate;
-// mod can;
 mod fts5;
 mod json;
 mod srf;
 mod standard;
 
 use crate::types::Sqlite;
-use kova_core::dsl::{Operand, Projection};
+use kova_kernel::dsl::{Operand, Projection};
 
 pub use self::aggregate::{GroupConcat, JsonGroupArray, JsonbGroupArray};
 pub use self::fts5::{Bm25, Highlight, InnerBm25, InnerHighlight, InnerSnippet, Snippet};

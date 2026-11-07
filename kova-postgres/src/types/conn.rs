@@ -1,7 +1,7 @@
 use crate::types::Value;
 use deadpool_postgres::{GenericClient, Object, Pool, Transaction};
-use kova_core::types::{Async, Connection, ConnectionAsync, Executable, ExecutableAsync};
-use kova_core::{Error, Result};
+use kova_kernel::types::{Async, Connection, ConnectionAsync, Executable, ExecutableAsync};
+use kova_kernel::{Error, Result};
 use tokio_postgres::Statement;
 use tokio_postgres::types::{ToSql, Type};
 

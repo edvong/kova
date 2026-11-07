@@ -5,8 +5,8 @@ mod conflict;
 use crate::dsl::func::{ExtFunction, ExtSrfFunction};
 use crate::dsl::{ExtAssignment, JsonOp, LockMode, Locking, WaitPolicy};
 use crate::types::{Postgres, Value};
-use kova_core::render::{PlatformRender, Render, RenderContext};
-use kova_core::{Error, Result};
+use kova_kernel::render::{PlatformRender, Render, RenderContext};
+use kova_kernel::{Error, Result};
 use std::any::TypeId;
 
 impl<'a, 's> PlatformRender<'a, 's, Value<'s>> for Postgres {

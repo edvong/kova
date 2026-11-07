@@ -1,4 +1,4 @@
-error[E0277]: `kova_core::dsl::function::aggregate::CountMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::CountMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:15:47
     |
  15 |     let _ = client.select::<Order>().group_by(Count(Wildcard));
@@ -6,30 +6,30 @@ error[E0277]: `kova_core::dsl::function::aggregate::CountMarker` cannot be used 
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::CountMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::CountMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Wildcard, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:16:47
     |
  16 |     let _ = client.select::<Order>().group_by(Sum(Order::amount));
@@ -37,30 +37,30 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::SumMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::SumMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:17:46
     |
  17 |     let _ = client.select::<User>().group_by(GroupConcat(User::name));
@@ -68,26 +68,26 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -98,27 +98,27 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker` cann
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonGroupArrayMarker, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -129,30 +129,30 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker` can
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_core::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_sqlite::dsl::function::aggregate::JsonbGroupArrayMarker, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:20:47
     |
  20 |     let _ = client.select::<Order>().group_by(Abs(Sum(Order::amount)));
@@ -160,32 +160,32 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
     |                                      |
     |                                      required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::SumMarker`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::SumMarker`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>` to implement `kova_core::dsl::can::CanGroup`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>` to implement `kova_kernel::dsl::can::CanGroup`
     = note: 2 redundant requirements hidden
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>>` to implement `kova_core::dsl::can::CanGroup`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, AppCodec>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>>>` to implement `kova_kernel::dsl::can::CanGroup`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>>>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:25:19
     |
  25 |         .group_by(JsonObject((User::id, User::name)));
@@ -193,29 +193,29 @@ error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::ds
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:28:19
     |
  28 |         .group_by(JsonbObject((User::id, User::name)));
@@ -223,26 +223,26 @@ error[E0277]: `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::ds
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
 error[E0277]: `kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
@@ -253,34 +253,34 @@ error[E0277]: `kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>` cannot
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+    = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
               Node<T>
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>>` to implement `kova_core::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>>` to implement `kova_kernel::dsl::clause::group_by::IntoGroupBy<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::fts5::InnerBm25<'_, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
-help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<String>>` and `Node<kova_core::dsl::column::Column<String>>: kova_core::dsl::can::CanGroup` trivially holds
+help: consider removing this method call, as the receiver has type `Node<kova_kernel::dsl::column::Column<String>>` and `Node<kova_kernel::dsl::column::Column<String>>: kova_kernel::dsl::can::CanGroup` trivially holds
     |
  31 -         .group_by(EventLog::description.bm25());
  31 +         .group_by(EventLog::description);
     |
 
-error[E0277]: the trait bound `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>: kova_core::dsl::can::CanOrder` is not satisfied
+error[E0277]: the trait bound `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>: kova_kernel::dsl::can::CanOrder` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:34:19
     |
  34 |         .order_by(JsonObject((User::id, User::name)));
@@ -288,29 +288,29 @@ error[E0277]: the trait bound `kova_sqlite::dsl::function::json::InnerJsonObject
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::can::CanOrder` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>`
-    = help: the following other types implement trait `kova_core::dsl::can::CanOrder`:
-              kova_core::dsl::column::Column<T, M, Mode>
-              kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-              kova_core::dsl::function::scalar::AbsMarker
-              kova_core::dsl::function::scalar::LengthMarker
-              kova_core::dsl::function::scalar::LowerMarker
-              kova_core::dsl::function::scalar::Scalar<M, E>
-              kova_core::dsl::function::scalar::UpperMarker
-              kova_core::dsl::math::Math<'a, DB, Output, X>
+    = help: the trait `kova_kernel::dsl::can::CanOrder` is not implemented for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>`
+    = help: the following other types implement trait `kova_kernel::dsl::can::CanOrder`:
+              kova_kernel::dsl::column::Column<T, M, Mode>
+              kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+              kova_kernel::dsl::function::scalar::AbsMarker
+              kova_kernel::dsl::function::scalar::LengthMarker
+              kova_kernel::dsl::function::scalar::LowerMarker
+              kova_kernel::dsl::function::scalar::Scalar<M, E>
+              kova_kernel::dsl::function::scalar::UpperMarker
+              kova_kernel::dsl::math::Math<'a, DB, Output, X>
             and $N others
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::clause::order::IntoOrdering<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_kernel::dsl::clause::order::IntoOrdering<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:179:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:168:16
     |
-177 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+166 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-178 |         where
-179 |             A: IntoArg<Ordering<'a, Sqlite, X>, M> {
+167 |         where
+168 |             A: IntoArg<Ordering<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::order_by`
 
-error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_kernel::dsl::function::aggregate::SumMarker` cannot be used in a `GROUP BY` or `PARTITION BY` clause
   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:38:53
    |
 38 |         Count(Order::id).over(Window().partition_by(Sum(Order::amount))),
@@ -318,22 +318,22 @@ error[E0277]: `kova_core::dsl::function::aggregate::SumMarker` cannot be used in
    |                                        |
    |                                        required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_core::dsl::function::aggregate::SumMarker`
-   = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+   = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_kernel::dsl::function::aggregate::SumMarker`
+   = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
              Node<T>
-             kova_core::dsl::column::Column<T, M, Mode>
-             kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-             kova_core::dsl::function::scalar::AbsMarker
-             kova_core::dsl::function::scalar::LengthMarker
-             kova_core::dsl::function::scalar::LowerMarker
-             kova_core::dsl::function::scalar::Scalar<M, E>
-             kova_core::dsl::function::scalar::UpperMarker
+             kova_kernel::dsl::column::Column<T, M, Mode>
+             kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+             kova_kernel::dsl::function::scalar::AbsMarker
+             kova_kernel::dsl::function::scalar::LengthMarker
+             kova_kernel::dsl::function::scalar::LowerMarker
+             kova_kernel::dsl::function::scalar::Scalar<M, E>
+             kova_kernel::dsl::function::scalar::UpperMarker
            and $N others
-   = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, _>` to implement `kova_core::dsl::can::CanGroup`
-   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, _>>` to implement `kova_core::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
-   = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<f64>>, _>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'_, Engine, _>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, _>` to implement `kova_kernel::dsl::can::CanGroup`
+   = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, _>>` to implement `kova_kernel::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
+   = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<f64>>, _>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'_, Engine, _>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `Window::<'a, DB, X>::partition_by`
-  --> /Users/me/Workspace/kova/kova-core/src/dsl/function/window.rs:56:16
+  --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/window.rs:56:16
    |
 54 |     pub fn partition_by<C, M>(mut self, cols: C) -> Self
    |            ------------ required by a bound in this associated function
@@ -341,7 +341,7 @@ note: required by a bound in `Window::<'a, DB, X>::partition_by`
 56 |             C: IntoArg<PartitionBy<'a, DB, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Window::<'a, DB, X>::partition_by`
 
-error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, _>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
+error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, _>` cannot be used in a `GROUP BY` or `PARTITION BY` clause
   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:41:52
    |
 41 |         Count(User::id).over(Window().partition_by(GroupConcat(User::name))),
@@ -349,21 +349,21 @@ error[E0277]: `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<
    |                                       |
    |                                       required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, _>`
-   = help: the following other types implement trait `kova_core::dsl::can::CanGroup`:
+   = help: the trait `kova_kernel::dsl::can::CanGroup` is not implemented for `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, _>`
+   = help: the following other types implement trait `kova_kernel::dsl::can::CanGroup`:
              Node<T>
-             kova_core::dsl::column::Column<T, M, Mode>
-             kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
-             kova_core::dsl::function::scalar::AbsMarker
-             kova_core::dsl::function::scalar::LengthMarker
-             kova_core::dsl::function::scalar::LowerMarker
-             kova_core::dsl::function::scalar::Scalar<M, E>
-             kova_core::dsl::function::scalar::UpperMarker
+             kova_kernel::dsl::column::Column<T, M, Mode>
+             kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>
+             kova_kernel::dsl::function::scalar::AbsMarker
+             kova_kernel::dsl::function::scalar::LengthMarker
+             kova_kernel::dsl::function::scalar::LowerMarker
+             kova_kernel::dsl::function::scalar::Scalar<M, E>
+             kova_kernel::dsl::function::scalar::UpperMarker
            and $N others
-   = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, _>>` to implement `kova_core::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
-   = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_core::dsl::column::Column<String>>, _>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'_, Engine, _>, kova_core::dsl::arg::ArgAst>`
+   = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, _>>` to implement `kova_kernel::dsl::function::window::IntoPartitionBy<'_, Engine, _>`
+   = note: required for `Node<kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'_, Node<kova_kernel::dsl::column::Column<String>>, _>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'_, Engine, _>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `Window::<'a, DB, X>::partition_by`
-  --> /Users/me/Workspace/kova/kova-core/src/dsl/function/window.rs:56:16
+  --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/window.rs:56:16
    |
 54 |     pub fn partition_by<C, M>(mut self, cols: C) -> Self
    |            ------------ required by a bound in this associated function
@@ -371,22 +371,22 @@ note: required by a bound in `Window::<'a, DB, X>::partition_by`
 56 |             C: IntoArg<PartitionBy<'a, DB, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Window::<'a, DB, X>::partition_by`
 
-error[E0277]: window clause `.over(...)` is not available on `kova_core::dsl::column::Column<i32>`
+error[E0277]: window clause `.over(...)` is not available on `kova_kernel::dsl::column::Column<i32>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:54
     |
  45 |     let _ = client.select::<User>().columns(User::id.over(Window()));
     |                                                      ^^^^ only aggregate and window functions support `.over(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_core::dsl::column::Column<i32>`
-help: the following other types implement trait `kova_core::dsl::can::CanWindow`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:110:1
+    = help: the trait `kova_kernel::dsl::can::CanWindow` is not implemented for `kova_kernel::dsl::column::Column<i32>`
+help: the following other types implement trait `kova_kernel::dsl::can::CanWindow`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:110:1
     |
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:158:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
     |
-158 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
+156 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:16
@@ -397,24 +397,24 @@ note: required by a bound in `Node::<T>::over`
 338 |             T: CanWindow + SetWindow<'a, Sqlite, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:45:59
     |
  45 |     let _ = client.select::<User>().columns(User::id.over(Window()));
-    |                                                      ---- ^^^^^^^^ the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_core::dsl::column::Column<i32>`
+    |                                                      ---- ^^^^^^^^ the trait `kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_kernel::dsl::column::Column<i32>`
     |                                                      |
     |                                                      required by a bound introduced by this call
     |
-help: the following other types implement trait `kova_core::dsl::function::SetWindow<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:100:1
+help: the following other types implement trait `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:100:1
     |
 100 | impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:143:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:141:1
     |
-143 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+141 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:28
     |
@@ -424,22 +424,22 @@ note: required by a bound in `Node::<T>::over`
 338 |             T: CanWindow + SetWindow<'a, Sqlite, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: window clause `.over(...)` is not available on `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+error[E0277]: window clause `.over(...)` is not available on `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:46:63
     |
  46 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
     |                                                               ^^^^ only aggregate and window functions support `.over(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the following other types implement trait `kova_core::dsl::can::CanWindow`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:110:1
+    = help: the trait `kova_kernel::dsl::can::CanWindow` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_kernel::dsl::can::CanWindow`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:110:1
     |
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:158:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
     |
-158 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
+156 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:16
@@ -450,7 +450,7 @@ note: required by a bound in `Node::<T>::over`
 338 |             T: CanWindow + SetWindow<'a, Sqlite, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>: kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:46:68
     |
  46 |     let _ = client.select::<User>().columns(Lower(User::name).over(Window()));
@@ -458,17 +458,17 @@ error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_cor
     |                                                               |
     |                                                               required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the following other types implement trait `kova_core::dsl::function::SetWindow<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:100:1
+    = help: the trait `kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:100:1
     |
 100 | impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:143:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:141:1
     |
-143 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+141 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:28
     |
@@ -484,16 +484,16 @@ error[E0277]: window clause `.over(...)` is not available on `kova_sqlite::dsl::
  49 |         .columns(EventLog::description.bm25().over(Window()));
     |                                               ^^^^ only aggregate and window functions support `.over(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanWindow` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
-help: the following other types implement trait `kova_core::dsl::can::CanWindow`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:110:1
+    = help: the trait `kova_kernel::dsl::can::CanWindow` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
+help: the following other types implement trait `kova_kernel::dsl::can::CanWindow`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:110:1
     |
 110 | impl<'a, DB: Database, M, E, X> CanWindow for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:158:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
     |
-158 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
+156 | impl<'a, T, X> CanWindow for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:16
@@ -504,24 +504,24 @@ note: required by a bound in `Node::<T>::over`
 338 |             T: CanWindow + SetWindow<'a, Sqlite, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0277]: the trait bound `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>: kova_core::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>: kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:49:52
     |
  49 |         .columns(EventLog::description.bm25().over(Window()));
-    |                                               ---- ^^^^^^^^ the trait `kova_core::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
+    |                                               ---- ^^^^^^^^ the trait `kova_kernel::dsl::function::SetWindow<'_, Engine, _>` is not implemented for `kova_sqlite::dsl::function::fts5::InnerBm25<'_, _>`
     |                                               |
     |                                               required by a bound introduced by this call
     |
-help: the following other types implement trait `kova_core::dsl::function::SetWindow<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:100:1
+help: the following other types implement trait `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:100:1
     |
 100 | impl<'a, DB: Database, M, E, X> SetWindow<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetWindow<'a, DB, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetWindow<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:143:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:141:1
     |
-143 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetWindow<'a, Engine, X>`
+141 | impl<'a, T, X> SetWindow<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_kernel::dsl::function::SetWindow<'a, Engine, X>`
 note: required by a bound in `Node::<T>::over`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:338:28
     |
@@ -531,37 +531,37 @@ note: required by a bound in `Node::<T>::over`
 338 |             T: CanWindow + SetWindow<'a, Sqlite, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::over`
 
-error[E0599]: the method `distinct` exists for struct `Node<kova_core::dsl::column::Column<i32>>`, but its trait bounds were not satisfied
+error[E0599]: the method `distinct` exists for struct `Node<kova_kernel::dsl::column::Column<i32>>`, but its trait bounds were not satisfied
   --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:50:54
    |
 50 |     let _ = client.select::<User>().columns(User::id.distinct());
-   |                                                      ^^^^^^^^ method cannot be called on `Node<kova_core::dsl::column::Column<i32>>` due to unsatisfied trait bounds
+   |                                                      ^^^^^^^^ method cannot be called on `Node<kova_kernel::dsl::column::Column<i32>>` due to unsatisfied trait bounds
    |
-  ::: /Users/me/Workspace/kova/kova-core/src/dsl/column.rs:11:1
+  ::: /Users/me/Workspace/kova/kova-kernel/src/dsl/column.rs:11:1
    |
 11 | pub struct Column<T, M = ColumnMeta, Mode = Static<T>> {
    | ------------------------------------------------------ doesn't satisfy `_: CanDistinct` or `_: SetDistinct`
    |
    = note: the following trait bounds were not satisfied:
-           `kova_core::dsl::column::Column<i32>: kova_core::dsl::can::CanDistinct`
-           `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetDistinct`
+           `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::can::CanDistinct`
+           `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::function::SetDistinct`
 
-error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
+error[E0277]: aggregate `.filter(WHERE ...)` modifier is not available on `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:63
     |
  51 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
     |                                                               ^^^^^^ only aggregate functions support `.filter(...)`
     |
-    = help: the trait `kova_core::dsl::can::CanFilter` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the following other types implement trait `kova_core::dsl::can::CanFilter`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:111:1
+    = help: the trait `kova_kernel::dsl::can::CanFilter` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_kernel::dsl::can::CanFilter`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:111:1
     |
 111 | impl<'a, DB: Database, M, E, X> CanFilter for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:156:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:154:1
     |
-156 | impl<'a, T, X> CanFilter for InnerGroupConcat<'a, T, X> {}
+154 | impl<'a, T, X> CanFilter for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::filter`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:345:16
@@ -572,7 +572,7 @@ note: required by a bound in `Node::<T>::filter`
 345 |             T: CanFilter + SetFilter<'a, Sqlite, X> {
     |                ^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>: kova_core::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>: kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:51:70
     |
  51 |     let _ = client.select::<User>().columns(Lower(User::name).filter(User::is_active.eq(true)));
@@ -580,17 +580,17 @@ error[E0277]: the trait bound `kova_core::dsl::function::scalar::Scalar<kova_cor
     |                                                               |
     |                                                               required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>`
-help: the following other types implement trait `kova_core::dsl::function::SetFilter<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:92:1
+    = help: the trait `kova_kernel::dsl::function::SetFilter<'_, Engine, _>` is not implemented for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>`
+help: the following other types implement trait `kova_kernel::dsl::function::SetFilter<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:92:1
     |
  92 | impl<'a, DB: Database, M, E, X> SetFilter<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetFilter<'a, DB, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetFilter<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:135:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:133:1
     |
-135 | impl<'a, T, X> SetFilter<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetFilter<'a, Engine, X>`
+133 | impl<'a, T, X> SetFilter<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_kernel::dsl::function::SetFilter<'a, Engine, X>`
 note: required by a bound in `Node::<T>::filter`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:345:28
     |
@@ -600,21 +600,21 @@ note: required by a bound in `Node::<T>::filter`
 345 |             T: CanFilter + SetFilter<'a, Sqlite, X> {
     |                            ^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::filter`
 
-error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::can::CanOrderBy` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::can::CanOrderBy` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:52:54
     |
  52 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
-    |                                                      ^^^^^^^^ the trait `kova_core::dsl::can::CanOrderBy` is not implemented for `kova_core::dsl::column::Column<i32>`
+    |                                                      ^^^^^^^^ the trait `kova_kernel::dsl::can::CanOrderBy` is not implemented for `kova_kernel::dsl::column::Column<i32>`
     |
-help: the following other types implement trait `kova_core::dsl::can::CanOrderBy`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:113:1
+help: the following other types implement trait `kova_kernel::dsl::can::CanOrderBy`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:113:1
     |
 113 | impl<'a, DB: Database, M, E, X> CanOrderBy for Aggregate<'a, DB, M, E, X> {}
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:157:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:155:1
     |
-157 | impl<'a, T, X> CanOrderBy for InnerGroupConcat<'a, T, X> {}
+155 | impl<'a, T, X> CanOrderBy for InnerGroupConcat<'a, T, X> {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>`
 note: required by a bound in `Node::<T>::order_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:352:16
@@ -625,22 +625,22 @@ note: required by a bound in `Node::<T>::order_by`
 352 |             T: CanOrderBy + SetOrderBy<'a, Sqlite, X>,
     |                ^^^^^^^^^^ required by this bound in `Node::<T>::order_by`
 
-error[E0277]: the trait bound `kova_core::dsl::column::Column<i32>: kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova_kernel::dsl::column::Column<i32>: kova_kernel::dsl::function::SetOrderBy<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/capabilities/group_and_modifiers.rs:52:54
     |
  52 |     let _ = client.select::<User>().columns(User::id.order_by(User::id.asc()));
-    |                                                      ^^^^^^^^ the trait `kova_core::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_core::dsl::column::Column<i32>`
+    |                                                      ^^^^^^^^ the trait `kova_kernel::dsl::function::SetOrderBy<'_, Engine, _>` is not implemented for `kova_kernel::dsl::column::Column<i32>`
     |
-help: the following other types implement trait `kova_core::dsl::function::SetOrderBy<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/function/aggregate.rs:84:1
+help: the following other types implement trait `kova_kernel::dsl::function::SetOrderBy<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/aggregate.rs:84:1
     |
  84 | impl<'a, DB: Database, M, E, X> SetOrderBy<'a, DB, X> for Aggregate<'a, DB, M, E, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_core::dsl::function::SetOrderBy<'a, DB, X>`
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::function::aggregate::Aggregate<'a, DB, M, E, X>` implements `kova_kernel::dsl::function::SetOrderBy<'a, DB, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:127:1
+   ::: /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/aggregate.rs:125:1
     |
-127 | impl<'a, T, X> SetOrderBy<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
-    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_core::dsl::function::SetOrderBy<'a, Engine, X>`
+125 | impl<'a, T, X> SetOrderBy<'a, Sqlite, X> for InnerGroupConcat<'a, T, X> {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_sqlite::dsl::function::aggregate::InnerGroupConcat<'a, T, X>` implements `kova_kernel::dsl::function::SetOrderBy<'a, Engine, X>`
 note: required by a bound in `Node::<T>::order_by`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:352:29
     |

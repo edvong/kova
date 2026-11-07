@@ -101,7 +101,7 @@ async fn compile_check_custom_types() -> Result<()> {
         .load_in::<(Uuid, Url, DateTime<Utc>, Timestamp, i64)>()
         .await?;
 
-    // 6. Option<CustomType> and Box<CustomType> extraction (handled generically by kova-core)
+    // 6. Option<CustomType> and Box<CustomType> extraction (handled generically by kova-kernel)
     let _optional_urls =
         client.select::<EventLog>().columns(EventLog::website).load_in::<Option<Url>>().await?;
 

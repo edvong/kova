@@ -3,7 +3,7 @@ use crate::dsl::{Constraint, ExtAssignment, ExtOperator, Locking};
 
 pub struct Extension;
 
-impl kova_core::types::Extension for Extension {
+impl kova_kernel::types::Extension for Extension {
     type Operator<'a> = ExtOperator<'a>;
     type Function<'a> = ExtFunction<'a>;
     type TableFunction<'a> = ExtSrfFunction<'a>;

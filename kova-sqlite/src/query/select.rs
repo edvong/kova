@@ -1,15 +1,15 @@
 use crate::dsl::func::{IntoSrfFunction, JsonSrfArgs};
 use crate::query::exec::fetch_rows;
 use crate::types::{Sqlite, SqliteExecutor};
-use kova_core::Result;
-use kova_core::database::Executor;
-use kova_core::dsl::statement::{IntoSelectStatement, SelectStatement};
-use kova_core::dsl::{
+use kova_kernel::Result;
+use kova_kernel::database::Executor;
+use kova_kernel::dsl::statement::{IntoSelectStatement, SelectStatement};
+use kova_kernel::dsl::{
     ArgAst, Close, Condition, Dynamic, EraseX, FromItem, GroupBy, IntoArg,
     IntoIdentifier, IntoInsertSource, IntoJoinConstraint, IntoOperand, IntoProjection, JoinType,
     Operand, Ordering, Projection, SetOperator, TypedNode, ValueSource,
 };
-use kova_core::types::{
+use kova_kernel::types::{
     Cte, DecodeColumn, FromRow, Model, Relation, Select as NewSelect,
 };
 use std::iter::once;
@@ -37,7 +37,6 @@ impl Dispatch for InnerQuery {
 pub struct Normal;
 pub struct JustAddFrom;
 pub struct TaggedFrom;
-pub struct JustAddSrf;
 pub struct JustAddJoin;
 
 pub(crate) type InitSelect<'c, 'a, T, E, X> = Select<'a, T, OuterQuery<'c, E>, JustAddFrom, X>;
@@ -59,9 +58,9 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
         self.into_state()
     }
 
-    pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
-        mut self, args: A,
-    ) -> Select<'a, T, D, JustAddSrf, X> {
+    pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, Normal, X>
+        where
+            A: IntoArg<FromItem<'a, Sqlite, X>, M> {
         self.statement.srf(args.into_args_erased());
         self.into_state()
     }
@@ -71,20 +70,10 @@ impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddFrom, X>
 impl<'a, T, D: Dispatch, X> Select<'a, T, D, TaggedFrom, X>
     where
         T: Model<Sqlite, X> {
-    pub fn srf<A: IntoArg<FromItem<'a, Sqlite, X>, M>, M>(
-        mut self, args: A,
-    ) -> Select<'a, T, D, JustAddSrf, X> {
+    pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, Normal, X>
+        where
+            A: IntoArg<FromItem<'a, Sqlite, X>, M> {
         self.statement.srf(args.into_args_erased());
-        self.into_state()
-    }
-}
-
-// Just appended SRF status: .tag() is allowed for this SRF, but the .srf() method no longer exists.
-impl<'a, T, D: Dispatch, X> Select<'a, T, D, JustAddSrf, X>
-    where
-        T: Model<Sqlite, X> {
-    pub fn tag<Marker: 'static>(mut self) -> Select<'a, T, D, Normal, X> {
-        self.statement.tag_latest_from::<Marker>();
         self.into_state()
     }
 }

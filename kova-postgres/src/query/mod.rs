@@ -6,7 +6,7 @@ mod select;
 mod statement;
 mod update;
 
-use kova_core::types::Model;
+use kova_kernel::types::Model;
 use crate::types::Postgres;
 use crate::query::delete::InitDelete;
 use crate::query::insert::InitInsert;
@@ -20,7 +20,7 @@ pub use {insert::Insert, select::Select, update::Update, delete::Delete, stateme
 pub struct Query;
 
 #[rustfmt::skip]
-impl<'a> kova_core::types::Query<'a, Postgres> for Query {
+impl<'a> kova_kernel::types::Query<'a, Postgres> for Query {
     type Select<'c, T: Model<Postgres, X>, E, X> = InitSelect<'c, 'a, T, E, X>
         where
             'a: 'c,

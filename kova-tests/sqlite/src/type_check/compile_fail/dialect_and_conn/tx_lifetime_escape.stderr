@@ -4,8 +4,8 @@ error: lifetime may not live long enough
 8 |     let _escaped_tx = client.transaction(|tx| Ok(tx));
   |                                           --- ^^^^^^ returning this value requires that `'1` must outlive `'2`
   |                                           | |
-  |                                           | return type of closure is Result<kova_core::database::operations::Operations<Engine, &'2 mut kova_sqlite::types::conn::SqliteTx<'_>, ()>, kova::Error>
-  |                                           has type `kova_core::database::operations::Operations<Engine, &'1 mut kova_sqlite::types::conn::SqliteTx<'_>, ()>`
+  |                                           | return type of closure is Result<kova_kernel::database::operations::Operations<Engine, &'2 mut kova_sqlite::types::conn::SqliteTx<'_>, ()>, kova::Error>
+  |                                           has type `kova_kernel::database::operations::Operations<Engine, &'1 mut kova_sqlite::types::conn::SqliteTx<'_>, ()>`
 
 error: lifetime may not live long enough
  --> src/type_check/compile_fail/dialect_and_conn/tx_lifetime_escape.rs:8:47
@@ -13,8 +13,8 @@ error: lifetime may not live long enough
 8 |     let _escaped_tx = client.transaction(|tx| Ok(tx));
   |                                           --- ^^^^^^ returning this value requires that `'3` must outlive `'4`
   |                                           | |
-  |                                           | return type of closure is Result<kova_core::database::operations::Operations<Engine, &mut kova_sqlite::types::conn::SqliteTx<'4>, ()>, kova::Error>
-  |                                           has type `kova_core::database::operations::Operations<Engine, &mut kova_sqlite::types::conn::SqliteTx<'3>, ()>`
+  |                                           | return type of closure is Result<kova_kernel::database::operations::Operations<Engine, &mut kova_sqlite::types::conn::SqliteTx<'4>, ()>, kova::Error>
+  |                                           has type `kova_kernel::database::operations::Operations<Engine, &mut kova_sqlite::types::conn::SqliteTx<'3>, ()>`
   |
   = note: requirement occurs because of a mutable reference to `kova_sqlite::types::conn::SqliteTx<'_>`
   = note: mutable references are invariant over their type parameter
@@ -27,7 +27,7 @@ error: lifetime may not live long enough
    |                                              --- ^^^^^^^^^^^^^^^^^^^^^^^ returning this value requires that `'1` must outlive `'2`
    |                                              | |
    |                                              | return type of closure is Result<kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'2, &mut kova_sqlite::types::conn::SqliteTx<'_>>, kova_sqlite::query::select::JustAddFrom, ()>, kova::Error>
-   |                                              has type `kova_core::database::operations::Operations<Engine, &'1 mut kova_sqlite::types::conn::SqliteTx<'_>, ()>`
+   |                                              has type `kova_kernel::database::operations::Operations<Engine, &'1 mut kova_sqlite::types::conn::SqliteTx<'_>, ()>`
    |
    = note: requirement occurs because of the type `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, &mut kova_sqlite::types::conn::SqliteTx<'_>>, kova_sqlite::query::select::JustAddFrom, ()>`, which makes the generic argument `'_` invariant
    = note: the struct `kova::query::Select<'a, T, D, S, X>` is invariant over the parameter `'a`
@@ -40,7 +40,7 @@ error: lifetime may not live long enough
    |                                              --- ^^^^^^^^^^^^^^^^^^^^^^^ returning this value requires that `'3` must outlive `'4`
    |                                              | |
    |                                              | return type of closure is Result<kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, &mut kova_sqlite::types::conn::SqliteTx<'4>>, kova_sqlite::query::select::JustAddFrom, ()>, kova::Error>
-   |                                              has type `kova_core::database::operations::Operations<Engine, &mut kova_sqlite::types::conn::SqliteTx<'3>, ()>`
+   |                                              has type `kova_kernel::database::operations::Operations<Engine, &mut kova_sqlite::types::conn::SqliteTx<'3>, ()>`
    |
    = note: requirement occurs because of the type `kova::query::Select<'_, models::type_check::user::User, kova_sqlite::query::select::OuterQuery<'_, &mut kova_sqlite::types::conn::SqliteTx<'_>>, kova_sqlite::query::select::JustAddFrom, ()>`, which makes the generic argument `'_` invariant
    = note: the struct `kova::query::Select<'a, T, D, S, X>` is invariant over the parameter `'a`

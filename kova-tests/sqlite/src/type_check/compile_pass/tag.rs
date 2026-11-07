@@ -28,14 +28,20 @@ fn compile_check_tags() -> Result<()> {
         .filter(User::is_active.tag::<T1>().eq(true))
         .load_in::<(i32, String)>()?;
 
-    // 2. Mixed Source Query (select_mix) Tagging
+    // 2. Mixed Source Query (main table + multiple tagged SRFs in a tuple)
     let _ = client
         .select::<User>()
         .tag::<MixAlias>()
-        .srf(JsonEach(User::name))
-        .tag::<MixAlias>()
-        .columns((User::id.tag::<MixAlias>(), JsonEach::value.tag::<MixAlias>()))
-        .load_in::<(i32, String)>()?;
+        .srf((
+            JsonEach(User::name).tag::<T1>(),
+            JsonEach((User::name, "$.roles")).tag::<T2>(),
+        ))
+        .columns((
+            User::id.tag::<MixAlias>(),
+            JsonEach::key.tag::<T1>(),
+            JsonEach::value.tag::<T2>(),
+        ))
+        .load_in::<(i32, String, String)>()?;
 
     // 3. Identifier Column Tagging (Virtual Columns / CTEs)
     #[allow(non_upper_case_globals)]

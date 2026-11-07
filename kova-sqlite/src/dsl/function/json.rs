@@ -4,8 +4,8 @@ use crate::dsl::ExtFunction;
 use crate::dsl::can::CanSqliteJson;
 use crate::dsl::node::Node;
 use crate::types::Sqlite;
-use kova_core::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
-use kova_core::dsl::{
+use kova_kernel::dsl::func::{Function, Scalar, ScalarBuild, ScalarMarker};
+use kova_kernel::dsl::{
     AstNode, CanAlias, CanCompare, CanGroup, CanMath, CanOrder, CanString, Dynamic,
     IntoArg, Operand, Projection, Static, TypedNode,
 };
@@ -97,7 +97,6 @@ impl<M, A, K, X> CanAlias for InnerJsonObject<M, A, K, X> {}
 impl<M, A, K, X> CanCompare for InnerJsonObject<M, A, K, X> {}
 impl<A, K, X> CanString<X> for InnerJsonObject<JsonObjectMarker, A, K, X> {}
 impl<M, A, K, X> CanSqliteJson<X> for InnerJsonObject<M, A, K, X> {}
-// impl<A, K, X> CanSqliteString<X> for InnerJsonObject<JsonObjectMarker, A, K, X> {}
 
 // JsonExtract & JsonbExtract (Isomorphic Dynamic Extraction of Nodes)
 pub struct JsonExtractMarker;

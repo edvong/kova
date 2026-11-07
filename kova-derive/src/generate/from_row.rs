@@ -4,7 +4,7 @@ use proc_macro2::TokenStream;
 use quote::quote;
 
 pub(crate) fn expand(def: &StructDef) -> TokenStream {
-    let columns_block = expand_identifier_columns(def);
+    let columns_block = expand_identifier_columns(def, "");
     let from_row_impl = expand_from_row_impl(def);
 
     quote! {

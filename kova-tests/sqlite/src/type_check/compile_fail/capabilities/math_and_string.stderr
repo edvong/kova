@@ -18,7 +18,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
             and $N others
     = note: required for `Static<String>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<String>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::column::Column<String>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::add`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:224:16
     |
@@ -48,7 +48,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
             and $N others
     = note: required for `Option<String>` to implement `CanMath<_>`
     = note: 2 redundant requirements hidden
-    = note: required for `kova_core::dsl::column::Column<Option<String>>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::column::Column<Option<String>>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::sub`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:232:16
     |
@@ -78,7 +78,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `uuid::Uuid
             and $N others
     = note: required for `Static<uuid::Uuid>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::column::Column<uuid::Uuid>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::add`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:224:16
     |
@@ -108,7 +108,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
             and $N others
     = note: required for `Static<String>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<String>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::column::Column<String>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::increment`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:305:16
     |
@@ -138,7 +138,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
             and $N others
     = note: required for `Option<String>` to implement `CanMath<_>`
     = note: 2 redundant requirements hidden
-    = note: required for `kova_core::dsl::column::Column<Option<String>>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::column::Column<Option<String>>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::increment`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:305:16
     |
@@ -168,7 +168,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `bool`
             and $N others
     = note: required for `Static<bool>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<bool>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::column::Column<bool>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::decrement`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:316:16
     |
@@ -194,17 +194,17 @@ help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::even
     | impl CanMath<AppCodec> for Decimal {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<String>` to implement `CanMath<AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::SumMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::SumMarker` to implement `kova_kernel::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `String`
@@ -225,17 +225,17 @@ help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::even
     = note: required for `Option<String>` to implement `CanMath<AppCodec>`
     = note: 1 redundant requirement hidden
     = note: required for `Static<Option<String>>` to implement `CanMath<AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::SumMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<Option<String>>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::SumMarker` to implement `kova_kernel::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<Option<String>>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<Option<String>>>, AppCodec>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<Option<String>>>, AppCodec>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<Option<String>>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `bool`
@@ -254,17 +254,17 @@ help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::even
     | impl CanMath<AppCodec> for Decimal {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<bool>` to implement `CanMath<AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::AvgMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<bool>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::AvgMarker, Node<kova_core::dsl::column::Column<bool>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::AvgMarker, Node<kova_core::dsl::column::Column<bool>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::AvgMarker, Node<kova_core::dsl::column::Column<bool>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::AvgMarker` to implement `kova_kernel::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<bool>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::AvgMarker, Node<kova_kernel::dsl::column::Column<bool>>, AppCodec>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::AvgMarker, Node<kova_kernel::dsl::column::Column<bool>>, AppCodec>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::AvgMarker, Node<kova_kernel::dsl::column::Column<bool>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `String`
@@ -283,17 +283,17 @@ help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::even
     | impl CanMath<AppCodec> for Decimal {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<String>` to implement `CanMath<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::AbsMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<String>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::column::Column<String>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::AbsMarker, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::AbsMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::column::Column<String>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::column::Column<String>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::AbsMarker, Node<kova_kernel::dsl::column::Column<String>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: numeric capability (`CanMath<AppCodec>`) is not satisfied for `uuid::Uuid`
@@ -312,17 +312,17 @@ help: the trait `CanMath<AppCodec>` is implemented for `models::type_check::even
     | impl CanMath<AppCodec> for Decimal {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<uuid::Uuid>` to implement `CanMath<AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::SumMarker` to implement `kova_core::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::SumMarker, Node<kova_core::dsl::column::Column<uuid::Uuid>>, AppCodec>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::aggregate::SumMarker` to implement `kova_kernel::dsl::function::aggregate::AggregateBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<uuid::Uuid>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<uuid::Uuid>>, AppCodec>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<uuid::Uuid>>, AppCodec>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::SumMarker, Node<kova_kernel::dsl::column::Column<uuid::Uuid>>, AppCodec>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i32`
@@ -345,7 +345,7 @@ error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i32`
             and $N others
     = note: required for `Static<i32>` to implement `CanString<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<i32>` to implement `CanString<_>`
+    = note: required for `kova_kernel::dsl::column::Column<i32>` to implement `CanString<_>`
 note: required by a bound in `Node::<T>::like`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
     |
@@ -375,7 +375,7 @@ error[E0277]: textual capability (`CanString<_>`) is not satisfied for `f64`
             and $N others
     = note: required for `Option<f64>` to implement `CanString<_>`
     = note: 2 redundant requirements hidden
-    = note: required for `kova_core::dsl::column::Column<Option<f64>>` to implement `CanString<_>`
+    = note: required for `kova_kernel::dsl::column::Column<Option<f64>>` to implement `CanString<_>`
 note: required by a bound in `Node::<T>::like`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
     |
@@ -405,8 +405,8 @@ error[E0277]: textual capability (`CanString<_>`) is not satisfied for `f64`
             and $N others
     = note: required for `Static<f64>` to implement `CanString<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<f64>` to implement `CanString<_>`
-    = note: required for `kova_core::dsl::column::Column<f64>` to implement `kova_sqlite::dsl::can::CanSqliteString<_>`
+    = note: required for `kova_kernel::dsl::column::Column<f64>` to implement `CanString<_>`
+    = note: required for `kova_kernel::dsl::column::Column<f64>` to implement `kova_sqlite::dsl::can::CanSqliteString<_>`
 note: required by a bound in `Node::<T>::regexp`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:388:16
     |
@@ -436,8 +436,8 @@ error[E0277]: textual capability (`CanString<_>`) is not satisfied for `uuid::Uu
             and $N others
     = note: required for `Static<uuid::Uuid>` to implement `CanString<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `CanString<_>`
-    = note: required for `kova_core::dsl::column::Column<uuid::Uuid>` to implement `kova_sqlite::dsl::can::CanSqliteString<_>`
+    = note: required for `kova_kernel::dsl::column::Column<uuid::Uuid>` to implement `CanString<_>`
+    = note: required for `kova_kernel::dsl::column::Column<uuid::Uuid>` to implement `kova_sqlite::dsl::can::CanSqliteString<_>`
 note: required by a bound in `Node::<T>::regexp`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:388:16
     |
@@ -447,14 +447,14 @@ note: required by a bound in `Node::<T>::regexp`
 388 |             T: CanSqliteString<X> + AstNode<'a, Sqlite, X>,
     |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::regexp`
 
-error[E0277]: textual capability (`CanString<_>`) is not satisfied for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>`
+error[E0277]: textual capability (`CanString<_>`) is not satisfied for `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, _>`
    --> src/type_check/compile_fail/capabilities/math_and_string.rs:33:53
     |
  33 |         .filter(JsonbObject((User::id, User::name)).like("%a%"));
     |                                                     ^^^^ expected a textual column or string expression
     |
-    = note: if `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>` is a custom textual type, implement `CanString<_>` for it.
-help: the trait `CanString<_>` is not implemented for `InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, _>`
+    = note: if `kova_sqlite::dsl::function::json::InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, _>` is a custom textual type, implement `CanString<_>` for it.
+help: the trait `CanString<_>` is not implemented for `InnerJsonObject<kova_sqlite::dsl::function::json::JsonbObjectMarker, (Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, _>`
       but it is implemented for `InnerJsonObject<kova_sqlite::dsl::function::json::JsonObjectMarker, _, _, _>`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/function/json.rs:98:1
     |
@@ -486,17 +486,17 @@ help: the trait `CanString<AppCodec>` is implemented for `url::Url`
     | impl CanString<AppCodec> for Url {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<i32>` to implement `CanString<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<i32>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<i32>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<i32>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<i32>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::LowerMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<i32>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<i32>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<i32>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<i32>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `f64`
@@ -517,17 +517,17 @@ help: the trait `CanString<AppCodec>` is implemented for `url::Url`
     = note: required for `Option<f64>` to implement `CanString<AppCodec>`
     = note: 1 redundant requirement hidden
     = note: required for `Static<Option<f64>>` to implement `CanString<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<Option<f64>>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<Option<f64>>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<Option<f64>>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<Option<f64>>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::LowerMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<Option<f64>>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<Option<f64>>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<Option<f64>>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<Option<f64>>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `bool`
@@ -546,17 +546,17 @@ help: the trait `CanString<AppCodec>` is implemented for `url::Url`
     | impl CanString<AppCodec> for Url {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<bool>` to implement `CanString<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::UpperMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<bool>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::UpperMarker, Node<kova_core::dsl::column::Column<bool>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::UpperMarker, Node<kova_core::dsl::column::Column<bool>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::UpperMarker, Node<kova_core::dsl::column::Column<bool>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::UpperMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<bool>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::UpperMarker, Node<kova_kernel::dsl::column::Column<bool>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::UpperMarker, Node<kova_kernel::dsl::column::Column<bool>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::UpperMarker, Node<kova_kernel::dsl::column::Column<bool>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `f64`
@@ -575,17 +575,17 @@ help: the trait `CanString<AppCodec>` is implemented for `url::Url`
     | impl CanString<AppCodec> for Url {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<f64>` to implement `CanString<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::LengthMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::column::Column<f64>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<f64>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<f64>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<f64>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::LengthMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::column::Column<f64>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<f64>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<f64>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<f64>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i64`
@@ -608,7 +608,7 @@ error[E0277]: textual capability (`CanString<_>`) is not satisfied for `i64`
             and $N others
     = note: required for `Static<i64>` to implement `CanString<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>` to implement `CanString<_>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<String>>>` to implement `CanString<_>`
 note: required by a bound in `Node::<T>::like`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:204:16
     |
@@ -634,17 +634,17 @@ help: the trait `CanString<AppCodec>` is implemented for `url::Url`
     | impl CanString<AppCodec> for Url {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<i64>` to implement `CanString<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LengthMarker, Node<kova_core::dsl::column::Column<String>>>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::LowerMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<String>>>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<String>>>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<String>>>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LengthMarker, Node<kova_kernel::dsl::column::Column<String>>>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: textual capability (`CanString<AppCodec>`) is not satisfied for `i64`
@@ -663,17 +663,17 @@ help: the trait `CanString<AppCodec>` is implemented for `url::Url`
     | impl CanString<AppCodec> for Url {}
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     = note: required for `Static<i64>` to implement `CanString<AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::LowerMarker` to implement `kova_core::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>, AppCodec>`
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>>` to implement `kova_core::dsl::operand::AstNode<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>>>` to implement `kova_core::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::function::aggregate::Aggregate<'_, Engine, kova_core::dsl::function::aggregate::CountMarker, Node<kova_core::dsl::column::Column<String>>, AppCodec>>>>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_kernel::dsl::function::scalar::LowerMarker` to implement `kova_kernel::dsl::function::scalar::ScalarBuild<'_, Engine, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>, AppCodec>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>>` to implement `kova_kernel::dsl::operand::AstNode<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>>>` to implement `kova_kernel::dsl::clause::projection::IntoProjection<'_, Engine, AppCodec>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::function::aggregate::Aggregate<'_, Engine, kova_kernel::dsl::function::aggregate::CountMarker, Node<kova_kernel::dsl::column::Column<String>>, AppCodec>>>>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, AppCodec>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
 error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
@@ -696,7 +696,7 @@ error[E0277]: numeric capability (`CanMath<_>`) is not satisfied for `String`
             and $N others
     = note: required for `Static<String>` to implement `CanMath<_>`
     = note: 1 redundant requirement hidden
-    = note: required for `kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>` to implement `CanMath<_>`
+    = note: required for `kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>` to implement `CanMath<_>`
 note: required by a bound in `Node::<T>::add`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:224:16
     |

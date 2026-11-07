@@ -1,8 +1,8 @@
 use crate::dsl::ExtFunction;
 use crate::dsl::node::Node;
 use crate::types::Sqlite;
-use kova_core::dsl::func::Function;
-use kova_core::dsl::{
+use kova_kernel::dsl::func::Function;
+use kova_kernel::dsl::{
     AstNode, CanAlias, CanCompare, CanGroup, CanMath, CanOrder, CanString, Operand, Static,
     TypedNode,
 };
@@ -77,7 +77,6 @@ impl<'a, X> CanCompare for InnerHighlight<'a, X> {}
 impl<'a, X> CanOrder for InnerHighlight<'a, X> {}
 impl<'a, X> CanGroup for InnerHighlight<'a, X> {}
 impl<'a, X> CanString<X> for InnerHighlight<'a, X> {}
-// impl<'a, X> CanSqliteString<X> for InnerHighlight<'a, X> {}
 
 // ==========================================
 // 3. Snippet

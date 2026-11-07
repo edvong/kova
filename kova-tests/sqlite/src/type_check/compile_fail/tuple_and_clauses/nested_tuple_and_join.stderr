@@ -1,34 +1,34 @@
-error[E0277]: cannot convert `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<f64>>)` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+error[E0277]: cannot convert `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<f64>>)` into SQL argument(s) of type `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:13:10
     |
  13 |         .columns(((User::id, User::name), User::balance));
-    |          ^^^^^^^ --------------------------------------- `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<f64>>)` doesn't satisfy the trait bound
+    |          ^^^^^^^ --------------------------------------- `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<f64>>)` doesn't satisfy the trait bound
     |          |
     |          invalid SQL argument(s)
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, kova_core::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<f64>>)`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, kova_kernel::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<f64>>)`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
-error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:14:45
     |
  14 |     let _ = client.select::<User>().columns(());
@@ -36,59 +36,59 @@ error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, ()>, _>` is not implemented for `()`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>, _>` is not implemented for `()`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
-error[E0277]: cannot convert `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<bool>>)` into SQL argument(s) of type `kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
+error[E0277]: cannot convert `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<bool>>)` into SQL argument(s) of type `kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:17:10
     |
  17 |         .group_by(((User::id, User::name), User::is_active));
-    |          ^^^^^^^^ ----------------------------------------- `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<bool>>)` doesn't satisfy the trait bound
+    |          ^^^^^^^^ ----------------------------------------- `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<bool>>)` doesn't satisfy the trait bound
     |          |
     |          invalid SQL argument(s)
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, kova_core::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<bool>>)`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, kova_kernel::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<bool>>)`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
+error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:18:46
     |
  18 |     let _ = client.select::<User>().group_by(());
@@ -96,59 +96,59 @@ error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, _>` is not implemented for `()`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, _>` is not implemented for `()`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
 
-error[E0277]: cannot convert `((kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, kova_core::dsl::clause::order::Ordering<'_, Engine, ()>), kova_core::dsl::clause::order::Ordering<'_, Engine, ()>)` into SQL argument(s) of type `kova_core::dsl::clause::order::Ordering<'_, Engine, ()>`
+error[E0277]: cannot convert `((kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>, kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>), kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>)` into SQL argument(s) of type `kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:21:10
     |
  21 |         .order_by(((User::id.asc(), User::name.desc()), User::balance.asc()));
-    |          ^^^^^^^^ ---------------------------------------------------------- `((kova_core::dsl::clause::order::Ordering<'_, Engine, _>, kova_core::dsl::clause::order::Ordering<'_, Engine, _>), kova_core::dsl::clause::order::Ordering<'_, Engine, _>)` doesn't satisfy the trait bound
+    |          ^^^^^^^^ ---------------------------------------------------------- `((kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>, kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>), kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>)` doesn't satisfy the trait bound
     |          |
     |          invalid SQL argument(s)
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgDirect, kova_core::dsl::arg::ArgDirect)>, kova_core::dsl::arg::ArgDirect)>>` is not implemented for `((kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, kova_core::dsl::clause::order::Ordering<'_, Engine, ()>), kova_core::dsl::clause::order::Ordering<'_, Engine, ()>)`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgDirect, kova_kernel::dsl::arg::ArgDirect)>, kova_kernel::dsl::arg::ArgDirect)>>` is not implemented for `((kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>, kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>), kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>)`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:179:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:168:16
     |
-177 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+166 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-178 |         where
-179 |             A: IntoArg<Ordering<'a, Sqlite, X>, M> {
+167 |         where
+168 |             A: IntoArg<Ordering<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::order_by`
 
-error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::clause::order::Ordering<'_, Engine, ()>`
+error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:22:46
     |
  22 |     let _ = client.select::<User>().order_by(());
@@ -156,48 +156,48 @@ error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, ()>, _>` is not implemented for `()`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, ()>, _>` is not implemented for `()`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::order_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:179:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:168:16
     |
-177 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+166 |     pub fn order_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-178 |         where
-179 |             A: IntoArg<Ordering<'a, Sqlite, X>, M> {
+167 |         where
+168 |             A: IntoArg<Ordering<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::order_by`
 
-error[E0277]: cannot convert `((kova_core::dsl::assignment::Assignment<'_, Engine, ()>, kova_core::dsl::assignment::Assignment<'_, Engine, ()>), kova_core::dsl::assignment::Assignment<'_, Engine, ()>)` into SQL argument(s) of type `kova_core::dsl::assignment::Assignment<'_, Engine, ()>`
+error[E0277]: cannot convert `((kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>, kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>), kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>)` into SQL argument(s) of type `kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>`
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:25:10
    |
 25 |         .set(((User::name.set("a"), User::balance.set(1.0)), User::is_active.set(true)));
-   |          ^^^ -------------------------------------------------------------------------- `((kova_core::dsl::assignment::Assignment<'_, Engine, _>, kova_core::dsl::assignment::Assignment<'_, Engine, _>), kova_core::dsl::assignment::Assignment<'_, Engine, _>)` doesn't satisfy the trait bound
+   |          ^^^ -------------------------------------------------------------------------- `((kova_kernel::dsl::assignment::Assignment<'_, Engine, _>, kova_kernel::dsl::assignment::Assignment<'_, Engine, _>), kova_kernel::dsl::assignment::Assignment<'_, Engine, _>)` doesn't satisfy the trait bound
    |          |
    |          invalid SQL argument(s)
    |
-   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::assignment::Assignment<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgDirect, kova_core::dsl::arg::ArgDirect)>, kova_core::dsl::arg::ArgDirect)>>` is not implemented for `((kova_core::dsl::assignment::Assignment<'_, Engine, ()>, kova_core::dsl::assignment::Assignment<'_, Engine, ()>), kova_core::dsl::assignment::Assignment<'_, Engine, ()>)`
+   = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgDirect, kova_kernel::dsl::arg::ArgDirect)>, kova_kernel::dsl::arg::ArgDirect)>>` is not implemented for `((kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>, kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>), kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>)`
    = note: expected a valid SQL construct or encodable value.
            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+   = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
            and $N others
 note: required by a bound in `Update::<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, S, X>::set`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:38:16
@@ -208,7 +208,7 @@ note: required by a bound in `Update::<'c, 'a, T, E, kova_sqlite::query::update:
 38 |             A: IntoArg<Assignment<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Update::<'c, 'a, T, E, NoReturn, S, X>::set`
 
-error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::assignment::Assignment<'_, Engine, ()>`
+error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>`
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:26:41
    |
 26 |     let _ = client.update::<User>().set(());
@@ -216,18 +216,18 @@ error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::
    |                                     |
    |                                     required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::assignment::Assignment<'_, Engine, ()>, _>` is not implemented for `()`
+   = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::assignment::Assignment<'_, Engine, ()>, _>` is not implemented for `()`
    = note: expected a valid SQL construct or encodable value.
            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+   = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
            and $N others
 note: required by a bound in `Update::<'c, 'a, T, E, kova_sqlite::query::update::NoReturn, S, X>::set`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:38:16
@@ -238,54 +238,54 @@ note: required by a bound in `Update::<'c, 'a, T, E, kova_sqlite::query::update:
 38 |             A: IntoArg<Assignment<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Update::<'c, 'a, T, E, NoReturn, S, X>::set`
 
-error[E0277]: `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<bool>>)` cannot be used as an `ON CONFLICT` target
+error[E0277]: `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<bool>>)` cannot be used as an `ON CONFLICT` target
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:29:22
    |
 29 |         .on_conflict(((User::id, User::name), User::is_active));
    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ invalid `ON CONFLICT` target
    |
-   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, kova_core::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<bool>>)`
+   = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, kova_kernel::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<bool>>)`
    = note: expected a physical table column, a tuple of columns/scalar expressions, or a platform-specific conflict target.
-   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+   = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
            and $N others
-   = note: required for `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<bool>>)` to implement `kova_core::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_core::dsl::component::Std, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, kova_core::dsl::arg::ArgAst)>), ()>`
+   = note: required for `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<bool>>)` to implement `kova_kernel::dsl::clause::conflict::IntoConflictTarget<'_, Engine, (kova_kernel::dsl::component::Std, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, kova_kernel::dsl::arg::ArgAst)>), ()>`
 note: required by a bound in `Insert::<'c, 'a, T, E, R, kova_sqlite::query::insert::NoConflict, X>::on_conflict`
-  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:60:12
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:59:16
    |
 57 |     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
    |            ----------- required by a bound in this associated function
-...
-60 |         A: IntoConflictTarget<'a, Sqlite, M, X>, {
-   |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
+58 |         where
+59 |             A: IntoConflictTarget<'a, Sqlite, M, X>, {
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, R, NoConflict, X>::on_conflict`
 
-error[E0277]: cannot convert `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<f64>>)` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+error[E0277]: cannot convert `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<f64>>)` into SQL argument(s) of type `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:30:34
    |
 30 |     let _ = client.insert(&user).returning(((User::id, User::name), User::balance));
-   |                                  ^^^^^^^^^ --------------------------------------- `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<f64>>)` doesn't satisfy the trait bound
+   |                                  ^^^^^^^^^ --------------------------------------- `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<f64>>)` doesn't satisfy the trait bound
    |                                  |
    |                                  invalid SQL argument(s)
    |
-   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, kova_core::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<String>>), Node<kova_core::dsl::column::Column<f64>>)`
+   = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, kova_kernel::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<String>>), Node<kova_kernel::dsl::column::Column<f64>>)`
    = note: expected a valid SQL construct or encodable value.
            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+   = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
            and $N others
 note: required by a bound in `Insert::<'c, 'a, T, E, kova_sqlite::query::insert::NoReturn, C, X>::returning`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/insert.rs:48:16
@@ -296,29 +296,29 @@ note: required by a bound in `Insert::<'c, 'a, T, E, kova_sqlite::query::insert:
 48 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Insert::<'c, 'a, T, E, NoReturn, C, X>::returning`
 
-error[E0277]: cannot convert `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<i32>>), Node<kova_core::dsl::column::Column<bool>>)` into SQL argument(s) of type `kova_core::dsl::function::window::PartitionBy<'_, Engine, _>`
+error[E0277]: cannot convert `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<i32>>), Node<kova_kernel::dsl::column::Column<bool>>)` into SQL argument(s) of type `kova_kernel::dsl::function::window::PartitionBy<'_, Engine, _>`
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:32:40
    |
 32 |         Count(Order::id).over(Window().partition_by(((Order::id, Order::user_id), Order::is_active))),
-   |                                        ^^^^^^^^^^^^ ----------------------------------------------- `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<i32>>), Node<kova_core::dsl::column::Column<bool>>)` doesn't satisfy the trait bound
+   |                                        ^^^^^^^^^^^^ ----------------------------------------------- `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<i32>>), Node<kova_kernel::dsl::column::Column<bool>>)` doesn't satisfy the trait bound
    |                                        |
    |                                        invalid SQL argument(s)
    |
-   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'_, Engine, _>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgAst, kova_core::dsl::arg::ArgAst)>, kova_core::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_core::dsl::column::Column<i32>>, Node<kova_core::dsl::column::Column<i32>>), Node<kova_core::dsl::column::Column<bool>>)`
+   = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'_, Engine, _>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgAst, kova_kernel::dsl::arg::ArgAst)>, kova_kernel::dsl::arg::ArgAst)>>` is not implemented for `((Node<kova_kernel::dsl::column::Column<i32>>, Node<kova_kernel::dsl::column::Column<i32>>), Node<kova_kernel::dsl::column::Column<bool>>)`
    = note: expected a valid SQL construct or encodable value.
            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+   = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
            and $N others
 note: required by a bound in `Window::<'a, DB, X>::partition_by`
-  --> /Users/me/Workspace/kova/kova-core/src/dsl/function/window.rs:56:16
+  --> /Users/me/Workspace/kova/kova-kernel/src/dsl/function/window.rs:56:16
    |
 54 |     pub fn partition_by<C, M>(mut self, cols: C) -> Self
    |            ------------ required by a bound in this associated function
@@ -326,7 +326,7 @@ note: required by a bound in `Window::<'a, DB, X>::partition_by`
 56 |             C: IntoArg<PartitionBy<'a, DB, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Window::<'a, DB, X>::partition_by`
 
-error[E0277]: cannot convert `((i32, i32), i32)` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
+error[E0277]: cannot convert `((i32, i32), i32)` into SQL argument(s) of type `kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>`
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:34:48
    |
 34 |     let _ = client.statement("SELECT ?, ?, ?").bind(((1_i32, 2_i32), 3_i32));
@@ -334,18 +334,18 @@ error[E0277]: cannot convert `((i32, i32), i32)` into SQL argument(s) of type `k
    |                                                |
    |                                                invalid SQL argument(s)
    |
-   = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgTuple<(kova_core::dsl::arg::ArgEncode, kova_core::dsl::arg::ArgEncode)>, kova_core::dsl::arg::ArgEncode)>>` is not implemented for `((i32, i32), i32)`
+   = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>, kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgTuple<(kova_kernel::dsl::arg::ArgEncode, kova_kernel::dsl::arg::ArgEncode)>, kova_kernel::dsl::arg::ArgEncode)>>` is not implemented for `((i32, i32), i32)`
    = note: expected a valid SQL construct or encodable value.
            if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-   = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-             `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+   = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+             `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+             `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
            and $N others
 note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/statement.rs:27:16
@@ -356,7 +356,7 @@ note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
 27 |             A: IntoArg<Bind<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Statement::<'c, 'a, E, X>::bind`
 
-error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
+error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>`
   --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:35:47
    |
 35 |     let _ = client.statement("SELECT 1").bind(());
@@ -377,8 +377,8 @@ error[E0277]: cannot convert `()` into SQL argument(s) of type `kova_core::dsl::
              &'b bool
              &'b f32
            and $N others
-   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, (), ()>`
-   = note: required for `()` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
+   = note: required for `Engine` to implement `kova_kernel::types::codec::Encode<'_, (), ()>`
+   = note: required for `()` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>, kova_kernel::dsl::arg::ArgEncode>`
 note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/statement.rs:27:16
    |
@@ -388,7 +388,7 @@ note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
 27 |             A: IntoArg<Bind<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Statement::<'c, 'a, E, X>::bind`
 
-error[E0277]: cannot convert `i32` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+error[E0277]: cannot convert `i32` into SQL argument(s) of type `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:38:45
     |
  38 |     let _ = client.select::<User>().columns(123_i32);
@@ -396,29 +396,29 @@ error[E0277]: cannot convert `i32` into SQL argument(s) of type `kova_core::dsl:
     |                                     |
     |                                     required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, ()>, _>` is not implemented for `i32`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>, _>` is not implemented for `i32`
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-    = help: the following other types implement trait `kova_core::dsl::arg::IntoArg<A, M>`:
-              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Condition<'a, DB, X>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, DB, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::order::Ordering<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<T>` implements `kova_core::dsl::arg::IntoArg<kova_core::dsl::function::window::PartitionBy<'a, Engine, X>, kova_core::dsl::arg::ArgAst>`
-              `Node<kova_core::dsl::column::Column<T, M, Mode>>` implements `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>`
+    = help: the following other types implement trait `kova_kernel::dsl::arg::IntoArg<A, M>`:
+              `&'b kova_sqlite::dsl::function::srf::srf_node::SrfNode<A, M, Tag>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Condition<'a, DB, X>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, DB, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::conflict::Conflict<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::order::Ordering<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<T>` implements `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::function::window::PartitionBy<'a, Engine, X>, kova_kernel::dsl::arg::ArgAst>`
+              `Node<kova_kernel::dsl::column::Column<T, M, Mode>>` implements `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
-error[E0277]: cannot convert `Condition<'_, Engine, _>` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+error[E0277]: cannot convert `Condition<'_, Engine, _>` into SQL argument(s) of type `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:39:45
     |
  39 |     let _ = client.select::<User>().columns(User::id.eq(1));
@@ -428,28 +428,28 @@ error[E0277]: cannot convert `Condition<'_, Engine, _>` into SQL argument(s) of 
     |
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-help: the trait `IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, ()>, _>` is not implemented for `Condition<'_, Engine, _>`
-      but trait `IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, _>, kova_core::dsl::arg::ArgAst>` is implemented for it
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/condition.rs:75:1
+help: the trait `IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>, _>` is not implemented for `Condition<'_, Engine, _>`
+      but trait `IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>, kova_kernel::dsl::arg::ArgAst>` is implemented for it
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/condition.rs:85:1
     |
- 75 | impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>, ArgAst> for Condition<'a, DB, X> {
+ 85 | impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>, ArgAst> for Condition<'a, DB, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    = help: for that trait implementation, expected `kova_core::dsl::clause::order::Ordering<'_, Engine, _>`, found `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+    = help: for that trait implementation, expected `kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>`, found `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:122:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:111:16
     |
-120 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+109 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-121 |         where
-122 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
+110 |         where
+111 |             A: IntoArg<Projection<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
-help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<i32>>` and `Node<kova_core::dsl::column::Column<i32>>: kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::projection::Projection<'_, Engine, ()>, _>` trivially holds
+help: consider removing this method call, as the receiver has type `Node<kova_kernel::dsl::column::Column<i32>>` and `Node<kova_kernel::dsl::column::Column<i32>>: kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>, _>` trivially holds
     |
  39 -     let _ = client.select::<User>().columns(User::id.eq(1));
  39 +     let _ = client.select::<User>().columns(User::id);
     |
 
-error[E0277]: cannot convert `Condition<'_, Engine, _>` into SQL argument(s) of type `kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
+error[E0277]: cannot convert `Condition<'_, Engine, _>` into SQL argument(s) of type `kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:40:46
     |
  40 |     let _ = client.select::<User>().group_by(User::id.eq(1));
@@ -459,22 +459,22 @@ error[E0277]: cannot convert `Condition<'_, Engine, _>` into SQL argument(s) of 
     |
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
-help: the trait `IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, _>` is not implemented for `Condition<'_, Engine, _>`
-      but trait `IntoArg<kova_core::dsl::clause::order::Ordering<'_, Engine, _>, kova_core::dsl::arg::ArgAst>` is implemented for it
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/condition.rs:75:1
+help: the trait `IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, _>` is not implemented for `Condition<'_, Engine, _>`
+      but trait `IntoArg<kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>, kova_kernel::dsl::arg::ArgAst>` is implemented for it
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/condition.rs:85:1
     |
- 75 | impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>, ArgAst> for Condition<'a, DB, X> {
+ 85 | impl<'a, DB: Database, X> IntoArg<Ordering<'a, DB, X>, ArgAst> for Condition<'a, DB, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    = help: for that trait implementation, expected `kova_core::dsl::clause::order::Ordering<'_, Engine, _>`, found `kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
+    = help: for that trait implementation, expected `kova_kernel::dsl::clause::order::Ordering<'_, Engine, _>`, found `kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::group_by`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:167:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:156:16
     |
-165 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+154 |     pub fn group_by<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            -------- required by a bound in this associated function
-166 |         where
-167 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
+155 |         where
+156 |             A: IntoArg<GroupBy<'a, Sqlite, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::group_by`
-help: consider removing this method call, as the receiver has type `Node<kova_core::dsl::column::Column<i32>>` and `Node<kova_core::dsl::column::Column<i32>>: kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::group_by::GroupBy<'_, Engine, ()>, _>` trivially holds
+help: consider removing this method call, as the receiver has type `Node<kova_kernel::dsl::column::Column<i32>>` and `Node<kova_kernel::dsl::column::Column<i32>>: kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::group_by::GroupBy<'_, Engine, ()>, _>` trivially holds
     |
  40 -     let _ = client.select::<User>().group_by(User::id.eq(1));
  40 +     let _ = client.select::<User>().group_by(User::id);
@@ -492,23 +492,23 @@ error[E0277]: `(Condition<'_, Engine, _>, Condition<'_, Engine, _>)` is not a va
  46 | |     ));
     | |_____^ invalid JOIN constraint
     |
-    = help: the trait `kova_core::dsl::clause::join::IntoJoinConstraint<'_, Engine, ()>` is not implemented for `(Condition<'_, Engine, _>, Condition<'_, Engine, _>)`
+    = help: the trait `kova_kernel::dsl::clause::join::IntoJoinConstraint<'_, Engine, ()>` is not implemented for `(Condition<'_, Engine, _>, Condition<'_, Engine, _>)`
     = note: for `ON` conditions, combine boolean conditions with `&` or `|` (not a tuple).
             for `USING (...)` joins, pass a column or a tuple of columns `(col1, col2)`.
-help: the trait `kova_core::dsl::clause::join::IntoJoinConstraint<'a, DB, X>` is implemented for `Condition<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/clause/join.rs:78:1
+help: the trait `kova_kernel::dsl::clause::join::IntoJoinConstraint<'a, DB, X>` is implemented for `Condition<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/clause/join.rs:78:1
     |
  78 | impl<'a, DB: Database, X> IntoJoinConstraint<'a, DB, X> for Condition<'a, DB, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::inner_join`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:128:36
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:117:36
     |
-127 |     pub fn inner_join<R: Relation>(
+116 |     pub fn inner_join<R: Relation>(
     |            ---------- required by a bound in this associated function
-128 |         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
+117 |         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
     |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::inner_join`
 
-error[E0277]: `(Condition<'_, Engine, _>, Node<kova_core::dsl::column::Column<i32>>)` is not a valid JOIN constraint
+error[E0277]: `(Condition<'_, Engine, _>, Node<kova_kernel::dsl::column::Column<i32>>)` is not a valid JOIN constraint
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:49:29
     |
  49 |         .inner_join::<User>((Order::user_id.eq(User::id), User::id));
@@ -516,23 +516,23 @@ error[E0277]: `(Condition<'_, Engine, _>, Node<kova_core::dsl::column::Column<i3
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::clause::join::IntoJoinConstraint<'_, Engine, ()>` is not implemented for `(Condition<'_, Engine, _>, Node<kova_core::dsl::column::Column<i32>>)`
+    = help: the trait `kova_kernel::dsl::clause::join::IntoJoinConstraint<'_, Engine, ()>` is not implemented for `(Condition<'_, Engine, _>, Node<kova_kernel::dsl::column::Column<i32>>)`
     = note: for `ON` conditions, combine boolean conditions with `&` or `|` (not a tuple).
             for `USING (...)` joins, pass a column or a tuple of columns `(col1, col2)`.
-help: the trait `kova_core::dsl::clause::join::IntoJoinConstraint<'a, DB, X>` is implemented for `Condition<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/dsl/clause/join.rs:78:1
+help: the trait `kova_kernel::dsl::clause::join::IntoJoinConstraint<'a, DB, X>` is implemented for `Condition<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-kernel/src/dsl/clause/join.rs:78:1
     |
  78 | impl<'a, DB: Database, X> IntoJoinConstraint<'a, DB, X> for Condition<'a, DB, X> {
     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::inner_join`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:128:36
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:117:36
     |
-127 |     pub fn inner_join<R: Relation>(
+116 |     pub fn inner_join<R: Relation>(
     |            ---------- required by a bound in this associated function
-128 |         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
+117 |         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
     |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::inner_join`
 
-error[E0277]: `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>>` is not a valid JOIN constraint
+error[E0277]: `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>>` is not a valid JOIN constraint
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:52:29
     |
  52 |         .inner_join::<User>(Lower(User::name));
@@ -540,23 +540,23 @@ error[E0277]: `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::fun
     |          |
     |          required by a bound introduced by this call
     |
-    = help: the trait `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>` is not implemented for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>>`
+    = help: the trait `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>` is not implemented for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>>`
     = note: for `ON` conditions, combine boolean conditions with `&` or `|` (not a tuple).
             for `USING (...)` joins, pass a column or a tuple of columns `(col1, col2)`.
-help: the trait `kova_core::dsl::arg::IntoArg<IdentifierMeta, kova_core::dsl::arg::ArgAst>` is implemented for `Node<kova_core::dsl::column::Column<T, M, Mode>>`
+help: the trait `kova_kernel::dsl::arg::IntoArg<IdentifierMeta, kova_kernel::dsl::arg::ArgAst>` is implemented for `Node<kova_kernel::dsl::column::Column<T, M, Mode>>`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/column.rs:27:1
     |
  27 | / impl<T, M, Mode> IntoArg<IdentifierMeta, ArgAst> for Column<T, M, Mode>
  28 | |     where
  29 | |         M: IntoIdentifier<T> {
     | |____________________________^
-    = note: required for `Node<kova_core::dsl::function::scalar::Scalar<kova_core::dsl::function::scalar::LowerMarker, Node<kova_core::dsl::column::Column<String>>>>` to implement `kova_core::dsl::clause::join::IntoJoinConstraint<'_, Engine, ()>`
+    = note: required for `Node<kova_kernel::dsl::function::scalar::Scalar<kova_kernel::dsl::function::scalar::LowerMarker, Node<kova_kernel::dsl::column::Column<String>>>>` to implement `kova_kernel::dsl::clause::join::IntoJoinConstraint<'_, Engine, ()>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::inner_join`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:128:36
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:117:36
     |
-127 |     pub fn inner_join<R: Relation>(
+116 |     pub fn inner_join<R: Relation>(
     |            ---------- required by a bound in this associated function
-128 |         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
+117 |         mut self, constraint: impl IntoJoinConstraint<'a, Sqlite, X>,
     |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::inner_join`
 
 error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i32>` (under codec `_`)
@@ -577,7 +577,7 @@ error[E0277]: SQL type mismatch: `Static<&str>` is not compatible with `Static<i
               `Static<&&str>` implements `Compatible<Static<Option<String>>, X>`
               `Static<&&str>` implements `Compatible<Static<String>, X>`
             and $N others
-    = note: required for `&str` to implement `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_core::dsl::operand::Open, _>`
+    = note: required for `&str` to implement `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, kova_kernel::dsl::operand::Open, _>`
 note: required by a bound in `Node::<T>::in_list`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:170:16
     |
@@ -587,25 +587,25 @@ note: required by a bound in `Node::<T>::in_list`
 170 |             V: IntoOperand<'a, T::Output, Sqlite, K, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::in_list`
 
-error[E0277]: the trait bound `Vec<i32>: kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `Vec<i32>: kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/tuple_and_clauses/nested_tuple_and_join.rs:56:63
     |
  56 |     let _ = client.select::<User>().filter(User::id.in_select(vec![1_i32, 2_i32]));
-    |                                                     --------- ^^^^^^^^^^^^^^^^^^ the trait `kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not implemented for `Vec<i32>`
+    |                                                     --------- ^^^^^^^^^^^^^^^^^^ the trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not implemented for `Vec<i32>`
     |                                                     |
     |                                                     required by a bound introduced by this call
     |
-help: the following other types implement trait `kova_core::dsl::statement::select::IntoSelectStatement<'a, DB, X>`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:291:1
+help: the following other types implement trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'a, DB, X>`
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:280:1
     |
-291 | / impl<'a, T: Model<Sqlite, X>, S, X> IntoSelectStatement<'a, Sqlite, X>
-292 | |     for Select<'a, T, InnerQuery, S, X> {
-    | |_______________________________________^ `kova::query::Select<'a, T, kova_sqlite::query::select::InnerQuery, S, X>` implements `kova_core::dsl::statement::select::IntoSelectStatement<'a, Engine, X>`
+280 | / impl<'a, T: Model<Sqlite, X>, S, X> IntoSelectStatement<'a, Sqlite, X>
+281 | |     for Select<'a, T, InnerQuery, S, X> {
+    | |_______________________________________^ `kova::query::Select<'a, T, kova_sqlite::query::select::InnerQuery, S, X>` implements `kova_kernel::dsl::statement::select::IntoSelectStatement<'a, Engine, X>`
     |
-   ::: /Users/me/Workspace/kova/kova-core/src/dsl/statement/select.rs:33:1
+   ::: /Users/me/Workspace/kova/kova-kernel/src/dsl/statement/select.rs:33:1
     |
  33 |   impl<'a, DB: Database, X> IntoSelectStatement<'a, DB, X> for SelectStatement<'a, DB> {
-    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_core::dsl::statement::select::SelectStatement<'a, DB>` implements `kova_core::dsl::statement::select::IntoSelectStatement<'a, DB, X>`
+    |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `kova_kernel::dsl::statement::select::SelectStatement<'a, DB>` implements `kova_kernel::dsl::statement::select::IntoSelectStatement<'a, DB, X>`
 note: required by a bound in `Node::<T>::in_select`
    --> /Users/me/Workspace/kova/kova-sqlite/src/dsl/node.rs:187:16
     |

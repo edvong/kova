@@ -1,6 +1,8 @@
+#![doc = include_str!("../README.md")]
+
 mod macros;
 
-pub use kova_core::{Error, Result};
+pub use kova_kernel::{Error, Result};
 pub use kova_derive::{Cte, FromRow, Model};
 
 #[cfg(feature = "postgres")]
@@ -10,23 +12,23 @@ pub use kova_postgres::options::Options;
 pub use kova_sqlite::options::Options;
 
 #[cfg(feature = "postgres")]
-pub type Client<X = ()> = kova_core::database::Client<types::Engine, kova_core::types::Async, X>;
+pub type Client<X = ()> = kova_kernel::database::Client<types::Engine, kova_kernel::types::Async, X>;
 
 #[cfg(feature = "sqlite")]
-pub type Client<X = ()> = kova_core::database::Client<types::Engine, kova_core::types::Sync, X>;
+pub type Client<X = ()> = kova_kernel::database::Client<types::Engine, kova_kernel::types::Sync, X>;
 
-pub type Transaction<'b, 't, X = ()> = kova_core::database::Transaction<'b, 't, types::Engine, X>;
+pub type Transaction<'b, 't, X = ()> = kova_kernel::database::Transaction<'b, 't, types::Engine, X>;
 
 pub mod options {
     #[cfg(feature = "postgres")]
-    pub use kova_postgres::options::RecyclingMethod;
+    pub use kova_postgres::{options::RecyclingMethod, types::Inspector};
 
     #[cfg(feature = "sqlite")]
-    pub use kova_sqlite::options::InitConnection;
+    pub use kova_sqlite::{options::InitConnection, types::Inspector};
 }
 
 pub mod types {
-    pub use kova_core::types::{
+    pub use kova_kernel::types::{
         ColumnMeta, Cte, Database, FromRow, IdentifierMeta, Model, Relation, Row,
     };
 
@@ -39,10 +41,10 @@ pub mod types {
 
 pub mod codec {
     pub use crate::decode_column;
-    pub use kova_core::dsl::{
+    pub use kova_kernel::dsl::{
         CanMath, CanString, Compatible, JsonType, JsonbType, Static,
     };
-    pub use kova_core::types::DecodeColumn;
+    pub use kova_kernel::types::DecodeColumn;
 
     #[cfg(feature = "postgres")]
     pub use kova_postgres::{
@@ -58,7 +60,7 @@ pub mod codec {
 }
 
 pub mod dsl {
-    pub use kova_core::dsl::{Condition, Dynamic, Identifier, Table};
+    pub use kova_kernel::dsl::{Condition, Dynamic, Identifier, Table};
 
     #[cfg(feature = "postgres")]
     pub use kova_postgres::dsl::{Column, Constraint, LockMode, Node, WaitPolicy};
@@ -67,7 +69,7 @@ pub mod dsl {
     pub use kova_sqlite::dsl::{Column, Node};
 
     pub mod func {
-        pub use kova_core::dsl::func::{FrameBound, FrameType, Wildcard, Window};
+        pub use kova_kernel::dsl::func::{FrameBound, FrameType, Wildcard, Window};
 
         #[cfg(feature = "postgres")]
         pub use kova_postgres::dsl::func::{

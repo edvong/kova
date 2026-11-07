@@ -1,12 +1,12 @@
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::types::{Sqlite, SqliteExecutor};
-use kova_core::Result;
-use kova_core::database::Executor;
-use kova_core::dsl::statement::InsertStatement;
-use kova_core::dsl::{
+use kova_kernel::Result;
+use kova_kernel::database::Executor;
+use kova_kernel::dsl::statement::InsertStatement;
+use kova_kernel::dsl::{
     Assignment, Condition, EraseX, IntoArg, IntoConflictTarget, IntoInsertSource, Projection,
 };
-use kova_core::types::{DecodeColumn, FromRow, Insert as NewInsert, Model};
+use kova_kernel::types::{DecodeColumn, FromRow, Insert as NewInsert, Model};
 use std::marker::PhantomData;
 
 pub struct NoConflict;
@@ -56,8 +56,7 @@ impl<'c, 'a, T, E, R, X> Insert<'c, 'a, T, E, R, NoConflict, X>
         T: Model<Sqlite, X> {
     pub fn on_conflict<A, M>(mut self, targets: A) -> Insert<'c, 'a, T, E, R, ConflictTarget, X>
         where
-            // A: IntoArg<Conflict<'a, Sqlite, X>, M> {
-        A: IntoConflictTarget<'a, Sqlite, M, X>, {
+            A: IntoConflictTarget<'a, Sqlite, M, X>, {
         self.statement.conflict_mut().set_target(targets.into_conflict_target());
         Insert { executor: self.executor, statement: self.statement, _marker: PhantomData }
     }

@@ -2,15 +2,17 @@
 name = "kova-postgres"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 authors.workspace = true
 description = "PostgreSQL support for Kova"
-readme = "../README.md"
+readme = false
 license.workspace = true
 repository.workspace = true
 keywords.workspace = true
+categories.workspace = true
 
 [dependencies]
-kova-core = { workspace = true }
+kova-kernel = { workspace = true }
 
 tokio-postgres = { workspace = true }
 deadpool-postgres = { workspace = true }

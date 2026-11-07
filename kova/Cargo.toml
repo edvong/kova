@@ -2,15 +2,20 @@
 name = "kova"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 authors.workspace = true
 description.workspace = true
-readme = "../README.md"
+readme = "README.md"
 license.workspace = true
 repository.workspace = true
 keywords.workspace = true
+categories.workspace = true
+
+[lib]
+doctest = false
 
 [dependencies]
-kova-core = { workspace = true }
+kova-kernel = { workspace = true }
 kova-derive = { workspace = true }
 kova-postgres = { workspace = true, optional = true }
 kova-sqlite = { workspace = true, optional = true }
@@ -26,3 +31,7 @@ native-tls = ["kova-postgres?/native-tls"]
 
 # SQLite-specific features
 sqlite = ["dep:kova-sqlite"]
+
+[package.metadata.docs.rs]
+no-default-features = true
+features = ["postgres", "rustls", "narrow-cast"]

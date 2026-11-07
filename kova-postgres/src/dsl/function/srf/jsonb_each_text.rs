@@ -4,7 +4,7 @@ use crate::dsl::column::Column;
 use crate::dsl::function::ExtSrfFunction;
 use crate::dsl::function::srf::IntoSrfFunction;
 use crate::dsl::function::srf::srf_node::{SrfBuildMarker, SrfNode, SrfSchemaMarker};
-use kova_core::types::IdentifierMeta;
+use kova_kernel::types::IdentifierMeta;
 
 pub type JsonbEachText<T = ()> = SrfNode<T, JsonbEachTextMarker>;
 

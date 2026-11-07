@@ -1,7 +1,7 @@
 use crate::types::conn::{InitFn, Target};
 use crate::types::{Inspector, Sqlite, SqlitePool};
-use kova_core::database::Client;
-use kova_core::{Error, Result};
+use kova_kernel::database::Client;
+use kova_kernel::{Error, Result};
 use rusqlite::Connection;
 use rusqlite::functions::FunctionFlags;
 use std::path::Path;
@@ -96,7 +96,7 @@ impl Options {
         self
     }
 
-    pub fn build(self) -> Result<Client<Sqlite, kova_core::types::Sync, ()>> {
+    pub fn build(self) -> Result<Client<Sqlite, kova_kernel::types::Sync, ()>> {
         let pool =
             SqlitePool::new(self.target, self.init, self.max_size, self.timeout, self.inspector)?;
         Ok(Client::new(pool))

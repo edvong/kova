@@ -8,6 +8,8 @@ impl Relation for Post {
 }
 
 impl<X> FromRow<Engine, X> for Post {
+    const COLUMN_COUNT: usize = 0;
+
     fn from_row_at(_: &<Engine as Database>::Row<'_>, _idx: &mut usize) -> kova::Result<Self> {
         unimplemented!()
     }

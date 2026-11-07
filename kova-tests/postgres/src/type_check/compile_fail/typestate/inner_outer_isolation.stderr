@@ -30,7 +30,7 @@ error[E0599]: no method named `alias` found for struct `kova::query::Select<'_, 
    |
    = note: the method was found for `kova::query::Select<'a, T, kova_postgres::query::select::InnerQuery, S, X>`
 
-error[E0277]: cannot convert `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>` into SQL argument(s) of type `kova_core::dsl::clause::projection::Projection<'_, Engine, ()>`
+error[E0277]: cannot convert `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>` into SQL argument(s) of type `kova_kernel::dsl::clause::projection::Projection<'_, Engine, ()>`
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:25:18
     |
  25 |         .columns(client.select::<User>().columns(User::id));
@@ -41,24 +41,24 @@ error[E0277]: cannot convert `kova::query::Select<'_, models::type_check::user::
     = note: expected a valid SQL construct or encodable value.
             if passing a tuple, ensure every element is a valid single argument (nested tuples are not allowed).
 help: the trait `IntoArg<Projection<'_, Postgres, ()>, _>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>`
-      but trait `IntoArg<Projection<'_, Postgres, ()>, kova_core::dsl::arg::ArgAst>` is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:301:1
+      but trait `IntoArg<Projection<'_, Postgres, ()>, kova_kernel::dsl::arg::ArgAst>` is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:290:1
     |
-301 | / impl<'a, T, S, X> IntoArg<Projection<'a, Postgres, X>, ArgAst> for Select<'a, T, InnerQuery, S, X>
-302 | |     where
-303 | |         T: Model<Postgres, X> {
+290 | / impl<'a, T, S, X> IntoArg<Projection<'a, Postgres, X>, ArgAst> for Select<'a, T, InnerQuery, S, X>
+291 | |     where
+292 | |         T: Model<Postgres, X> {
     | |_____________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::columns`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:123:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:112:16
     |
-121 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
+110 |     pub fn columns<A, M>(mut self, cols: A) -> Select<'a, T, D, Normal, X>
     |            ------- required by a bound in this associated function
-122 |         where
-123 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
+111 |         where
+112 |             A: IntoArg<Projection<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::columns`
 
-error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>: kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not satisfied
+error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>: kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not satisfied
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:28:36
     |
  28 |         .filter(User::id.in_select(client.select::<User>().columns(User::id)));
@@ -66,12 +66,12 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |                          |
     |                          required by a bound introduced by this call
     |
-help: the trait `kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>`
+help: the trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, _>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, _>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:310:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:299:1
     |
-310 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
-311 | |     for Select<'a, T, InnerQuery, S, X> {
+299 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
+300 | |     for Select<'a, T, InnerQuery, S, X> {
     | |_______________________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
 note: required by a bound in `Node::<T>::in_select`
@@ -83,7 +83,7 @@ note: required by a bound in `Node::<T>::in_select`
 181 |             V: IntoSelectStatement<'a, Postgres, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Node::<T>::in_select`
 
-error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
+error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:29:43
     |
  29 |     let _ = client.select::<User>().union(client.select::<User>());
@@ -91,21 +91,21 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |                                     |
     |                                     required by a bound introduced by this call
     |
-help: the trait `kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
+help: the trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:310:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:299:1
     |
-310 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
-311 | |     for Select<'a, T, InnerQuery, S, X> {
+299 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
+300 | |     for Select<'a, T, InnerQuery, S, X> {
     | |_______________________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::union`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:217:40
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:206:40
     |
-217 |     pub fn union(mut self, other: impl IntoSelectStatement<'a, Postgres, X>)
+206 |     pub fn union(mut self, other: impl IntoSelectStatement<'a, Postgres, X>)
     |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::union`
 
-error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
+error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:30:47
     |
  30 |     let _ = client.select::<User>().intersect(client.select::<User>());
@@ -113,21 +113,21 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |                                     |
     |                                     required by a bound introduced by this call
     |
-help: the trait `kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
+help: the trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:310:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:299:1
     |
-310 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
-311 | |     for Select<'a, T, InnerQuery, S, X> {
+299 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
+300 | |     for Select<'a, T, InnerQuery, S, X> {
     | |_______________________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::intersect`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:229:44
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:218:44
     |
-229 |     pub fn intersect(mut self, other: impl IntoSelectStatement<'a, Postgres, X>)
+218 |     pub fn intersect(mut self, other: impl IntoSelectStatement<'a, Postgres, X>)
     |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::intersect`
 
-error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
+error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:31:44
     |
  31 |     let _ = client.select::<User>().except(client.select::<User>());
@@ -135,21 +135,21 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |                                     |
     |                                     required by a bound introduced by this call
     |
-help: the trait `kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
+help: the trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:310:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:299:1
     |
-310 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
-311 | |     for Select<'a, T, InnerQuery, S, X> {
+299 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
+300 | |     for Select<'a, T, InnerQuery, S, X> {
     | |_______________________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::except`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:235:41
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:224:41
     |
-235 |     pub fn except(mut self, other: impl IntoSelectStatement<'a, Postgres, X>)
+224 |     pub fn except(mut self, other: impl IntoSelectStatement<'a, Postgres, X>)
     |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::except`
 
-error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
+error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not satisfied
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:34:27
     |
  34 |         .with::<DummyCte>(client.select::<User>());
@@ -157,18 +157,18 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |          |
     |          required by a bound introduced by this call
     |
-help: the trait `kova_core::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
+help: the trait `kova_kernel::dsl::statement::select::IntoSelectStatement<'_, Engine, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:310:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:299:1
     |
-310 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
-311 | |     for Select<'a, T, InnerQuery, S, X> {
+299 | / impl<'a, T: Model<Postgres, X>, S, X> IntoSelectStatement<'a, Postgres, X>
+300 | |     for Select<'a, T, InnerQuery, S, X> {
     | |_______________________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::with`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:110:47
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:99:47
     |
-110 |     pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Postgres, X>)
+ 99 |     pub fn with<C: Cte>(mut self, query: impl IntoSelectStatement<'a, Postgres, X>)
     |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
 
 error[E0277]: cannot use `kova::dsl::func::Any<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>>` as an operand where `Static<i32>` is expected (under codec `_`)
@@ -179,22 +179,22 @@ error[E0277]: cannot use `kova::dsl::func::Any<kova::query::Select<'_, models::t
    |                          |
    |                          required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `kova::dsl::func::Any<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>>`
+   = help: the trait `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `kova::dsl::func::Any<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>>`
    = note: ensure the operand type is compatible with `Static<i32>` and implements `Encode` under codec `_`.
-help: the following other types implement trait `kova_core::dsl::operand::IntoOperand<'a, Target, DB, K, X>`
+help: the following other types implement trait `kova_kernel::dsl::operand::IntoOperand<'a, Target, DB, K, X>`
   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/function/any_all.rs:11:1
    |
 11 | / impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, (Close, Open), X> for Any<I>
 12 | |     where
 13 | |         I: IntoIterator<Item = V>,
 14 | |         V: IntoOperand<'a, Target, Postgres, Open, X> {
-   | |_____________________________________________________^ `kova::dsl::func::Any<I>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Open), X>`
+   | |_____________________________________________________^ `kova::dsl::func::Any<I>` implements `kova_kernel::dsl::operand::IntoOperand<'_, Target, Engine, (kova_kernel::dsl::operand::Close, kova_kernel::dsl::operand::Open), X>`
 ...
 35 | / impl<'a, M, Target, S, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
 36 | |     for Any<InnerSelect<'a, M, S, X>>
 37 | |     where
 38 | |         M: Model<Postgres, X> {
-   | |_____________________________^ `kova::dsl::func::Any<kova::query::Select<'_, M, kova_postgres::query::select::InnerQuery, S, X>>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Close), X>`
+   | |_____________________________^ `kova::dsl::func::Any<kova::query::Select<'_, M, kova_postgres::query::select::InnerQuery, S, X>>` implements `kova_kernel::dsl::operand::IntoOperand<'_, Target, Engine, (kova_kernel::dsl::operand::Close, kova_kernel::dsl::operand::Close), X>`
 note: required by a bound in `Node::<T>::eq`
   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:83:16
    |
@@ -212,22 +212,22 @@ error[E0277]: cannot use `All<kova::query::Select<'_, models::type_check::user::
    |                          |
    |                          required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `All<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>>`
+   = help: the trait `kova_kernel::dsl::operand::IntoOperand<'_, Static<i32>, Engine, _, _>` is not implemented for `All<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::Normal, ()>>`
    = note: ensure the operand type is compatible with `Static<i32>` and implements `Encode` under codec `_`.
-help: the following other types implement trait `kova_core::dsl::operand::IntoOperand<'a, Target, DB, K, X>`
+help: the following other types implement trait `kova_kernel::dsl::operand::IntoOperand<'a, Target, DB, K, X>`
   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/function/any_all.rs:23:1
    |
 23 | / impl<'a, I, V, Target, X> IntoOperand<'a, Target, Postgres, (Close, Open), X> for All<I>
 24 | |     where
 25 | |         I: IntoIterator<Item = V>,
 26 | |         V: IntoOperand<'a, Target, Postgres, Open, X> {
-   | |_____________________________________________________^ `All<I>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Open), X>`
+   | |_____________________________________________________^ `All<I>` implements `kova_kernel::dsl::operand::IntoOperand<'_, Target, Engine, (kova_kernel::dsl::operand::Close, kova_kernel::dsl::operand::Open), X>`
 ...
 46 | / impl<'a, M, Target, S, X> IntoOperand<'a, Target, Postgres, (Close, Close), X>
 47 | |     for All<InnerSelect<'a, M, S, X>>
 48 | |     where
 49 | |         M: Model<Postgres, X> {
-   | |_____________________________^ `All<kova::query::Select<'_, M, kova_postgres::query::select::InnerQuery, S, X>>` implements `kova_core::dsl::operand::IntoOperand<'_, Target, Engine, (kova_core::dsl::operand::Close, kova_core::dsl::operand::Close), X>`
+   | |_____________________________^ `All<kova::query::Select<'_, M, kova_postgres::query::select::InnerQuery, S, X>>` implements `kova_kernel::dsl::operand::IntoOperand<'_, Target, Engine, (kova_kernel::dsl::operand::Close, kova_kernel::dsl::operand::Close), X>`
 note: required by a bound in `Node::<T>::gt`
   --> /Users/me/Workspace/kova/kova-postgres/src/dsl/node.rs:99:16
    |
@@ -247,25 +247,25 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |
 help: the trait `kova_postgres::dsl::function::srf::IntoSrfFunction<'_, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:328:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:317:1
     |
-328 | / impl<'a, M, S, X> IntoSrfFunction<'a, X> for Select<'a, M, InnerQuery, S, X>
-329 | |     where
-330 | |         M: Model<Postgres, X> {
+317 | / impl<'a, M, S, X> IntoSrfFunction<'a, X> for Select<'a, M, InnerQuery, S, X>
+318 | |     where
+319 | |         M: Model<Postgres, X> {
     | |_____________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
     = note: required for `kova_postgres::dsl::function::srf::jsonb_each::JsonbEachMarker` to implement `kova_postgres::dsl::function::srf::srf_node::SrfBuildMarker<'_, kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>, ()>`
-    = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>, kova_postgres::dsl::function::srf::jsonb_each::JsonbEachMarker>` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::table::FromItem<'_, Engine, ()>, kova_core::dsl::arg::ArgAst>`
+    = note: required for `kova_postgres::dsl::function::srf::srf_node::SrfNode<kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>, kova_postgres::dsl::function::srf::jsonb_each::JsonbEachMarker>` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::table::FromItem<'_, Engine, ()>, kova_kernel::dsl::arg::ArgAst>`
 note: required by a bound in `kova::query::Select::<'a, T, D, kova_postgres::query::select::JustAddFrom, X>::srf`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:64:16
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:63:16
     |
- 62 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, JustAddSrf, X>
+ 61 |     pub fn srf<A, M>(mut self, args: A) -> Select<'a, T, D, Normal, X>
     |            --- required by a bound in this associated function
- 63 |         where
- 64 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
+ 62 |         where
+ 63 |             A: IntoArg<FromItem<'a, Postgres, X>, M> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, D, JustAddFrom, X>::srf`
 
-error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not satisfied
+error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user::User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>: kova_kernel::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not satisfied
    --> src/type_check/compile_fail/typestate/inner_outer_isolation.rs:44:35
     |
  44 |     let _ = client.insert::<User>(client.select::<User>());
@@ -273,18 +273,18 @@ error[E0277]: the trait bound `kova::query::Select<'_, models::type_check::user:
     |                    |
     |                    required by a bound introduced by this call
     |
-help: the trait `kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
+help: the trait `kova_kernel::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not implemented for `Select<'_, User, kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>, kova_postgres::query::select::JustAddFrom, ()>`
       but it is implemented for `Select<'_, User, kova_postgres::query::select::InnerQuery, _, ()>`
-   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:318:1
+   --> /Users/me/Workspace/kova/kova-postgres/src/query/select.rs:307:1
     |
-318 | / impl<'a, T, M, S, X> IntoInsertSource<'a, Postgres, T, X> for Select<'a, M, InnerQuery, S, X>
-319 | |     where
-320 | |         T: Model<Postgres, X>,
-321 | |         M: Model<Postgres, X> {
+307 | / impl<'a, T, M, S, X> IntoInsertSource<'a, Postgres, T, X> for Select<'a, M, InnerQuery, S, X>
+308 | |     where
+309 | |         T: Model<Postgres, X>,
+310 | |         M: Model<Postgres, X> {
     | |_____________________________^
     = help: for that trait implementation, expected `kova_postgres::query::select::InnerQuery`, found `kova_postgres::query::select::OuterQuery<'_, kova_postgres::types::conn::PgPool>`
-note: required by a bound in `kova_core::database::operations::Operations::<DB, E, X>::insert`
-   --> /Users/me/Workspace/kova/kova-core/src/database/operations.rs:38:47
+note: required by a bound in `kova_kernel::database::operations::Operations::<DB, E, X>::insert`
+   --> /Users/me/Workspace/kova/kova-kernel/src/database/operations.rs:38:47
     |
  38 |     pub fn insert<'a, T>(&'c self, data: impl IntoInsertSource<'a, DB, T, X>)
     |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Operations::<DB, E, X>::insert`

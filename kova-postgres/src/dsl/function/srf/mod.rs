@@ -14,7 +14,7 @@ pub use crate::dsl::function::srf::{
 use crate::dsl::can::{CanPgArray, CanPgJsonb};
 use crate::dsl::node::Node;
 use crate::types::{Encode, Postgres};
-use kova_core::dsl::{AstNode, Operand};
+use kova_kernel::dsl::{AstNode, Operand};
 
 pub enum ExtSrfFunction<'a> {
     Unnest(Operand<'a, Postgres>),

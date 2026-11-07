@@ -1,5 +1,5 @@
 use crate::types::Postgres;
-use kova_core::dsl::{Component, Conflict, Ext, IntoConflictTarget};
+use kova_kernel::dsl::{Component, Conflict, Ext, IntoConflictTarget};
 
 pub struct Constraint(pub &'static str);
 

@@ -3,8 +3,8 @@
 use crate::dsl::column::Column;
 use crate::dsl::function::srf::srf_node::{SrfBuildMarker, SrfNode, SrfSchemaMarker};
 use crate::dsl::function::srf::{ExtSrfFunction, IntoSrfFunction};
-use kova_core::dsl::Dynamic;
-use kova_core::types::IdentifierMeta;
+use kova_kernel::dsl::Dynamic;
+use kova_kernel::types::IdentifierMeta;
 
 pub type JsonEach<T = ()> = SrfNode<T, JsonEachMarker>;
 

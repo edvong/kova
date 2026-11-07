@@ -1,7 +1,7 @@
 use crate::options::InitConnection;
 use crate::types::Value;
-use kova_core::types::{Connection, ConnectionSync, Executable, ExecutableSync, Sync};
-use kova_core::{Error, Result};
+use kova_kernel::types::{Connection, ConnectionSync, Executable, ExecutableSync, Sync};
+use kova_kernel::{Error, Result};
 use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::sync::{Arc, Condvar, Mutex};
@@ -124,6 +124,9 @@ impl Drop for PooledConn<'_> {
     #[inline]
     fn drop(&mut self) {
         if let Some(conn) = self.conn.take() {
+            if !conn.is_autocommit() {
+                let _ = conn.execute_batch("ROLLBACK");
+            }
             let mut state = self.pool.state.lock().unwrap_or_else(|e| e.into_inner());
             state.idle.push(conn);
             self.pool.condvar.notify_one();

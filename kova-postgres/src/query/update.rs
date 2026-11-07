@@ -1,10 +1,10 @@
 use crate::query::exec::{execute_affected, fetch_rows};
 use crate::types::{PgExecutor, Postgres};
-use kova_core::Result;
-use kova_core::database::Executor;
-use kova_core::dsl::statement::UpdateStatement;
-use kova_core::dsl::{Assignment, Condition, EraseX, IntoArg, IntoRelationList, Projection};
-use kova_core::types::{DecodeColumn, FromRow, Model, Update as NewUpdate};
+use kova_kernel::Result;
+use kova_kernel::database::Executor;
+use kova_kernel::dsl::statement::UpdateStatement;
+use kova_kernel::dsl::{Assignment, Condition, EraseX, IntoArg, IntoRelationList, Projection};
+use kova_kernel::types::{DecodeColumn, FromRow, Model, Update as NewUpdate};
 use std::iter::once;
 use std::marker::PhantomData;
 

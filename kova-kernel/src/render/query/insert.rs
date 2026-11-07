@@ -48,7 +48,15 @@ impl<'a, DB: Database, T, X> InsertStatement<'a, DB, T, X> {
                     ));
                 }
 
-                let max_rows_per_batch = (DB::MAX_PARAMS / cols_per_row).max(1);
+                let tail_params = if self.on_conflict.action.is_some() || !self.returning.items.is_empty() {
+                    let mut tail_ctx = RenderContext::<'a, 's, DB>::with_capacity(0, 0);
+                    self.render_tail(&mut tail_ctx)?;
+                    tail_ctx.params.len()
+                } else {
+                    0
+                };
+
+                let max_rows_per_batch = (DB::MAX_PARAMS.saturating_sub(tail_params) / cols_per_row).max(1);
                 let mut batches = Vec::with_capacity(rows.len().div_ceil(max_rows_per_batch));
                 let mut row_buf: Vec<DB::Value<'s>> = Vec::with_capacity(cols_per_row);
 

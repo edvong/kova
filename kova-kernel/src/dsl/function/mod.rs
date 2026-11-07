@@ -32,16 +32,6 @@ impl<'a, DB: Database> Function<'a, DB> {
         func.into_function()
     }
 
-    // #[inline(always)]
-    // pub fn agg(name: &'static str, op: Operand<'a, DB>) -> Self {
-    //     Self::from(StandardFunction::Aggregate { name, op: Box::new(op), sep: None })
-    // }
-    //
-    // #[inline(always)]
-    // pub fn agg_with_sep(name: &'static str, op: Operand<'a, DB>, sep: Option<&'static str>) -> Self {
-    //     Self::from(StandardFunction::Aggregate { name, op: Box::new(op), sep })
-    // }
-
     pub fn quantifier(mut self, quantifier: Quantifier) -> Self {
         self.quantifier = Some(quantifier);
         self

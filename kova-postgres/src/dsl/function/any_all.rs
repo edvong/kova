@@ -1,9 +1,9 @@
 use crate::dsl::func::ExtFunction;
 use crate::query::InnerSelect;
 use crate::types::Postgres;
-use kova_core::dsl::func::Function;
-use kova_core::dsl::{Close, IntoOperand, Open, Operand};
-use kova_core::types::Model;
+use kova_kernel::dsl::func::Function;
+use kova_kernel::dsl::{Close, IntoOperand, Open, Operand};
+use kova_kernel::types::Model;
 
 pub struct Any<I>(pub I);
 pub struct All<I>(pub I);

@@ -3,11 +3,11 @@
 use crate::dsl::node::Node;
 use crate::dsl::ExtFunction;
 use crate::types::Sqlite;
-use kova_core::dsl::func::{
+use kova_kernel::dsl::func::{
     Aggregate, AggregateBuild, AggregateMarker, Function, Quantifier, SetDistinct, SetFilter,
     SetOrderBy, SetWindow, Window,
 };
-use kova_core::dsl::{
+use kova_kernel::dsl::{
     AstNode, CanAlias, CanCompare, CanDistinct, CanFilter, CanOrder, CanOrderBy, CanString,
     CanWindow, Condition, Operand, Ordering, Static, TypedNode,
 };
@@ -36,7 +36,6 @@ impl<'a, T, X> AggregateBuild<'a, Sqlite, T, X> for JsonGroupArrayMarker
         T: AstNode<'a, Sqlite, X> {
     #[inline(always)]
     fn build_function(expr: T) -> Function<'a, Sqlite> {
-        // Function::agg("json_group_array", expr.into_ast_operand())
         Function::from(ExtFunction::JsonGroupArray(Box::new(expr.into_ast_operand())))
     }
 }
@@ -50,7 +49,6 @@ impl<'a, T, X> AggregateBuild<'a, Sqlite, T, X> for JsonbGroupArrayMarker
         T: AstNode<'a, Sqlite, X> {
     #[inline(always)]
     fn build_function(expr: T) -> Function<'a, Sqlite> {
-        // Function::agg("jsonb_group_array", expr.into_ast_operand())
         Function::from(ExtFunction::JsonbGroupArray(Box::new(expr.into_ast_operand())))
     }
 }

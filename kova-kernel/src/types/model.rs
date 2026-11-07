@@ -13,7 +13,7 @@ pub trait Cte: Relation { }
     note = "expected a type that implements `FromRow<{DB}, {X}>`.\nif `{Self}` is a struct, ensure it derives `Model` or `FromRow` and all fields implement `Decode` under codec `{X}`."
 )]
 pub trait FromRow<DB: Database, X>: Sized {
-    const COLUMN_COUNT: usize = 0;
+    const COLUMN_COUNT: usize;
 
     #[inline(always)]
     fn from_row(row: &DB::Row<'_>) -> Result<Self> {

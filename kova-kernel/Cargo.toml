@@ -1,12 +1,14 @@
 [package]
-name = "kova-core"
+name = "kova-kernel"
 version.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 authors.workspace = true
-description = "Core types and traits for Kova"
-readme = "../README.md"
+description = "Internal algebraic kernel and SQL rendering engine for the Kova ORM"
+readme = false
 license.workspace = true
 repository.workspace = true
 keywords.workspace = true
+categories.workspace = true
 
 [dependencies]

@@ -1,7 +1,7 @@
 use crate::types::Postgres;
 use crate::types::value::Value;
-use kova_core::Error;
-use kova_core::types::{ColumnIndex, Row as CoreRow};
+use kova_kernel::Error;
+use kova_kernel::types::{ColumnIndex, Row as CoreRow};
 
 pub struct Row<'a> {
     pub(crate) inner: &'a tokio_postgres::Row,
@@ -19,7 +19,7 @@ impl<'a> CoreRow<'a, Postgres> for Row<'a> {
         self.inner.columns().get(idx).map(|c| c.name())
     }
 
-    fn get_value<'i, I>(&self, idx: I) -> kova_core::Result<Value<'a>>
+    fn get_value<'i, I>(&self, idx: I) -> kova_kernel::Result<Value<'a>>
         where
             I: Into<ColumnIndex<'i>> {
         match idx.into() {

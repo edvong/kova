@@ -1,8 +1,9 @@
 use crate::types::Sqlite;
-use kova_core::dsl::func::{Aggregate, Scalar};
-use kova_core::dsl::{
-    CanString, Column, Dynamic, IntoIdentifier, JsonType, JsonbType, Static, TypedNode,
+use kova_kernel::dsl::func::{Aggregate, Scalar};
+use kova_kernel::dsl::{
+    CanString, Column, Dynamic, JsonType, JsonbType, Static, TypedNode,
 };
+use kova_kernel::types::ColumnMeta;
 use std::collections::{BTreeMap, HashMap};
 
 #[diagnostic::on_unimplemented(
@@ -56,9 +57,7 @@ impl<K, V, X> CanSqliteJson<X> for BTreeMap<K, V> {}
 
 impl<T, M, Mode: CanSqliteJson<X>, X> CanSqliteJson<X> for Column<T, M, Mode> {}
 
-impl<T, M, Mode: CanString<X>, X> CanSqliteFts<X> for Column<T, M, Mode>
-    where
-        M: IntoIdentifier<T> + Copy {
+impl<T, Mode: CanString<X>, X> CanSqliteFts<X> for Column<T, ColumnMeta, Mode> {
     #[inline(always)]
     fn fts_table(&self) -> &'static str {
         self.source()

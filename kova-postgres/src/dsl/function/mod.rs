@@ -31,8 +31,8 @@ pub(crate) use crate::dsl::function::srf::IntoSrfFunction;
 
 use crate::dsl::operator::JsonOp;
 use crate::types::Postgres;
-use kova_core::dsl::func::Function;
-use kova_core::dsl::{IntoOperand, Operand, Projection, Static};
+use kova_kernel::dsl::func::Function;
+use kova_kernel::dsl::{IntoOperand, Operand, Projection, Static};
 
 pub enum ExtFunction<'a> {
     JsonbAgg(Box<Operand<'a, Postgres>>),

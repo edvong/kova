@@ -13,7 +13,6 @@ pub use {
 
 pub(crate) use {
     assignment::ExtAssignment,
-    // can::{CanSqliteString, CanSqliteFts},
     function::ExtFunction,
     operator::ExtOperator,
 };
@@ -26,6 +25,5 @@ pub mod func {
         Lower, Math, Max, Min, Snippet, Sum, Upper,
     };
 
-    // pub(crate) use crate::dsl::function::ExtFunction
     pub(crate) use crate::dsl::function::{IntoSrfFunction, JsonSrfArgs, ExtSrfFunction};
 }

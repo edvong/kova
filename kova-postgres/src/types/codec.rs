@@ -1,6 +1,6 @@
 use crate::types::{Postgres, Value};
-use kova_core::types::{FromValue, IntoValue};
-use kova_core::{impl_platform_codec, impl_platform_encode_only, impl_platform_prim_codec, Error, Result};
+use kova_kernel::types::{FromValue, IntoValue};
+use kova_kernel::{impl_platform_codec, impl_platform_encode_only, impl_platform_prim_codec, Error, Result};
 use std::borrow::Cow;
 
 #[diagnostic::on_unimplemented(

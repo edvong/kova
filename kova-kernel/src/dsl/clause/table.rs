@@ -29,9 +29,8 @@ impl<'a, DB: Database, X> FromItem<'a, DB, X> {
     }
 
     fn tag(&mut self, tag: TypeId) {
-        match &mut self.inner {
-            TableInner::Table(_, t) => *t = Some(tag),
-            TableInner::Function(_, t) => *t = Some(tag),
+        if let TableInner::Table(_, t) = &mut self.inner {
+            *t = Some(tag);
         }
     }
 

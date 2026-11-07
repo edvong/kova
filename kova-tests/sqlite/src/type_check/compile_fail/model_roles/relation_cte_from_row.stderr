@@ -20,8 +20,8 @@ help: the trait `Model<Engine, ()>` is not implemented for `OnlyRelation`
              models::type_check::event_log::EventLog
              models::type_check::order::Order
            and $N others
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
+note: required by a bound in `kova_kernel::types::query::Query::Select`
+  --> /Users/me/Workspace/kova/kova-kernel/src/types/query.rs:7:24
    |
  7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
@@ -48,8 +48,8 @@ help: the trait `Model<Engine, ()>` is not implemented for `OnlyCte`
              models::type_check::event_log::EventLog
              models::type_check::order::Order
            and $N others
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
+note: required by a bound in `kova_kernel::types::query::Query::Select`
+  --> /Users/me/Workspace/kova/kova-kernel/src/types/query.rs:7:24
    |
  7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
@@ -72,8 +72,8 @@ error[E0277]: `models::type_check::post_view::PostView` is not a valid `Model` u
              models::type_check::event_log::EventLog
              models::type_check::order::Order
            and $N others
-note: required by a bound in `kova_core::types::query::Query::Select`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:7:24
+note: required by a bound in `kova_kernel::types::query::Query::Select`
+  --> /Users/me/Workspace/kova/kova-kernel/src/types/query.rs:7:24
    |
  7 |     type Select<'c, T: Model<DB, X>, E, X>: Select<'c, 'a, DB, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Select`
@@ -101,9 +101,9 @@ help: the trait `Model<Engine, _>` is not implemented for `OnlyCte`
               models::type_check::order::Order
             and $N others
 note: required by a bound in `kova::query::Select::<'a, (), kova_sqlite::query::select::InnerQuery, kova_sqlite::query::select::Normal, X>::from`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:247:20
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:236:20
     |
-247 |     pub fn from<M: Model<Sqlite, X>>() -> Select<'a, M, InnerQuery, JustAddFrom, X> {
+236 |     pub fn from<M: Model<Sqlite, X>>() -> Select<'a, M, InnerQuery, JustAddFrom, X> {
     |                    ^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, (), InnerQuery, Normal, X>::from`
 
 error[E0277]: `OnlyRelation` is not a valid `Model` under codec `()`
@@ -128,8 +128,8 @@ help: the trait `Model<Engine, ()>` is not implemented for `OnlyRelation`
              models::type_check::event_log::EventLog
              models::type_check::order::Order
            and $N others
-note: required by a bound in `kova_core::types::query::Query::Update`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:18:24
+note: required by a bound in `kova_kernel::types::query::Query::Update`
+  --> /Users/me/Workspace/kova/kova-kernel/src/types/query.rs:18:24
    |
 18 |     type Update<'c, T: Model<DB, X>, E, X>: Update<'c, 'a, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Update`
@@ -156,8 +156,8 @@ help: the trait `Model<Engine, ()>` is not implemented for `OnlyRelation`
              models::type_check::event_log::EventLog
              models::type_check::order::Order
            and $N others
-note: required by a bound in `kova_core::types::query::Query::Delete`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:23:24
+note: required by a bound in `kova_kernel::types::query::Query::Delete`
+  --> /Users/me/Workspace/kova/kova-kernel/src/types/query.rs:23:24
    |
 23 |     type Delete<'c, T: Model<DB, X>, E, X>: Delete<'c, 'a, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Delete`
@@ -180,66 +180,66 @@ error[E0277]: `models::type_check::post_view::PostView` is not a valid `Model` u
              models::type_check::event_log::EventLog
              models::type_check::order::Order
            and $N others
-note: required by a bound in `kova_core::types::query::Query::Delete`
-  --> /Users/me/Workspace/kova/kova-core/src/types/query.rs:23:24
+note: required by a bound in `kova_kernel::types::query::Query::Delete`
+  --> /Users/me/Workspace/kova/kova-kernel/src/types/query.rs:23:24
    |
 23 |     type Delete<'c, T: Model<DB, X>, E, X>: Delete<'c, 'a, T, E, X>
    |                        ^^^^^^^^^^^^ required by this bound in `Query::Delete`
 
 error[E0277]: the trait bound `models::type_check::order::Order: Cte` is not satisfied
-   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:33:44
-    |
- 33 |     let _ = client.select::<User>().with::<Order>(Select::from::<Order>());
-    |                                     ----   ^^^^^ the trait `Cte` is not implemented for `models::type_check::order::Order`
-    |                                     |
-    |                                     required by a bound introduced by this call
-    |
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:33:44
+   |
+33 |     let _ = client.select::<User>().with::<Order>(Select::from::<Order>());
+   |                                     ----   ^^^^^ the trait `Cte` is not implemented for `models::type_check::order::Order`
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
 help: the following other types implement trait `Cte`
-   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:18:1
-    |
- 18 | impl Cte for OnlyCte {}
-    | ^^^^^^^^^^^^^^^^^^^^ `OnlyCte`
-    |
-   ::: $MODELS/src/runtime/top_spender.rs
-    |
-    | #[derive(Cte)]
-    |          ^^^ `TopSpender`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:18:1
+   |
+18 | impl Cte for OnlyCte {}
+   | ^^^^^^^^^^^^^^^^^^^^ `OnlyCte`
+   |
+  ::: $MODELS/src/runtime/top_spender.rs
+   |
+   | #[derive(Cte)]
+   |          ^^^ `TopSpender`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::with`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:108:20
-    |
-108 |     pub fn with<C: Cte>(
-    |                    ^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
-    = note: this error originates in the derive macro `Cte` (in Nightly builds, run with -Z macro-backtrace for more info)
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:97:20
+   |
+97 |     pub fn with<C: Cte>(
+   |                    ^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
+   = note: this error originates in the derive macro `Cte` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `OnlyRelation: Cte` is not satisfied
-   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:34:44
-    |
- 34 |     let _ = client.select::<User>().with::<OnlyRelation>(Select::from::<Order>());
-    |                                     ----   ^^^^^^^^^^^^ unsatisfied trait bound
-    |                                     |
-    |                                     required by a bound introduced by this call
-    |
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:34:44
+   |
+34 |     let _ = client.select::<User>().with::<OnlyRelation>(Select::from::<Order>());
+   |                                     ----   ^^^^^^^^^^^^ unsatisfied trait bound
+   |                                     |
+   |                                     required by a bound introduced by this call
+   |
 help: the trait `Cte` is not implemented for `OnlyRelation`
-   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
-    |
-  9 | pub struct OnlyRelation;
-    | ^^^^^^^^^^^^^^^^^^^^^^^
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:9:1
+   |
+ 9 | pub struct OnlyRelation;
+   | ^^^^^^^^^^^^^^^^^^^^^^^
 help: the following other types implement trait `Cte`
-   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:18:1
-    |
- 18 | impl Cte for OnlyCte {}
-    | ^^^^^^^^^^^^^^^^^^^^ `OnlyCte`
-    |
-   ::: $MODELS/src/runtime/top_spender.rs
-    |
-    | #[derive(Cte)]
-    |          ^^^ `TopSpender`
+  --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:18:1
+   |
+18 | impl Cte for OnlyCte {}
+   | ^^^^^^^^^^^^^^^^^^^^ `OnlyCte`
+   |
+  ::: $MODELS/src/runtime/top_spender.rs
+   |
+   | #[derive(Cte)]
+   |          ^^^ `TopSpender`
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::with`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:108:20
-    |
-108 |     pub fn with<C: Cte>(
-    |                    ^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
-    = note: this error originates in the derive macro `Cte` (in Nightly builds, run with -Z macro-backtrace for more info)
+  --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:97:20
+   |
+97 |     pub fn with<C: Cte>(
+   |                    ^^^ required by this bound in `Select::<'a, T, D, S, X>::with`
+   = note: this error originates in the derive macro `Cte` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: the trait bound `models::type_check::post_view::PostView: Relation` is not satisfied
    --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:39:23
@@ -260,12 +260,12 @@ error[E0277]: the trait bound `models::type_check::post_view::PostView: Relation
               models::runtime::user::User
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, D, S, X>::inner_join`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:127:26
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:116:26
     |
-127 |     pub fn inner_join<R: Relation>(
+116 |     pub fn inner_join<R: Relation>(
     |                          ^^^^^^^^ required by this bound in `Select::<'a, T, D, S, X>::inner_join`
 
-error[E0277]: the trait bound `models::type_check::post_view::PostView: kova_core::dsl::relation::IntoRelationList` is not satisfied
+error[E0277]: the trait bound `models::type_check::post_view::PostView: kova_kernel::dsl::relation::IntoRelationList` is not satisfied
   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:40:44
    |
 40 |     let _ = client.update::<User>().from::<PostView>();
@@ -283,14 +283,14 @@ error[E0277]: the trait bound `models::type_check::post_view::PostView: kova_cor
              models::runtime::post::Post
              models::runtime::user::User
            and $N others
-   = note: required for `models::type_check::post_view::PostView` to implement `kova_core::dsl::relation::IntoRelationList`
+   = note: required for `models::type_check::post_view::PostView` to implement `kova_kernel::dsl::relation::IntoRelationList`
 note: required by a bound in `Update::<'c, 'a, T, E, R, S, X>::from`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:58:22
    |
 58 |     pub fn from<REL: IntoRelationList>(mut self) -> Self {
    |                      ^^^^^^^^^^^^^^^^ required by this bound in `Update::<'c, 'a, T, E, R, S, X>::from`
 
-error[E0277]: the trait bound `(models::type_check::order::Order, models::type_check::post_view::PostView): kova_core::dsl::relation::IntoRelationList` is not satisfied
+error[E0277]: the trait bound `(models::type_check::order::Order, models::type_check::post_view::PostView): kova_kernel::dsl::relation::IntoRelationList` is not satisfied
   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:41:44
    |
 41 |     let _ = client.update::<User>().from::<(Order, PostView)>();
@@ -298,7 +298,7 @@ error[E0277]: the trait bound `(models::type_check::order::Order, models::type_c
    |                                     |
    |                                     required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::relation::IntoRelationList` is not implemented for `(models::type_check::order::Order, models::type_check::post_view::PostView)`
+   = help: the trait `kova_kernel::dsl::relation::IntoRelationList` is not implemented for `(models::type_check::order::Order, models::type_check::post_view::PostView)`
 note: required by a bound in `Update::<'c, 'a, T, E, R, S, X>::from`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/update.rs:58:22
    |
@@ -331,12 +331,12 @@ help: the trait `FromRow<Engine, ()>` is not implemented for `OnlyCte`
               `models::runtime::user::User` implements `FromRow<Engine, X>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:222:16
     |
-231 |     pub fn load_as<U>(self) -> Result<Vec<U>>
+220 |     pub fn load_as<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-232 |         where
-233 |             U: FromRow<Sqlite, X> {
+221 |         where
+222 |             U: FromRow<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
 
 error[E0277]: cannot map a database row to `OnlyRelation` (under codec `()`)
@@ -365,15 +365,15 @@ help: the trait `FromRow<Engine, ()>` is not implemented for `OnlyRelation`
               `models::runtime::user::User` implements `FromRow<Engine, X>`
             and $N others
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_as`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:233:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:222:16
     |
-231 |     pub fn load_as<U>(self) -> Result<Vec<U>>
+220 |     pub fn load_as<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-232 |         where
-233 |             U: FromRow<Sqlite, X> {
+221 |         where
+222 |             U: FromRow<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_as`
 
-error[E0277]: the trait bound `models::type_check::post::Post: kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not satisfied
+error[E0277]: the trait bound `models::type_check::post::Post: kova_kernel::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not satisfied
   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:48:35
    |
 48 |     let _ = client.insert::<User>(Post);
@@ -381,21 +381,21 @@ error[E0277]: the trait bound `models::type_check::post::Post: kova_core::dsl::c
    |                    |
    |                    required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not implemented for `models::type_check::post::Post`
-   = help: the following other types implement trait `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`:
-             `&'a T` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
-             `&'a Vec<T>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
-             `&'a [T]` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
-             `Vec<T>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
-             `kova::query::Select<'a, M, kova_sqlite::query::select::InnerQuery, S, X>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, Engine, T, X>`
-             `kova_core::dsl::statement::select::SelectStatement<'a, DB>` implements `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
-note: required by a bound in `kova_core::database::operations::Operations::<DB, E, X>::insert`
-  --> /Users/me/Workspace/kova/kova-core/src/database/operations.rs:38:47
+   = help: the trait `kova_kernel::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not implemented for `models::type_check::post::Post`
+   = help: the following other types implement trait `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`:
+             `&'a T` implements `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `&'a Vec<T>` implements `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `&'a [T]` implements `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `Vec<T>` implements `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+             `kova::query::Select<'a, M, kova_sqlite::query::select::InnerQuery, S, X>` implements `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, Engine, T, X>`
+             `kova_kernel::dsl::statement::select::SelectStatement<'a, DB>` implements `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+note: required by a bound in `kova_kernel::database::operations::Operations::<DB, E, X>::insert`
+  --> /Users/me/Workspace/kova/kova-kernel/src/database/operations.rs:38:47
    |
 38 |     pub fn insert<'a, T>(&'c self, data: impl IntoInsertSource<'a, DB, T, X>)
    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Operations::<DB, E, X>::insert`
 
-error[E0277]: the trait bound `Vec<models::type_check::post::Post>: kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not satisfied
+error[E0277]: the trait bound `Vec<models::type_check::post::Post>: kova_kernel::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not satisfied
   --> src/type_check/compile_fail/model_roles/relation_cte_from_row.rs:49:35
    |
 49 |     let _ = client.insert::<User>(vec![Post]);
@@ -403,17 +403,17 @@ error[E0277]: the trait bound `Vec<models::type_check::post::Post>: kova_core::d
    |                    |
    |                    required by a bound introduced by this call
    |
-   = help: the trait `kova_core::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not implemented for `Vec<models::type_check::post::Post>`
-help: the following other types implement trait `kova_core::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
-  --> /Users/me/Workspace/kova/kova-core/src/dsl/clause/insert.rs:53:1
+   = help: the trait `kova_kernel::dsl::clause::insert::IntoInsertSource<'_, Engine, models::type_check::user::User, ()>` is not implemented for `Vec<models::type_check::post::Post>`
+help: the following other types implement trait `kova_kernel::dsl::clause::insert::IntoInsertSource<'a, DB, T, X>`
+  --> /Users/me/Workspace/kova/kova-kernel/src/dsl/clause/insert.rs:53:1
    |
 53 | impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for Vec<T> {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `Vec<T>`
 ...
 74 | impl<'a, DB: Database, T: Model<DB, X>, X> IntoInsertSource<'a, DB, T, X> for &'a Vec<T> {
    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `&Vec<T>`
-note: required by a bound in `kova_core::database::operations::Operations::<DB, E, X>::insert`
-  --> /Users/me/Workspace/kova/kova-core/src/database/operations.rs:38:47
+note: required by a bound in `kova_kernel::database::operations::Operations::<DB, E, X>::insert`
+  --> /Users/me/Workspace/kova/kova-kernel/src/database/operations.rs:38:47
    |
 38 |     pub fn insert<'a, T>(&'c self, data: impl IntoInsertSource<'a, DB, T, X>)
    |                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Operations::<DB, E, X>::insert`

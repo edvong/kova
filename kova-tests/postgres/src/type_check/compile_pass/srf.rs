@@ -12,7 +12,9 @@ use kova::query::Select;
 use models::type_check::post::Post;
 
 struct DateSeries;
+struct StepSeries;
 struct KvAlias;
+struct ElemAlias;
 
 /// Stress Test 1: Array Expansion using Unnest (Vec & Column)
 async fn compile_check_srf_unnest() -> Result<()> {
@@ -49,28 +51,27 @@ async fn compile_check_srf_unnest() -> Result<()> {
     Ok(())
 }
 
-/// Stress Test 2: Deep JSONB Parsing, Deref Schema Access & Multi-SRF Injection
+/// Stress Test 2: Deep JSONB Parsing, Deref Schema Access & Multi-SRF Tagging
 async fn compile_check_srf_jsonb() -> Result<()> {
     let client = Options::from("").build()?.codec::<AppCodec>();
 
-    let each_fn = JsonbEachText(EventLog::metadata);
+    let each_fn = JsonbEachText(EventLog::metadata).tag::<KvAlias>();
 
     let _ = client
         .select::<EventLog>()
         .srf((
-            JsonbArrayElements(EventLog::metadata.json_path("tags")),
-            JsonbEachText(EventLog::metadata),
+            JsonbArrayElements(EventLog::metadata.json_path("tags")).tag::<ElemAlias>(),
+            &each_fn,
         ))
-        .tag::<KvAlias>()
         .columns((
             EventLog::id,
-            JsonbArrayElements::value,
+            JsonbArrayElements::value.tag::<ElemAlias>(),
             // Testing both static associated const and Deref instance field access
             JsonbEachText::key.tag::<KvAlias>(),
             each_fn.value.tag::<KvAlias>(),
         ))
         .filter(
-            JsonbArrayElements::value.eq("urgent")
+            JsonbArrayElements::value.tag::<ElemAlias>().eq("urgent")
                 & each_fn.key.tag::<KvAlias>().eq("source"),
         )
         .load_in::<(uuid::Uuid, String, String, String)>()
@@ -79,23 +80,25 @@ async fn compile_check_srf_jsonb() -> Result<()> {
     Ok(())
 }
 
-/// Stress Test 3: GenerateSeries (With Step & Without Step)
+/// Stress Test 3: GenerateSeries (With Step, Without Step, and Multi-Tagged Tuple)
 async fn compile_check_srf_generate_series() -> Result<()> {
     let client = Options::from("").build()?.codec::<AppCodec>();
 
-    // Scenario A: Without .step() (verifies phantom S = L binding)
+    // Scenario A: Without .step() (verifies phantom S = L binding) + direct .tag()
     let _ = client
         .select::<User>()
-        .srf(GenerateSeries(1_i32, 100_i32))
-        .filter(User::id.eq(GenerateSeries::generate_series))
+        .srf(GenerateSeries(1_i32, 100_i32).tag::<StepSeries>())
+        .filter(User::id.eq(GenerateSeries::generate_series.tag::<StepSeries>()))
         .load_as::<User>()
         .await?;
 
-    // Scenario B: With .step() and heterogeneous timestamp/interval literals
+    // Scenario B: With .step().tag() and heterogeneous timestamp/interval literals
     let _ = client
         .select::<Order>()
-        .srf(GenerateSeries("2026-01-01", "2026-12-31").step("1 day"))
-        .tag::<DateSeries>()
+        .srf((
+            GenerateSeries("2026-01-01", "2026-12-31").step("1 day").tag::<DateSeries>(),
+            GenerateSeries(1_i32, 10_i32).step(1_i32).tag::<StepSeries>(),
+        ))
         .left_join::<Order>(
             Order::created_at.eq(GenerateSeries::generate_series.tag::<DateSeries>()),
         )

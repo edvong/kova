@@ -1,8 +1,8 @@
 use crate::types::conn::PgClient;
 use crate::types::{PgExecutor, Postgres, Row};
-use kova_core::Result;
-use kova_core::database::Executor;
-use kova_core::dsl::statement::StatementPayload;
+use kova_kernel::Result;
+use kova_kernel::database::Executor;
+use kova_kernel::dsl::statement::StatementPayload;
 
 pub(crate) async fn execute_affected<'a, E, I, D>(executor: &Executor<E>, payload: I) -> Result<u64>
     where

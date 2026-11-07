@@ -1,6 +1,6 @@
 use crate::types::{Sqlite, Value};
-use kova_core::types::{FromValue, IntoValue};
-use kova_core::{Error, Result, impl_platform_codec, impl_platform_encode_only};
+use kova_kernel::types::{FromValue, IntoValue};
+use kova_kernel::{Error, Result, impl_platform_codec, impl_platform_encode_only};
 use std::borrow::Cow;
 use std::convert::TryFrom;
 

@@ -1,7 +1,7 @@
 use crate::types::Postgres;
-use kova_core::Result;
-use kova_core::dsl::PaginationClause;
-use kova_core::render::{PlatformRender, RenderContext};
+use kova_kernel::Result;
+use kova_kernel::dsl::PaginationClause;
+use kova_kernel::render::{PlatformRender, RenderContext};
 
 impl<'a, 's> PlatformRender<'a, 's, &'s PaginationClause> for Postgres {
     #[inline(always)]

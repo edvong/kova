@@ -1,10 +1,10 @@
-error[E0277]: cannot convert `u64` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
-  --> src/type_check/compile_fail/features/narrow_cast_bounds.rs:8:48
+error[E0277]: cannot convert `u64` into SQL argument(s) of type `kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>`
+  --> src/type_check/compile_fail/features/narrow_cast_bounds.rs:8:47
    |
- 8 |     let _ = client.statement("SELECT $1").bind(1_u64);
-   |                                           ---- ^^^^^ invalid SQL argument(s)
-   |                                           |
-   |                                           required by a bound introduced by this call
+ 8 |     let _ = client.statement("SELECT ?").bind(1_u64);
+   |                                          ---- ^^^^^ invalid SQL argument(s)
+   |                                          |
+   |                                          required by a bound introduced by this call
    |
    = help: the trait `Encode<'_>` is not implemented for `u64`
    = note: expected a valid SQL construct or encodable value.
@@ -19,8 +19,8 @@ error[E0277]: cannot convert `u64` into SQL argument(s) of type `kova_core::dsl:
              &u16
              &u32
            and $N others
-   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, u64, ()>`
-   = note: required for `u64` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
+   = note: required for `Engine` to implement `kova_kernel::types::codec::Encode<'_, u64, ()>`
+   = note: required for `u64` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>, kova_kernel::dsl::arg::ArgEncode>`
 note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/statement.rs:27:16
    |
@@ -30,13 +30,13 @@ note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
 27 |             A: IntoArg<Bind<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Statement::<'c, 'a, E, X>::bind`
 
-error[E0277]: cannot convert `usize` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
-  --> src/type_check/compile_fail/features/narrow_cast_bounds.rs:9:48
+error[E0277]: cannot convert `usize` into SQL argument(s) of type `kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>`
+  --> src/type_check/compile_fail/features/narrow_cast_bounds.rs:9:47
    |
- 9 |     let _ = client.statement("SELECT $1").bind(1_usize);
-   |                                           ---- ^^^^^^^ invalid SQL argument(s)
-   |                                           |
-   |                                           required by a bound introduced by this call
+ 9 |     let _ = client.statement("SELECT ?").bind(1_usize);
+   |                                          ---- ^^^^^^^ invalid SQL argument(s)
+   |                                          |
+   |                                          required by a bound introduced by this call
    |
    = help: the trait `Encode<'_>` is not implemented for `usize`
    = note: expected a valid SQL construct or encodable value.
@@ -51,8 +51,8 @@ error[E0277]: cannot convert `usize` into SQL argument(s) of type `kova_core::ds
              &u16
              &u32
            and $N others
-   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, usize, ()>`
-   = note: required for `usize` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
+   = note: required for `Engine` to implement `kova_kernel::types::codec::Encode<'_, usize, ()>`
+   = note: required for `usize` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>, kova_kernel::dsl::arg::ArgEncode>`
 note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/statement.rs:27:16
    |
@@ -62,13 +62,13 @@ note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
 27 |             A: IntoArg<Bind<'a, Sqlite, X>, M> {
    |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Statement::<'c, 'a, E, X>::bind`
 
-error[E0277]: cannot convert `isize` into SQL argument(s) of type `kova_core::dsl::clause::bind::Bind<'_, Engine, ()>`
-  --> src/type_check/compile_fail/features/narrow_cast_bounds.rs:10:48
+error[E0277]: cannot convert `isize` into SQL argument(s) of type `kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>`
+  --> src/type_check/compile_fail/features/narrow_cast_bounds.rs:10:47
    |
-10 |     let _ = client.statement("SELECT $1").bind(1_isize);
-   |                                           ---- ^^^^^^^ invalid SQL argument(s)
-   |                                           |
-   |                                           required by a bound introduced by this call
+10 |     let _ = client.statement("SELECT ?").bind(1_isize);
+   |                                          ---- ^^^^^^^ invalid SQL argument(s)
+   |                                          |
+   |                                          required by a bound introduced by this call
    |
    = help: the trait `Encode<'_>` is not implemented for `isize`
    = note: expected a valid SQL construct or encodable value.
@@ -83,8 +83,8 @@ error[E0277]: cannot convert `isize` into SQL argument(s) of type `kova_core::ds
              &u16
              &u32
            and $N others
-   = note: required for `Engine` to implement `kova_core::types::codec::Encode<'_, isize, ()>`
-   = note: required for `isize` to implement `kova_core::dsl::arg::IntoArg<kova_core::dsl::clause::bind::Bind<'_, Engine, ()>, kova_core::dsl::arg::ArgEncode>`
+   = note: required for `Engine` to implement `kova_kernel::types::codec::Encode<'_, isize, ()>`
+   = note: required for `isize` to implement `kova_kernel::dsl::arg::IntoArg<kova_kernel::dsl::clause::bind::Bind<'_, Engine, ()>, kova_kernel::dsl::arg::ArgEncode>`
 note: required by a bound in `Statement::<'c, 'a, E, X>::bind`
   --> /Users/me/Workspace/kova/kova-sqlite/src/query/statement.rs:27:16
    |
@@ -106,7 +106,7 @@ error[E0277]: cannot extract `u64` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -120,12 +120,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -141,7 +141,7 @@ error[E0277]: cannot extract `usize` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -155,12 +155,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -176,7 +176,7 @@ error[E0277]: cannot extract `isize` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -190,12 +190,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -211,7 +211,7 @@ error[E0277]: cannot extract `i8` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -225,12 +225,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -246,7 +246,7 @@ error[E0277]: cannot extract `u8` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -260,12 +260,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -281,7 +281,7 @@ error[E0277]: cannot extract `u16` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -295,12 +295,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -316,7 +316,7 @@ error[E0277]: cannot extract `u32` from the database column(s)
     = note: expected a type that implements `DecodeColumn` or `Decode`.
             if passing a tuple, ensure every element can be decoded from the database.
 help: the following other types implement trait `DecodeColumn<DB, X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:43:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:43:13
     |
  43 |             impl<X> $crate::types::DecodeColumn<$db, X> for $prim where $prim: Decode<X> {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -330,12 +330,12 @@ help: the following other types implement trait `DecodeColumn<DB, X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -351,7 +351,7 @@ error[E0277]: type `u8` cannot be decoded from a SQLite value under codec `()`
     = note: if `u8` is a custom type, implement `Decode<'a, ()> for u8` and `decode_column!((), u8)`.
             for narrowing extractions (`i8`, `u8`, `i16`, `u16`, `u32`, `u64`, `usize`, `isize`, `f32`), enable the `narrow-cast` feature.
 help: the following other types implement trait `Decode<X>`
-   --> /Users/me/Workspace/kova/kova-core/src/types/codec.rs:30:13
+   --> /Users/me/Workspace/kova/kova-kernel/src/types/codec.rs:30:13
     |
  30 |             impl<X> Decode<X> for $prim {
     |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -365,15 +365,15 @@ help: the following other types implement trait `Decode<X>`
  26 | impl_platform_codec!(Sqlite, i32, i64, f64, bool, String, Vec<u8>);
     | ------------------------------------------------------------------ in this macro invocation
     = note: required for `Option<u8>` to implement `Decode`
-    = note: required for `Engine` to implement `kova_core::types::codec::Decode<Option<u8>, ()>`
+    = note: required for `Engine` to implement `kova_kernel::types::codec::Decode<Option<u8>, ()>`
     = note: required for `Option<u8>` to implement `DecodeColumn<Engine, ()>`
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
     = note: this error originates in the macro `$crate::impl_platform_prim_codec` which comes from the expansion of the macro `impl_platform_codec` (in Nightly builds, run with -Z macro-backtrace for more info)
 
@@ -397,10 +397,10 @@ error[E0277]: cannot extract `(i32, u16)` from the database column(s)
               `i32` implements `DecodeColumn<Engine, X>`
               `i64` implements `DecodeColumn<Engine, X>`
 note: required by a bound in `kova::query::Select::<'a, T, kova_sqlite::query::select::OuterQuery<'c, E>, S, X>::load_in`
-   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:239:16
+   --> /Users/me/Workspace/kova/kova-sqlite/src/query/select.rs:228:16
     |
-237 |     pub fn load_in<U>(self) -> Result<Vec<U>>
+226 |     pub fn load_in<U>(self) -> Result<Vec<U>>
     |            ------- required by a bound in this associated function
-238 |         where
-239 |             U: DecodeColumn<Sqlite, X> {
+227 |         where
+228 |             U: DecodeColumn<Sqlite, X> {
     |                ^^^^^^^^^^^^^^^^^^^^^^^ required by this bound in `Select::<'a, T, OuterQuery<'c, E>, S, X>::load_in`
