@@ -11,21 +11,21 @@ exclude = ["kova-tests"]
 resolver = "2"
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.85"
 authors = ["Edmond Vong <edmond@edvong.com>"]
-description = "A PostgreSQL and SQLite ORM for Rust"
+description = "A macro-free, modern PostgreSQL and SQLite ORM for Rust with native binary JSONB and FTS5"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/edvong/kova"
-keywords = ["postgres", "sqlite", "orm", "database", "sql"]
-categories = ["database"]
+keywords = ["postgresql", "sqlite", "orm", "sql", "database"]
+categories = ["database", "asynchronous"]
 
 [workspace.dependencies]
-kova-kernel = { path = "kova-kernel", version = "0.1.0" }
-kova-derive = { path = "kova-derive", version = "0.1.0" }
-kova-postgres = { path = "kova-postgres", version = "0.1.0" }
-kova-sqlite = { path = "kova-sqlite", version = "0.1.0" }
+kova-kernel = { path = "kova-kernel", version = "0.1.1" }
+kova-derive = { path = "kova-derive", version = "0.1.1" }
+kova-postgres = { path = "kova-postgres", version = "0.1.1" }
+kova-sqlite = { path = "kova-sqlite", version = "0.1.1" }
 
 tokio-postgres = "0.7"
 deadpool-postgres = "0.14"
